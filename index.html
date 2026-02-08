@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Booked Holdings — Booking Platforms for Local Business</title>
+<meta name="description" content="Booked Holdings designs, owns, and operates category-specific platforms that turn attention into booked appointments for local businesses.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+body{font-family:'Inter',system-ui,-apple-system,sans-serif;color:#111;background:#fff;line-height:1.65;font-size:16px;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
+a{color:inherit;text-decoration:none}
+ul{list-style:none}
+button{font-family:inherit}
+img,svg{display:block;max-width:100%}
+
+.wrap{width:100%;max-width:1120px;margin:0 auto;padding:0 24px}
+
+/* ── Typography ── */
+h1{font-size:clamp(2.2rem,5vw,3.4rem);font-weight:900;line-height:1.08;letter-spacing:-0.035em;color:#000}
+h2{font-size:clamp(1.5rem,3.5vw,2.2rem);font-weight:800;line-height:1.15;letter-spacing:-0.03em;color:#000}
+h3{font-size:1.15rem;font-weight:700;line-height:1.3;color:#000}
+p{color:#444}
+.label{font-size:0.72rem;font-weight:700;text-transform:uppercase;letter-spacing:0.12em;color:#999;margin-bottom:12px}
+
+/* ── Buttons ── */
+.btn{display:inline-flex;align-items:center;justify-content:center;font-family:inherit;font-weight:700;font-size:0.92rem;border:none;border-radius:6px;cursor:pointer;transition:all 0.15s ease;text-align:center}
+.btn-dark{background:#111;color:#fff;padding:14px 28px}
+.btn-dark:hover{background:#333;transform:translateY(-1px)}
+.btn-dark:focus-visible{outline:2px solid #111;outline-offset:3px}
+.btn-outline{background:transparent;color:#111;padding:12px 24px;border:1.5px solid #d0d0d0}
+.btn-outline:hover{border-color:#111;background:#fafafa}
+.btn-outline:focus-visible{outline:2px solid #111;outline-offset:3px}
+
+/* ── Header ── */
+.site-header{position:sticky;top:0;z-index:100;background:rgba(255,255,255,0.96);backdrop-filter:blur(12px);border-bottom:1px solid #eee;padding:0 24px}
+.header-inner{max-width:1120px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;height:60px}
+.logo{font-size:1.05rem;font-weight:900;letter-spacing:-0.03em;color:#000}
+.logo span{font-weight:400;color:#888}
+nav{display:flex;align-items:center;gap:28px}
+nav a{font-size:0.82rem;font-weight:600;color:#555;transition:color 0.15s}
+nav a:hover{color:#000}
+nav a:focus-visible{outline:2px solid #111;outline-offset:3px;border-radius:2px}
+
+/* ── Sections ── */
+section{padding:100px 0}
+.divider{height:1px;background:#eee;max-width:1120px;margin:0 auto}
+
+/* ── Hero ── */
+.hero{padding:120px 0 100px}
+.hero-content{max-width:720px}
+.hero p{font-size:clamp(1rem,1.8vw,1.2rem);color:#555;margin:20px 0 40px;line-height:1.7;max-width:600px}
+
+/* ── What We Do ── */
+.what-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:40px;margin-top:48px}
+.what-item h3{margin-bottom:6px}
+.what-item p{font-size:0.9rem;color:#555;line-height:1.6}
+.what-num{font-size:0.72rem;font-weight:800;color:#bbb;letter-spacing:0.06em;margin-bottom:12px}
+
+/* ── Brands ── */
+.brands-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:24px;margin-top:48px}
+.brand-card{border:1px solid #e5e5e5;border-radius:12px;padding:36px 28px;transition:border-color 0.2s,box-shadow 0.2s}
+.brand-card:hover{border-color:#bbb;box-shadow:0 8px 30px rgba(0,0,0,0.04)}
+.brand-icon{width:44px;height:44px;border-radius:10px;display:flex;align-items:center;justify-content:center;margin-bottom:20px;font-size:1.2rem;font-weight:900;color:#fff}
+.brand-icon.jobs{background:#d97706}
+.brand-icon.clinics{background:#0b7a5a}
+.brand-icon.auto{background:#2563eb}
+.brand-card h3{font-size:1.1rem;margin-bottom:4px}
+.brand-card .tagline{font-size:0.85rem;color:#888;margin-bottom:18px}
+.brand-card ul{display:flex;flex-direction:column;gap:7px;margin-bottom:24px}
+.brand-card li{font-size:0.84rem;color:#555;padding-left:16px;position:relative;line-height:1.5}
+.brand-card li::before{content:"";position:absolute;left:0;top:7px;width:5px;height:5px;border-radius:50%;background:#d0d0d0}
+
+/* ── Operate ── */
+.operate-grid{display:grid;grid-template-columns:1fr 1fr;gap:48px;margin-top:48px}
+.operate-item{padding:32px 0}
+.operate-item:not(:last-child){border-bottom:1px solid #eee}
+.operate-item h3{margin-bottom:8px}
+.operate-item p{font-size:0.9rem;color:#555;line-height:1.65}
+
+/* ── Why ── */
+.why-content{max-width:680px;margin-top:32px}
+.why-content p{font-size:0.95rem;line-height:1.75;margin-bottom:18px;color:#444}
+.why-content p:last-child{margin-bottom:0}
+
+/* ── Footer ── */
+.site-footer{background:#fafafa;border-top:1px solid #eee;padding:60px 0 40px}
+.footer-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:40px}
+.footer-col h4{font-size:0.78rem;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:#999;margin-bottom:16px}
+.footer-col p,.footer-col a{font-size:0.88rem;color:#555;line-height:1.7}
+.footer-col a{display:block;margin-bottom:6px;transition:color 0.15s}
+.footer-col a:hover{color:#000}
+.footer-col a:focus-visible{outline:2px solid #111;outline-offset:2px;border-radius:2px}
+.footer-bottom{margin-top:48px;padding-top:24px;border-top:1px solid #eee;display:flex;align-items:center;justify-content:space-between;font-size:0.78rem;color:#999}
+
+/* ── Mobile nav toggle ── */
+.nav-toggle{display:none;background:none;border:none;cursor:pointer;padding:8px}
+.nav-toggle svg{width:22px;height:22px;color:#111}
+
+/* ── Responsive ── */
+@media(max-width:900px){
+  .what-grid,.brands-grid{grid-template-columns:1fr}
+  .operate-grid{grid-template-columns:1fr}
+  .footer-grid{grid-template-columns:1fr;gap:28px}
+}
+@media(max-width:640px){
+  section{padding:72px 0}
+  .hero{padding:80px 0 64px}
+  .wrap{padding:0 20px}
+  nav{display:none;position:absolute;top:60px;left:0;right:0;background:#fff;border-bottom:1px solid #eee;padding:16px 24px;flex-direction:column;gap:12px}
+  nav.open{display:flex}
+  nav a{font-size:0.92rem;padding:8px 0}
+  .nav-toggle{display:block}
+  .footer-bottom{flex-direction:column;gap:8px;text-align:center}
+}
+</style>
+</head>
+<body>
+
+<!-- ═══ HEADER ═══ -->
+<header class="site-header">
+  <div class="header-inner">
+    <a href="./index.html" class="logo">Booked <span>Holdings</span></a>
+    <nav>
+      <a href="#brands">Brands</a>
+      <a href="#operate">How We Operate</a>
+      <a href="#why">Why Holdings</a>
+      <a href="#contact">Contact</a>
+    </nav>
+    <button class="nav-toggle" aria-label="Toggle menu" aria-expanded="false">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"/></svg>
+    </button>
+  </div>
+</header>
+
+<!-- ═══ HERO ═══ -->
+<section class="hero">
+  <div class="wrap">
+    <div class="hero-content">
+      <h1>We don't sell marketing. We build booking machines.</h1>
+      <p>Booked Holdings designs, owns, and operates category-specific platforms that turn attention into booked appointments for local businesses.</p>
+      <a href="#brands" class="btn btn-dark">View Our Brands</a>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ═══ WHAT WE DO ═══ -->
+<section>
+  <div class="wrap">
+    <div class="label">What We Do</div>
+    <h2>One model, applied vertically</h2>
+    <div class="what-grid">
+      <div class="what-item">
+        <div class="what-num">01</div>
+        <h3>Category-specific platforms</h3>
+        <p>Each brand is built for one industry. The language, workflows, and systems are purpose-built for that vertical.</p>
+      </div>
+      <div class="what-item">
+        <div class="what-num">02</div>
+        <h3>Attention to appointments</h3>
+        <p>Every platform converts paid and organic traffic into real bookings. Calls tracked. Forms attributed. Results visible.</p>
+      </div>
+      <div class="what-item">
+        <div class="what-num">03</div>
+        <h3>Owned infrastructure</h3>
+        <p>We build and control the websites, ad systems, tracking layers, and follow-up workflows. Nothing outsourced. Nothing rented.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ═══ BRANDS ═══ -->
+<section id="brands">
+  <div class="wrap">
+    <div class="label">Our Brands</div>
+    <h2>Three verticals. One operating model.</h2>
+    <div class="brands-grid">
+
+      <div class="brand-card">
+        <div class="brand-icon jobs">BJ</div>
+        <h3>BookedJobs</h3>
+        <p class="tagline">Trades and local service businesses</p>
+        <ul>
+          <li>Websites built to convert calls and quotes</li>
+          <li>Google Search, Maps, and Meta ads</li>
+          <li>Call tracking and lead attribution</li>
+          <li>AI Receptionist for missed calls</li>
+        </ul>
+        <a href="https://bookedjobs.ca" class="btn btn-outline" target="_blank" rel="noopener">Visit BookedJobs</a>
+      </div>
+
+      <div class="brand-card">
+        <div class="brand-icon clinics">BC</div>
+        <h3>BookedClinics</h3>
+        <p class="tagline">Healthcare and allied health clinics</p>
+        <ul>
+          <li>Patient-focused websites and booking flows</li>
+          <li>Google and Meta ads tracked to real bookings</li>
+          <li>Google Maps and Local SEO optimisation</li>
+          <li>AI Receptionist for patient enquiries</li>
+        </ul>
+        <a href="https://bookedclinics.ca" class="btn btn-outline" target="_blank" rel="noopener">Visit BookedClinics</a>
+      </div>
+
+      <div class="brand-card">
+        <div class="brand-icon auto">BA</div>
+        <h3>Booked Auto</h3>
+        <p class="tagline">Automotive service businesses</p>
+        <ul>
+          <li>Service-focused websites for mechanics and detailers</li>
+          <li>Targeted ads for high-intent local searches</li>
+          <li>Booking and call tracking infrastructure</li>
+          <li>Automated follow-up and review workflows</li>
+        </ul>
+        <a href="https://bookedauto.ca" class="btn btn-outline" target="_blank" rel="noopener">Visit Booked Auto</a>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ═══ HOW WE OPERATE ═══ -->
+<section id="operate">
+  <div class="wrap">
+    <div class="label">How We Operate</div>
+    <h2>Operators, not agencies</h2>
+    <div class="operate-grid">
+      <div>
+        <div class="operate-item">
+          <h3>Operators first</h3>
+          <p>We run each brand as a product, not a service. Every workflow, template, and system is designed once, improved continuously, and deployed across clients in that vertical.</p>
+        </div>
+        <div class="operate-item">
+          <h3>Full-stack attribution</h3>
+          <p>Every call, form submission, and booking is tracked back to its source. Clients see exactly what their spend produces. We optimise weekly against real outcomes, not vanity metrics.</p>
+        </div>
+      </div>
+      <div>
+        <div class="operate-item">
+          <h3>Systems over services</h3>
+          <p>We don't sell hours. We build systems — websites, ad infrastructure, tracking layers, and follow-up automations — that compound in value over time.</p>
+        </div>
+        <div class="operate-item">
+          <h3>Vertical depth</h3>
+          <p>Each brand only serves one category. This lets us build deeper expertise, tighter copy, and better-converting assets than any generalist agency could.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ═══ WHY A HOLDING COMPANY ═══ -->
+<section id="why">
+  <div class="wrap">
+    <div class="label">Why Holdings</div>
+    <h2>Why a holding company?</h2>
+    <div class="why-content">
+      <p>Most marketing agencies spread thin across dozens of industries. They sell retainers, deliver reports, and move on. We took the opposite approach.</p>
+      <p>Booked Holdings exists to build, own, and operate brands that go deep into a single category. Each brand shares a common operating system — the same infrastructure, the same tracking methodology, the same performance standards — but speaks the language of its specific market.</p>
+      <p>The holding structure lets us share resources across brands without diluting focus. Engineering, ad operations, and AI tooling are centralised. Brand strategy, copy, and client experience are vertical-specific.</p>
+      <p>The result: each brand moves faster, converts better, and scales independently — while the parent company compounds the advantage across all three.</p>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ═══ FOOTER ═══ -->
+<footer class="site-footer" id="contact">
+  <div class="wrap">
+    <div class="footer-grid">
+      <div class="footer-col">
+        <h4>Booked Holdings</h4>
+        <p>We design, own, and operate booking platforms for local businesses across trades, healthcare, and automotive.</p>
+      </div>
+      <div class="footer-col">
+        <h4>Brands</h4>
+        <a href="https://bookedjobs.ca" target="_blank" rel="noopener">BookedJobs</a>
+        <a href="https://bookedclinics.ca" target="_blank" rel="noopener">BookedClinics</a>
+        <a href="https://bookedauto.ca" target="_blank" rel="noopener">Booked Auto</a>
+      </div>
+      <div class="footer-col">
+        <h4>Contact</h4>
+        <a href="mailto:hello@bookedholdings.com">hello@bookedholdings.com</a>
+        <p style="margin-top:8px">Canada &bull; Ireland</p>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>Booked Holdings</span>
+      <span>All rights reserved.</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+/* Mobile nav toggle */
+(function(){
+  var toggle=document.querySelector('.nav-toggle');
+  var nav=document.querySelector('header nav');
+  if(!toggle||!nav)return;
+  toggle.addEventListener('click',function(){
+    var open=nav.classList.toggle('open');
+    toggle.setAttribute('aria-expanded',open?'true':'false');
+  });
+  nav.querySelectorAll('a').forEach(function(a){
+    a.addEventListener('click',function(){
+      nav.classList.remove('open');
+      toggle.setAttribute('aria-expanded','false');
+    });
+  });
+})();
+</script>
+</body>
+</html>

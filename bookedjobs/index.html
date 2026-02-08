@@ -1,0 +1,788 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BookedJobs — More Local Jobs for Trades &amp; Contractors</title>
+<meta name="description" content="We build your website and run Google + Facebook ads that drive calls and quote requests for trades and contractors. Results-focused marketing that fills your schedule.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+body{font-family:'Inter',system-ui,-apple-system,sans-serif;color:#1a1a1a;background:#fff;line-height:1.65;font-size:16px;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
+a{color:inherit;text-decoration:none}
+ul{list-style:none}
+button{font-family:inherit}
+
+.wrap{width:100%;max-width:1100px;margin:0 auto;padding:0 24px}
+section{padding:80px 0}
+h1{font-size:clamp(2rem,5vw,3.1rem);font-weight:900;line-height:1.12;letter-spacing:-0.03em;color:#0a0a0a}
+h2{font-size:clamp(1.4rem,3.5vw,2.1rem);font-weight:800;line-height:1.18;letter-spacing:-0.02em;color:#0a0a0a}
+h3{font-size:1.12rem;font-weight:700;line-height:1.3;color:#0a0a0a}
+p{color:#3a3a3a}
+.label{font-size:0.78rem;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:#d97706;margin-bottom:10px}
+
+/* ── Buttons ── */
+.btn{display:inline-flex;align-items:center;justify-content:center;font-family:inherit;font-weight:700;font-size:1rem;border:none;border-radius:8px;cursor:pointer;transition:all 0.2s ease;text-align:center}
+.btn-primary{background:#d97706;color:#fff;padding:16px 32px;font-size:1.05rem}
+.btn-primary:hover{background:#b45309;transform:translateY(-1px);box-shadow:0 6px 20px rgba(217,119,6,0.3)}
+.btn-outline{background:transparent;color:#d97706;padding:14px 28px;border:2px solid #d97706}
+.btn-outline:hover{background:#d97706;color:#fff}
+.btn-ghost{background:transparent;color:#d97706;font-weight:600;font-size:0.95rem;padding:0;border:none;cursor:pointer;border-bottom:1px solid transparent;transition:border-color 0.2s}
+.btn-ghost:hover{border-bottom-color:#d97706}
+
+/* ── Header ── */
+.site-header{position:sticky;top:0;z-index:100;background:rgba(255,255,255,0.97);backdrop-filter:blur(8px);border-bottom:1px solid #e5e5e5;padding:0 24px}
+.header-inner{max-width:1100px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;height:60px}
+.logo{font-size:1.2rem;font-weight:900;color:#0a0a0a;letter-spacing:-0.03em}
+.logo span{color:#d97706}
+.header-cta{font-size:0.85rem;padding:10px 20px;border-radius:6px}
+
+/* ── Trust strip ── */
+.trust-strip{background:#1a1a1a;padding:12px 24px;text-align:center;font-size:0.8rem;color:#a3a3a3;font-weight:600;letter-spacing:0.03em}
+
+/* ── Hero ── */
+.hero{padding:100px 0 80px;background:linear-gradient(180deg,#fffbf5 0%,#fff 100%)}
+.hero-content{max-width:680px}
+.hero .sub{font-size:clamp(1rem,2vw,1.18rem);color:#4a4a4a;margin:16px 0 32px;line-height:1.7;max-width:580px}
+.hero-actions{display:flex;align-items:center;gap:20px;flex-wrap:wrap;margin-bottom:28px}
+.hero-checks{display:flex;flex-direction:column;gap:10px}
+.hero-checks li{display:flex;align-items:center;gap:10px;font-size:0.9rem;color:#3a3a3a;font-weight:600}
+.hero-checks svg{width:18px;height:18px;color:#d97706;flex-shrink:0}
+
+/* ── AI Receptionist intro ── */
+.ai-intro{background:#1a1a1a;color:#fff}
+.ai-intro .label{color:#fbbf24}
+.ai-intro h2{color:#fff}
+.ai-intro .sub{color:#a3a3a3;font-size:1.05rem;line-height:1.7;margin:12px 0 28px;max-width:560px}
+.ai-intro-checks{display:flex;flex-direction:column;gap:12px;margin-bottom:32px}
+.ai-intro-checks li{display:flex;align-items:flex-start;gap:10px;font-size:0.93rem;color:#d4d4d4;line-height:1.55}
+.ai-intro-checks svg{width:18px;height:18px;color:#fbbf24;flex-shrink:0;margin-top:2px}
+.ai-intro-actions{display:flex;align-items:center;gap:20px;flex-wrap:wrap}
+.ai-intro-actions .btn-primary{background:#d97706}
+.ai-intro-actions .btn-ghost{color:#fbbf24}
+.ai-intro-actions .btn-ghost:hover{border-bottom-color:#fbbf24}
+
+/* ── AI How it works ── */
+.ai-steps{background:#fffbf5}
+.ai-flow{margin-top:28px;background:#fff;border:1px solid #e5e5e5;border-radius:10px;padding:24px;max-width:520px}
+.ai-flow-title{font-size:0.82rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:#999;margin-bottom:14px}
+.ai-flow-line{display:flex;align-items:flex-start;gap:10px;font-size:0.88rem;color:#555;line-height:1.55;padding:6px 0}
+.ai-flow-line strong{color:#0a0a0a;font-weight:700;flex-shrink:0;min-width:32px}
+
+/* ── AI Features grid ── */
+.ai-features-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:36px}
+.ai-feat{background:#fff;border:1px solid #e5e5e5;border-radius:10px;padding:24px 20px;transition:border-color 0.2s}
+.ai-feat:hover{border-color:#d97706}
+.ai-feat-icon{width:40px;height:40px;background:#fff7ed;border-radius:8px;display:flex;align-items:center;justify-content:center;margin-bottom:12px}
+.ai-feat-icon svg{width:20px;height:20px;color:#d97706}
+.ai-feat h3{font-size:0.95rem;margin-bottom:4px}
+.ai-feat p{font-size:0.82rem;color:#666;line-height:1.5}
+
+/* ── AI Pricing tiers ── */
+.ai-pricing{background:#fafafa}
+.ai-tiers{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-top:36px}
+.ai-tier{background:#fff;border:1px solid #e5e5e5;border-radius:12px;padding:32px 24px;text-align:center;transition:border-color 0.2s,box-shadow 0.2s}
+.ai-tier:hover{border-color:#d97706;box-shadow:0 4px 20px rgba(217,119,6,0.07)}
+.ai-tier.featured{border:2px solid #d97706;position:relative}
+.ai-tier.featured::before{content:"Most Popular";position:absolute;top:-12px;left:50%;transform:translateX(-50%);background:#d97706;color:#fff;font-size:0.7rem;font-weight:700;padding:3px 14px;border-radius:20px;letter-spacing:0.04em;text-transform:uppercase}
+.ai-tier h3{font-size:1.15rem;margin-bottom:16px}
+.ai-tier ul{display:flex;flex-direction:column;gap:8px;margin-bottom:24px;text-align:left}
+.ai-tier li{font-size:0.87rem;color:#4a4a4a;padding-left:18px;position:relative;line-height:1.5}
+.ai-tier li::before{content:"";position:absolute;left:0;top:7px;width:6px;height:6px;border-radius:50%;background:#fde68a}
+.ai-pricing-note{text-align:center;margin-top:20px;font-size:0.85rem;color:#777}
+
+/* ── AI FAQ ── */
+.ai-faq{background:#fff}
+
+/* ── Problem ── */
+.problem{background:#fafafa}
+.problem-list{margin-top:24px;display:flex;flex-direction:column;gap:14px;max-width:640px}
+.problem-list li{display:flex;align-items:flex-start;gap:12px;font-size:0.93rem;color:#3a3a3a;line-height:1.6}
+.problem-list svg{width:20px;height:20px;color:#dc2626;flex-shrink:0;margin-top:2px}
+
+/* ── Offer ── */
+.offer-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:20px;margin-top:40px}
+.offer-card{background:#fff;border:1px solid #e5e5e5;border-radius:12px;padding:32px 26px;transition:border-color 0.2s,box-shadow 0.2s}
+.offer-card:hover{border-color:#d97706;box-shadow:0 6px 24px rgba(217,119,6,0.07)}
+.offer-icon{width:44px;height:44px;background:#fff7ed;border-radius:10px;display:flex;align-items:center;justify-content:center;margin-bottom:16px}
+.offer-icon svg{width:22px;height:22px;color:#d97706}
+.offer-card h3{margin-bottom:14px;font-size:1.08rem}
+.offer-card ul{display:flex;flex-direction:column;gap:8px}
+.offer-card li{font-size:0.87rem;color:#4a4a4a;padding-left:18px;position:relative;line-height:1.55}
+.offer-card li::before{content:"";position:absolute;left:0;top:7px;width:6px;height:6px;border-radius:50%;background:#fde68a}
+
+/* ── Steps ── */
+.steps{background:#fffbf5}
+.steps-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:28px;margin-top:44px}
+.step-num{width:48px;height:48px;border-radius:50%;background:#d97706;color:#fff;font-weight:800;font-size:1.15rem;display:flex;align-items:center;justify-content:center;margin-bottom:14px}
+.step h3{margin-bottom:6px}
+.step p{font-size:0.9rem;color:#555;line-height:1.6}
+.steps-cta{text-align:center;margin-top:44px}
+
+/* ── Week 1 ── */
+.week1-grid{margin-top:24px;display:grid;grid-template-columns:1fr 1fr;gap:12px;max-width:640px}
+.week1-grid li{display:flex;align-items:center;gap:10px;font-size:0.9rem;color:#3a3a3a;font-weight:500}
+.week1-grid svg{width:18px;height:18px;color:#d97706;flex-shrink:0}
+
+/* ── Pricing ── */
+.pricing{background:#fafafa}
+.pricing-body{margin-top:20px;max-width:640px}
+.pricing-body p{margin-bottom:14px;font-size:0.95rem;line-height:1.7;color:#3a3a3a}
+.pricing-disclaimer{font-size:0.82rem;color:#777;margin-top:20px;padding-top:16px;border-top:1px solid #e0e0e0;line-height:1.55}
+
+/* ── Qualification ── */
+.qual-grid{display:grid;grid-template-columns:1fr 1fr;gap:32px;margin-top:28px}
+.qual-block h3{font-size:1rem;margin-bottom:14px}
+.qual-block ul{display:flex;flex-direction:column;gap:10px}
+.qual-block li{display:flex;align-items:flex-start;gap:10px;font-size:0.9rem;color:#3a3a3a;line-height:1.55}
+.qual-block li svg{width:18px;height:18px;flex-shrink:0;margin-top:2px}
+.qual-block.yes li svg{color:#d97706}
+.qual-block.no li svg{color:#a3a3a3}
+
+/* ── FAQ ── */
+.faq-list{margin-top:32px;max-width:720px;display:flex;flex-direction:column}
+.faq-item{border-bottom:1px solid #e5e5e5}
+.faq-item:first-child{border-top:1px solid #e5e5e5}
+.faq-q{width:100%;background:none;border:none;padding:20px 0;display:flex;align-items:center;justify-content:space-between;cursor:pointer;text-align:left;font-size:0.98rem;font-weight:700;color:#0a0a0a;gap:16px}
+.faq-q svg{width:20px;height:20px;flex-shrink:0;color:#999;transition:transform 0.25s}
+.faq-item.open .faq-q svg{transform:rotate(45deg);color:#d97706}
+.faq-a{max-height:0;overflow:hidden;transition:max-height 0.3s ease}
+.faq-item.open .faq-a{max-height:300px}
+.faq-a-inner{padding:0 0 20px;font-size:0.9rem;color:#555;line-height:1.7}
+
+/* ── Final CTA ── */
+.final-cta{background:#1a1a1a;color:#fff;text-align:center;padding:80px 0}
+.final-cta h2{color:#fff;margin-bottom:10px}
+.final-cta p{color:#a3a3a3;margin-bottom:32px;font-size:1rem;max-width:520px;margin-left:auto;margin-right:auto;line-height:1.7}
+.final-cta .btn-primary{background:#d97706;color:#fff;padding:18px 40px;font-size:1.08rem}
+.final-cta .btn-primary:hover{background:#b45309;box-shadow:0 6px 24px rgba(217,119,6,0.35)}
+.final-cta .microcopy{font-size:0.82rem;color:#666;margin-top:16px}
+
+/* ── Footer ── */
+.site-footer{background:#111;color:#666;padding:36px 0;font-size:0.85rem}
+.footer-inner{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px}
+.footer-brand{font-weight:800;color:#fff;font-size:1rem;margin-bottom:2px}
+.footer-tagline{font-size:0.8rem;color:#555}
+.footer-links{display:flex;gap:20px}
+.footer-links a{color:#666;transition:color 0.2s}
+.footer-links a:hover{color:#fff}
+
+/* ── Privacy ── */
+.privacy-section{background:#0a0a0a;padding:32px 0;font-size:0.82rem;color:#555;line-height:1.7}
+.privacy-section h3{font-size:0.95rem;margin-bottom:6px;color:#999}
+
+/* ── Responsive ── */
+@media(max-width:768px){
+  section{padding:60px 0}
+  .ai-features-grid{grid-template-columns:1fr 1fr}
+  .ai-tiers{grid-template-columns:1fr}
+  .offer-grid{grid-template-columns:1fr}
+  .steps-grid{grid-template-columns:1fr;gap:32px}
+  .week1-grid{grid-template-columns:1fr}
+  .qual-grid{grid-template-columns:1fr;gap:20px}
+  .hero{padding:80px 0 60px}
+  .hero-actions{flex-direction:column;align-items:flex-start}
+  .footer-inner{flex-direction:column;text-align:center}
+  .footer-links{justify-content:center}
+}
+@media(max-width:480px){
+  .wrap{padding:0 16px}
+  .offer-card{padding:24px 20px}
+  .ai-features-grid{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="header-inner">
+    <a href="./index.html" class="logo">Booked<span>Jobs</span></a>
+    <div style="display:flex;align-items:center;gap:20px">
+      <a href="ai-receptionist/index.html" style="font-size:0.85rem;font-weight:600;color:#d97706">AI Receptionist</a>
+      <a href="book/index.html" class="btn btn-primary header-cta">Book a Call</a>
+    </div>
+  </div>
+</header>
+
+<div class="trust-strip">Built for Plumbers &bull; Electricians &bull; HVAC &bull; Roofers &bull; Landscapers &bull; Builders</div>
+
+<!-- ═══ 1. HERO ═══ -->
+<section class="hero">
+  <div class="wrap">
+    <div class="hero-content">
+      <h1>More Local Jobs in 30 Days &mdash; Guaranteed</h1>
+      <p class="sub">We build your website and run Google + Facebook ads that drive calls and quote requests. Including Google Maps optimisation to help you show up where people actually search.</p>
+      <div class="hero-actions">
+        <a href="book/index.html" class="btn btn-primary">Book a Free 15-Minute Call</a>
+        <a href="#how" class="btn-ghost">See how it works &darr;</a>
+      </div>
+      <ul class="hero-checks">
+        <li>
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg>
+          Website built to convert
+        </li>
+        <li>
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg>
+          Google Maps + Google Search + Facebook ads
+        </li>
+        <li>
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg>
+          Call + form tracking
+        </li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ AI RECEPTIONIST: INTRO ═══ -->
+<section class="ai-intro">
+  <div class="wrap">
+    <div class="label">AI Receptionist</div>
+    <h2>Never Miss Another Call</h2>
+    <p class="sub">AI Receptionist answers 24/7, qualifies the job, and books you in. Even when you are on a roof, under a sink, or done for the day.</p>
+    <ul class="ai-intro-checks">
+      <li>
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg>
+        Missed calls turn into booked jobs — automatically
+      </li>
+      <li>
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg>
+        Instant SMS follow-up so the lead stays warm
+      </li>
+      <li>
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg>
+        Filters tyre-kickers so you only deal with real jobs
+      </li>
+    </ul>
+    <div class="ai-intro-actions">
+      <a href="ai-receptionist-demo/index.html" class="btn btn-primary">Book a Demo</a>
+      <a href="#ai-receptionist" class="btn-ghost">See How It Works &darr;</a>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ AI RECEPTIONIST: HOW IT WORKS ═══ -->
+<section class="ai-steps" id="ai-receptionist">
+  <div class="wrap">
+    <div class="label">How It Works</div>
+    <h2>Three steps. Zero missed leads.</h2>
+    <div class="steps-grid">
+      <div class="step">
+        <div class="step-num">1</div>
+        <h3>Answer</h3>
+        <p>A call comes in and you cannot pick up. AI Receptionist answers instantly, greets the caller by your business name, and sounds natural.</p>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <h3>Qualify</h3>
+        <p>It asks what they need, where they are, and when they want the work done. Tyre-kickers get filtered. Real jobs get flagged.</p>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <h3>Book + Follow-Up</h3>
+        <p>The lead gets booked into your calendar or sent an SMS with next steps. You get a summary with the job details, ready to go.</p>
+      </div>
+    </div>
+    <div class="ai-flow">
+      <div class="ai-flow-title">Example call flow</div>
+      <div class="ai-flow-line"><strong>AI:</strong> "Thanks for calling Smith Plumbing. How can we help?"</div>
+      <div class="ai-flow-line"><strong>Caller:</strong> "My hot water is out. Can someone come today?"</div>
+      <div class="ai-flow-line"><strong>AI:</strong> "Got it — hot water issue. What suburb are you in?"</div>
+      <div class="ai-flow-line"><strong>Caller:</strong> "Parramatta."</div>
+      <div class="ai-flow-line"><strong>AI:</strong> "We cover Parramatta. I will book you in and send a confirmation text now."</div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ AI RECEPTIONIST: FEATURES ═══ -->
+<section class="ai-features">
+  <div class="wrap">
+    <div class="label">Features</div>
+    <h2>What your AI Receptionist does</h2>
+    <div class="ai-features-grid">
+      <div class="ai-feat">
+        <div class="ai-feat-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+        </div>
+        <h3>24/7 Answering</h3>
+        <p>Every call answered, day or night. No voicemail. No missed leads.</p>
+      </div>
+      <div class="ai-feat">
+        <div class="ai-feat-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+        </div>
+        <h3>Job Qualification</h3>
+        <p>Asks what the job is, where, and when. Filters out time-wasters before they reach you.</p>
+      </div>
+      <div class="ai-feat">
+        <div class="ai-feat-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9.568 3H5.25A2.25 2.25 0 003 5.25v4.318c0 .597.237 1.17.659 1.591l9.581 9.581c.699.699 1.78.872 2.607.33a18.095 18.095 0 005.223-5.223c.542-.827.369-1.908-.33-2.607L11.16 3.66A2.25 2.25 0 009.568 3z"/><path stroke-linecap="round" stroke-linejoin="round" d="M6 6h.008v.008H6V6z"/></svg>
+        </div>
+        <h3>Call Summary + Tags</h3>
+        <p>Every call summarised with job type, location, and urgency. Tagged and ready for action.</p>
+      </div>
+      <div class="ai-feat">
+        <div class="ai-feat-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M8.625 9.75a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H8.25m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H12m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0h-.375m-13.5 3.01c0 1.6 1.123 2.994 2.707 3.227 1.087.16 2.185.283 3.293.369V21l4.184-4.183a1.14 1.14 0 01.778-.332 48.294 48.294 0 005.83-.498c1.585-.233 2.708-1.626 2.708-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0012 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018z"/></svg>
+        </div>
+        <h3>SMS Follow-Up</h3>
+        <p>Caller gets an instant text with your details and booking confirmation. No lead left hanging.</p>
+      </div>
+      <div class="ai-feat">
+        <div class="ai-feat-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5"/></svg>
+        </div>
+        <h3>Calendar Booking</h3>
+        <p>Books qualified leads straight into your calendar. You wake up to a full schedule.</p>
+      </div>
+      <div class="ai-feat">
+        <div class="ai-feat-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"/></svg>
+        </div>
+        <h3>Call Notes + Logs</h3>
+        <p>Full log of every conversation. Searchable. Exportable. Nothing gets lost.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ AI RECEPTIONIST: PRICING ═══ -->
+<section class="ai-pricing" id="ai-pricing">
+  <div class="wrap">
+    <div class="label">Pricing</div>
+    <h2>Simple plans. No surprises.</h2>
+    <div class="ai-tiers">
+      <div class="ai-tier">
+        <h3>Starter</h3>
+        <ul>
+          <li>AI answering during business hours</li>
+          <li>Job qualification questions</li>
+          <li>Call summaries sent to your phone</li>
+        </ul>
+        <a href="ai-receptionist-demo/index.html" class="btn btn-outline">Book a Demo</a>
+      </div>
+      <div class="ai-tier featured">
+        <h3>Pro</h3>
+        <ul>
+          <li>24/7 AI answering (after-hours included)</li>
+          <li>SMS follow-up to every caller</li>
+          <li>Calendar booking for qualified leads</li>
+        </ul>
+        <a href="ai-receptionist-demo/index.html" class="btn btn-primary">Book a Demo</a>
+      </div>
+      <div class="ai-tier">
+        <h3>Scale</h3>
+        <ul>
+          <li>Everything in Pro</li>
+          <li>Multi-location or multi-trade support</li>
+          <li>Custom call flows and escalation rules</li>
+        </ul>
+        <a href="ai-receptionist-demo/index.html" class="btn btn-outline">Book a Demo</a>
+      </div>
+    </div>
+    <p class="ai-pricing-note">Pricing depends on call volume. We will confirm the right plan on the call.</p>
+  </div>
+</section>
+
+<!-- ═══ AI RECEPTIONIST: FAQ ═══ -->
+<section class="ai-faq">
+  <div class="wrap">
+    <div class="label">AI Receptionist FAQ</div>
+    <h2>Common questions about AI Receptionist</h2>
+    <div class="faq-list">
+      <div class="faq-item">
+        <button class="faq-q" aria-expanded="false">
+          Does it replace my receptionist?
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
+        </button>
+        <div class="faq-a"><div class="faq-a-inner">No. It handles the calls you cannot get to — after hours, when you are on a job, or when the line is busy. It works alongside your team, not instead of them.</div></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" aria-expanded="false">
+          Can it book into my calendar?
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
+        </button>
+        <div class="faq-a"><div class="faq-a-inner">Yes. It connects to your calendar and books qualified leads into available slots. You control which times are open and what types of jobs get booked automatically.</div></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" aria-expanded="false">
+          What if it gets something wrong?
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
+        </button>
+        <div class="faq-a"><div class="faq-a-inner">Every call is logged and recorded. You can review any conversation. If the AI is unsure, it tells the caller someone will ring them back and flags it for you immediately.</div></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" aria-expanded="false">
+          Can it handle emergencies?
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
+        </button>
+        <div class="faq-a"><div class="faq-a-inner">You set the rules. If the caller mentions a burst pipe, flooding, or anything urgent, the AI can immediately transfer the call to your mobile or send a priority alert so you can ring back within minutes.</div></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" aria-expanded="false">
+          How fast can we launch?
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
+        </button>
+        <div class="faq-a"><div class="faq-a-inner">Most trades are live within 48 hours. We set up your call flow, connect your calendar, and test everything before it goes live. No long onboarding process.</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ 2. PROBLEM ═══ -->
+<section class="problem">
+  <div class="wrap">
+    <div class="label">The Problem</div>
+    <h2>If you are not getting calls, here is why.</h2>
+    <ul class="problem-list">
+      <li>
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+        Your website has no clear offer and no reason for someone to call right now
+      </li>
+      <li>
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+        Your site is slow on mobile and looks like it was built five years ago
+      </li>
+      <li>
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+        You are not showing up in Google Maps when people search your trade in your area
+      </li>
+      <li>
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+        Competitors get the calls before you even show up in local search results
+      </li>
+      <li>
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+        You have run ads before but had no tracking so you have no idea what worked
+      </li>
+      <li>
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+        People click your ad, land on your site, and leave without calling or filling out a form
+      </li>
+      <li>
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+        Missed calls go to voicemail and nobody follows up
+      </li>
+      <li>
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+        Your last agency charged a monthly retainer and delivered reports full of metrics you never understood
+      </li>
+    </ul>
+  </div>
+</section>
+
+<!-- ═══ 3. OFFER STACK ═══ -->
+<section class="offer">
+  <div class="wrap">
+    <div class="label">What You Get</div>
+    <h2>Everything you need to get the phone ringing</h2>
+    <div class="offer-grid">
+
+      <div class="offer-card">
+        <div class="offer-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 21a9.004 9.004 0 008.716-6.747M12 21a9.004 9.004 0 01-8.716-6.747M12 21c2.485 0 4.5-4.03 4.5-9S14.485 3 12 3m0 18c-2.485 0-4.5-4.03-4.5-9S9.515 3 12 3m0 0a8.997 8.997 0 017.843 4.582M12 3a8.997 8.997 0 00-7.843 4.582m15.686 0A11.953 11.953 0 0112 10.5c-2.998 0-5.74-1.1-7.843-2.918m15.686 0A8.959 8.959 0 0121 12c0 .778-.099 1.533-.284 2.253m0 0A17.919 17.919 0 0112 16.5c-3.162 0-6.133-.815-8.716-2.247m0 0A9.015 9.015 0 013 12c0-1.605.42-3.113 1.157-4.418"/></svg>
+        </div>
+        <h3>High-Converting Website</h3>
+        <ul>
+          <li>Fast on mobile, loads in under 3 seconds</li>
+          <li>Service pages built around what people search</li>
+          <li>Trust signals: reviews, licenses, service areas</li>
+          <li>Click-to-call and quote request on every page</li>
+          <li>Quote request form that actually gets filled out</li>
+        </ul>
+      </div>
+
+      <div class="offer-card">
+        <div class="offer-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z"/></svg>
+        </div>
+        <h3>Google Maps Optimisation</h3>
+        <ul>
+          <li>Google Business Profile setup and optimisation</li>
+          <li>Service areas, categories, and on-page signals</li>
+          <li>Review and listing best practices</li>
+          <li>Built to improve visibility in local searches</li>
+          <li>Ongoing updates as your services or areas change</li>
+        </ul>
+      </div>
+
+      <div class="offer-card">
+        <div class="offer-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 013 19.875v-6.75zM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V8.625zM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V4.125z"/></svg>
+        </div>
+        <h3>Lead-Driven Ads</h3>
+        <ul>
+          <li>Google Search for people actively looking for your trade</li>
+          <li>Facebook and Instagram for local awareness and retargeting</li>
+          <li>Geo-targeted to your service area only</li>
+          <li>Ad creatives that speak to homeowners, not marketers</li>
+          <li>Budget recommendations based on your area and trade</li>
+        </ul>
+      </div>
+
+      <div class="offer-card">
+        <div class="offer-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 002.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-.97 1.293c-.282.376-.769.542-1.21.38a12.035 12.035 0 01-7.143-7.143c-.162-.441.004-.928.38-1.21l1.293-.97c.363-.271.527-.734.417-1.173L6.963 3.102a1.125 1.125 0 00-1.091-.852H4.5A2.25 2.25 0 002.25 4.5v2.25z"/></svg>
+        </div>
+        <h3>Tracking + Follow-Up</h3>
+        <ul>
+          <li>Every call tracked and recorded</li>
+          <li>Every form submission attributed to its source</li>
+          <li>Missed-call text back so leads do not slip away</li>
+          <li>Simple lead pipeline so nothing falls through the cracks</li>
+          <li>Weekly optimisation based on real enquiries, not clicks</li>
+        </ul>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ═══ 4. HOW IT WORKS ═══ -->
+<section class="steps" id="how">
+  <div class="wrap">
+    <div class="label">How It Works</div>
+    <h2>Three steps to a full schedule</h2>
+    <div class="steps-grid">
+      <div class="step">
+        <div class="step-num">1</div>
+        <h3>Quick Audit Call</h3>
+        <p>15 minutes. We look at your current site, your area, and your competition. We tell you exactly where you are losing leads.</p>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <h3>Launch Setup</h3>
+        <p>We build your website, install tracking, optimise your Google Maps listing, and launch your ad campaigns. Most trades are live within two weeks.</p>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <h3>Jobs Come In</h3>
+        <p>Calls and quote requests start coming in. We measure every lead and optimise weekly to keep improving your results.</p>
+      </div>
+    </div>
+    <div class="steps-cta">
+      <a href="book/index.html" class="btn btn-primary">Book Your Free Audit Call</a>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ 5. WEEK 1 ═══ -->
+<section class="week1">
+  <div class="wrap">
+    <div class="label">What to Expect</div>
+    <h2>What you will see in week one</h2>
+    <ul class="week1-grid">
+      <li>
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg>
+        New landing page or full website refresh
+      </li>
+      <li>
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg>
+        Call and form tracking installed
+      </li>
+      <li>
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg>
+        Google Search campaign live and targeting your area
+      </li>
+      <li>
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg>
+        Meta retargeting campaign set up
+      </li>
+      <li>
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg>
+        Lead follow-up workflow active
+      </li>
+      <li>
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg>
+        Google Business Profile optimised or reviewed
+      </li>
+      <li>
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg>
+        First performance report in your inbox
+      </li>
+    </ul>
+  </div>
+</section>
+
+<!-- ═══ 6. PRICING ═══ -->
+<section class="pricing">
+  <div class="wrap">
+    <div class="label">Pricing</div>
+    <h2>Transparent pricing. Real accountability.</h2>
+    <div class="pricing-body">
+      <p>You pay for a done-for-you system: website, Google Maps, ads, tracking, and weekly optimisation. Everything is included so there are no surprise costs down the line.</p>
+      <p>You also cover your own ad spend directly with Google and Meta. We handle strategy, creative, and ongoing management. Every dollar is tracked back to real calls and quote requests.</p>
+      <p>We are not here to collect a fee and send you a report. We are here to fill your schedule. If something is not working, we fix it — that is what the weekly optimisation is for.</p>
+      <p>We confirm fit before any work begins. If your trade, location, or capacity does not align with what we do, we will tell you upfront.</p>
+      <p class="pricing-disclaimer">Results depend on location, competition, offer, and how fast you respond to leads. We confirm fit before launch and set realistic expectations based on your specific market.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ 7. WHO THIS IS FOR ═══ -->
+<section class="qualification">
+  <div class="wrap">
+    <div class="label">Is This For You</div>
+    <h2>This works best if...</h2>
+    <div class="qual-grid">
+      <div class="qual-block yes">
+        <h3>Good fit</h3>
+        <ul>
+          <li>
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg>
+            You answer calls during work hours or have someone who does
+          </li>
+          <li>
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg>
+            You can handle more jobs this month
+          </li>
+          <li>
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg>
+            You serve a clear area — a city, region, or set of suburbs
+          </li>
+          <li>
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg>
+            You are serious about getting more work and growing
+          </li>
+        </ul>
+      </div>
+      <div class="qual-block no">
+        <h3>Not a fit if...</h3>
+        <ul>
+          <li>
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+            You never answer the phone and do not plan to
+          </li>
+          <li>
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+            You are fully booked for months and cannot take on new work
+          </li>
+          <li>
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+            You want "branding" and do not care about measurable leads
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ 8. FAQ ═══ -->
+<section class="faq">
+  <div class="wrap">
+    <div class="label">Questions</div>
+    <h2>Frequently asked questions</h2>
+    <div class="faq-list">
+
+      <div class="faq-item">
+        <button class="faq-q" aria-expanded="false">
+          What trades do you work with?
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
+        </button>
+        <div class="faq-a"><div class="faq-a-inner">Plumbing, electrical, HVAC, roofing, landscaping, general contracting, painting, fencing, concrete, and most residential or commercial trades that rely on local calls and quote requests.</div></div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-q" aria-expanded="false">
+          How fast can we launch?
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
+        </button>
+        <div class="faq-a"><div class="faq-a-inner">Most trades are live within 10 to 14 days. That includes the website, tracking setup, and ad launch. If you have photos and details ready, it can go faster.</div></div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-q" aria-expanded="false">
+          What do you need from me?
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
+        </button>
+        <div class="faq-a"><div class="faq-a-inner">Your services, service area, any photos of past work, and access to your Google Business Profile. We handle everything else. The less you have ready, the more we fill in — but the more you provide, the faster we launch.</div></div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-q" aria-expanded="false">
+          What counts as a lead?
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
+        </button>
+        <div class="faq-a"><div class="faq-a-inner">A tracked phone call or form submission from someone looking to hire you. We filter out spam, wrong numbers, and tire kickers. You only count real enquiries from people in your service area who want work done.</div></div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-q" aria-expanded="false">
+          Do you help with Google Maps rankings?
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
+        </button>
+        <div class="faq-a"><div class="faq-a-inner">Yes. We optimise your Google Business Profile, service areas, and on-page signals to improve local visibility. Results depend on location and competition, but this is a core part of our setup — not an add-on.</div></div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-q" aria-expanded="false">
+          What if I already have a website?
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
+        </button>
+        <div class="faq-a"><div class="faq-a-inner">We will audit it. If it converts well, we can work with it. If it is slow, hard to navigate, or missing clear calls to action, we will build you a new one. Either way, we add tracking and make sure it is set up to turn visitors into enquiries.</div></div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-q" aria-expanded="false">
+          What if I am already running ads?
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
+        </button>
+        <div class="faq-a"><div class="faq-a-inner">Good. We will audit what you have, find what is working and what is wasting money, and either optimise the existing campaigns or rebuild them. We also install proper tracking so you know exactly what each dollar is doing.</div></div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ═══ 9. FINAL CTA ═══ -->
+<section class="final-cta">
+  <div class="wrap">
+    <h2>Want more calls and quote requests?</h2>
+    <p>If you are a tradesperson or contractor who can take on more work, serves a defined local area, and answers the phone, book a call. We will look at your market and tell you exactly what we would do.</p>
+    <a href="book/index.html" class="btn btn-primary">Book a Free 15-Minute Call</a>
+    <p class="microcopy">No pressure. If it is not a fit, we will tell you straight.</p>
+  </div>
+</section>
+
+<!-- ═══ FOOTER ═══ -->
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="footer-inner">
+      <div>
+        <div class="footer-brand">BookedJobs</div>
+        <div class="footer-tagline">Performance marketing for local trades</div>
+      </div>
+      <div class="footer-links">
+        <a href="#privacy">Privacy</a>
+        <a href="mailto:hello@bookedjobs.ca">Contact</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<!-- ═══ PRIVACY ═══ -->
+<section class="privacy-section" id="privacy">
+  <div class="wrap">
+    <h3>Privacy</h3>
+    <p>BookedJobs does not sell, share, or distribute your personal data to third parties. Information collected through this site (such as your name, email, or phone number) is used only to communicate with you about our services. Ad platform data (Google, Meta) is used solely for campaign optimisation and reporting. If you have questions, contact <a href="mailto:hello@bookedjobs.ca" style="color:#d97706">hello@bookedjobs.ca</a>.</p>
+  </div>
+</section>
+
+<script>
+(function(){
+  var items=document.querySelectorAll('.faq-item');
+  items.forEach(function(item){
+    var btn=item.querySelector('.faq-q');
+    btn.addEventListener('click',function(){
+      var isOpen=item.classList.contains('open');
+      items.forEach(function(i){i.classList.remove('open');i.querySelector('.faq-q').setAttribute('aria-expanded','false')});
+      if(!isOpen){item.classList.add('open');btn.setAttribute('aria-expanded','true')}
+    });
+  });
+})();
+</script>
+</body>
+</html>
