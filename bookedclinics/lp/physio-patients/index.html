@@ -93,6 +93,13 @@ p{color:#3a3a3a;margin-bottom:12px}
 .final-cta .label{color:#34d399}
 .final-cta h2{color:#fff;margin-bottom:12px}
 .final-cta-sub{color:#b0cfc0;margin-bottom:32px}
+.booked-confirm{text-align:center;margin-top:16px;padding:20px;background:#f0faf6;border:2px dashed #0b7a5a;border-radius:12px}
+.booked-confirm p{font-size:0.95rem;color:#3a3a3a;margin-bottom:12px;font-weight:500}
+.btn-confirm{display:inline-flex;align-items:center;gap:8px;background:#0b7a5a;color:#fff;font-family:inherit;font-weight:700;font-size:1rem;padding:16px 32px;border:none;border-radius:8px;cursor:pointer;transition:all 0.2s;text-decoration:none}
+.btn-confirm:hover{background:#096b4e;transform:translateY(-1px);box-shadow:0 4px 16px rgba(11,122,90,0.25)}
+.btn-confirm svg{width:20px;height:20px}
+.final-cta .booked-confirm{background:rgba(255,255,255,0.08);border-color:rgba(255,255,255,0.25)}
+.final-cta .booked-confirm p{color:#b0cfc0}
 .final-cta-cal{max-width:560px;margin:0 auto;background:#fff;border-radius:12px;overflow:hidden}
 .final-cta-cal iframe{width:100%;min-height:900px;border:none}
 
@@ -127,6 +134,13 @@ p{color:#3a3a3a;margin-bottom:12px}
       </div>
       <div class="hero-cal" id="form">
         <iframe src="https://api.leadconnectorhq.com/widget/booking/9yOuci94fupPl370mgq0" style="width:100%;min-height:900px;border:none;" ></iframe>
+      </div>
+      <div class="booked-confirm">
+        <p>Already booked your call above? Click below to confirm.</p>
+        <a href="../../thank-you/" class="btn-confirm" onclick="if(typeof fbq!=='undefined'){fbq('track','Schedule')}">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg>
+          I've Booked My Call
+        </a>
       </div>
     </div>
   </div>
@@ -261,6 +275,13 @@ p{color:#3a3a3a;margin-bottom:12px}
     <p class="final-cta-sub">15 minutes. No pitch. We'll confirm if we're a fit and what it takes to start.</p>
     <div class="final-cta-cal">
       <iframe src="https://api.leadconnectorhq.com/widget/booking/9yOuci94fupPl370mgq0" style="width:100%;min-height:900px;border:none;" ></iframe>
+    </div>
+    <div class="booked-confirm" style="margin-top:24px">
+      <p>Already booked your call? Click below to confirm.</p>
+      <a href="../../thank-you/" class="btn-confirm" onclick="if(typeof fbq!=='undefined'){fbq('track','Schedule')}">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg>
+        I've Booked My Call
+      </a>
     </div>
   </div>
 </section>
