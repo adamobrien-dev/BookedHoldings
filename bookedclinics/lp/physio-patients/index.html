@@ -383,5 +383,31 @@ window.addEventListener('message',function(e){
   }
 });
 </script>
+<!-- Form Submit Handler -->
+<script>
+var GHL_WEBHOOK='https://services.leadconnectorhq.com/hooks/REPLACE_WITH_YOUR_WEBHOOK_ID';
+function handleFormSubmit(e){
+  e.preventDefault();
+  var form=e.target;
+  var btn=form.querySelector('.btn-submit');
+  btn.disabled=true;btn.textContent='Submitting...';
+  var data={
+    firstName:form.querySelector('[name=firstName]').value,
+    lastName:form.querySelector('[name=lastName]')?form.querySelector('[name=lastName]').value:'',
+    phone:form.querySelector('[name=phone]').value,
+    email:form.querySelector('[name=email]').value,
+    source:window.location.href
+  };
+  ['utm_source','utm_medium','utm_campaign','utm_content','utm_term','gclid','fbclid'].forEach(function(p){
+    var v=sessionStorage.getItem(p);if(v)data[p]=v;
+  });
+  if(typeof fbq!=='undefined'){fbq('track','Schedule');}
+  if(GHL_WEBHOOK.indexOf('REPLACE')===-1){
+    fetch(GHL_WEBHOOK,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)}).catch(function(){});
+  }
+  setTimeout(function(){window.location.href='../../thank-you/';},500);
+  return false;
+}
+</script>
 </body>
 </html>
