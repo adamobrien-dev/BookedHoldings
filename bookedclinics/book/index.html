@@ -111,8 +111,8 @@ p{color:#3a3a3a}
 <!-- ═══ HERO ═══ -->
 <section class="hero">
   <div class="hero-inner">
-    <h1>Book Your 15-Minute Growth Call</h1>
-    <p class="sub">We will quickly diagnose what is blocking patient bookings — Google Maps visibility, website conversion, tracking, and follow-up.</p>
+    <h1>Claim Your Free Patient Growth Strategy Call</h1>
+    <p class="sub">In 15 minutes we'll diagnose what's blocking patient bookings and show you how the Patient Booking Engine&trade; can fill your schedule. No pitch &mdash; just a clear plan.</p>
     <div class="trust-strip">Built for Physio &bull; Chiro &bull; Dental &bull; Med Spa &bull; Wellness</div>
   </div>
 </section>
@@ -254,7 +254,7 @@ p{color:#3a3a3a}
           </iframe>
         </div>
 
-        <p class="cal-reassurance">No pressure. If we cannot help, we will tell you.</p>
+        <p class="cal-reassurance">&#10003; No pressure &bull; We only onboard 3 new clinics per month &bull; If we can't help, we'll say so.</p>
       </div>
 
     </div>
@@ -296,6 +296,25 @@ p{color:#3a3a3a}
     });
   });
 })();
+</script>
+
+<!-- Meta Pixel -->
+<script>
+!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,document,'script','https://connect.facebook.net/en_US/fbevents.js');
+fbq('init', '4321187884801624');
+fbq('track', 'PageView');
+</script>
+
+<!-- GHL Booking Detection + Redirect -->
+<script>
+window.addEventListener('message', function(e) {
+  if (Array.isArray(e.data)) {
+    if (e.data[0] === 'msgsndr-booking-complete') {
+      if (typeof fbq !== 'undefined') { fbq('track', 'Schedule'); }
+      setTimeout(function() { window.location.href = '../thank-you/'; }, 800);
+    }
+  }
+});
 </script>
 </body>
 </html>
