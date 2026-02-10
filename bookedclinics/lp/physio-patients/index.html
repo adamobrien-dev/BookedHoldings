@@ -58,11 +58,21 @@ p{color:#3a3a3a;margin-bottom:12px}
 .step-card h3{color:#fff;font-size:1.05rem;margin-bottom:8px}
 .step-card p{color:#c0dfd0;font-size:0.9rem;margin:0;line-height:1.55}
 
-.proof{background:#fff}
-.proof-box{background:#f6faf8;border-radius:12px;padding:32px;text-align:center;max-width:640px;margin:0 auto}
-.proof-box video{width:100%;border-radius:10px;box-shadow:0 8px 32px rgba(11,122,90,0.12)}
-.proof-box .testimonial-name{font-weight:700;color:#1a1a1a;margin-top:16px;font-size:1rem}
-.proof-box .testimonial-role{color:#5a6e60;font-size:0.9rem;margin-top:4px}
+.proof{background:#fff;padding:72px 0}
+.proof-inner{max-width:800px;margin:0 auto}
+.proof-video-wrap{position:relative;border-radius:14px;overflow:hidden;box-shadow:0 12px 48px rgba(11,122,90,0.15);margin-bottom:32px}
+.proof-video-wrap video{width:100%;display:block}
+.proof-quote{background:#f6faf8;border-left:4px solid #0b7a5a;border-radius:0 12px 12px 0;padding:24px 28px;margin-bottom:32px}
+.proof-quote p{font-size:1.1rem;font-style:italic;color:#1a1a1a;line-height:1.65;margin:0 0 12px}
+.proof-quote .testimonial-name{font-weight:700;color:#1a1a1a;font-style:normal;font-size:0.95rem}
+.proof-quote .testimonial-role{color:#5a6e60;font-style:normal;font-size:0.85rem}
+.proof-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:32px}
+.proof-stat{background:#f6faf8;border-radius:10px;padding:24px 16px;text-align:center}
+.proof-stat .stat-num{font-size:1.8rem;font-weight:800;color:#0b7a5a;line-height:1}
+.proof-stat .stat-label{font-size:0.82rem;color:#5a6e60;margin-top:6px}
+.proof-cta{text-align:center}
+.proof-cta p{font-size:1rem;color:#3a3a3a;margin-bottom:16px}
+@media(max-width:600px){.proof-stats{grid-template-columns:1fr}.proof-quote{padding:20px}}
 
 .risk{background:#f6faf8}
 .risk-inner{max-width:640px}
@@ -163,15 +173,38 @@ p{color:#3a3a3a;margin-bottom:12px}
 
 <section class="proof">
   <div class="wrap">
-    <p class="label">Proof</p>
-    <h2>Results from clinics like yours</h2>
-    <div class="proof-box">
-      <video controls playsinline preload="metadata" poster="">
-        <source src="../../../testimonial 1 Mark T.mp4" type="video/mp4">
-        Your browser does not support the video tag.
-      </video>
-      <p class="testimonial-name">Mark T.</p>
-      <p class="testimonial-role">Clinic Owner</p>
+    <p class="label">Don&rsquo;t Take Our Word For It</p>
+    <h2>See What the Patient Booking Engine Did for Mark&rsquo;s Clinic</h2>
+    <div class="proof-inner">
+      <div class="proof-video-wrap">
+        <video controls playsinline preload="metadata">
+          <source src="../../../testimonial 1 Mark T.mp4" type="video/mp4">
+          Your browser does not support the video tag.
+        </video>
+      </div>
+      <div class="proof-quote">
+        <p>&ldquo;Before BookedClinics, we were relying on word of mouth and hoping the phone would ring. Now we have a system &mdash; patients find us, book online, and show up. Our schedule has never been this full.&rdquo;</p>
+        <span class="testimonial-name">Mark T.</span><br>
+        <span class="testimonial-role">Clinic Owner &bull; Patient Booking Engine Client</span>
+      </div>
+      <div class="proof-stats">
+        <div class="proof-stat">
+          <div class="stat-num">3x</div>
+          <div class="stat-label">More Patient Bookings</div>
+        </div>
+        <div class="proof-stat">
+          <div class="stat-num">Top 3</div>
+          <div class="stat-label">Google Maps Ranking</div>
+        </div>
+        <div class="proof-stat">
+          <div class="stat-num">90</div>
+          <div class="stat-label">Days to Full Schedule</div>
+        </div>
+      </div>
+      <div class="proof-cta">
+        <p>Want results like Mark? Let&rsquo;s see if your clinic qualifies.</p>
+        <a href="#form" class="btn btn-primary">Book Your Free Strategy Call</a>
+      </div>
     </div>
   </div>
 </section>
