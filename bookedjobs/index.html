@@ -201,6 +201,7 @@ p{color:#3a3a3a}
   <div class="header-inner">
     <a href="./index.html" class="logo">Booked<span>Jobs</span></a>
     <div style="display:flex;align-items:center;gap:20px">
+      <a href="#services" style="font-size:0.85rem;font-weight:600;color:#d97706">Services</a>
       <a href="ai-receptionist/index.html" style="font-size:0.85rem;font-weight:600;color:#d97706">AI Receptionist</a>
       <a href="book/index.html" class="btn btn-primary header-cta">Book a Call</a>
     </div>
@@ -428,6 +429,40 @@ p{color:#3a3a3a}
         </button>
         <div class="faq-a"><div class="faq-a-inner">Most trades are live within 48 hours. We set up your call flow, connect your calendar, and test everything before it goes live. No long onboarding process.</div></div>
       </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ TRADE SERVICES ═══ -->
+<section id="services" style="background:#fff;padding:60px 0">
+  <div class="wrap">
+    <div class="label">Services by Trade</div>
+    <h2>Marketing built for your trade</h2>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px;margin-top:28px">
+      <a href="electrician-marketing/index.html" style="display:block;border:1px solid #e5e5e5;border-radius:10px;padding:24px 20px;transition:border-color 0.2s,box-shadow 0.2s">
+        <h3 style="margin-bottom:4px">Electrician Marketing</h3>
+        <p style="font-size:0.85rem;color:#666">More electrical jobs across Canada</p>
+      </a>
+      <a href="plumber-marketing/index.html" style="display:block;border:1px solid #e5e5e5;border-radius:10px;padding:24px 20px;transition:border-color 0.2s,box-shadow 0.2s">
+        <h3 style="margin-bottom:4px">Plumber Marketing</h3>
+        <p style="font-size:0.85rem;color:#666">Get the phone ringing nationwide</p>
+      </a>
+      <a href="hvac-marketing/index.html" style="display:block;border:1px solid #e5e5e5;border-radius:10px;padding:24px 20px;transition:border-color 0.2s,box-shadow 0.2s">
+        <h3 style="margin-bottom:4px">HVAC Marketing</h3>
+        <p style="font-size:0.85rem;color:#666">Fill your service calendar consistently</p>
+      </a>
+      <a href="contractor-marketing/index.html" style="display:block;border:1px solid #e5e5e5;border-radius:10px;padding:24px 20px;transition:border-color 0.2s,box-shadow 0.2s">
+        <h3 style="margin-bottom:4px">Contractor Marketing</h3>
+        <p style="font-size:0.85rem;color:#666">More quote requests and booked projects</p>
+      </a>
+      <a href="google-ads-for-trades/index.html" style="display:block;border:1px solid #e5e5e5;border-radius:10px;padding:24px 20px;transition:border-color 0.2s,box-shadow 0.2s">
+        <h3 style="margin-bottom:4px">Google Ads for Trades</h3>
+        <p style="font-size:0.85rem;color:#666">Tracked campaigns that drive real jobs</p>
+      </a>
+      <a href="google-maps-ranking-for-trades/index.html" style="display:block;border:1px solid #e5e5e5;border-radius:10px;padding:24px 20px;transition:border-color 0.2s,box-shadow 0.2s">
+        <h3 style="margin-bottom:4px">Google Maps Ranking</h3>
+        <p style="font-size:0.85rem;color:#666">Dominate the local 3-Pack</p>
+      </a>
     </div>
   </div>
 </section>
@@ -771,6 +806,27 @@ p{color:#3a3a3a}
   </div>
 </section>
 
+<!-- UTM Persistence -->
+<script>
+(function(){
+  var params=['utm_source','utm_medium','utm_campaign','utm_content','utm_term','gclid','fbclid'];
+  var search=new URLSearchParams(window.location.search);
+  params.forEach(function(p){var v=search.get(p);if(v)sessionStorage.setItem(p,v)});
+  document.querySelectorAll('a[href*="book"]').forEach(function(a){
+    var url=new URL(a.href,window.location.origin);
+    params.forEach(function(p){var v=sessionStorage.getItem(p);if(v)url.searchParams.set(p,v)});
+    a.href=url.toString();
+  });
+})();
+</script>
+<!-- Meta Pixel (placeholder) -->
+<script>
+!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,document,'script','https://connect.facebook.net/en_US/fbevents.js');
+// fbq('init', 'YOUR_PIXEL_ID');
+// fbq('track', 'PageView');
+</script>
+<!-- Google Ads Conversion (placeholder) -->
+<!-- <script async src="https://www.googletagmanager.com/gtag/js?id=AW-XXXXXXX"></script> -->
 <script>
 (function(){
   var items=document.querySelectorAll('.faq-item');

@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fill Your Dental Chair — New Patients, Not Just Clicks | BookedClinics</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:'DM Sans',system-ui,sans-serif;color:#3a3a3a;background:#fff;line-height:1.65;font-size:16px;-webkit-font-smoothing:antialiased}
+img,svg{display:block;max-width:100%}
+a{color:inherit;text-decoration:none}
+ul{list-style:none}
+.wrap{width:100%;max-width:1100px;margin:0 auto;padding:0 24px}
+section{padding:60px 0}
+h1{font-size:clamp(1.75rem,4.5vw,2.75rem);font-weight:800;line-height:1.15;letter-spacing:-0.025em;color:#0a0a0a}
+h2{font-size:clamp(1.35rem,3vw,1.9rem);font-weight:700;line-height:1.2;letter-spacing:-0.02em;color:#0a0a0a}
+h3{font-size:1.1rem;font-weight:700;line-height:1.3;color:#0a0a0a}
+p{color:#3a3a3a;margin-bottom:12px}
+.label{font-size:0.78rem;font-weight:600;text-transform:uppercase;letter-spacing:0.1em;color:#0b7a5a;margin-bottom:10px}
+.btn{display:inline-flex;align-items:center;justify-content:center;font-family:inherit;font-weight:600;font-size:1rem;border:none;border-radius:8px;cursor:pointer;transition:all 0.2s;text-align:center}
+.btn-primary{background:#0b7a5a;color:#fff;padding:14px 28px}
+.btn-primary:hover{background:#096b4e;transform:translateY(-1px);box-shadow:0 4px 16px rgba(11,122,90,0.25)}
+
+.site-header{position:sticky;top:0;z-index:100;background:rgba(255,255,255,0.97);backdrop-filter:blur(8px);border-bottom:1px solid #eee;padding:0 24px}
+.header-inner{max-width:1100px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;height:56px}
+.logo{font-size:1.1rem;font-weight:800;color:#0a0a0a;letter-spacing:-0.02em}
+.logo span{color:#0b7a5a}
+
+.hero{padding:48px 0 56px;background:linear-gradient(180deg,#f6faf8 0%,#fff 100%)}
+.hero-grid{display:grid;grid-template-columns:1fr 1fr;gap:40px;align-items:start}
+@media(max-width:900px){.hero-grid{grid-template-columns:1fr}}
+.hero h1{margin-bottom:14px}
+.hero-sub{font-size:clamp(0.95rem,1.5vw,1.1rem);color:#3a3a3a;margin-bottom:20px;line-height:1.6}
+.hero-checks{display:flex;flex-direction:column;gap:8px;margin-bottom:24px}
+.hero-checks li{display:flex;align-items:center;gap:10px;font-size:0.92rem;font-weight:500;color:#3a3a3a}
+.hero-checks li svg{width:18px;height:18px;color:#0b7a5a;flex-shrink:0}
+.hero-cal{background:#fff;border:1px solid #e5e7eb;border-radius:12px;overflow:hidden;min-height:400px}
+.hero-cal iframe{min-height:420px}
+
+.deliverables{background:#f6faf8}
+.deliverables-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:24px;margin-top:24px}
+.deliverables-grid .card{background:#fff;border:1px solid #e5e7eb;border-radius:10px;padding:24px}
+.deliverables-grid .card h3{margin-bottom:8px;font-size:1rem}
+.deliverables-grid .card p{font-size:0.9rem;margin:0;line-height:1.55}
+
+.steps{background:#0a2e1f;color:#fff;padding:60px 0}
+.steps .label{color:#34d399}
+.steps h2{color:#fff;margin-bottom:12px}
+.steps-sub{color:#b0cfc0;font-size:1rem;margin-bottom:32px}
+.steps-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:28px;margin-top:28px}
+@media(max-width:768px){.steps-grid{grid-template-columns:1fr}}
+.step-card{background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);border-radius:10px;padding:28px}
+.step-num{font-size:0.78rem;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:#34d399;margin-bottom:10px}
+.step-card h3{color:#fff;font-size:1.05rem;margin-bottom:8px}
+.step-card p{color:#c0dfd0;font-size:0.9rem;margin:0;line-height:1.55}
+
+.proof{background:#fff}
+.proof-box{background:#f6faf8;border:1px dashed #0b7a5a;border-radius:12px;padding:48px 32px;text-align:center}
+.proof-box p{font-size:1rem;color:#5a6e60;margin:0}
+
+.risk{background:#f6faf8}
+.risk-inner{max-width:640px}
+.risk ul{margin-top:16px}
+.risk li{display:flex;align-items:flex-start;gap:10px;margin-bottom:12px;font-size:0.95rem;color:#3a3a3a;line-height:1.55}
+.risk li svg{width:20px;height:20px;color:#0b7a5a;flex-shrink:0;margin-top:2px}
+
+.faq{background:#fff}
+.faq-list{max-width:680px;margin-top:24px}
+.faq-item{border-bottom:1px solid #e5e7eb}
+.faq-q{width:100%;display:flex;align-items:center;justify-content:space-between;gap:16px;padding:18px 0;font-family:inherit;font-size:1rem;font-weight:600;color:#0a0a0a;text-align:left;background:none;border:none;cursor:pointer}
+.faq-q::after{content:'+';font-size:1.25rem;color:#0b7a5a;flex-shrink:0}
+.faq-item.open .faq-q::after{content:'−'}
+.faq-a{padding:0 0 18px;font-size:0.95rem;color:#3a3a3a;line-height:1.6;display:none}
+.faq-item.open .faq-a{display:block}
+
+.final-cta{background:#0a2e1f;color:#fff;padding:60px 0}
+.final-cta .label{color:#34d399}
+.final-cta h2{color:#fff;margin-bottom:12px}
+.final-cta-sub{color:#b0cfc0;margin-bottom:32px}
+.final-cta-cal{max-width:560px;margin:0 auto;background:#fff;border-radius:12px;overflow:hidden;min-height:400px}
+.final-cta-cal iframe{min-height:420px}
+
+.site-footer{background:#0a2e1f;color:#b0cfc0;padding:24px 0;font-size:0.85rem}
+.site-footer a{color:#34d399}
+.site-footer a:hover{text-decoration:underline}
+
+.sticky-cta{display:none;position:fixed;bottom:0;left:0;right:0;background:#0b7a5a;padding:12px 16px;z-index:200;text-align:center}
+.sticky-cta a{display:block;color:#fff;font-weight:700;font-size:1rem;text-decoration:none}
+@media(max-width:768px){.sticky-cta{display:block}}
+</style>
+</head>
+<body>
+<header class="site-header">
+  <div class="header-inner wrap">
+    <span class="logo">Booked<span>Clinics</span></span>
+    <a href="#form" class="btn btn-primary">Book a call</a>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="wrap">
+    <div class="hero-grid">
+      <div>
+        <h1>Fill Your Dental Chair — New Patients, Not Just Clicks</h1>
+        <p class="hero-sub">Clicks that don’t book are wasted. We run Google Ads, Meta Ads, and Google Maps campaigns built to put new patients in your chair. Tracked from first click to booked appointment.</p>
+        <ul class="hero-checks">
+          <li><svg fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg> Google Ads — targeted, tracked</li>
+          <li><svg fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg> Meta Ads — awareness + retargeting</li>
+          <li><svg fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg> Google Maps — 3-Pack visibility</li>
+        </ul>
+      </div>
+      <div class="hero-cal" id="form">
+        <iframe src="https://api.leadconnectorhq.com/widget/booking/9yOuci94fupPl370mgq0" style="width:100%;border:none;overflow:hidden;" scrolling="no"></iframe>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="deliverables">
+  <div class="wrap">
+    <p class="label">What you get</p>
+    <h2>Deliverables that book patients</h2>
+    <div class="deliverables-grid">
+      <div class="card"><h3>Google Ads</h3><p>Targeted campaigns. Every click and conversion tracked so you see real ROI.</p></div>
+      <div class="card"><h3>Meta / Facebook Ads</h3><p>Awareness and retargeting so people who looked you up come back and book.</p></div>
+      <div class="card"><h3>Google Maps ranking</h3><p>Optimisation for local search so you show up in the 3-Pack when patients search.</p></div>
+      <div class="card"><h3>Conversion website</h3><p>Landing pages and forms built to turn visitors into booked appointments.</p></div>
+      <div class="card"><h3>Full tracking</h3><p>From first click to booked appointment. No guesswork.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="steps">
+  <div class="wrap">
+    <p class="label">How it works</p>
+    <h2>Three steps to more booked patients</h2>
+    <p class="steps-sub">No lock-in. We confirm fit first.</p>
+    <div class="steps-grid">
+      <div class="step-card">
+        <p class="step-num">Step 1</p>
+        <h3>Book a 15‑min call</h3>
+        <p>We learn your practice, goals, and current marketing. No pitch — we see if we’re a fit.</p>
+      </div>
+      <div class="step-card">
+        <p class="step-num">Step 2</p>
+        <h3>We build your system</h3>
+        <p>Site, ads, Maps, and tracking. Everything set up to send patients to your calendar.</p>
+      </div>
+      <div class="step-card">
+        <p class="step-num">Step 3</p>
+        <h3>Patients start booking</h3>
+        <p>Campaigns go live. You see who clicked, who booked, and what’s working.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="proof">
+  <div class="wrap">
+    <p class="label">Proof</p>
+    <h2>Results from clinics like yours</h2>
+    <div class="proof-box">
+      <p>[Results from clinics like yours — coming soon]</p>
+    </div>
+  </div>
+</section>
+
+<section class="risk">
+  <div class="wrap">
+    <p class="label">No lock-in</p>
+    <h2>Risk reversal</h2>
+    <div class="risk-inner">
+      <p>We confirm fit before you commit. What that means:</p>
+      <ul>
+        <li><svg fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg> No long-term contract before we’ve proven we can drive the right patients.</li>
+        <li><svg fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg> 15‑min call first — we’ll tell you honestly if we’re not a fit.</li>
+        <li><svg fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg> Transparent tracking so you see exactly where every booking came from.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section class="faq">
+  <div class="wrap">
+    <p class="label">FAQ</p>
+    <h2>Common questions</h2>
+    <div class="faq-list">
+      <div class="faq-item">
+        <button type="button" class="faq-q" aria-expanded="false">How quickly can we see new dental patients?</button>
+        <div class="faq-a">Typically within the first few weeks after launch. We focus on campaigns and tracking from day one so every booking is visible.</div>
+      </div>
+      <div class="faq-item">
+        <button type="button" class="faq-q" aria-expanded="false">Do you work with dental practices only?</button>
+        <div class="faq-a">We work with dental, physio, chiro, vet, and other local clinics. The same system — tracked ads, Maps, conversion site — applies to all.</div>
+      </div>
+      <div class="faq-item">
+        <button type="button" class="faq-q" aria-expanded="false">What if we’re already running Google Ads?</button>
+        <div class="faq-a">We can audit your current setup and either improve it or build a new structure with proper tracking and conversion focus. We’ll be direct about what’s working and what isn’t.</div>
+      </div>
+      <div class="faq-item">
+        <button type="button" class="faq-q" aria-expanded="false">Is there a minimum contract?</button>
+        <div class="faq-a">We confirm fit on a 15‑min call first. No long-term lock-in before we’ve shown we can drive the right patients to your schedule.</div>
+      </div>
+      <div class="faq-item">
+        <button type="button" class="faq-q" aria-expanded="false">How do you track “booked” vs “clicks”?</button>
+        <div class="faq-a">We use conversion tracking from first click through to your booking system. You’ll see which campaigns and keywords led to actual appointments, not just site visits.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="final-cta">
+  <div class="wrap">
+    <p class="label">Book a call</p>
+    <h2>Fill your dental chair with new patients</h2>
+    <p class="final-cta-sub">15 minutes. No pitch. We’ll confirm if we’re a fit and what it takes to start.</p>
+    <div class="final-cta-cal">
+      <iframe src="https://api.leadconnectorhq.com/widget/booking/9yOuci94fupPl370mgq0" style="width:100%;border:none;overflow:hidden;" scrolling="no"></iframe>
+    </div>
+  </div>
+</section>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <p>BookedClinics &nbsp;·&nbsp; <a href="/privacy">Privacy</a></p>
+  </div>
+</footer>
+
+<div class="sticky-cta">
+  <a href="#form">Book a call →</a>
+</div>
+
+<!-- UTM Persistence -->
+<script>
+(function(){
+  var params=['utm_source','utm_medium','utm_campaign','utm_content','utm_term','gclid','fbclid'];
+  var search=new URLSearchParams(window.location.search);
+  params.forEach(function(p){var v=search.get(p);if(v)sessionStorage.setItem(p,v)});
+  document.querySelectorAll('a[href*="book"],a[href*="#form"]').forEach(function(a){
+    var url=new URL(a.href,window.location.origin);
+    params.forEach(function(p){var v=sessionStorage.getItem(p);if(v)url.searchParams.set(p,v)});
+    a.href=url.toString();
+  });
+})();
+</script>
+<!-- Meta Pixel (placeholder) -->
+<script>
+!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,document,'script','https://connect.facebook.net/en_US/fbevents.js');
+// fbq('init', 'YOUR_PIXEL_ID');
+// fbq('track', 'PageView');
+</script>
+<!-- Google Ads Conversion (placeholder) -->
+<!-- <script async src="https://www.googletagmanager.com/gtag/js?id=AW-XXXXXXX"></script> -->
+
+<script>
+(function(){
+  var items=document.querySelectorAll('.faq-item');
+  items.forEach(function(item){
+    var btn=item.querySelector('.faq-q');
+    btn.addEventListener('click',function(){
+      var isOpen=item.classList.contains('open');
+      items.forEach(function(i){i.classList.remove('open');i.querySelector('.faq-q').setAttribute('aria-expanded','false')});
+      if(!isOpen){item.classList.add('open');btn.setAttribute('aria-expanded','true')}
+    });
+  });
+})();
+</script>
+</body>
+</html>

@@ -196,6 +196,7 @@ p{color:#3a3a3a}
   <div class="header-inner">
     <a href="./index.html" class="logo">Booked<span>Clinics</span></a>
     <div style="display:flex;align-items:center;gap:20px">
+      <a href="#services" style="font-size:0.85rem;font-weight:600;color:#0b7a5a">Services</a>
       <a href="ai-receptionist/index.html" style="font-size:0.85rem;font-weight:600;color:#0b7a5a">AI Receptionist</a>
       <a href="book/index.html" class="btn btn-primary header-cta">Book a Call</a>
     </div>
@@ -431,6 +432,40 @@ p{color:#3a3a3a}
         </button>
         <div class="faq-a"><div class="faq-a-inner">Most clinics are live within 48 hours. We configure your call flow, connect your calendar, and test everything before it goes live. No lengthy onboarding process.</div></div>
       </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ NICHE SERVICES ═══ -->
+<section id="services" style="background:#fff;padding:60px 0">
+  <div class="wrap">
+    <div class="label">Services by Specialty</div>
+    <h2>Marketing built for your clinic type</h2>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px;margin-top:28px">
+      <a href="physiotherapy-marketing/index.html" style="display:block;border:1px solid #e5e7eb;border-radius:10px;padding:24px 20px;transition:border-color 0.2s,box-shadow 0.2s">
+        <h3 style="margin-bottom:4px">Physiotherapy Marketing</h3>
+        <p style="font-size:0.85rem;color:#666">More physio patients across Canada</p>
+      </a>
+      <a href="chiropractor-marketing/index.html" style="display:block;border:1px solid #e5e7eb;border-radius:10px;padding:24px 20px;transition:border-color 0.2s,box-shadow 0.2s">
+        <h3 style="margin-bottom:4px">Chiropractor Marketing</h3>
+        <p style="font-size:0.85rem;color:#666">Fill your chiro schedule nationwide</p>
+      </a>
+      <a href="dental-marketing/index.html" style="display:block;border:1px solid #e5e7eb;border-radius:10px;padding:24px 20px;transition:border-color 0.2s,box-shadow 0.2s">
+        <h3 style="margin-bottom:4px">Dental Marketing</h3>
+        <p style="font-size:0.85rem;color:#666">New dental patients, consistently</p>
+      </a>
+      <a href="veterinary-marketing/index.html" style="display:block;border:1px solid #e5e7eb;border-radius:10px;padding:24px 20px;transition:border-color 0.2s,box-shadow 0.2s">
+        <h3 style="margin-bottom:4px">Veterinary Marketing</h3>
+        <p style="font-size:0.85rem;color:#666">Book more pet owner appointments</p>
+      </a>
+      <a href="clinic-google-ads/index.html" style="display:block;border:1px solid #e5e7eb;border-radius:10px;padding:24px 20px;transition:border-color 0.2s,box-shadow 0.2s">
+        <h3 style="margin-bottom:4px">Google Ads for Clinics</h3>
+        <p style="font-size:0.85rem;color:#666">Tracked campaigns that book patients</p>
+      </a>
+      <a href="clinic-google-maps-ranking/index.html" style="display:block;border:1px solid #e5e7eb;border-radius:10px;padding:24px 20px;transition:border-color 0.2s,box-shadow 0.2s">
+        <h3 style="margin-bottom:4px">Google Maps Ranking</h3>
+        <p style="font-size:0.85rem;color:#666">Dominate the local 3-Pack</p>
+      </a>
     </div>
   </div>
 </section>
@@ -725,6 +760,27 @@ p{color:#3a3a3a}
   </div>
 </section>
 
+<!-- UTM Persistence -->
+<script>
+(function(){
+  var params=['utm_source','utm_medium','utm_campaign','utm_content','utm_term','gclid','fbclid'];
+  var search=new URLSearchParams(window.location.search);
+  params.forEach(function(p){var v=search.get(p);if(v)sessionStorage.setItem(p,v)});
+  document.querySelectorAll('a[href*="book"]').forEach(function(a){
+    var url=new URL(a.href,window.location.origin);
+    params.forEach(function(p){var v=sessionStorage.getItem(p);if(v)url.searchParams.set(p,v)});
+    a.href=url.toString();
+  });
+})();
+</script>
+<!-- Meta Pixel (placeholder) -->
+<script>
+!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,document,'script','https://connect.facebook.net/en_US/fbevents.js');
+// fbq('init', 'YOUR_PIXEL_ID');
+// fbq('track', 'PageView');
+</script>
+<!-- Google Ads Conversion (placeholder) -->
+<!-- <script async src="https://www.googletagmanager.com/gtag/js?id=AW-XXXXXXX"></script> -->
 <script>
 (function(){
   var items=document.querySelectorAll('.faq-item');
