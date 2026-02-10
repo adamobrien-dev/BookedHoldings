@@ -311,37 +311,21 @@ fbq('track', 'PageView');
 })();
 </script>
 
-<!-- GHL Calendar: Auto-Resize + Booking Redirect -->
+<!-- GHL Calendar: Resize handler -->
 <script>
-(function(){
-  // Track iframe loads — first load is the calendar, second is the confirmation
-  document.querySelectorAll('iframe[src*="leadconnectorhq"]').forEach(function(iframe){
-    var loadCount=0;
-    iframe.addEventListener('load',function(){
-      loadCount++;
-      if(loadCount>1){
-        // Second load = booking confirmation page loaded inside iframe
-        window.location.href='../../thank-you/';
+window.addEventListener('message',function(e){
+  if(typeof e.data==='string'){
+    try{
+      var d=JSON.parse(e.data);
+      if(d.frameHeight){
+        document.querySelectorAll('iframe').forEach(function(f){f.style.height=d.frameHeight+'px'});
       }
-    });
-  });
-
-  // Also catch any postMessage events from GHL
-  window.addEventListener('message',function(e){
-    // Resize handling
-    if(typeof e.data==='string'){
-      try{
-        var d=JSON.parse(e.data);
-        if(d.frameHeight){
-          document.querySelectorAll('iframe').forEach(function(f){f.style.height=d.frameHeight+'px'});
-        }
-      }catch(x){}
-    }
-    if(e.data&&e.data.type==='hsFormCallback'&&e.data.height){
-      document.querySelectorAll('iframe').forEach(function(f){f.style.height=e.data.height+'px'});
-    }
-  });
-})();
+    }catch(x){}
+  }
+  if(e.data&&e.data.type==='hsFormCallback'&&e.data.height){
+    document.querySelectorAll('iframe').forEach(function(f){f.style.height=e.data.height+'px'});
+  }
+});
 </script>
 </body>
 </html>
