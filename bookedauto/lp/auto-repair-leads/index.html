@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fill Your Auto Repair Bays — BookedAuto</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:'Inter',sans-serif;color:#3a3a3a;line-height:1.5;padding-bottom:0}
+    .site-header{position:sticky;top:0;background:rgba(255,255,255,0.9);backdrop-filter:blur(8px);border-bottom:1px solid #eee;z-index:100;padding:14px 20px}
+    .header-inner{max-width:1100px;margin:0 auto;display:flex;align-items:center;justify-content:space-between}
+    .logo{font-size:1.25rem;font-weight:800;text-decoration:none;color:#0f172a}
+    .logo span{color:#2563eb}
+    .btn-primary{display:inline-block;background:#2563eb;color:#fff!important;font-weight:600;padding:10px 20px;border-radius:8px;text-decoration:none;font-size:0.95rem;transition:background .2s}
+    .btn-primary:hover{background:#1d4ed8}
+    .hero{background:linear-gradient(180deg,#f0f5ff 0%,#fff 100%);padding:40px 20px 50px;text-align:center}
+    .hero-inner{max-width:720px;margin:0 auto}
+    .hero h1{font-size:clamp(1.75rem,4vw,2.5rem);font-weight:800;color:#0f172a;line-height:1.2;margin-bottom:16px}
+    .hero-sub{font-size:1.1rem;color:#3a3a3a;margin-bottom:24px;line-height:1.6}
+    .hero-checks{display:flex;flex-wrap:wrap;justify-content:center;gap:20px 28px;margin-bottom:28px}
+    .hero-checks span{display:inline-flex;align-items:center;gap:8px;font-weight:600;color:#0f172a;font-size:0.95rem}
+    .hero-checks svg{flex-shrink:0;color:#2563eb;width:20px;height:20px}
+    .hero-cal{max-width:640px;margin:0 auto;min-height:500px;border-radius:12px;overflow:hidden;box-shadow:0 4px 20px rgba(0,0,0,0.08)}
+    .hero-cal iframe{width:100%;border:none;overflow:hidden;min-height:500px}
+    .section{padding:48px 20px;max-width:900px;margin:0 auto}
+    .label{font-size:0.78rem;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:#2563eb;margin-bottom:12px}
+    .section h2{font-size:1.75rem;font-weight:800;color:#0f172a;margin-bottom:24px}
+    .deliverables{background:#f0f5ff;padding:48px 20px}
+    .deliverables-inner{max-width:900px;margin:0 auto}
+    .deliverables h2{margin-bottom:28px}
+    .deliv-list{display:grid;gap:16px}
+    .deliv-item{display:flex;align-items:flex-start;gap:12px;padding:16px;background:#fff;border-radius:8px;box-shadow:0 1px 3px rgba(0,0,0,0.06)}
+    .deliv-item strong{color:#0f172a}
+    .step-num{width:36px;height:36px;border-radius:50%;background:#2563eb;color:#fff;font-weight:800;font-size:1rem;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0}
+    .steps .deliv-item .step-num{margin-right:4px}
+    .proof{background:#0f172a;padding:48px 20px;color:#fff}
+    .proof-inner{max-width:720px;margin:0 auto;text-align:center}
+    .proof .label{color:#60a5fa}
+    .proof h2{color:#fff;margin-bottom:16px}
+    .proof p{color:#94a3b8;font-size:1rem}
+    .risk{background:#f0f5ff;padding:48px 20px}
+    .risk-inner{max-width:720px;margin:0 auto;text-align:center}
+    .risk h2{margin-bottom:16px}
+    .risk p{color:#3a3a3a;margin-bottom:0}
+    .faq{padding:48px 20px}
+    .faq-inner{max-width:640px;margin:0 auto}
+    .faq h2{margin-bottom:24px}
+    .faq-item{border-bottom:1px solid #eee;padding:16px 0}
+    .faq-q{width:100%;display:flex;align-items:center;justify-content:space-between;gap:12px;background:none;border:none;font-family:inherit;font-size:1rem;font-weight:600;color:#0f172a;text-align:left;cursor:pointer;padding:0}
+    .faq-q::after{content:'';width:20px;height:20px;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%232563eb'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'/%3E%3C/svg%3E") no-repeat center;flex-shrink:0;transition:transform .2s}
+    .faq-item.open .faq-q::after{transform:rotate(180deg)}
+    .faq-a{display:none;padding-top:12px;color:#3a3a3a;font-size:0.95rem;line-height:1.6}
+    .faq-item.open .faq-a{display:block}
+    .final-cta{background:linear-gradient(180deg,#f0f5ff 0%,#fff 100%);padding:48px 20px 56px;text-align:center}
+    .final-cta h2{margin-bottom:12px}
+    .final-cta p{margin-bottom:24px;color:#3a3a3a}
+    .final-cta .hero-cal{margin:0 auto 24px}
+    .site-footer{background:#0f172a;color:#7a9ac0;padding:24px 20px;text-align:center;font-size:0.9rem}
+    .site-footer a{color:#60a5fa;text-decoration:none}
+    .sticky-cta{display:none;position:fixed;bottom:0;left:0;right:0;background:#2563eb;padding:12px 16px;z-index:200;text-align:center;box-shadow:0 -2px 10px rgba(0,0,0,0.1)}
+    .sticky-cta a{display:block;color:#fff;font-weight:700;font-size:1rem;text-decoration:none}
+    @media(max-width:768px){.sticky-cta{display:block}body{padding-bottom:52px}}
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <div class="header-inner">
+      <span class="logo">Booked<span>Auto</span></span>
+      <a href="#form" class="btn-primary">Book a Call</a>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="hero-inner">
+        <h1>Fill Your Auto Repair Bays — Jobs, Not Just Clicks</h1>
+        <p class="hero-sub">We run Google Ads, Meta Ads, and Google Maps campaigns that put real service appointments on your calendar. Every call tracked. Every dollar accounted for.</p>
+        <div class="hero-checks">
+          <span><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>Google Ads</span>
+          <span><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>Meta Ads</span>
+          <span><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>Google Maps</span>
+        </div>
+        <div class="hero-cal" id="form">
+          <iframe src="https://api.leadconnectorhq.com/widget/booking/9yOuci94fupPl370mgq0" style="width:100%;border:none;overflow:hidden;" scrolling="no"></iframe>
+        </div>
+      </div>
+    </section>
+
+    <section class="deliverables">
+      <div class="deliverables-inner">
+        <p class="label">What You Get</p>
+        <h2>Deliverables</h2>
+        <div class="deliv-list">
+          <div class="deliv-item"><strong>Google Ads</strong> — Campaigns built for service appointments, not generic traffic.</div>
+          <div class="deliv-item"><strong>Meta Ads</strong> — Facebook & Instagram ads that reach people ready to book.</div>
+          <div class="deliv-item"><strong>Google Maps 3-Pack</strong> — Ranking and visibility so you show when locals search.</div>
+          <div class="deliv-item"><strong>Conversion Website</strong> — Simple pages that turn clicks into booked jobs.</div>
+          <div class="deliv-item"><strong>Full Tracking</strong> — From first click to booked appointment. Every dollar accounted for.</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section steps">
+      <p class="label">How It Works</p>
+      <h2>3-Step Process</h2>
+      <div class="deliv-list">
+        <div class="deliv-item"><span class="step-num">1</span><div><strong>Book a call.</strong> We confirm you're a fit and what outcomes you want (filled bays, more walk-ins, booked service appointments).</div></div>
+        <div class="deliv-item"><span class="step-num">2</span><div><strong>We build your system.</strong> Ads, Maps, and tracking so every lead is tied to a booked job.</div></div>
+        <div class="deliv-item"><span class="step-num">3</span><div><strong>Phone starts ringing.</strong> Real appointments on your calendar — tracked from click to booked service.</div></div>
+      </div>
+    </section>
+
+    <section class="proof">
+      <div class="proof-inner">
+        <p class="label">Proof</p>
+        <h2>Results from auto shops like yours</h2>
+        <p>Available on the strategy call. We'll show you what's working for repair shops in your situation.</p>
+      </div>
+    </section>
+
+    <section class="risk">
+      <div class="risk-inner">
+        <p class="label">Risk Reversal</p>
+        <h2>No lock-in. Fit confirmed first.</h2>
+        <p>We only work with shops where we're confident we can move the needle. No long-term contracts. Fit is confirmed on the call.</p>
+      </div>
+    </section>
+
+    <section class="faq">
+      <div class="faq-inner">
+        <p class="label">FAQ</p>
+        <h2>Common questions</h2>
+        <div class="faq-item">
+          <button type="button" class="faq-q" aria-expanded="false">How do you track booked appointments?</button>
+          <div class="faq-a">We use call tracking, form submissions, and booking links so every lead is tied to a source. You'll see exactly which campaigns drive service appointments.</div>
+        </div>
+        <div class="faq-item">
+          <button type="button" class="faq-q" aria-expanded="false">Do you work with single-location auto repair shops?</button>
+          <div class="faq-a">Yes. We focus on shops that want more booked jobs and walk-ins — whether you're one bay or several.</div>
+        </div>
+        <div class="faq-item">
+          <button type="button" class="faq-q" aria-expanded="false">What's the minimum commitment?</button>
+          <div class="faq-a">We confirm fit on the strategy call first. No long-term lock-in. Terms and scope are discussed once we agree we're a fit.</div>
+        </div>
+        <div class="faq-item">
+          <button type="button" class="faq-q" aria-expanded="false">How long until I see more appointments?</button>
+          <div class="faq-a">Timeline depends on your market and current setup. We'll give you a clear expectation on the call based on your situation.</div>
+        </div>
+        <div class="faq-item">
+          <button type="button" class="faq-q" aria-expanded="false">What if I'm already running ads?</button>
+          <div class="faq-a">We'll review what you have and either improve it or build a cleaner system focused on booked service appointments, not just clicks.</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="final-cta">
+      <p class="label">Book Your Call</p>
+      <h2>Get real appointments on your calendar</h2>
+      <p>Book a strategy call. We'll confirm fit and show you how we fill bays with tracked, booked jobs.</p>
+      <div class="hero-cal" id="form-bottom">
+        <iframe src="https://api.leadconnectorhq.com/widget/booking/9yOuci94fupPl370mgq0" style="width:100%;border:none;overflow:hidden;" scrolling="no"></iframe>
+      </div>
+      <a href="#form" class="btn-primary">Scroll to Calendar</a>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    BookedAuto · Privacy
+  </footer>
+
+  <div class="sticky-cta">
+    <a href="#form">Book a Call — Get More Appointments</a>
+  </div>
+
+  <!-- GHL form embed auto-resize -->
+  <script src="https://link.msgsndr.com/js/form_embed.js" type="text/javascript"></script>
+  <script>
+  (function(){
+    var params=['utm_source','utm_medium','utm_campaign','utm_content','utm_term','gclid','fbclid'];
+    var search=new URLSearchParams(window.location.search);
+    params.forEach(function(p){var v=search.get(p);if(v)sessionStorage.setItem(p,v)});
+    document.querySelectorAll('a[href*="book"],a[href*="#form"]').forEach(function(a){
+      var url=new URL(a.href,window.location.origin);
+      params.forEach(function(p){var v=sessionStorage.getItem(p);if(v)url.searchParams.set(p,v)});
+      a.href=url.toString();
+    });
+  })();
+  </script>
+  <!-- UTM Persistence -->
+  <!-- Meta Pixel (placeholder) -->
+  <script>
+  !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,document,'script','https://connect.facebook.net/en_US/fbevents.js');
+  // fbq('init', 'YOUR_PIXEL_ID');
+  // fbq('track', 'PageView');
+  </script>
+  <!-- Google Ads Conversion (placeholder) -->
+  <!-- <script async src="https://www.googletagmanager.com/gtag/js?id=AW-XXXXXXX"></script> -->
+  <script>
+  (function(){
+    var items=document.querySelectorAll('.faq-item');
+    items.forEach(function(item){
+      var btn=item.querySelector('.faq-q');
+      btn.addEventListener('click',function(){
+        var isOpen=item.classList.contains('open');
+        items.forEach(function(i){i.classList.remove('open');i.querySelector('.faq-q').setAttribute('aria-expanded','false')});
+        if(!isOpen){item.classList.add('open');btn.setAttribute('aria-expanded','true')}
+      });
+    });
+  })();
+  </script>
+</body>
+</html>
