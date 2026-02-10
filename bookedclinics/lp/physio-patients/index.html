@@ -311,22 +311,60 @@ fbq('track', 'PageView');
 })();
 </script>
 
-<!-- GHL Calendar Auto-Resize -->
+<!-- GHL Calendar: Auto-Resize + Booking Redirect -->
 <script>
 window.addEventListener('message',function(e){
+  // Resize handling
   if(e.data&&e.data.type==='hsFormCallback'&&e.data.height){
     document.querySelectorAll('iframe').forEach(function(f){f.style.height=e.data.height+'px'});
   }
-  // LeadConnector resize event
   if(typeof e.data==='string'){
     try{
       var d=JSON.parse(e.data);
       if(d.frameHeight){
         document.querySelectorAll('iframe').forEach(function(f){f.style.height=d.frameHeight+'px'});
       }
+      // GHL booking confirmed — redirect to thank-you
+      if(d.type==='booking-confirmed'||d.action==='booking-confirmed'||d.event_type==='booking-confirmed'){
+        window.location.href='../../thank-you/';
+      }
     }catch(x){}
   }
+  // Object-based GHL events
+  if(e.data&&typeof e.data==='object'){
+    if(e.data.type==='booking-confirmed'||e.data.action==='booking-confirmed'||e.data.event_type==='booking-confirmed'){
+      window.location.href='../../thank-you/';
+    }
+    // GHL form submission event
+    if(e.data.type==='form:submit'||e.data.type==='formSubmit'||e.data.formSubmitted){
+      window.location.href='../../thank-you/';
+    }
+  }
 });
+
+// Fallback: watch for GHL confirmation screen by polling iframe
+(function(){
+  var redirected=false;
+  setInterval(function(){
+    if(redirected) return;
+    try{
+      var iframes=document.querySelectorAll('iframe');
+      iframes.forEach(function(iframe){
+        try{
+          var iframeDoc=iframe.contentDocument||iframe.contentWindow.document;
+          // GHL shows confirmation text after booking
+          if(iframeDoc&&iframeDoc.body&&iframeDoc.body.innerText){
+            var text=iframeDoc.body.innerText.toLowerCase();
+            if(text.indexOf('booking confirmed')>-1||text.indexOf('you are booked')>-1||text.indexOf('appointment confirmed')>-1||text.indexOf('successfully booked')>-1){
+              redirected=true;
+              window.location.href='../../thank-you/';
+            }
+          }
+        }catch(x){/* cross-origin, expected */}
+      });
+    }catch(x){}
+  },1500);
+})();
 </script>
 </body>
 </html>
