@@ -38,19 +38,8 @@ p{color:#3a3a3a;margin-bottom:12px}
 .hero-checks{display:flex;flex-direction:column;gap:8px;margin-bottom:24px}
 .hero-checks li{display:flex;align-items:center;gap:10px;font-size:0.92rem;font-weight:500;color:#3a3a3a}
 .hero-checks li svg{width:18px;height:18px;color:#0b7a5a;flex-shrink:0}
-.hero-form{background:#fff;border:1px solid #e5e7eb;border-radius:12px;padding:32px}
-.hero-form h3{font-size:1.15rem;margin-bottom:4px;text-align:center}
-.hero-form .form-sub{font-size:0.88rem;color:#666;text-align:center;margin-bottom:24px}
-.hero-form .form-group{margin-bottom:16px}
-.hero-form label{display:block;font-size:0.85rem;font-weight:600;color:#1a1a1a;margin-bottom:6px}
-.hero-form input,.hero-form select{width:100%;padding:14px 16px;border:1px solid #d1d5db;border-radius:8px;font-family:inherit;font-size:0.95rem;transition:border 0.2s}
-.hero-form input:focus,.hero-form select:focus{outline:none;border-color:#0b7a5a;box-shadow:0 0 0 3px rgba(11,122,90,0.1)}
-.hero-form .btn-submit{width:100%;padding:16px;background:#0b7a5a;color:#fff;font-family:inherit;font-weight:700;font-size:1.05rem;border:none;border-radius:8px;cursor:pointer;transition:all 0.2s;margin-top:8px}
-.hero-form .btn-submit:hover{background:#096b4e;transform:translateY(-1px);box-shadow:0 4px 16px rgba(11,122,90,0.25)}
-.hero-form .btn-submit:disabled{opacity:0.6;cursor:not-allowed;transform:none}
-.hero-form .form-note{font-size:0.78rem;color:#999;text-align:center;margin-top:12px}
-.hero-form .form-trust{display:flex;align-items:center;justify-content:center;gap:6px;margin-top:12px;font-size:0.82rem;color:#666}
-.hero-form .form-trust svg{width:14px;height:14px;color:#0b7a5a}
+.hero-cal{background:#fff;border:1px solid #e5e7eb;border-radius:12px;overflow:hidden}
+.hero-cal iframe{width:100%;min-height:900px;border:none}
 
 .deliverables{background:#f6faf8}
 .deliverables-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:24px;margin-top:24px}
@@ -104,14 +93,8 @@ p{color:#3a3a3a;margin-bottom:12px}
 .final-cta .label{color:#34d399}
 .final-cta h2{color:#fff;margin-bottom:12px}
 .final-cta-sub{color:#b0cfc0;margin-bottom:32px}
-.final-cta-form{max-width:480px;margin:0 auto;background:#fff;border-radius:12px;padding:32px}
-.final-cta-form .form-group{margin-bottom:16px}
-.final-cta-form label{display:block;font-size:0.85rem;font-weight:600;color:#1a1a1a;margin-bottom:6px}
-.final-cta-form input{width:100%;padding:14px 16px;border:1px solid #d1d5db;border-radius:8px;font-family:inherit;font-size:0.95rem}
-.final-cta-form input:focus{outline:none;border-color:#0b7a5a;box-shadow:0 0 0 3px rgba(11,122,90,0.1)}
-.final-cta-form .btn-submit{width:100%;padding:16px;background:#0b7a5a;color:#fff;font-family:inherit;font-weight:700;font-size:1.05rem;border:none;border-radius:8px;cursor:pointer;transition:all 0.2s;margin-top:8px}
-.final-cta-form .btn-submit:hover{background:#096b4e}
-.final-cta-form .form-note{font-size:0.78rem;color:#999;text-align:center;margin-top:12px}
+.final-cta-cal{max-width:560px;margin:0 auto;background:#fff;border-radius:12px;overflow:hidden}
+.final-cta-cal iframe{width:100%;min-height:900px;border:none}
 
 .site-footer{background:#0a2e1f;color:#b0cfc0;padding:24px 0;font-size:0.85rem}
 .site-footer a{color:#34d399}
@@ -142,32 +125,8 @@ p{color:#3a3a3a;margin-bottom:12px}
           <li><svg fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg> Google Maps — 3-Pack visibility</li>
         </ul>
       </div>
-            <div class="hero-form" id="form">
-        <h3>Book Your Free Strategy Call</h3>
-        <p class="form-sub">15 minutes. No pitch. We confirm fit first.</p>
-        <form id="lead-form" onsubmit="return handleFormSubmit(event)">
-          <div class="form-group">
-            <label for="firstName">First Name *</label>
-            <input type="text" id="firstName" name="firstName" required placeholder="Your first name">
-          </div>
-          <div class="form-group">
-            <label for="lastName">Last Name *</label>
-            <input type="text" id="lastName" name="lastName" required placeholder="Your last name">
-          </div>
-          <div class="form-group">
-            <label for="phone">Phone *</label>
-            <input type="tel" id="phone" name="phone" required placeholder="(555) 123-4567">
-          </div>
-          <div class="form-group">
-            <label for="email">Email *</label>
-            <input type="email" id="email" name="email" required placeholder="you@clinic.com">
-          </div>
-          <button type="submit" class="btn-submit">Book My Strategy Call &rarr;</button>
-        </form>
-        <div class="form-trust">
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z"/></svg>
-          No spam. We&rsquo;ll call you within 24 hours.
-        </div>
+                  <div class="hero-cal" id="form">
+        <iframe src="https://api.leadconnectorhq.com/widget/booking/9yOuci94fupPl370mgq0" style="width:100%;min-height:900px;border:none;"></iframe>
       </div>
     </div>
   </div>
@@ -300,25 +259,9 @@ p{color:#3a3a3a;margin-bottom:12px}
     <p class="label">Book a call</p>
     <h2>Get more patients on your schedule</h2>
     <p class="final-cta-sub">15 minutes. No pitch. We’ll confirm if we’re a fit and what it takes to start.</p>
-        <div class="final-cta-form">
-      <form onsubmit="return handleFormSubmit(event)">
-        <div class="form-group">
-          <label for="firstName2" style="color:#1a1a1a">First Name *</label>
-          <input type="text" id="firstName2" name="firstName" required placeholder="Your first name">
-        </div>
-        <div class="form-group">
-          <label for="phone2" style="color:#1a1a1a">Phone *</label>
-          <input type="tel" id="phone2" name="phone" required placeholder="(555) 123-4567">
-        </div>
-        <div class="form-group">
-          <label for="email2" style="color:#1a1a1a">Email *</label>
-          <input type="email" id="email2" name="email" required placeholder="you@clinic.com">
-        </div>
-        <button type="submit" class="btn-submit">Book My Strategy Call &rarr;</button>
-        <p class="form-note">15 minutes. No pitch. We confirm fit first.</p>
-      </form>
+            <div class="final-cta-cal">
+      <iframe src="https://api.leadconnectorhq.com/widget/booking/9yOuci94fupPl370mgq0" style="width:100%;min-height:900px;border:none;"></iframe>
     </div>
-  </div>
 </section>
 
 <footer class="site-footer">
@@ -367,47 +310,27 @@ fbq('track', 'PageView');
 })();
 </script>
 
-<!-- GHL Calendar: Resize handler -->
+<!-- GHL Calendar: Booking Detection + Resize -->
 <script>
-window.addEventListener('message',function(e){
-  if(typeof e.data==='string'){
-    try{
-      var d=JSON.parse(e.data);
-      if(d.frameHeight){
-        document.querySelectorAll('iframe').forEach(function(f){f.style.height=d.frameHeight+'px'});
-      }
-    }catch(x){}
+window.addEventListener('message', function(e) {
+  // GHL sends postMessage as an Array
+  if (Array.isArray(e.data)) {
+    // Booking complete: e.data[0] === 'msgsndr-booking-complete'
+    if (e.data[0] === 'msgsndr-booking-complete') {
+      if (typeof fbq !== 'undefined') { fbq('track', 'Schedule'); }
+      setTimeout(function() { window.location.href = '../../thank-you/'; }, 800);
+    }
   }
-  if(e.data&&e.data.type==='hsFormCallback'&&e.data.height){
-    document.querySelectorAll('iframe').forEach(function(f){f.style.height=e.data.height+'px'});
+  // Resize handling
+  if (typeof e.data === 'string') {
+    try {
+      var d = JSON.parse(e.data);
+      if (d.frameHeight) {
+        document.querySelectorAll('iframe').forEach(function(f) { f.style.height = d.frameHeight + 'px'; });
+      }
+    } catch(x) {}
   }
 });
-</script>
-<!-- Form Submit Handler -->
-<script>
-var GHL_WEBHOOK='https://services.leadconnectorhq.com/hooks/REPLACE_WITH_YOUR_WEBHOOK_ID';
-function handleFormSubmit(e){
-  e.preventDefault();
-  var form=e.target;
-  var btn=form.querySelector('.btn-submit');
-  btn.disabled=true;btn.textContent='Submitting...';
-  var data={
-    firstName:form.querySelector('[name=firstName]').value,
-    lastName:form.querySelector('[name=lastName]')?form.querySelector('[name=lastName]').value:'',
-    phone:form.querySelector('[name=phone]').value,
-    email:form.querySelector('[name=email]').value,
-    source:window.location.href
-  };
-  ['utm_source','utm_medium','utm_campaign','utm_content','utm_term','gclid','fbclid'].forEach(function(p){
-    var v=sessionStorage.getItem(p);if(v)data[p]=v;
-  });
-  if(typeof fbq!=='undefined'){fbq('track','Schedule');}
-  if(GHL_WEBHOOK.indexOf('REPLACE')===-1){
-    fetch(GHL_WEBHOOK,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)}).catch(function(){});
-  }
-  setTimeout(function(){window.location.href='../../thank-you/';},500);
-  return false;
-}
 </script>
 </body>
 </html>
