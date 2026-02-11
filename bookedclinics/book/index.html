@@ -69,7 +69,7 @@ p{color:#3a3a3a}
 .cal-title{font-size:1.05rem;font-weight:700;color:#0a0a0a;margin-bottom:4px}
 .cal-tz{font-size:0.8rem;color:#999;margin-bottom:20px}
 .ghl-calendar-slot{width:100%}
-.ghl-calendar-slot iframe{width:100% !important;border:none !important;display:block;min-height:980px;height:980px}
+.ghl-calendar-slot iframe{width:100% !important;border:none !important;display:block;height:800px}
 .cal-reassurance{margin-top:16px;text-align:center;font-size:0.8rem;color:#888;line-height:1.55}
 
 /* ── Footer ── */
@@ -256,8 +256,7 @@ p{color:#3a3a3a}
         <div class="ghl-calendar-slot">
           <iframe
             src="https://api.leadconnectorhq.com/widget/booking/9yOuci94fupPl370mgq0"
-            style="width: 100%;border:none;overflow: hidden;"
-            scrolling="no"
+            style="width:100%;border:none;"
             id="Aa9W1KgXUmSV5esKOCMs_1770520492602">
           </iframe>
         </div>
@@ -313,7 +312,7 @@ fbq('init', '4321187884801624');
 fbq('track', 'PageView');
 </script>
 
-<!-- GHL Booking Detection + Redirect -->
+<!-- GHL Calendar: Booking Detection + Resize -->
 <script>
 window.addEventListener('message', function(e) {
   if (Array.isArray(e.data)) {
@@ -321,6 +320,15 @@ window.addEventListener('message', function(e) {
       if (typeof fbq !== 'undefined') { fbq('track', 'Schedule'); }
       setTimeout(function() { window.location.href = '../thank-you/'; }, 800);
     }
+  }
+  if (typeof e.data === 'string') {
+    try {
+      var d = JSON.parse(e.data);
+      if (d.frameHeight) {
+        var h = d.frameHeight;
+        document.querySelectorAll('.ghl-calendar-slot iframe').forEach(function(f) { f.style.height = h + 'px'; });
+      }
+    } catch(x) {}
   }
 });
 </script>
