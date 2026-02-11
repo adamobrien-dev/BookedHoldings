@@ -33,6 +33,7 @@ p{color:#3a3a3a;margin-bottom:12px}
 .hero{padding:48px 0 56px;background:linear-gradient(180deg,#f6faf8 0%,#fff 100%)}
 .hero-grid{display:grid;grid-template-columns:1fr 1fr;gap:40px;align-items:start}
 @media(max-width:900px){.hero-grid{grid-template-columns:1fr}}
+.guarantee-line{font-size:1.15rem;font-weight:700;color:#0b7a5a;margin-bottom:16px;line-height:1.4}
 .hero h1{margin-bottom:14px}
 .hero-sub{font-size:clamp(0.95rem,1.5vw,1.1rem);color:#3a3a3a;margin-bottom:20px;line-height:1.6}
 .hero-checks{display:flex;flex-direction:column;gap:8px;margin-bottom:24px}
@@ -103,6 +104,38 @@ p{color:#3a3a3a;margin-bottom:12px}
 .sticky-cta{display:none;position:fixed;bottom:0;left:0;right:0;background:#0b7a5a;padding:12px 16px;z-index:200;text-align:center}
 .sticky-cta a{display:block;color:#fff;font-weight:700;font-size:1rem;text-decoration:none}
 @media(max-width:768px){.sticky-cta{display:block}}
+
+/* ── Mobile Fixes ── */
+@media(max-width:480px){
+  .site-header{padding:0 12px}
+  .header-inner{height:50px}
+  .header-inner .btn-primary{font-size:0.75rem;padding:8px 12px;white-space:nowrap}
+  .logo{font-size:0.95rem}
+  .hero{padding:32px 0 40px}
+  .hero h1{font-size:1.55rem;margin-bottom:10px}
+  .guarantee-line{font-size:0.95rem;margin-bottom:12px}
+  .hero-sub{font-size:0.9rem;margin-bottom:16px}
+  .hero-checks{gap:6px;margin-bottom:20px}
+  .hero-checks li{font-size:0.82rem;align-items:flex-start}
+  .hero-checks li svg{width:16px;height:16px;margin-top:2px}
+  .hero-cal{border-radius:8px}
+  section{padding:40px 0}
+  .wrap{padding:0 16px}
+  h2{font-size:1.25rem}
+  .deliverables-grid{grid-template-columns:1fr}
+  .proof-stats{grid-template-columns:1fr}
+  .proof-stat .stat-num{font-size:1.5rem}
+  .final-cta{padding:40px 0}
+  .final-cta-cal{border-radius:8px}
+  .sticky-cta{padding:10px 12px;padding-bottom:max(10px,env(safe-area-inset-bottom))}
+  .sticky-cta a{font-size:0.9rem}
+}
+@media(max-width:768px){
+  .header-inner .btn-primary{font-size:0.8rem;padding:10px 16px}
+  .hero h1{font-size:1.75rem}
+  .hero-checks li{font-size:0.85rem}
+  body{padding-bottom:52px}
+}
 </style>
 </head>
 <body>
