@@ -361,7 +361,7 @@ window.addEventListener('message', function(e) {
     try {
       var d = JSON.parse(e.data);
       if (d.frameHeight) {
-        document.querySelectorAll('iframe').forEach(function(f) { f.style.minHeight = 'auto'; f.style.height = d.frameHeight + 'px'; });
+        var h = Math.max(d.frameHeight, 900); document.querySelectorAll('iframe').forEach(function(f) { f.style.height = h + 'px'; });
       }
     } catch(x) {}
   }
