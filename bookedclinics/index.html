@@ -178,22 +178,30 @@ p{color:#3a3a3a}
   .offer-grid{grid-template-columns:1fr}
   .steps-grid{grid-template-columns:1fr;gap:32px}
   .week1-list{grid-template-columns:1fr}
-  .hero{padding:80px 0 60px}
+  .hero{padding:40px 0 36px}
   .hero-actions{flex-direction:column;align-items:flex-start}
   .footer-inner{flex-direction:column;text-align:center}
   .footer-links{justify-content:center}
+  .header-inner .nav-links{gap:12px}
+  .header-inner .nav-links a:not(.btn){font-size:0.78rem}
+  .btn-primary.header-cta{font-size:0.78rem;padding:8px 14px}
 }
 
 @media(max-width:480px){
   .wrap{padding:0 16px}
   .offer-card{padding:24px 20px}
   .ai-features-grid{grid-template-columns:1fr}
-  .site-header .header-inner{flex-wrap:wrap;height:auto;padding:10px 0;gap:6px}
-  .site-header .header-inner > div{gap:8px}
-  .site-header .header-inner > div > a:not(.btn){font-size:0.75rem}
-  .btn-primary.header-cta{font-size:0.65rem;padding:6px 10px;white-space:nowrap;border-radius:6px}
+  .site-header{padding:0 12px}
+  .site-header .header-inner{height:auto;padding:10px 0}
+  .header-inner .nav-links{gap:10px}
+  .header-inner .nav-links a:not(.btn){font-size:0.72rem}
+  .btn-primary.header-cta{font-size:0.68rem;padding:6px 10px;white-space:nowrap;border-radius:6px}
+  .hero{padding:28px 0 32px}
   .hero h1{font-size:1.5rem}
-  .hero p.hero-sub{font-size:0.9rem}
+  .hero p.sub{font-size:0.9rem;margin:12px 0 20px}
+  .hero-actions{margin-bottom:20px}
+  .hero-actions .btn-primary{font-size:0.9rem;padding:12px 24px}
+  .hero-benefits li{font-size:0.84rem}
   .trust-strip{font-size:0.72rem;padding:8px 12px}
   section{padding:40px 0}
   h2{font-size:1.3rem}
@@ -205,7 +213,7 @@ p{color:#3a3a3a}
 <header class="site-header">
   <div class="header-inner">
     <a href="./index.html" class="logo">Booked<span>Clinics</span></a>
-    <div style="display:flex;align-items:center;gap:20px">
+    <div class="nav-links" style="display:flex;align-items:center;gap:20px">
       <a href="#services" style="font-size:0.85rem;font-weight:600;color:#0b7a5a">Services</a>
       <a href="ai-receptionist/index.html" style="font-size:0.85rem;font-weight:600;color:#0b7a5a">AI Receptionist</a>
       <a href="book/index.html" class="btn btn-primary header-cta">Claim Your Free Strategy Call</a>
