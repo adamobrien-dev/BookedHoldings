@@ -38,8 +38,8 @@ p{color:#3a3a3a}
 .hero-checks{display:flex;flex-direction:column;gap:8px;margin-bottom:28px}
 .hero-checks li{display:flex;align-items:center;gap:10px;font-size:0.9rem;color:#3a3a3a;font-weight:600}
 .hero-checks svg{width:18px;height:18px;color:#d97706;flex-shrink:0}
-.cal-wrap{background:#fff;border:1px solid #e5e5e5;border-radius:12px;overflow:hidden;min-height:420px}
-.cal-wrap iframe{display:block;min-height:420px}
+.cal-wrap{background:#fff;border:1px solid #e5e5e5;border-radius:12px}
+.cal-wrap iframe{display:block;height:800px}
 
 .deliverables{background:#fffbf5}
 .deliverables h2{margin-bottom:24px}
@@ -111,7 +111,7 @@ p{color:#3a3a3a}
       </ul>
     </div>
     <div class="cal-wrap" id="form">
-      <iframe src="https://api.leadconnectorhq.com/widget/booking/9yOuci94fupPl370mgq0" style="width:100%;border:none;overflow:hidden;" scrolling="no"></iframe>
+      <iframe src="https://api.leadconnectorhq.com/widget/booking/9yOuci94fupPl370mgq0" style="width:100%;border:none;"></iframe>
     </div>
   </div>
 </section>
@@ -224,7 +224,7 @@ p{color:#3a3a3a}
     <h2>Book Your Strategy Call</h2>
     <p class="sub">Pick a time. We’ll show you how to fill your HVAC schedule with real jobs.</p>
     <div class="cal-wrap">
-      <iframe src="https://api.leadconnectorhq.com/widget/booking/9yOuci94fupPl370mgq0" style="width:100%;border:none;overflow:hidden;" scrolling="no"></iframe>
+      <iframe src="https://api.leadconnectorhq.com/widget/booking/9yOuci94fupPl370mgq0" style="width:100%;border:none;"></iframe>
     </div>
   </div>
 </section>
@@ -270,6 +270,27 @@ p{color:#3a3a3a}
     });
   });
 })();
+</script>
+
+<!-- GHL Calendar: Booking Detection + Resize -->
+<script>
+window.addEventListener('message', function(e) {
+  if (Array.isArray(e.data)) {
+    if (e.data[0] === 'msgsndr-booking-complete') {
+      if (typeof fbq !== 'undefined') { fbq('track', 'Schedule'); }
+      setTimeout(function() { window.location.href = '../../thank-you/'; }, 800);
+    }
+  }
+  if (typeof e.data === 'string') {
+    try {
+      var d = JSON.parse(e.data);
+      if (d.frameHeight) {
+        var h = d.frameHeight;
+        document.querySelectorAll('iframe').forEach(function(f) { f.style.height = h + 'px'; });
+      }
+    } catch(x) {}
+  }
+});
 </script>
 </body>
 </html>

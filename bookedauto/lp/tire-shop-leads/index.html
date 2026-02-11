@@ -23,8 +23,8 @@
     .hero-checks{display:flex;flex-wrap:wrap;justify-content:center;gap:20px 28px;margin-bottom:28px}
     .hero-checks span{display:inline-flex;align-items:center;gap:8px;font-weight:600;color:#0f172a;font-size:0.95rem}
     .hero-checks svg{flex-shrink:0;color:#2563eb;width:20px;height:20px}
-    .hero-cal{max-width:640px;margin:0 auto;min-height:500px;border-radius:12px;overflow:hidden;box-shadow:0 4px 20px rgba(0,0,0,0.08)}
-    .hero-cal iframe{width:100%;border:none;overflow:hidden;min-height:500px}
+    .hero-cal{max-width:640px;margin:0 auto;border-radius:12px;box-shadow:0 4px 20px rgba(0,0,0,0.08)}
+    .hero-cal iframe{width:100%;border:none;height:800px}
     .section{padding:48px 20px;max-width:900px;margin:0 auto}
     .label{font-size:0.78rem;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:#2563eb;margin-bottom:12px}
     .section h2{font-size:1.75rem;font-weight:800;color:#0f172a;margin-bottom:24px}
@@ -84,7 +84,7 @@
           <span><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>Google Maps</span>
         </div>
         <div class="hero-cal" id="form">
-          <iframe src="https://api.leadconnectorhq.com/widget/booking/9yOuci94fupPl370mgq0" style="width:100%;border:none;overflow:hidden;" scrolling="no"></iframe>
+          <iframe src="https://api.leadconnectorhq.com/widget/booking/9yOuci94fupPl370mgq0" style="width:100%;border:none;"></iframe>
         </div>
       </div>
     </section>
@@ -167,7 +167,7 @@
       <h2>Get real tire and service customers</h2>
       <p>Book a strategy call. We'll confirm fit and show you how we bring in tire and service customers — tracked from click to booked service.</p>
       <div class="hero-cal" id="form-bottom">
-        <iframe src="https://api.leadconnectorhq.com/widget/booking/9yOuci94fupPl370mgq0" style="width:100%;border:none;overflow:hidden;" scrolling="no"></iframe>
+        <iframe src="https://api.leadconnectorhq.com/widget/booking/9yOuci94fupPl370mgq0" style="width:100%;border:none;"></iframe>
       </div>
       <a href="#form" class="btn-primary">Scroll to Calendar</a>
     </section>
@@ -217,5 +217,26 @@
     });
   })();
   </script>
+
+<!-- GHL Calendar: Booking Detection + Resize -->
+<script>
+window.addEventListener('message', function(e) {
+  if (Array.isArray(e.data)) {
+    if (e.data[0] === 'msgsndr-booking-complete') {
+      if (typeof fbq !== 'undefined') { fbq('track', 'Schedule'); }
+      setTimeout(function() { window.location.href = '../../thank-you/'; }, 800);
+    }
+  }
+  if (typeof e.data === 'string') {
+    try {
+      var d = JSON.parse(e.data);
+      if (d.frameHeight) {
+        var h = d.frameHeight;
+        document.querySelectorAll('iframe').forEach(function(f) { f.style.height = h + 'px'; });
+      }
+    } catch(x) {}
+  }
+});
+</script>
 </body>
 </html>

@@ -60,7 +60,7 @@ p{color:#3a3a3a}
 .cal-card{background:#fff;border:1px solid #e5e7eb;border-radius:12px;padding:28px 24px;position:sticky;top:24px;box-shadow:0 4px 14px rgba(37,99,235,0.08)}
 .cal-title{font-size:1.05rem;font-weight:700;color:#0f172a;margin-bottom:4px}
 .cal-tz{font-size:0.8rem;color:#64748b;margin-bottom:20px}
-.ghl-calendar-slot iframe{width:100%!important;border:none!important;display:block;min-height:980px;height:980px}
+.ghl-calendar-slot iframe{width:100%!important;border:none!important;display:block;height:800px}
 .cal-reassurance{margin-top:16px;text-align:center;font-size:0.8rem;color:#64748b;line-height:1.55}
 
 .site-footer{background:#0f172a;color:#7a9ac0;padding:28px 0;font-size:0.82rem}
@@ -178,7 +178,7 @@ p{color:#3a3a3a}
         <div class="cal-title">Choose a time</div>
         <div class="cal-tz">Times shown in your local time zone.</div>
         <div class="ghl-calendar-slot">
-          <iframe src="https://api.leadconnectorhq.com/widget/booking/9yOuci94fupPl370mgq0" style="width:100%;border:none;overflow:hidden;" scrolling="no"></iframe>
+          <iframe src="https://api.leadconnectorhq.com/widget/booking/9yOuci94fupPl370mgq0" style="width:100%;border:none;"></iframe>
         </div>
         <p class="cal-reassurance">No pressure. If we can't help, we'll tell you.</p>
       </div>
@@ -218,6 +218,27 @@ p{color:#3a3a3a}
     });
   });
 })();
+</script>
+
+<!-- GHL Calendar: Booking Detection + Resize -->
+<script>
+window.addEventListener('message', function(e) {
+  if (Array.isArray(e.data)) {
+    if (e.data[0] === 'msgsndr-booking-complete') {
+      if (typeof fbq !== 'undefined') { fbq('track', 'Schedule'); }
+      setTimeout(function() { window.location.href = '../thank-you/'; }, 800);
+    }
+  }
+  if (typeof e.data === 'string') {
+    try {
+      var d = JSON.parse(e.data);
+      if (d.frameHeight) {
+        var h = d.frameHeight;
+        document.querySelectorAll('iframe').forEach(function(f) { f.style.height = h + 'px'; });
+      }
+    } catch(x) {}
+  }
+});
 </script>
 </body>
 </html>
