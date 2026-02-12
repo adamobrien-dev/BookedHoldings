@@ -6,19 +6,22 @@
       "includeFiles": "clients/**/*"
     }
   },
-  "rewrites": [
+  "redirects": [
     {
-      "source": "/s/:client",
-      "destination": "/api/client?client=:client"
-    },
-    {
-      "source": "/:path*",
+      "source": "/:path((?!api/).*)",
       "has": [
         {
           "type": "host",
-          "value": "(?<client>[^.]+)\\.bookedjobs\\.ca"
+          "value": "squareelectric.bookedjobs.ca"
         }
       ],
+      "destination": "https://squareelectric.bookedjobs.ca/api/client",
+      "permanent": false
+    }
+  ],
+  "rewrites": [
+    {
+      "source": "/s/:client",
       "destination": "/api/client?client=:client"
     }
   ]
