@@ -1,27 +1,25 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "cleanUrls": true,
-  "redirects": [
-    {
-      "source": "/test-redirect",
-      "destination": "/clients/squareelectric/",
-      "permanent": false
+  "functions": {
+    "api/client.js": {
+      "includeFiles": "clients/**"
     }
-  ],
+  },
   "rewrites": [
     {
-      "source": "/s/squareelectric",
-      "destination": "/clients/squareelectric/index.html"
+      "source": "/s/:client",
+      "destination": "/api/client?client=:client"
     },
     {
       "source": "/:path*",
       "has": [
         {
           "type": "host",
-          "value": "squareelectric.bookedjobs.ca"
+          "value": "(?<client>[^.]+)\\.bookedjobs\\.ca"
         }
       ],
-      "destination": "/clients/squareelectric/:path*"
+      "destination": "/api/client?client=:client"
     }
   ]
 }
