@@ -3,7 +3,7 @@
   "cleanUrls": true,
   "functions": {
     "api/client.js": {
-      "includeFiles": "clients/**"
+      "includeFiles": "clients/**/*"
     }
   },
   "rewrites": [

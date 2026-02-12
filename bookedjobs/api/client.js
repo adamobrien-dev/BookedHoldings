@@ -32,6 +32,11 @@ module.exports = (req, res) => {
     try { clientsFromCwd = fs.readdirSync(path.join(cwd, 'clients')); } catch (e) { clientsFromCwd = [e.message]; }
     try { clientsFromDir = fs.readdirSync(path.join(dirname, '..', 'clients')); } catch (e) { clientsFromDir = [e.message]; }
 
+    let subFiles = [];
+    if (subdomain) {
+      try { subFiles = fs.readdirSync(path.join(dirname, '..', 'clients', subdomain)); } catch (e) { subFiles = [e.message]; }
+    }
+
     res.setHeader('Content-Type', 'application/json');
     return res.end(JSON.stringify({
       host,
@@ -41,7 +46,8 @@ module.exports = (req, res) => {
       cwdFiles,
       dirFiles,
       clientsFromCwd,
-      clientsFromDir
+      clientsFromDir,
+      subFiles
     }, null, 2));
   }
 
