@@ -1,10 +1,17 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "cleanUrls": true,
+  "redirects": [
+    {
+      "source": "/test-redirect",
+      "destination": "/clients/squareelectric/",
+      "permanent": false
+    }
+  ],
   "rewrites": [
     {
-      "source": "/s/squareelectric/:path*",
-      "destination": "/clients/squareelectric/:path*"
+      "source": "/s/squareelectric",
+      "destination": "/clients/squareelectric/index.html"
     },
     {
       "source": "/:path*",
