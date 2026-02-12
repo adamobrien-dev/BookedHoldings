@@ -5,10 +5,10 @@
       "has": [
         {
           "type": "host",
-          "value": "(?<sub>.+)\\.bookedjobs\\.ca"
+          "value": "squareelectric.bookedjobs.ca"
         }
       ],
-      "destination": "/clients/:sub/:path*"
+      "destination": "/clients/squareelectric/:path*"
     }
   ]
 }
