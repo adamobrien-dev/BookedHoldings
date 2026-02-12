@@ -18,39 +18,89 @@ module.exports = (req, res) => {
     subdomain = req.query.client.toLowerCase().replace(/[^a-z0-9-]/g, '');
   }
 
+  // Debug mode: show file system info to diagnose path issues
+  if (req.query && req.query.debug === '1') {
+    const cwd = process.cwd();
+    const dirname = __dirname;
+    let cwdFiles = [];
+    let dirFiles = [];
+    let clientsFromCwd = [];
+    let clientsFromDir = [];
+
+    try { cwdFiles = fs.readdirSync(cwd); } catch (e) { cwdFiles = [e.message]; }
+    try { dirFiles = fs.readdirSync(dirname); } catch (e) { dirFiles = [e.message]; }
+    try { clientsFromCwd = fs.readdirSync(path.join(cwd, 'clients')); } catch (e) { clientsFromCwd = [e.message]; }
+    try { clientsFromDir = fs.readdirSync(path.join(dirname, '..', 'clients')); } catch (e) { clientsFromDir = [e.message]; }
+
+    res.setHeader('Content-Type', 'application/json');
+    return res.end(JSON.stringify({
+      host,
+      subdomain,
+      cwd,
+      dirname,
+      cwdFiles,
+      dirFiles,
+      clientsFromCwd,
+      clientsFromDir
+    }, null, 2));
+  }
+
   if (!subdomain) {
     res.statusCode = 404;
     res.setHeader('Content-Type', 'text/html');
     return res.end('<html><body><h1>404 — Page Not Found</h1><p><a href="https://bookedjobs.ca">Go to BookedJobs.ca</a></p></body></html>');
   }
 
-  // Resolve the client HTML file
-  const htmlPath = path.join(process.cwd(), 'clients', subdomain, 'index.html');
+  // Try multiple possible paths where Vercel may place included files
+  const possiblePaths = [
+    path.join(process.cwd(), 'clients', subdomain, 'index.html'),
+    path.join(__dirname, '..', 'clients', subdomain, 'index.html'),
+    path.join(__dirname, 'clients', subdomain, 'index.html'),
+  ];
 
-  try {
-    if (!fs.existsSync(htmlPath)) {
-      // Try the 404 page
-      const notFoundPath = path.join(process.cwd(), 'clients', '404.html');
-      if (fs.existsSync(notFoundPath)) {
-        const html404 = fs.readFileSync(notFoundPath, 'utf-8');
-        res.statusCode = 404;
-        res.setHeader('Content-Type', 'text/html; charset=utf-8');
-        return res.end(html404);
+  let html = null;
+  let usedPath = null;
+
+  for (const p of possiblePaths) {
+    try {
+      if (fs.existsSync(p)) {
+        html = fs.readFileSync(p, 'utf-8');
+        usedPath = p;
+        break;
       }
-      res.statusCode = 404;
-      res.setHeader('Content-Type', 'text/html');
-      return res.end('<html><body><h1>404 — Client Not Found</h1><p><a href="https://bookedjobs.ca">Go to BookedJobs.ca</a></p></body></html>');
+    } catch (e) {
+      // continue trying
     }
+  }
 
-    const html = fs.readFileSync(htmlPath, 'utf-8');
+  if (html) {
     res.statusCode = 200;
     res.setHeader('Content-Type', 'text/html; charset=utf-8');
     res.setHeader('Cache-Control', 's-maxage=3600, stale-while-revalidate=86400');
     return res.end(html);
-  } catch (err) {
-    console.error('Error serving client page:', err);
-    res.statusCode = 500;
-    res.setHeader('Content-Type', 'text/html');
-    return res.end('<html><body><h1>500 — Server Error</h1></body></html>');
   }
+
+  // Client not found — try custom 404
+  const notFoundPaths = [
+    path.join(process.cwd(), 'clients', '404.html'),
+    path.join(__dirname, '..', 'clients', '404.html'),
+    path.join(__dirname, 'clients', '404.html'),
+  ];
+
+  for (const p of notFoundPaths) {
+    try {
+      if (fs.existsSync(p)) {
+        const html404 = fs.readFileSync(p, 'utf-8');
+        res.statusCode = 404;
+        res.setHeader('Content-Type', 'text/html; charset=utf-8');
+        return res.end(html404);
+      }
+    } catch (e) {
+      // continue
+    }
+  }
+
+  res.statusCode = 404;
+  res.setHeader('Content-Type', 'text/html');
+  return res.end('<html><body><h1>404 — Client Not Found</h1><p><a href="https://bookedjobs.ca">Go to BookedJobs.ca</a></p></body></html>');
 };
