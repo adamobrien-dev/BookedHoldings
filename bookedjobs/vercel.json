@@ -1,5 +1,10 @@
 {
+  "$schema": "https://openapi.vercel.sh/vercel.json",
   "rewrites": [
+    {
+      "source": "/s/squareelectric/:path*",
+      "destination": "/clients/squareelectric/:path*"
+    },
     {
       "source": "/:path*",
       "has": [
