@@ -1,14 +1,14 @@
 {
   "rewrites": [
     {
-      "source": "/:path(.*)",
+      "source": "/:path*",
       "has": [
         {
           "type": "host",
-          "value": "(?<sub>(?!www)[a-z0-9][a-z0-9-]+)\\.bookedjobs\\.ca"
+          "value": "(?<sub>.+)\\.bookedjobs\\.ca"
         }
       ],
-      "destination": "/clients/:sub/:path"
+      "destination": "/clients/:sub/:path*"
     }
   ]
 }
