@@ -70,12 +70,13 @@ p{color:#3a3a3a}
 .cal-tz{font-size:0.8rem;color:#999;margin-bottom:20px}
 
 /* ✅ Calendar sizing (prevents cutoff even if auto-resize fails) */
-.ghl-calendar-slot{width:100%}
+.ghl-calendar-slot{width:100%;overflow:hidden}
 .ghl-calendar-slot iframe{
   width:100% !important;
   border:none !important;
   display:block;
   height:800px;
+  overflow:hidden;
 }
 
 /* ── Footer ── */
@@ -225,8 +226,8 @@ fbq('track', 'PageView');
         <div class="ghl-calendar-slot">
           <iframe
             src="https://api.leadconnectorhq.com/widget/booking/1YN9fpamXOM9GE7OdZaN"
-            style="width: 100%;border:none;"
-            
+            style="width:100%;border:none;overflow:hidden;"
+            scrolling="no"
             id="Aa9W1KgXUmSV5esKOCMs_1770572824141">
           </iframe>
         </div>
