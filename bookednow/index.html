@@ -3,344 +3,911 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>BookedNow — Online bookings for clinics, on your terms</title>
-<meta name="description" content="BookedNow helps clinic owners take appointments from their website and links—without sending patients through a crowded marketplace. Built for local practices.">
+<title>BookedNow — Turn ad clicks into booked appointments</title>
+<meta name="description" content="BookedNow helps clinics turn Meta and Google ad clicks into booked appointments on their own domain—landing pages, booking, deposits, reminders, and reporting tied to real bookings. Not a marketplace. Not an EMR.">
 <link rel="icon" type="image/svg+xml" href="favicon.svg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
-body{font-family:'DM Sans',system-ui,-apple-system,sans-serif;color:#1c1c1c;background:#fff;line-height:1.65;font-size:16px;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
-img,svg{display:block;max-width:100%}
-a{color:inherit;text-decoration:none}
-ul{list-style:none}
-button{font-family:inherit}
-
-.wrap{width:100%;max-width:1080px;margin:0 auto;padding:0 24px}
-section{padding:76px 0}
-
-h1{font-size:clamp(2rem,4.8vw,2.85rem);font-weight:800;line-height:1.14;letter-spacing:-0.03em;color:#0a0a0a}
-h2{font-size:clamp(1.4rem,3.2vw,2rem);font-weight:700;line-height:1.2;letter-spacing:-0.02em;color:#0a0a0a}
-h3{font-size:1.08rem;font-weight:700;line-height:1.3;color:#0a0a0a}
-p{color:#3a3a3a}
-.label{font-size:0.72rem;font-weight:700;text-transform:uppercase;letter-spacing:0.11em;color:#0b7a5a;margin-bottom:10px}
-
-.btn{display:inline-flex;align-items:center;justify-content:center;font-family:inherit;font-weight:600;font-size:1rem;border:none;border-radius:8px;cursor:pointer;transition:all 0.2s ease;text-align:center}
-.btn-primary{background:#0b7a5a;color:#fff;padding:15px 28px;font-size:1.02rem}
-.btn-primary:hover{background:#096b4e;transform:translateY(-1px);box-shadow:0 4px 18px rgba(11,122,90,0.28)}
-.btn-outline{background:transparent;color:#0b7a5a;padding:13px 24px;border:2px solid #0b7a5a;border-radius:8px;font-weight:600}
-.btn-outline:hover{background:#0b7a5a;color:#fff}
-.btn-ghost{background:transparent;color:#0b7a5a;font-weight:600;font-size:0.94rem;padding:0;border:none;cursor:pointer;border-bottom:1px solid transparent;transition:border-color 0.2s}
-.btn-ghost:hover{border-bottom-color:#0b7a5a}
-
-.site-header{position:sticky;top:0;z-index:100;background:rgba(255,255,255,0.96);backdrop-filter:blur(10px);border-bottom:1px solid #eee;padding:0 24px}
-.header-inner{max-width:1080px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;height:58px}
-.logo{font-size:1.12rem;font-weight:800;color:#0a0a0a;letter-spacing:-0.02em}
-.logo span{color:#0b7a5a}
-.nav-links{display:flex;align-items:center;gap:22px}
-.nav-links a:not(.btn){font-size:0.86rem;font-weight:600;color:#3d5a50}
-.nav-links a:not(.btn):hover{color:#0b7a5a}
-.header-cta{font-size:0.82rem;padding:9px 18px;border-radius:6px}
-
-.trust-strip{background:#f4faf7;border-bottom:1px solid #e3efe8;padding:11px 24px;text-align:center;font-size:0.8rem;color:#4a6b5c;font-weight:600;letter-spacing:0.02em}
-
-.hero{padding:92px 0 72px;background:linear-gradient(180deg,#f4faf7 0%,#fff 55%)}
-.hero-layout{display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:center}
-.hero-content{max-width:560px}
-.hero .sub{font-size:clamp(1rem,1.9vw,1.15rem);color:#454545;margin:16px 0 28px;line-height:1.68;max-width:540px}
-.hero-actions{display:flex;align-items:center;gap:18px;flex-wrap:wrap;margin-bottom:26px}
-.hero-benefits{display:flex;flex-direction:column;gap:9px}
-.hero-benefits li{display:flex;align-items:flex-start;gap:10px;font-size:0.9rem;color:#333;font-weight:500;line-height:1.5}
-.hero-benefits li svg{width:17px;height:17px;color:#0b7a5a;flex-shrink:0;margin-top:3px}
-
-.hero-visual{background:#fff;border:1px solid #e5ebe7;border-radius:14px;padding:22px;box-shadow:0 12px 40px rgba(11,90,60,0.06)}
-.mock-title{font-size:0.72rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:#889990;margin-bottom:14px}
-.mock-row{display:flex;align-items:center;justify-content:space-between;padding:12px 14px;border-radius:10px;background:#f8fcfa;margin-bottom:8px;font-size:0.86rem;color:#2a2a2a;font-weight:600}
-.mock-row span{color:#5a7a6c;font-weight:500;font-size:0.8rem}
-.mock-row:last-child{margin-bottom:0;background:linear-gradient(90deg,#e8f5ef 0%,#f8fcfa 100%);border:1px solid #c8e6d4}
-
-.problem{background:#fafafa}
-.problem-list{margin-top:26px;display:flex;flex-direction:column;gap:12px;max-width:620px}
-.problem-list li{display:flex;align-items:flex-start;gap:12px;font-size:0.94rem;color:#3a3a3a;line-height:1.58}
-.problem-list li svg{width:19px;height:19px;color:#c2410c;flex-shrink:0;margin-top:2px}
-
-.features-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:36px}
-.feat{background:#fff;border:1px solid #e8ece9;border-radius:12px;padding:26px 22px;transition:border-color 0.2s,box-shadow 0.2s}
-.feat:hover{border-color:#0b7a5a;box-shadow:0 4px 22px rgba(11,122,90,0.07)}
-.feat-icon{width:42px;height:42px;background:#ecf8f3;border-radius:10px;display:flex;align-items:center;justify-content:center;margin-bottom:14px}
-.feat-icon svg{width:21px;height:21px;color:#0b7a5a}
-.feat p{font-size:0.86rem;color:#555;line-height:1.55;margin-top:6px}
-
-.steps{background:#f4faf7}
-.steps-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:26px;margin-top:40px}
-.step-num{width:42px;height:42px;border-radius:50%;background:#0b7a5a;color:#fff;font-weight:700;font-size:1.05rem;display:flex;align-items:center;justify-content:center;margin-bottom:14px}
-.step h3{margin-bottom:6px}
-.step p{font-size:0.88rem;color:#555;line-height:1.6}
-.steps-cta{text-align:center;margin-top:40px}
-
-.compare{background:#fff}
-.compare-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-top:32px;max-width:820px}
-.compare-card{border-radius:12px;padding:28px 24px;border:1px solid #e5e5e5}
-.compare-card h3{margin-bottom:12px;font-size:1rem}
-.compare-card ul{display:flex;flex-direction:column;gap:8px}
-.compare-card li{font-size:0.88rem;color:#4a4a4a;padding-left:16px;position:relative;line-height:1.5}
-.compare-card li::before{content:"";position:absolute;left:0;top:7px;width:5px;height:5px;border-radius:50%;background:#ccc}
-.compare-card.yours{border-color:#b8e0cf;background:#f9fdfb}
-.compare-card.yours li::before{background:#0b7a5a}
-
-.faq-list{margin-top:28px;max-width:700px}
-.faq-item{border-bottom:1px solid #e8e8e8}
-.faq-item:first-child{border-top:1px solid #e8e8e8}
-.faq-q{width:100%;background:none;border:none;padding:18px 0;display:flex;align-items:center;justify-content:space-between;cursor:pointer;text-align:left;font-size:0.97rem;font-weight:600;color:#0a0a0a;gap:14px}
-.faq-q svg{width:19px;height:19px;flex-shrink:0;color:#999;transition:transform 0.25s}
-.faq-item.open .faq-q svg{transform:rotate(45deg);color:#0b7a5a}
-.faq-a{max-height:0;overflow:hidden;transition:max-height 0.3s ease}
-.faq-item.open .faq-a{max-height:280px}
-.faq-a-inner{padding:0 0 18px;font-size:0.9rem;color:#555;line-height:1.65}
-
-.final-cta{background:linear-gradient(135deg,#062a1f 0%,#0d3d2d 100%);color:#fff;text-align:center;padding:76px 0}
-.final-cta h2{color:#fff;margin-bottom:10px}
-.final-cta p{color:#a8d4c4;margin-bottom:28px;font-size:1rem;max-width:500px;margin-left:auto;margin-right:auto;line-height:1.65}
-.final-cta .btn-primary{background:#fff;color:#0b7a5a;padding:16px 36px;font-size:1.05rem}
-.final-cta .btn-primary:hover{background:#f0faf6;box-shadow:0 4px 20px rgba(255,255,255,0.12)}
-.final-cta .microcopy{font-size:0.8rem;color:#6a9e88;margin-top:14px}
-
-.site-footer{background:#062a1f;color:#6a9e88;padding:36px 0;font-size:0.84rem}
-.footer-inner{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:14px}
-.footer-brand{font-weight:700;color:#fff;font-size:0.98rem}
-.footer-tagline{font-size:0.8rem;color:#5a8a78}
-.footer-links{display:flex;gap:18px}
-.footer-links a{color:#7aaa96;transition:color 0.2s}
-.footer-links a:hover{color:#fff}
-
-.privacy-section{background:#f6f6f6;padding:36px 0;font-size:0.84rem;color:#666;line-height:1.65}
-.privacy-section h3{font-size:0.95rem;margin-bottom:8px;color:#1a1a1a}
-
-@media(max-width:900px){
-  .hero-layout{grid-template-columns:1fr;gap:36px}
-  .hero-visual{max-width:420px}
-  .features-grid{grid-template-columns:1fr 1fr}
-  .steps-grid{grid-template-columns:1fr;gap:24px}
+:root {
+  --font-sans: "Manrope", system-ui, -apple-system, sans-serif;
+  --font-display: "Manrope", system-ui, -apple-system, sans-serif;
+  --ink: #141414;
+  --muted: #454545;
+  --faint: #737373;
+  --line: #e5e5e5;
+  --line-strong: #d4d4d4;
+  --surface: #f4f4f5;
+  --page-bg: #ececec;
+  --header-bg: #1a1a1a;
+  --accent: #0f766e;
+  --accent-hover: #0d6962;
+  --accent-bright: #14b8a6;
+  --accent-soft: rgba(15, 118, 110, 0.12);
+  --accent-contrast: #fff;
+  --radius: 12px;
+  --radius-pill: 9999px;
+  --pad-x: clamp(1rem, 4.5vw, 1.75rem);
+  --section-y: clamp(2.5rem, 7vw, 4rem);
+  --content-max: 38rem;
+  --wrap-max: 72rem;
+  --touch: 3rem;
+  --shadow-card: 0 4px 24px rgba(0, 0, 0, 0.07), 0 1px 3px rgba(0, 0, 0, 0.06);
 }
-@media(max-width:640px){
-  section{padding:56px 0}
-  .features-grid{grid-template-columns:1fr}
-  .compare-grid{grid-template-columns:1fr}
-  .hero{padding:48px 0 40px}
-  .hero-actions{flex-direction:column;align-items:flex-start}
-  .footer-inner{flex-direction:column;text-align:center}
-  .nav-links .nav-link{display:none}
-  .wrap{padding:0 16px}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+body {
+  font-family: var(--font-sans);
+  font-size: 1.0625rem;
+  line-height: 1.55;
+  color: var(--ink);
+  background: var(--page-bg);
+  -webkit-font-smoothing: antialiased;
+}
+img, svg { display: block; max-width: 100%; }
+a { color: inherit; text-decoration: none; }
+ul { list-style: none; }
+button { font: inherit; color: inherit; cursor: pointer; }
+
+.skip {
+  position: absolute;
+  left: -9999px;
+  top: 0.5rem;
+  z-index: 200;
+  padding: 0.5rem 1rem;
+  background: var(--ink);
+  color: #fff;
+}
+.skip:focus { left: 0.5rem; outline: 2px solid var(--accent-bright); outline-offset: 2px; }
+
+.wrap {
+  width: min(100% - 2 * var(--pad-x), var(--wrap-max));
+  margin-inline: auto;
+}
+section { padding-block: var(--section-y); }
+
+h1, h2, h3 {
+  font-family: var(--font-display);
+  font-weight: 700;
+  color: var(--ink);
+  letter-spacing: -0.03em;
+  line-height: 1.15;
+}
+h1 { font-size: clamp(1.85rem, 5vw + 0.35rem, 2.75rem); font-weight: 800; }
+h2 { font-size: clamp(1.35rem, 2.2vw + 0.45rem, 1.75rem); font-weight: 800; margin-bottom: 0.4em; }
+h3 { font-size: 1.0625rem; font-weight: 700; margin-bottom: 0.35em; letter-spacing: -0.02em; }
+p { color: var(--muted); max-width: var(--content-max); }
+
+.label {
+  font-family: var(--font-sans);
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--faint);
+  margin-bottom: 0.65rem;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: var(--touch);
+  padding: 0 1.35rem;
+  font-size: 1rem;
+  font-weight: 600;
+  border-radius: var(--radius-pill);
+  border: 1px solid transparent;
+  text-align: center;
+  transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+}
+.btn-primary {
+  background: var(--accent);
+  color: var(--accent-contrast);
+  font-weight: 700;
+}
+.btn-primary:hover { background: var(--accent-hover); }
+.btn-primary:focus-visible { outline: 2px solid var(--accent-bright); outline-offset: 2px; }
+
+.btn-secondary {
+  background: #fff;
+  color: var(--ink);
+  border: 2px solid var(--ink);
+  font-weight: 700;
+}
+.btn-secondary:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+.btn-secondary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.top-bar {
+  background: #262626;
+  color: #a3a3a3;
+  font-size: 0.8125rem;
+  padding: 0.45rem var(--pad-x);
+  text-align: center;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+.top-bar a {
+  color: #e5e5e5;
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 0.15em;
+}
+.top-bar a:hover { color: #fff; }
+
+.site-header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: var(--header-bg);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+.header-inner {
+  width: min(100% - 2 * var(--pad-x), var(--wrap-max));
+  margin-inline: auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  min-height: 3.35rem;
+  padding-block: 0.55rem;
+}
+.logo {
+  font-family: var(--font-sans);
+  font-size: 1.125rem;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  color: #fafafa;
+  padding-block: 0.35rem;
+}
+.logo span { color: var(--accent-bright); font-weight: 800; }
+
+.menu-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: var(--touch);
+  min-height: var(--touch);
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  border-radius: var(--radius);
+  background: transparent;
+  color: #fafafa;
+}
+.menu-toggle:hover { border-color: rgba(255, 255, 255, 0.45); }
+.menu-toggle:focus-visible { outline: 2px solid var(--accent-bright); outline-offset: 2px; }
+.menu-toggle .open-label { display: none; }
+.site-header.is-open .menu-toggle .closed-label { display: none; }
+.site-header.is-open .menu-toggle .open-label { display: inline; }
+
+.nav-panel {
+  display: none;
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 100%;
+  background: #222;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 0.5rem var(--pad-x) 1rem;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0;
+}
+.site-header.is-open .nav-panel { display: flex; }
+.nav-panel a {
+  display: flex;
+  align-items: center;
+  min-height: var(--touch);
+  padding: 0 0.25rem;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: #f5f5f5;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+.nav-panel a:last-of-type { border-bottom: none; }
+.nav-panel a:hover { color: #fff; }
+.nav-panel .nav-secondary {
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  border-radius: var(--radius-pill);
+  margin-top: 0.5rem;
+  padding: 0 1rem;
+  justify-content: center;
+  text-decoration: none;
+}
+.nav-panel .nav-secondary:hover {
+  background: rgba(255, 255, 255, 0.06);
+  color: #fff;
+}
+.nav-panel .btn-primary {
+  margin-top: 0.75rem;
+  justify-content: center;
+  border: none;
+}
+
+.hero {
+  padding-block: clamp(2rem, 6vw, 3.75rem);
+  border-bottom: 1px solid var(--line);
+  background: linear-gradient(180deg, #f0f0f0 0%, #fafafa 50%, #fff 100%);
+}
+.hero-layout {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(1.5rem, 4vw, 2.25rem);
+}
+.hero-content { max-width: 42rem; }
+.hero .sub {
+  margin-top: 1rem;
+  font-size: 1.0625rem;
+  line-height: 1.6;
+  color: var(--muted);
+  max-width: 40rem;
+}
+.hero-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0.85rem;
+  margin-top: 1.5rem;
+}
+
+.booksy-widget {
+  border-radius: var(--radius);
+  padding: 1.25rem 1.25rem 1.1rem;
+  background: #fff;
+  box-shadow: var(--shadow-card);
+  border: 1px solid rgba(0, 0, 0, 0.04);
+  font-size: 0.8125rem;
+  max-width: 22rem;
+  margin-inline: auto;
+}
+.widget-field {
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 0.65rem 0.85rem;
+  margin-bottom: 0.65rem;
+}
+.widget-field .wf-label {
+  display: block;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--faint);
+  margin-bottom: 0.2rem;
+}
+.widget-field .wf-value {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: var(--ink);
+}
+.widget-when {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 0.75rem;
+  align-items: start;
+  margin-bottom: 0.85rem;
+}
+.widget-when .widget-field { margin-bottom: 0; }
+.widget-cal {
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 0.5rem;
+  min-width: 8.5rem;
+  background: var(--surface);
+}
+.widget-cal-cap {
+  font-size: 0.6875rem;
+  font-weight: 700;
+  color: var(--ink);
+  text-align: center;
+  margin-bottom: 0.35rem;
+}
+.widget-cal-dow {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 0.15rem;
+  text-align: center;
+  font-size: 0.5625rem;
+  font-weight: 700;
+  color: var(--faint);
+  text-transform: uppercase;
+  margin-bottom: 0.25rem;
+}
+.widget-cal-dates {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 0.2rem;
+  text-align: center;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  color: var(--muted);
+}
+.widget-cal-dates span { padding: 0.2rem 0; border-radius: 6px; }
+.widget-cal-dates .pick { background: var(--accent); color: #fff; }
+.widget-cta {
+  display: block;
+  width: 100%;
+  text-align: center;
+  padding: 0.9rem 1rem;
+  font-size: 0.9375rem;
+  font-weight: 800;
+  border-radius: var(--radius-pill);
+  background: var(--accent);
+  color: #fff;
+  margin-top: 0.15rem;
+}
+.widget-foot {
+  margin-top: 0.75rem;
+  padding-top: 0.65rem;
+  border-top: 1px solid var(--line);
+  color: var(--faint);
+  font-size: 0.6875rem;
+  line-height: 1.45;
+}
+
+.problem {
+  background: var(--surface);
+  border-bottom: 1px solid var(--line);
+}
+.problem .lead {
+  margin-top: 0.65rem;
+  font-size: 1rem;
+  max-width: 40rem;
+  line-height: 1.55;
+}
+.problem-list {
+  margin-top: 1.35rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+  max-width: 42rem;
+}
+.problem-list li {
+  display: flex;
+  gap: 0.65rem;
+  font-size: 0.9375rem;
+  line-height: 1.5;
+  color: var(--muted);
+}
+.problem-list li svg {
+  flex-shrink: 0;
+  width: 1.125rem;
+  height: 1.125rem;
+  margin-top: 0.15rem;
+  color: #b45309;
+}
+
+.solution {
+  background: #fff;
+  border-bottom: 1px solid var(--line);
+}
+.solution .lead {
+  margin-top: 0.65rem;
+  max-width: 40rem;
+  font-size: 1rem;
+}
+.flow-grid {
+  margin-top: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.35rem;
+}
+.flow-step h3 { margin-bottom: 0.25rem; }
+.flow-step p { font-size: 0.9375rem; max-width: 36rem; line-height: 1.55; }
+.flow-num {
+  font-size: 0.75rem;
+  font-weight: 800;
+  width: 2rem;
+  height: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid var(--accent);
+  color: var(--accent);
+  border-radius: var(--radius);
+  margin-bottom: 0.5rem;
+}
+
+.features {
+  background: #fff;
+  border-bottom: 1px solid var(--line);
+}
+.features .lead { margin-top: 0.65rem; max-width: 40rem; font-size: 1rem; }
+.features-grid {
+  margin-top: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+.feat {
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 1.25rem 1.15rem;
+  background: #fafafa;
+}
+.feat:hover { border-color: var(--line-strong); }
+.feat p { font-size: 0.9375rem; margin-top: 0.4rem; max-width: none; line-height: 1.5; }
+
+.clinics {
+  background: #fff;
+  border-bottom: 1px solid var(--line);
+}
+.clinics .lead { margin-top: 0.65rem; max-width: 40rem; font-size: 1rem; }
+.chips-scroll {
+  margin-top: 1.25rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+.chip {
+  padding: 0.55rem 1.05rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--ink);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-pill);
+}
+
+.agencies {
+  background: var(--surface);
+  border-bottom: 1px solid var(--line);
+}
+.agencies .lead { margin-top: 0.65rem; max-width: 40rem; font-size: 1rem; }
+.agency-points {
+  margin-top: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  max-width: 42rem;
+}
+.agency-points li {
+  display: flex;
+  gap: 0.65rem;
+  font-size: 0.9375rem;
+  line-height: 1.5;
+  color: var(--muted);
+}
+.agency-points li svg {
+  flex-shrink: 0;
+  width: 1.125rem;
+  height: 1.125rem;
+  margin-top: 0.15rem;
+  color: var(--accent);
+}
+
+.compliance-note {
+  background: #fafafa;
+  border-bottom: 1px solid var(--line);
+  padding: 1.15rem var(--pad-x);
+  font-size: 0.875rem;
+  line-height: 1.55;
+  color: var(--muted);
+}
+.compliance-note .wrap {
+  width: min(100% - 2 * var(--pad-x), var(--wrap-max));
+  margin-inline: auto;
+  max-width: 48rem;
+}
+.compliance-note strong { color: var(--ink); font-weight: 700; }
+
+.faq { border-bottom: 1px solid var(--line); background: #fff; }
+.faq-list { margin-top: 1rem; max-width: 44rem; }
+.faq-item { border-bottom: 1px solid var(--line); }
+.faq-item:first-child { border-top: 1px solid var(--line); }
+.faq-q {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  min-height: var(--touch);
+  padding: 0.85rem 0;
+  background: none;
+  border: none;
+  text-align: left;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: var(--ink);
+}
+.faq-q:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: var(--radius); }
+.faq-q svg { flex-shrink: 0; width: 1.125rem; height: 1.125rem; color: var(--faint); transition: transform 0.2s ease; }
+.faq-item.open .faq-q svg { transform: rotate(45deg); color: var(--accent); }
+.faq-a { max-height: 0; overflow: hidden; transition: max-height 0.25s ease; }
+.faq-item.open .faq-a { max-height: 24rem; }
+.faq-a-inner { padding: 0 0 1rem; font-size: 0.9375rem; line-height: 1.55; color: var(--muted); max-width: none; }
+.faq-a-inner a { color: var(--accent); font-weight: 600; text-decoration: underline; text-underline-offset: 0.15em; }
+
+.final-cta {
+  text-align: left;
+  padding-block: clamp(2.5rem, 7vw, 3.75rem);
+  background: var(--accent);
+  color: #ecfdf5;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+}
+.final-cta .wrap { max-width: 40rem; }
+.final-cta h2 { color: #fff; }
+.final-cta p { color: rgba(255, 255, 255, 0.9); max-width: none; margin-top: 0.5rem; }
+.final-cta .btn-primary {
+  margin-top: 1.35rem;
+  background: #fff;
+  color: var(--header-bg);
+}
+.final-cta .btn-primary:hover { background: #f4f4f5; color: #000; }
+.final-cta .btn-primary:focus-visible { outline-color: #fff; }
+.final-cta .microcopy { margin-top: 1rem; font-size: 0.8125rem; color: rgba(255, 255, 255, 0.7); }
+.final-cta .microcopy a {
+  color: rgba(255, 255, 255, 0.95);
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 0.15em;
+}
+.final-cta .microcopy a:hover { color: #fff; }
+
+.site-footer {
+  padding-block: 2.5rem 1.5rem;
+  background: #0a0a0a;
+  color: #a3a3a3;
+  font-size: 0.875rem;
+}
+.footer-inner {
+  width: min(100% - 2 * var(--pad-x), var(--wrap-max));
+  margin-inline: auto;
+}
+.footer-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2rem;
+}
+.footer-grid > div:first-child { grid-column: 1 / -1; }
+.footer-brand {
+  font-weight: 800;
+  color: #fafafa;
+  font-size: 1.125rem;
+  letter-spacing: -0.02em;
+}
+.footer-brand span { color: var(--accent-bright); }
+.footer-tagline {
+  line-height: 1.5;
+  max-width: 22rem;
+  margin-top: 0.35rem;
+  font-size: 0.8125rem;
+}
+.footer-col h3 {
+  font-family: var(--font-sans);
+  font-size: 0.6875rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #737373;
+  margin-bottom: 0.75rem;
+}
+.footer-col ul { display: flex; flex-direction: column; gap: 0.5rem; }
+.footer-col a {
+  color: #d4d4d4;
+  font-weight: 500;
+  text-decoration: none;
+}
+.footer-col a:hover { color: #fff; text-decoration: underline; text-underline-offset: 0.15em; }
+.footer-legal {
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  font-size: 0.75rem;
+  line-height: 1.55;
+  color: #737373;
+  max-width: 52rem;
+}
+.footer-legal a { color: var(--accent-bright); font-weight: 600; text-decoration: none; }
+.footer-legal a:hover { text-decoration: underline; }
+
+@media (min-width: 48rem) {
+  .hero-actions {
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+  .hero-actions .btn-primary,
+  .hero-actions .btn-secondary { width: auto; min-width: 11rem; }
+  .flow-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.25rem;
+  }
+  .features-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+  }
+  .footer-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 2rem 1.5rem;
+    align-items: start;
+  }
+}
+
+@media (min-width: 64rem) {
+  .footer-grid > div:first-child { grid-column: auto; }
+  .footer-grid {
+    grid-template-columns: 1.4fr repeat(3, 1fr);
+    gap: 2rem 1.5rem;
+    align-items: start;
+  }
+  .features-grid { grid-template-columns: repeat(3, 1fr); }
+  .feat:nth-child(4) { grid-column: 1; }
+  .feat:nth-child(5) { grid-column: 2; }
+  .hero-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(17rem, 22rem);
+    gap: 2.5rem 3.5rem;
+    align-items: center;
+  }
+  .booksy-widget { margin-inline: 0; max-width: none; }
+  .menu-toggle { display: none; }
+  .nav-panel {
+    display: flex !important;
+    position: static;
+    flex-direction: row;
+    align-items: center;
+    gap: 0.25rem 1.1rem;
+    padding: 0;
+    border: none;
+    background: transparent;
+  }
+  .nav-panel a.nav-link {
+    min-height: auto;
+    padding: 0.35rem 0;
+    border: none;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.72);
+  }
+  .nav-panel a.nav-link:hover { color: #fff; }
+  .nav-panel a.nav-secondary {
+    margin-top: 0;
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    border-radius: var(--radius-pill);
+    padding: 0.4rem 1rem;
+    min-height: auto;
+    font-size: 0.8125rem;
+    font-weight: 700;
+    color: #fff;
+    text-decoration: none;
+  }
+  .nav-panel a.nav-secondary:hover {
+    background: rgba(255, 255, 255, 0.08);
+    color: #fff;
+  }
+  .nav-panel .btn-primary {
+    margin-top: 0;
+    margin-left: 0.35rem;
+    min-height: 2.5rem;
+    padding: 0 1.15rem;
+    font-size: 0.8125rem;
+  }
+  .header-inner { min-height: 3.5rem; }
 }
 </style>
 </head>
 <body>
 
+<a class="skip" href="#main">Skip to content</a>
+
+<div class="top-bar">Your domain · Your brand · <a href="#features">What you get</a> · <a href="#how-it-works">How it works</a></div>
+
 <header class="site-header">
   <div class="header-inner">
     <a href="./" class="logo">Booked<span>Now</span></a>
-    <div class="nav-links">
+    <button type="button" class="menu-toggle" id="menu-toggle" aria-expanded="false" aria-controls="site-nav">
+      <span class="closed-label">Menu</span>
+      <span class="open-label">Close</span>
+    </button>
+    <nav id="site-nav" class="nav-panel" aria-label="Primary">
+      <a href="#how-it-works" class="nav-link">How it works</a>
       <a href="#features" class="nav-link">Features</a>
       <a href="#faq" class="nav-link">FAQ</a>
+      <a href="mailto:hello@bookednow.app?subject=List%20my%20practice" class="nav-secondary">List your practice</a>
       <a href="#early-access" class="btn btn-primary header-cta">Get early access</a>
-    </div>
+    </nav>
   </div>
 </header>
 
-<div class="trust-strip">Dental · Veterinary · Chiropractic · Med spa · Physio · Mental health — any clinic that runs on appointments</div>
-
+<main id="main">
 <section class="hero">
   <div class="wrap hero-layout">
     <div class="hero-content">
-      <h1>Take bookings like a pro—without the marketplace tax</h1>
-      <p class="sub">BookedNow is scheduling software built for clinic owners who want patients booking <strong>directly with you</strong>, from your website, Google, or a simple link. Your calendar. Your rules. No sending people off to another brand to find you.</p>
+      <h1>Turn ad clicks into booked appointments</h1>
+      <p class="sub">BookedNow gives clinics a mobile-first booking funnel on their own domain, built for Meta and Google ads. Capture leads, take deposits, track booked appointments, and reduce no-shows — without sending patients to a marketplace.</p>
       <div class="hero-actions">
         <a href="mailto:hello@bookednow.app?subject=BookedNow%20early%20access" class="btn btn-primary" id="early-access">Get early access</a>
-        <a href="#features" class="btn-ghost">See features ↓</a>
+        <a href="#how-it-works" class="btn btn-secondary">See how it works</a>
       </div>
-      <ul class="hero-benefits">
-        <li>
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.3" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg>
-          <span>Online booking page that matches your practice</span>
-        </li>
-        <li>
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.3" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg>
-          <span>Staff, rooms, and services organized the way you actually work</span>
-        </li>
-        <li>
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.3" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg>
-          <span>Reminders and confirmations that cut no-shows—not more admin</span>
-        </li>
-      </ul>
     </div>
-    <div class="hero-visual" aria-hidden="true">
-      <div class="mock-title">Today — Front desk view</div>
-      <div class="mock-row">9:00 AM <span>New patient · Sarah M.</span></div>
-      <div class="mock-row">10:30 AM <span>Follow-up · Jake T.</span></div>
-      <div class="mock-row">1:15 PM <span>Blocked · Lunch</span></div>
-      <div class="mock-row" style="margin-top:12px">Web booking <span style="color:#0b7a5a;font-weight:700">+3 this week</span></div>
-    </div>
+    <aside class="booksy-widget" aria-hidden="true">
+      <div class="widget-field">
+        <span class="wf-label">Service</span>
+        <span class="wf-value">New patient visit</span>
+      </div>
+      <div class="widget-when">
+        <div class="widget-field">
+          <span class="wf-label">When?</span>
+          <span class="wf-value">Pick a time</span>
+        </div>
+        <div class="widget-cal" role="img" aria-label="Sample calendar">
+          <div class="widget-cal-cap">May 2026</div>
+          <div class="widget-cal-dow"><span>S</span><span>M</span><span>T</span><span>W</span><span>T</span><span>F</span><span>S</span></div>
+          <div class="widget-cal-dates">
+            <span></span><span></span><span></span><span></span><span>1</span><span>2</span><span>3</span>
+          </div>
+        </div>
+      </div>
+      <span class="widget-cta">Book</span>
+      <p class="widget-foot">Preview only — your live experience stays on your website and brand.</p>
+    </aside>
   </div>
 </section>
 
-<section class="problem">
+<section class="problem" id="problem">
   <div class="wrap">
-    <div class="label">Sound familiar?</div>
-    <h2>Phone tag and generic tools were not built for clinics</h2>
+    <div class="label">The problem</div>
+    <h2>Ads are working, but bookings are leaking</h2>
+    <p class="lead">You are paying for clicks. Too many never become a real appointment on your calendar.</p>
     <ul class="problem-list">
       <li>
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
-        Patients drop off when they have to call during business hours only
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.75" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+        After-hours traffic hits a “call us” wall and moves on
       </li>
       <li>
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
-        Big marketplaces put their brand between you and your patient
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.75" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+        Third-party booking apps put another brand in the middle of your patient journey
       </li>
       <li>
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
-        One-size-fits-all schedulers ignore providers, rooms, and treatment length
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.75" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+        Embedded widgets often make it harder to see which ad actually drove the booking
       </li>
       <li>
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
-        You lose track of who booked from where—and what actually filled the chair
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.75" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+        No-shows quietly inflate the true cost of every new patient you buy with ads
       </li>
     </ul>
   </div>
 </section>
 
-<section class="compare" id="features">
+<section class="solution" id="how-it-works">
   <div class="wrap">
-    <div class="label">Built for owners</div>
-    <h2>Clinic-first booking—not a directory with a calendar bolted on</h2>
-    <div class="compare-grid">
-      <div class="compare-card">
-        <h3>Typical consumer marketplaces</h3>
-        <ul>
-          <li>Patients browse competitors on the same screen</li>
-          <li>Your clinic listed next to everyone else in town</li>
-          <li>Fees and policies can change with little notice</li>
-          <li>Your relationship starts on their app, not yours</li>
-        </ul>
+    <div class="label">The fix</div>
+    <h2>One first-party path from ad click to appointment</h2>
+    <p class="lead">Send traffic to pages you own. Let patients book in a flow that matches how you really schedule. Keep reporting tied to booked visits—not just clicks.</p>
+    <div class="flow-grid">
+      <div class="flow-step">
+        <div class="flow-num">1</div>
+        <h3>Run ads to your pages</h3>
+        <p>Point Meta and Google campaigns at landing pages and booking links on your domain—not a separate app patients have to figure out.</p>
       </div>
-      <div class="compare-card yours">
-        <h3>BookedNow</h3>
-        <ul>
-          <li>Booking lives on your site and your links</li>
-          <li>You control services, deposits, and cancellation rules</li>
-          <li>Multi-provider and multi-location when you need it</li>
-          <li>Designed so the patient sees your practice—not ours</li>
-        </ul>
+      <div class="flow-step">
+        <div class="flow-num">2</div>
+        <h3>Patients book on their phone</h3>
+        <p>They pick a service, time, and location. Optional deposits cut no-shows. Reminders bring them back when life gets busy.</p>
       </div>
-    </div>
-
-    <div class="features-grid" style="margin-top:44px">
-      <div class="feat">
-        <div class="feat-icon">
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5a2.25 2.25 0 002.25-2.25m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5a2.25 2.25 0 012.25 2.25v7.5"/></svg>
-        </div>
-        <h3>Real calendar logic</h3>
-        <p>Lengths, buffers, and resources so the right slots show online—no double-booking chaos.</p>
-      </div>
-      <div class="feat">
-        <div class="feat-icon">
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M13.19 8.688a4.5 4.5 0 011.242 7.244l-4.5 4.5a4.5 4.5 0 01-6.364-6.364l1.757-1.757m13.35-.622l1.757-1.757a4.5 4.5 0 00-6.364-6.364l-4.5 4.5a4.5 4.5 0 001.242 7.244"/></svg>
-        </div>
-        <h3>Embeds &amp; links</h3>
-        <p>Drop booking on your homepage, a campaign landing page, or text a link—wherever patients already find you.</p>
-      </div>
-      <div class="feat">
-        <div class="feat-icon">
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0"/></svg>
-        </div>
-        <h3>Fewer no-shows</h3>
-        <p>Automated reminders patients actually see—so your team spends less time chasing confirmations.</p>
-      </div>
-      <div class="feat">
-        <div class="feat-icon">
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z"/></svg>
-        </div>
-        <h3>Staff-friendly</h3>
-        <p>Front desk gets a clear view of what came from the web vs. walk-ins and referrals.</p>
-      </div>
-      <div class="feat">
-        <div class="feat-icon">
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18L9 11.25l4.306 4.307a11.95 11.95 0 015.814-5.519l2.74-1.22m0 0l-5.94-2.28m5.94 2.28l-2.28 5.941"/></svg>
-        </div>
-        <h3>Grow on purpose</h3>
-        <p>See which channels fill the schedule so you can double down on what works.</p>
-      </div>
-      <div class="feat">
-        <div class="feat-icon">
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z"/></svg>
-        </div>
-        <h3>Serious about trust</h3>
-        <p>We treat health-adjacent data with care. Details on security and compliance ship with the product.</p>
+      <div class="flow-step">
+        <div class="flow-num">3</div>
+        <h3>You see what worked</h3>
+        <p>Reporting connects campaigns and pages to booked appointments and revenue—so you can scale what actually fills the schedule.</p>
       </div>
     </div>
   </div>
 </section>
 
-<section class="steps">
+<section class="features" id="features">
   <div class="wrap">
-    <div class="label">How it works</div>
-    <h2>Live in three straightforward steps</h2>
-    <div class="steps-grid">
-      <div class="step">
-        <div class="step-num">1</div>
-        <h3>Set up your practice</h3>
-        <p>Add providers, services, locations, and how long each appointment really takes—including buffers you already use today.</p>
+    <div class="label">What you get</div>
+    <h2>Everything patients need to go from “interested” to “on the calendar”</h2>
+    <p class="lead">Built for busy clinic teams and the marketers who support them—without turning BookedNow into an EMR.</p>
+    <div class="features-grid">
+      <div class="feat">
+        <h3>Landing pages</h3>
+        <p>Campaign-ready pages on your site for offers, promos, and new-patient specials—so ads land somewhere you control.</p>
       </div>
-      <div class="step">
-        <div class="step-num">2</div>
-        <h3>Share your booking link</h3>
-        <p>Put it on your website, in email footers, and in ad campaigns. Patients pick a time without playing phone tag.</p>
+      <div class="feat">
+        <h3>Booking</h3>
+        <p>Mobile-first scheduling with services, providers, locations, and real appointment lengths—fewer awkward “we need to move you” calls.</p>
       </div>
-      <div class="step">
-        <div class="step-num">3</div>
-        <h3>Show up prepared</h3>
-        <p>Confirmations go out automatically. Your team sees the day at a glance—fewer surprises, more filled chairs.</p>
+      <div class="feat">
+        <h3>Payments &amp; deposits</h3>
+        <p>Collect cards or deposits at booking when it makes sense for your practice—protect margin on paid traffic.</p>
       </div>
-    </div>
-    <div class="steps-cta">
-      <a href="mailto:hello@bookednow.app?subject=BookedNow%20early%20access" class="btn btn-primary">Request early access</a>
+      <div class="feat">
+        <h3>Reminders</h3>
+        <p>Automated confirmations and reminders patients actually see—so your ad spend is not wasted on empty chairs.</p>
+      </div>
+      <div class="feat">
+        <h3>Attribution &amp; reporting</h3>
+        <p>See which campaigns and pages lead to booked appointments and revenue—so you can double down on what fills the schedule.</p>
+      </div>
     </div>
   </div>
 </section>
+
+<section class="clinics" id="clinics">
+  <div class="wrap">
+    <div class="label">Built for clinics</div>
+    <h2>Designed for practices that live and die by the schedule</h2>
+    <p class="lead">If your growth plan includes paid social or search, BookedNow is meant for you.</p>
+    <div class="chips-scroll" aria-label="Clinic types">
+      <span class="chip">Med spas</span>
+      <span class="chip">Dental</span>
+      <span class="chip">Chiropractic</span>
+      <span class="chip">Physio</span>
+      <span class="chip">Mental health</span>
+      <span class="chip">Veterinary</span>
+      <span class="chip">Dermatology</span>
+    </div>
+  </div>
+</section>
+
+<section class="agencies" id="agencies">
+  <div class="wrap">
+    <div class="label">Built for agencies</div>
+    <h2>Show clients the line from campaign to revenue</h2>
+    <p class="lead">Give marketing teams clear reporting on what drove booked visits—without handing them the clinical chart.</p>
+    <ul class="agency-points">
+      <li>
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg>
+        <span>Campaign and landing-page visibility tied to <strong>booked appointments</strong>, not vanity clicks alone</span>
+      </li>
+      <li>
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg>
+        <span>Roles that fit how clinics work: owners and ops stay in control; marketers get the funnel view they need</span>
+      </li>
+      <li>
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg>
+        <span>Less time explaining why the booking button lives on someone else’s domain</span>
+      </li>
+    </ul>
+  </div>
+</section>
+
+<div class="compliance-note" role="note">
+  <div class="wrap">
+    <strong>Compliance-aware measurement.</strong> Healthcare marketing has real rules. BookedNow is designed so measurement stays on public marketing and booking experiences—not patient charting workflows. What you enable in Meta, Google, or other tools should always be reviewed with qualified legal counsel for your practice and region.
+  </div>
+</div>
 
 <section class="faq" id="faq">
   <div class="wrap">
-    <div class="label">Questions</div>
-    <h2>FAQ</h2>
+    <div class="label">FAQ</div>
+    <h2>Common questions</h2>
     <div class="faq-list">
       <div class="faq-item">
         <button type="button" class="faq-q" aria-expanded="false">
-          Is BookedNow the same as a patient marketplace?
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
+          Is BookedNow a patient marketplace?
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
         </button>
-        <div class="faq-a"><div class="faq-a-inner">No. BookedNow is software for <em>your</em> clinic to capture bookings. We are not trying to rank you next to competitors in a consumer app.</div></div>
+        <div class="faq-a"><div class="faq-a-inner">No. Patients book with <em>your</em> clinic on <em>your</em> website and brand. There is no public directory where they browse competitors side by side with you.</div></div>
       </div>
       <div class="faq-item">
         <button type="button" class="faq-q" aria-expanded="false">
-          Who is it for?
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
+          Who is BookedNow for?
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
         </button>
-        <div class="faq-a"><div class="faq-a-inner">Any appointment-based clinic: dental, vet, chiro, med spa, physio, mental health, and similar practices. If you sell time in a chair or a room, you are the audience.</div></div>
+        <div class="faq-a"><div class="faq-a-inner">Clinic owners and operators who run—or want to run—Meta and Google ads, plus the agencies that manage those campaigns. If appointments drive your revenue, you are the audience.</div></div>
       </div>
       <div class="faq-item">
         <button type="button" class="faq-q" aria-expanded="false">
-          Will it replace my EMR or practice software?
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
+          Will BookedNow replace my EMR?
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
         </button>
-        <div class="faq-a"><div class="faq-a-inner">BookedNow focuses on scheduling and the patient booking experience. Many clinics pair a dedicated booking layer with their existing systems—we will share integration plans as we open the beta.</div></div>
+        <div class="faq-a"><div class="faq-a-inner">No. The first release focuses on scheduling, landing pages, payments, reminders, and reporting. It is <strong>not</strong> built for clinical notes, charting, insurance claims, or a full medical record—that stays with the systems you already use.</div></div>
       </div>
       <div class="faq-item">
         <button type="button" class="faq-q" aria-expanded="false">
-          How do I get access?
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
+          How do I get early access?
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
         </button>
-        <div class="faq-a"><div class="faq-a-inner">We are onboarding design partners first. Email <a href="mailto:hello@bookednow.app" style="color:#0b7a5a;font-weight:600">hello@bookednow.app</a> with your clinic type and roughly how many appointments you book per week.</div></div>
+        <div class="faq-a"><div class="faq-a-inner">Email <a href="mailto:hello@bookednow.app">hello@bookednow.app</a> with your clinic type, locations, and roughly how many appointments you book each week. We onboard design partners in small batches.</div></div>
       </div>
     </div>
   </div>
@@ -348,44 +915,78 @@ p{color:#3a3a3a}
 
 <section class="final-cta">
   <div class="wrap">
-    <h2>Own your booking flow</h2>
-    <p>Join the early list for BookedNow. Tell us what your front desk wishes your current tools did—and we will build with you.</p>
-    <a href="mailto:hello@bookednow.app?subject=BookedNow%20early%20access" class="btn btn-primary">Email hello@bookednow.app</a>
-    <p class="microcopy">No spam. We will only write when there is something worth your time.</p>
+    <h2>Ready to keep bookings on your brand?</h2>
+    <p>Tell us about your clinic and your ads. We will follow up when there is a fit for early access.</p>
+    <a href="mailto:hello@bookednow.app?subject=BookedNow%20early%20access" class="btn btn-primary">Get early access</a>
+    <p class="microcopy">Prefer to browse first? Jump back to <a href="#how-it-works">how it works</a>.</p>
   </div>
 </section>
+</main>
 
 <footer class="site-footer">
-  <div class="wrap">
-    <div class="footer-inner">
+  <div class="footer-inner">
+    <div class="footer-grid">
       <div>
-        <div class="footer-brand">BookedNow</div>
-        <div class="footer-tagline">Online bookings for clinics</div>
+        <div class="footer-brand">Booked<span>Now</span></div>
+        <p class="footer-tagline">bookednow.app · Booked Holdings</p>
       </div>
-      <div class="footer-links">
-        <a href="#privacy">Privacy</a>
-        <a href="mailto:hello@bookednow.app">Contact</a>
+      <div class="footer-col">
+        <h3>Product</h3>
+        <ul>
+          <li><a href="#how-it-works">How it works</a></li>
+          <li><a href="#features">Features</a></li>
+          <li><a href="#clinics">Clinics</a></li>
+          <li><a href="#agencies">Agencies</a></li>
+          <li><a href="#faq">FAQ</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h3>Company</h3>
+        <ul>
+          <li><a href="mailto:hello@bookednow.app">Contact</a></li>
+          <li><a href="mailto:hello@bookednow.app?subject=List%20my%20practice">List your practice</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h3>Legal</h3>
+        <ul>
+          <li><a href="#privacy">Privacy</a></li>
+        </ul>
       </div>
     </div>
+    <p class="footer-legal" id="privacy">This marketing page does not load third-party ad pixels. If you email us, we use your address only to respond about BookedNow. <a href="mailto:hello@bookednow.app">hello@bookednow.app</a></p>
   </div>
 </footer>
 
-<section class="privacy-section" id="privacy">
-  <div class="wrap">
-    <h3>Privacy</h3>
-    <p>This landing page does not use third-party ad pixels. If you email us, we use your address only to respond about BookedNow. A full privacy policy will ship with the product. Questions: <a href="mailto:hello@bookednow.app" style="color:#0b7a5a;font-weight:600">hello@bookednow.app</a>.</p>
-  </div>
-</section>
-
 <script>
-(function(){
-  var items=document.querySelectorAll('.faq-item');
-  items.forEach(function(item){
-    var btn=item.querySelector('.faq-q');
-    btn.addEventListener('click',function(){
-      var open=item.classList.contains('open');
-      items.forEach(function(i){i.classList.remove('open');i.querySelector('.faq-q').setAttribute('aria-expanded','false')});
-      if(!open){item.classList.add('open');btn.setAttribute('aria-expanded','true')}
+(function () {
+  var header = document.querySelector(".site-header");
+  var toggle = document.getElementById("menu-toggle");
+  var panel = document.getElementById("site-nav");
+  if (toggle && header) {
+    toggle.addEventListener("click", function () {
+      var open = header.classList.toggle("is-open");
+      toggle.setAttribute("aria-expanded", open ? "true" : "false");
+    });
+    panel.querySelectorAll("a").forEach(function (a) {
+      a.addEventListener("click", function () {
+        header.classList.remove("is-open");
+        toggle.setAttribute("aria-expanded", "false");
+      });
+    });
+  }
+  document.querySelectorAll(".faq-item").forEach(function (item) {
+    var btn = item.querySelector(".faq-q");
+    btn.addEventListener("click", function () {
+      var wasOpen = item.classList.contains("open");
+      document.querySelectorAll(".faq-item").forEach(function (i) {
+        i.classList.remove("open");
+        i.querySelector(".faq-q").setAttribute("aria-expanded", "false");
+      });
+      if (!wasOpen) {
+        item.classList.add("open");
+        btn.setAttribute("aria-expanded", "true");
+      }
     });
   });
 })();
