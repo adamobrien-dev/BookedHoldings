@@ -1,0 +1,1047 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BookedClinics — Agency Dashboard</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #0a0d14; color: #e2e8f0; min-height: 100vh; }
+
+  /* ── HEADER ── */
+  header { padding: 16px 24px; border-bottom: 1px solid #1a2035; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; background: #0a0d14; z-index: 100; }
+  header h1 { font-size: 16px; font-weight: 700; color: #fff; letter-spacing: -0.3px; }
+  header h1 span { color: #6366f1; }
+  .last-updated { font-size: 11px; color: #475569; }
+
+  /* ── NAV TABS ── */
+  .nav-tabs { display: flex; gap: 4px; padding: 0 24px; border-bottom: 1px solid #1a2035; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  .nav-tab { font-size: 12px; font-weight: 500; color: #64748b; padding: 10px 14px; border-bottom: 2px solid transparent; cursor: pointer; white-space: nowrap; transition: color 0.15s; }
+  .nav-tab.active { color: #6366f1; border-bottom-color: #6366f1; }
+  .nav-tab:hover { color: #94a3b8; }
+
+  /* ── LAYOUT ── */
+  .container { max-width: 1200px; margin: 0 auto; padding: 24px; }
+
+  /* ── ALERTS ── */
+  .alerts { display: flex; flex-direction: column; gap: 10px; margin-bottom: 28px; }
+  .alert { border-radius: 8px; padding: 14px 18px; display: flex; gap: 12px; align-items: flex-start; }
+  .alert-red { background: #1f0a0a; border: 1px solid #7f1d1d; border-left: 3px solid #ef4444; }
+  .alert-yellow { background: #1c1505; border: 1px solid #78350f; border-left: 3px solid #f59e0b; }
+  .alert-purple { background: #110d1f; border: 1px solid #4c1d95; border-left: 3px solid #7c3aed; }
+  .alert-icon { font-size: 15px; flex-shrink: 0; margin-top: 1px; }
+  .alert-content { flex: 1; }
+  .alert-title { font-size: 13px; font-weight: 600; margin-bottom: 3px; }
+  .alert-red .alert-title { color: #fca5a5; }
+  .alert-yellow .alert-title { color: #fbbf24; }
+  .alert-purple .alert-title { color: #c4b5fd; }
+  .alert-body { font-size: 12px; color: #94a3b8; line-height: 1.5; }
+  .alert-body strong { color: #e2e8f0; }
+
+  /* ── STAT CARDS ── */
+  .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 28px; }
+  .stat-card { background: #111623; border: 1px solid #1a2035; border-radius: 10px; padding: 18px 20px; }
+  .stat-label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.8px; color: #475569; margin-bottom: 10px; }
+  .stat-value { font-size: 30px; font-weight: 700; color: #fff; line-height: 1; }
+  .stat-sub { font-size: 11px; color: #475569; margin-top: 6px; }
+  .green { color: #34d399; }
+  .yellow { color: #fbbf24; }
+  .red { color: #f87171; }
+  .blue { color: #60a5fa; }
+  .purple { color: #a78bfa; }
+
+  /* ── SECTION HEADER ── */
+  .section-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; margin-top: 32px; }
+  .section-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: #475569; }
+  .section-badge { font-size: 10px; font-weight: 600; padding: 3px 8px; border-radius: 20px; }
+
+  /* ── BILLING TABLE ── */
+  .billing-grid { display: flex; flex-direction: column; gap: 10px; margin-bottom: 28px; }
+  .billing-row { background: #111623; border: 1px solid #1a2035; border-radius: 10px; padding: 16px 20px; display: grid; grid-template-columns: 2fr 1fr 1fr 1fr 1fr; gap: 12px; align-items: center; }
+  .billing-row.alert-row { border-color: #7f1d1d; background: #140a0a; }
+  .billing-client { }
+  .billing-name { font-size: 14px; font-weight: 600; color: #e2e8f0; }
+  .billing-niche { font-size: 11px; color: #475569; margin-top: 2px; }
+  .billing-col-label { font-size: 10px; text-transform: uppercase; letter-spacing: 0.6px; color: #475569; margin-bottom: 4px; }
+  .billing-col-value { font-size: 13px; font-weight: 600; color: #e2e8f0; }
+  .billing-col-sub { font-size: 11px; color: #475569; margin-top: 2px; }
+  .pill { display: inline-flex; align-items: center; font-size: 10px; font-weight: 700; padding: 3px 8px; border-radius: 20px; text-transform: uppercase; letter-spacing: 0.4px; }
+  .pill-green { background: #052e16; color: #34d399; border: 1px solid #166534; }
+  .pill-red { background: #2d0a0a; color: #f87171; border: 1px solid #7f1d1d; }
+  .pill-yellow { background: #1c1000; color: #fbbf24; border: 1px solid #78350f; }
+  .pill-blue { background: #0a1628; color: #60a5fa; border: 1px solid #1e3a5f; }
+  .pill-gray { background: #1a1f2e; color: #64748b; border: 1px solid #2d3748; }
+
+  /* ── UPCOMING PAYMENTS ── */
+  .upcoming-list { display: flex; flex-direction: column; gap: 8px; margin-bottom: 28px; }
+  .upcoming-item { background: #111623; border: 1px solid #1a2035; border-radius: 8px; padding: 12px 16px; display: flex; align-items: center; gap: 16px; }
+  .upcoming-date { font-size: 12px; font-weight: 700; color: #6366f1; width: 70px; flex-shrink: 0; }
+  .upcoming-client { font-size: 13px; font-weight: 600; color: #e2e8f0; flex: 1; }
+  .upcoming-desc { font-size: 12px; color: #64748b; flex: 2; }
+  .upcoming-amount { font-size: 14px; font-weight: 700; color: #34d399; text-align: right; flex-shrink: 0; }
+  .upcoming-urgent { border-color: #92400e; background: #110c00; }
+  .upcoming-urgent .upcoming-date { color: #f59e0b; }
+
+  /* ── CLIENT CARDS ── */
+  .client-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; margin-bottom: 28px; }
+  .client-card { background: #111623; border: 1px solid #1a2035; border-radius: 10px; overflow: hidden; }
+  .client-header { padding: 14px 18px; border-bottom: 1px solid #1a2035; display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; }
+  .client-name { font-size: 14px; font-weight: 600; color: #fff; }
+  .client-niche { font-size: 11px; color: #475569; margin-top: 2px; }
+  .client-body { padding: 14px 18px; }
+  .funnel { display: flex; flex-direction: column; gap: 7px; }
+  .funnel-row { display: flex; align-items: center; gap: 10px; }
+  .funnel-label { font-size: 11px; color: #64748b; width: 110px; flex-shrink: 0; }
+  .funnel-bar-wrap { flex: 1; background: #0a0d14; border-radius: 3px; height: 5px; overflow: hidden; }
+  .funnel-bar { height: 100%; border-radius: 3px; }
+  .bar-new { background: #6366f1; }
+  .bar-hot { background: #f59e0b; }
+  .bar-booked { background: #10b981; }
+  .bar-sale { background: #34d399; }
+  .funnel-count { font-size: 12px; font-weight: 600; color: #e2e8f0; width: 24px; text-align: right; flex-shrink: 0; }
+  .client-footer { padding: 10px 18px; border-top: 1px solid #1a2035; display: flex; gap: 16px; flex-wrap: wrap; }
+  .client-meta { font-size: 11px; color: #475569; }
+  .client-meta strong { color: #64748b; }
+
+  /* ── WORKFLOW TABLE ── */
+  .table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; margin-bottom: 28px; border-radius: 10px; border: 1px solid #1a2035; }
+  table { width: 100%; border-collapse: collapse; background: #111623; }
+  th { font-size: 10px; text-transform: uppercase; letter-spacing: 0.8px; color: #475569; padding: 10px 14px; text-align: left; border-bottom: 1px solid #1a2035; white-space: nowrap; }
+  td { padding: 10px 14px; font-size: 12px; border-bottom: 1px solid #0a0d14; white-space: nowrap; }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: #151c2e; }
+  .wf-name { color: #e2e8f0; font-size: 12px; white-space: normal; }
+  .wf-draft { color: #f87171; font-size: 11px; font-weight: 700; }
+  .wf-live { color: #34d399; font-size: 11px; font-weight: 700; }
+
+  /* ── PIPELINE ── */
+  .pipeline-stats { display: grid; grid-template-columns: repeat(6, 1fr); gap: 10px; margin-bottom: 20px; }
+  .pipeline-stat { text-align: center; background: #0a0d14; border-radius: 8px; padding: 14px 8px; }
+  .pipeline-num { font-size: 26px; font-weight: 700; line-height: 1; }
+  .pipeline-label { font-size: 10px; color: #475569; margin-top: 6px; line-height: 1.3; }
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  .prospect-section { margin-bottom: 12px; }
+  .prospect-label { font-size: 10px; text-transform: uppercase; letter-spacing: 0.8px; font-weight: 700; margin-bottom: 8px; }
+  .prospect-list { font-size: 12px; color: #94a3b8; line-height: 1.9; }
+  .pipeline-note { margin-top: 16px; padding: 12px 14px; background: #0a0d14; border-radius: 8px; border-left: 3px solid #f59e0b; font-size: 12px; color: #94a3b8; line-height: 1.6; }
+  .pipeline-note strong { color: #fbbf24; }
+
+  /* ── ACTION LIST ── */
+  .action-list { background: #111623; border: 1px solid #1a2035; border-radius: 10px; padding: 8px; margin-bottom: 28px; }
+  .action-item { display: flex; align-items: flex-start; gap: 12px; padding: 14px 12px; border-bottom: 1px solid #1a2035; }
+  .action-item:last-child { border-bottom: none; }
+  .action-num { width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; flex-shrink: 0; margin-top: 1px; }
+  .num-red { background: #7f1d1d; color: #fca5a5; }
+  .num-yellow { background: #78350f; color: #fbbf24; }
+  .num-blue { background: #1e3a5f; color: #93c5fd; }
+  .num-purple { background: #4c1d95; color: #c4b5fd; }
+  .action-text { flex: 1; min-width: 0; }
+  .action-title { font-size: 13px; font-weight: 600; color: #e2e8f0; margin-bottom: 4px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .action-desc { font-size: 12px; color: #64748b; line-height: 1.6; }
+  .tag-urgent { background: #7f1d1d; color: #fca5a5; font-size: 9px; font-weight: 700; padding: 2px 6px; border-radius: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
+  .tag-soon { background: #78350f; color: #fbbf24; font-size: 9px; font-weight: 700; padding: 2px 6px; border-radius: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
+
+  /* ── STALE CONTRACTS ── */
+  .contracts-list { display: flex; flex-direction: column; gap: 8px; margin-bottom: 28px; }
+  .contract-item { background: #111623; border: 1px solid #1a2035; border-radius: 8px; padding: 12px 16px; display: flex; align-items: center; gap: 14px; }
+  .contract-days { font-size: 20px; font-weight: 700; width: 44px; flex-shrink: 0; text-align: center; }
+  .contract-info { flex: 1; }
+  .contract-name { font-size: 13px; font-weight: 600; color: #e2e8f0; }
+  .contract-biz { font-size: 11px; color: #475569; margin-top: 2px; }
+  .contract-sent { font-size: 11px; color: #475569; }
+  .days-critical { color: #f87171; }
+  .days-warn { color: #fbbf24; }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 900px) {
+    .stats-grid { grid-template-columns: repeat(2, 1fr); }
+    .billing-row { grid-template-columns: 1fr 1fr; }
+    .billing-row > *:nth-child(n+4) { display: none; }
+    .pipeline-stats { grid-template-columns: repeat(3, 1fr); }
+    .two-col { grid-template-columns: 1fr; }
+  }
+
+  @media (max-width: 640px) {
+    header { padding: 12px 16px; }
+    .container { padding: 16px; }
+    .nav-tabs { padding: 0 16px; }
+    .stats-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+    .stat-value { font-size: 26px; }
+    .client-grid { grid-template-columns: 1fr; }
+    .billing-row { grid-template-columns: 1fr; gap: 8px; }
+    .billing-row > * { display: block !important; }
+    .billing-row { padding: 14px 16px; }
+    .pipeline-stats { grid-template-columns: repeat(2, 1fr); }
+    .upcoming-item { flex-wrap: wrap; gap: 8px; }
+    .upcoming-date { width: auto; }
+    .upcoming-desc { flex: auto; width: 100%; order: 3; }
+    .upcoming-amount { margin-left: auto; }
+    .contract-item { flex-wrap: wrap; }
+  }
+
+  @media (max-width: 400px) {
+    .stats-grid { grid-template-columns: 1fr 1fr; }
+    .stat-value { font-size: 22px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1><span>Booked</span>Clinics — Agency Dashboard</h1>
+  <div style="display:flex;align-items:center;gap:12px;">
+    <span class="last-updated" id="last-updated">Loading...</span>
+    <button onclick="loadData()" id="refresh-btn" style="font-size:11px;color:#6366f1;background:none;border:1px solid #6366f1;border-radius:6px;padding:4px 10px;cursor:pointer;">Refresh</button>
+  </div>
+</header>
+
+<div class="nav-tabs">
+  <div class="nav-tab active">Overview</div>
+  <div class="nav-tab">Billing</div>
+  <div class="nav-tab">Clients</div>
+  <div class="nav-tab">Pipeline</div>
+  <div class="nav-tab">Actions</div>
+</div>
+
+<div class="container">
+
+  <!-- ── ALERTS ── -->
+  <div class="alerts">
+    <div class="alert alert-red">
+      <div class="alert-icon">🚨</div>
+      <div class="alert-content">
+        <div class="alert-title">Fletcher Munksgard — $500 payment FAILED</div>
+        <div class="alert-body">Stripe shows <strong>requires_payment_method</strong> — no card attached or declined. Signed May 14. Contract says no work begins until payment received. Send a new payment link today before setting up his GHL account.</div>
+      </div>
+    </div>
+    <div class="alert alert-yellow">
+      <div class="alert-icon">⚠️</div>
+      <div class="alert-content">
+        <div class="alert-title">Thania — $167 installment due May 18 (3 days)</div>
+        <div class="alert-body">Second of 3 onboarding installments. Stripe shows first $167 collected. Her deal is performance-only — <strong>no flat retainer</strong>. Bi-weekly performance invoices also not being sent yet.</div>
+      </div>
+    </div>
+    <div class="alert alert-purple">
+      <div class="alert-icon">⚡</div>
+      <div class="alert-content">
+        <div class="alert-title">All follow-up workflows are in DRAFT across every client account</div>
+        <div class="alert-body"><strong>65 of 75 leads (87%) sitting in New Lead with zero outreach sent.</strong> No SMS, no email, nothing. This is the same pattern that caused Angel to churn. Publish Fast 5 in all 4 accounts today.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── TOP STATS ── -->
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-label">Total Collected</div>
+      <div class="stat-value green" id="stat-collected">$2,800</div>
+      <div class="stat-sub">Stripe + PayPal verified</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Guaranteed MRR (June)</div>
+      <div class="stat-value blue">~$2,500</div>
+      <div class="stat-sub">+ Thania % performance</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Total Leads</div>
+      <div class="stat-value" id="stat-total-leads">75</div>
+      <div class="stat-sub" id="stat-leads-sub">Across active accounts</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Leads Stuck</div>
+      <div class="stat-value red" id="stat-stuck">65</div>
+      <div class="stat-sub red" id="stat-stuck-sub">87% — zero follow-up sent</div>
+    </div>
+  </div>
+
+  <!-- ── BILLING STATUS ── -->
+  <div class="section-header">
+    <div class="section-title">Billing Status — All Clients</div>
+  </div>
+
+  <div class="billing-grid">
+
+    <!-- Fletcher — FAILED -->
+    <div class="billing-row alert-row">
+      <div class="billing-client">
+        <div class="billing-name">Fletcher Munksgard</div>
+        <div class="billing-niche">Dane Functional Health · GLP-1, Functional Medicine</div>
+      </div>
+      <div>
+        <div class="billing-col-label">Payment</div>
+        <div><span class="pill pill-red">❌ Failed</span></div>
+        <div class="billing-col-sub">$500 on Stripe</div>
+      </div>
+      <div>
+        <div class="billing-col-label">Deal</div>
+        <div class="billing-col-value">Flat $500/mo</div>
+        <div class="billing-col-sub">No onboarding fee</div>
+      </div>
+      <div>
+        <div class="billing-col-label">Next Due</div>
+        <div class="billing-col-value red">Now</div>
+        <div class="billing-col-sub">Payment never collected</div>
+      </div>
+      <div>
+        <div class="billing-col-label">Status</div>
+        <div><span class="pill pill-red">Needs Action</span></div>
+      </div>
+    </div>
+
+    <!-- Frank -->
+    <div class="billing-row">
+      <div class="billing-client">
+        <div class="billing-name">Frank Aguilera</div>
+        <div class="billing-niche">Aguilera Health & Wellness · Chiropractic · Bakersfield, CA</div>
+      </div>
+      <div>
+        <div class="billing-col-label">Paid</div>
+        <div><span class="pill pill-green">✓ $500</span></div>
+        <div class="billing-col-sub">Stripe · May 6</div>
+      </div>
+      <div>
+        <div class="billing-col-label">Deal</div>
+        <div class="billing-col-value">Flat $500/mo</div>
+        <div class="billing-col-sub">Onboarding waived</div>
+      </div>
+      <div>
+        <div class="billing-col-label">Next Due</div>
+        <div class="billing-col-value">~Jun 6</div>
+        <div class="billing-col-sub">$500 retainer</div>
+      </div>
+      <div>
+        <div class="billing-col-label">Status</div>
+        <div><span class="pill pill-yellow">Setting Up</span></div>
+      </div>
+    </div>
+
+    <!-- Terri -->
+    <div class="billing-row">
+      <div class="billing-client">
+        <div class="billing-name">Terri Mignot</div>
+        <div class="billing-niche">Get Body Sculpted · Body Contouring · Tucker, GA</div>
+      </div>
+      <div>
+        <div class="billing-col-label">Paid</div>
+        <div><span class="pill pill-green">✓ $333</span></div>
+        <div class="billing-col-sub">Stripe · May 1 · Installment 1/3</div>
+      </div>
+      <div>
+        <div class="billing-col-label">Deal</div>
+        <div class="billing-col-value">$1k setup + $500/mo</div>
+        <div class="billing-col-sub">3 × $333 installments</div>
+      </div>
+      <div>
+        <div class="billing-col-label">Next Due</div>
+        <div class="billing-col-value">~Jun 1</div>
+        <div class="billing-col-sub">$333 install. + $500 retainer = $833</div>
+      </div>
+      <div>
+        <div class="billing-col-label">Status</div>
+        <div><span class="pill pill-blue">Ads Live</span></div>
+      </div>
+    </div>
+
+    <!-- Allaphia -->
+    <div class="billing-row">
+      <div class="billing-client">
+        <div class="billing-name">Allaphia Richards</div>
+        <div class="billing-niche">Paradise Healing LLC · Boston, MA</div>
+      </div>
+      <div>
+        <div class="billing-col-label">Paid</div>
+        <div><span class="pill pill-green">✓ $1,000</span></div>
+        <div class="billing-col-sub">Stripe · Apr 30 · Full onboarding</div>
+      </div>
+      <div>
+        <div class="billing-col-label">Deal</div>
+        <div class="billing-col-value">$1k setup + $500/mo</div>
+        <div class="billing-col-sub">Lump sum — fully paid</div>
+      </div>
+      <div>
+        <div class="billing-col-label">Next Due</div>
+        <div class="billing-col-value">~Jun 5</div>
+        <div class="billing-col-sub">$500 retainer month 1</div>
+      </div>
+      <div>
+        <div class="billing-col-label">Status</div>
+        <div><span class="pill pill-blue">Ads Live</span></div>
+      </div>
+    </div>
+
+    <!-- Thania -->
+    <div class="billing-row">
+      <div class="billing-client">
+        <div class="billing-name">Thania Ramirez</div>
+        <div class="billing-niche">Tiali Beauty Lounge · Med-Spa · Warwick, RI</div>
+      </div>
+      <div>
+        <div class="billing-col-label">Paid</div>
+        <div><span class="pill pill-green">✓ $167</span></div>
+        <div class="billing-col-sub">Stripe · Apr 18 · Installment 1/3</div>
+      </div>
+      <div>
+        <div class="billing-col-label">Deal</div>
+        <div class="billing-col-value">$500 setup + 10% rev</div>
+        <div class="billing-col-sub">Performance only — no retainer</div>
+      </div>
+      <div>
+        <div class="billing-col-label">Next Due</div>
+        <div class="billing-col-value yellow">May 18</div>
+        <div class="billing-col-sub">$167 installment 2/3</div>
+      </div>
+      <div>
+        <div class="billing-col-label">Status</div>
+        <div><span class="pill pill-blue">Ads Live</span></div>
+      </div>
+    </div>
+
+    <!-- Shawn -->
+    <div class="billing-row">
+      <div class="billing-client">
+        <div class="billing-name">Shawn Dua</div>
+        <div class="billing-niche">Skinny Ventures LLC · Skinny.com · Weight Loss</div>
+      </div>
+      <div>
+        <div class="billing-col-label">Paid</div>
+        <div><span class="pill pill-green">✓ $500</span></div>
+        <div class="billing-col-sub">Stripe · Apr 15 · Onboarding</div>
+      </div>
+      <div>
+        <div class="billing-col-label">Deal</div>
+        <div class="billing-col-value">$500 setup + rev %</div>
+        <div class="billing-col-sub">10% d1-7, 5% d8-30</div>
+      </div>
+      <div>
+        <div class="billing-col-label">Next Due</div>
+        <div class="billing-col-value red">Unknown</div>
+        <div class="billing-col-sub">No ads live · No GHL account</div>
+      </div>
+      <div>
+        <div class="billing-col-label">Status</div>
+        <div><span class="pill pill-red">Inactive</span></div>
+      </div>
+    </div>
+
+    <!-- Angel (churned) -->
+    <div class="billing-row" style="opacity:0.5;">
+      <div class="billing-client">
+        <div class="billing-name">Angel Carroll <span style="font-size:11px;color:#475569;">(churned ~May 8)</span></div>
+        <div class="billing-niche">Carroll Aesthetics · 30-Day Trial</div>
+      </div>
+      <div>
+        <div class="billing-col-label">Paid</div>
+        <div><span class="pill pill-gray">$300</span></div>
+        <div class="billing-col-sub">PayPal Pay Later · Apr 20</div>
+      </div>
+      <div>
+        <div class="billing-col-label">Deal</div>
+        <div class="billing-col-value">30-day trial</div>
+        <div class="billing-col-sub">$300 setup non-refundable</div>
+      </div>
+      <div>
+        <div class="billing-col-label">Owed</div>
+        <div class="billing-col-value">$0</div>
+        <div class="billing-col-sub">Cancelled in trial — nothing owed</div>
+      </div>
+      <div>
+        <div class="billing-col-label">Status</div>
+        <div><span class="pill pill-gray">Churned</span></div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ── UPCOMING PAYMENTS ── -->
+  <div class="section-header">
+    <div class="section-title">Upcoming Invoice Schedule</div>
+  </div>
+
+  <div class="upcoming-list">
+    <div class="upcoming-item upcoming-urgent">
+      <div class="upcoming-date">NOW</div>
+      <div class="upcoming-client">Fletcher Munksgard</div>
+      <div class="upcoming-desc">$500 payment failed on Stripe — resend link immediately</div>
+      <div class="upcoming-amount red">$500</div>
+    </div>
+    <div class="upcoming-item upcoming-urgent">
+      <div class="upcoming-date">May 18</div>
+      <div class="upcoming-client">Thania Ramirez</div>
+      <div class="upcoming-desc">Onboarding installment 2/3 — invoice via Stripe</div>
+      <div class="upcoming-amount yellow">$167</div>
+    </div>
+    <div class="upcoming-item">
+      <div class="upcoming-date">Jun 1</div>
+      <div class="upcoming-client">Terri Mignot</div>
+      <div class="upcoming-desc">Onboarding installment 2/3 ($333) + retainer month 1 ($500)</div>
+      <div class="upcoming-amount">$833</div>
+    </div>
+    <div class="upcoming-item">
+      <div class="upcoming-date">Jun 5</div>
+      <div class="upcoming-client">Allaphia Richards</div>
+      <div class="upcoming-desc">Retainer month 1 — 30 days after campaign launch ~May 5</div>
+      <div class="upcoming-amount">$500</div>
+    </div>
+    <div class="upcoming-item">
+      <div class="upcoming-date">Jun 6</div>
+      <div class="upcoming-client">Frank Aguilera</div>
+      <div class="upcoming-desc">Retainer month 2</div>
+      <div class="upcoming-amount">$500</div>
+    </div>
+    <div class="upcoming-item">
+      <div class="upcoming-date">Jun 14</div>
+      <div class="upcoming-client">Fletcher Munksgard</div>
+      <div class="upcoming-desc">Retainer month 2 (assuming payment fixed)</div>
+      <div class="upcoming-amount">$500</div>
+    </div>
+    <div class="upcoming-item">
+      <div class="upcoming-date">Jun 18</div>
+      <div class="upcoming-client">Thania Ramirez</div>
+      <div class="upcoming-desc">Onboarding installment 3/3 (final)</div>
+      <div class="upcoming-amount">$167</div>
+    </div>
+    <div class="upcoming-item">
+      <div class="upcoming-date">Jul 1</div>
+      <div class="upcoming-client">Terri Mignot</div>
+      <div class="upcoming-desc">Onboarding installment 3/3 ($333) + retainer month 2 ($500)</div>
+      <div class="upcoming-amount">$833</div>
+    </div>
+  </div>
+
+  <!-- ── STALE CONTRACTS ── -->
+  <div class="section-header">
+    <div class="section-title">Unsigned Contracts — Going Stale</div>
+    <span class="section-badge pill pill-red">4 critical</span>
+  </div>
+  <div class="contracts-list">
+    <div class="contract-item">
+      <div class="contract-days days-critical">28d</div>
+      <div class="contract-info">
+        <div class="contract-name">Doyinsola Abikoye</div>
+        <div class="contract-biz">Sent Apr 17 — no business name on file</div>
+      </div>
+      <span class="pill pill-red">Critical</span>
+    </div>
+    <div class="contract-item">
+      <div class="contract-days days-critical">27d</div>
+      <div class="contract-info">
+        <div class="contract-name">Emily Anderson</div>
+        <div class="contract-biz">Renew Chiropractic · Sent Apr 18</div>
+      </div>
+      <span class="pill pill-red">Critical</span>
+    </div>
+    <div class="contract-item">
+      <div class="contract-days days-critical">24d</div>
+      <div class="contract-info">
+        <div class="contract-name">Brittany Baumer</div>
+        <div class="contract-biz">The Skin & Body Spa · Sent Apr 21</div>
+      </div>
+      <span class="pill pill-red">Critical</span>
+    </div>
+    <div class="contract-item">
+      <div class="contract-days days-critical">23d</div>
+      <div class="contract-info">
+        <div class="contract-name">Andre F</div>
+        <div class="contract-biz">Clear Cost Telehealth · Sent Apr 22</div>
+      </div>
+      <span class="pill pill-red">Critical</span>
+    </div>
+    <div class="contract-item">
+      <div class="contract-days days-warn">10d</div>
+      <div class="contract-info">
+        <div class="contract-name">Nayson Rouhipour</div>
+        <div class="contract-biz">Glendale's Urgent Care · Sent May 5</div>
+      </div>
+      <span class="pill pill-yellow">Warming</span>
+    </div>
+    <div class="contract-item">
+      <div class="contract-days days-warn">8d</div>
+      <div class="contract-info">
+        <div class="contract-name">Nnenna Obioha</div>
+        <div class="contract-biz">Sent May 7 — marked Lost in GHL but contract was sent after</div>
+      </div>
+      <span class="pill pill-yellow">Conflicted</span>
+    </div>
+    <div class="contract-item">
+      <div class="contract-days" style="color:#64748b;">2d</div>
+      <div class="contract-info">
+        <div class="contract-name">Yahaira Manon</div>
+        <div class="contract-biz">Sent May 13 — 2 ad images in Drive folder</div>
+      </div>
+      <span class="pill pill-gray">Recent</span>
+    </div>
+  </div>
+
+  <!-- ── CLIENT PIPELINE ── -->
+  <div class="section-header">
+    <div class="section-title">Client Lead Pipelines</div>
+    <span class="section-badge pill pill-red">87% stuck</span>
+  </div>
+
+  <div class="client-grid">
+
+    <div class="client-card" id="card-terri">
+      <div class="client-header">
+        <div>
+          <div class="client-name">Terri — Get Body Sculpted</div>
+          <div class="client-niche">Body Sculpting · Tucker, GA</div>
+        </div>
+        <span class="pill pill-blue">Ads Live</span>
+      </div>
+      <div class="client-body">
+        <div class="funnel">
+          <div class="funnel-row">
+            <div class="funnel-label">New Lead</div>
+            <div class="funnel-bar-wrap"><div class="funnel-bar bar-new" id="terri-bar-new" style="width:87%"></div></div>
+            <div class="funnel-count" id="terri-new">48</div>
+          </div>
+          <div class="funnel-row">
+            <div class="funnel-label">Hot Lead</div>
+            <div class="funnel-bar-wrap"><div class="funnel-bar bar-hot" id="terri-bar-hot" style="width:0%"></div></div>
+            <div class="funnel-count" id="terri-hot">0</div>
+          </div>
+          <div class="funnel-row">
+            <div class="funnel-label">New Booking</div>
+            <div class="funnel-bar-wrap"><div class="funnel-bar bar-booked" id="terri-bar-booked" style="width:4%"></div></div>
+            <div class="funnel-count" id="terri-booked">2</div>
+          </div>
+          <div class="funnel-row">
+            <div class="funnel-label">Sale</div>
+            <div class="funnel-bar-wrap"><div class="funnel-bar bar-sale" id="terri-bar-sale" style="width:0%"></div></div>
+            <div class="funnel-count" id="terri-sale">0</div>
+          </div>
+        </div>
+      </div>
+      <div class="client-footer">
+        <div class="client-meta"><strong id="terri-total">55</strong> total</div>
+        <div class="client-meta"><strong>9</strong> wf — all draft</div>
+        <div class="client-meta"><strong>$833</strong> due Jun 1</div>
+      </div>
+    </div>
+
+    <div class="client-card" id="card-allaphia">
+      <div class="client-header">
+        <div>
+          <div class="client-name">Allaphia — Paradise Healing</div>
+          <div class="client-niche">Healing & Wellness · Boston, MA</div>
+        </div>
+        <span class="pill pill-blue">Ads Live</span>
+      </div>
+      <div class="client-body">
+        <div class="funnel">
+          <div class="funnel-row">
+            <div class="funnel-label">New Lead</div>
+            <div class="funnel-bar-wrap"><div class="funnel-bar bar-new" id="allaphia-bar-new" style="width:100%"></div></div>
+            <div class="funnel-count" id="allaphia-new">11</div>
+          </div>
+          <div class="funnel-row">
+            <div class="funnel-label">Hot Lead</div>
+            <div class="funnel-bar-wrap"><div class="funnel-bar bar-hot" id="allaphia-bar-hot" style="width:0%"></div></div>
+            <div class="funnel-count" id="allaphia-hot">0</div>
+          </div>
+          <div class="funnel-row">
+            <div class="funnel-label">Scheduled</div>
+            <div class="funnel-bar-wrap"><div class="funnel-bar bar-booked" id="allaphia-bar-booked" style="width:0%"></div></div>
+            <div class="funnel-count" id="allaphia-booked">0</div>
+          </div>
+          <div class="funnel-row">
+            <div class="funnel-label">Sale</div>
+            <div class="funnel-bar-wrap"><div class="funnel-bar bar-sale" id="allaphia-bar-sale" style="width:0%"></div></div>
+            <div class="funnel-count" id="allaphia-sale">0</div>
+          </div>
+        </div>
+      </div>
+      <div class="client-footer">
+        <div class="client-meta"><strong id="allaphia-total">12</strong> total</div>
+        <div class="client-meta"><strong>7</strong> wf — all draft</div>
+        <div class="client-meta"><strong>$500</strong> due Jun 5</div>
+      </div>
+    </div>
+
+    <div class="client-card" id="card-thania">
+      <div class="client-header">
+        <div>
+          <div class="client-name">Thania — Tiali Beauty Lounge</div>
+          <div class="client-niche">Beauty / Med-Spa · Warwick, RI</div>
+        </div>
+        <span class="pill pill-blue">Ads Live</span>
+      </div>
+      <div class="client-body">
+        <div class="funnel">
+          <div class="funnel-row">
+            <div class="funnel-label">New Lead</div>
+            <div class="funnel-bar-wrap"><div class="funnel-bar bar-new" id="thania-bar-new" style="width:86%"></div></div>
+            <div class="funnel-count" id="thania-new">6</div>
+          </div>
+          <div class="funnel-row">
+            <div class="funnel-label">Hot Lead</div>
+            <div class="funnel-bar-wrap"><div class="funnel-bar bar-hot" id="thania-bar-hot" style="width:14%"></div></div>
+            <div class="funnel-count" id="thania-hot">1</div>
+          </div>
+          <div class="funnel-row">
+            <div class="funnel-label">New Booking</div>
+            <div class="funnel-bar-wrap"><div class="funnel-bar bar-booked" id="thania-bar-booked" style="width:14%"></div></div>
+            <div class="funnel-count" id="thania-booked">1</div>
+          </div>
+          <div class="funnel-row">
+            <div class="funnel-label">Sale</div>
+            <div class="funnel-bar-wrap"><div class="funnel-bar bar-sale" id="thania-bar-sale" style="width:0%"></div></div>
+            <div class="funnel-count" id="thania-sale">0</div>
+          </div>
+        </div>
+      </div>
+      <div class="client-footer">
+        <div class="client-meta"><strong id="thania-total">7</strong> total</div>
+        <div class="client-meta"><strong>7</strong> wf — all draft</div>
+        <div class="client-meta red"><strong>$167</strong> due May 18</div>
+      </div>
+    </div>
+
+    <div class="client-card" id="card-aguilera">
+      <div class="client-header">
+        <div>
+          <div class="client-name">Aguilera Health & Wellness</div>
+          <div class="client-niche">Chiropractic · Bakersfield, CA</div>
+        </div>
+        <span class="pill pill-yellow">Setting Up</span>
+      </div>
+      <div class="client-body">
+        <div class="funnel">
+          <div class="funnel-row">
+            <div class="funnel-label">New Lead</div>
+            <div class="funnel-bar-wrap"><div class="funnel-bar bar-new" id="aguilera-bar-new" style="width:100%"></div></div>
+            <div class="funnel-count" id="aguilera-new">1</div>
+          </div>
+          <div class="funnel-row">
+            <div class="funnel-label">Hot Lead</div>
+            <div class="funnel-bar-wrap"><div class="funnel-bar bar-hot" id="aguilera-bar-hot" style="width:0%"></div></div>
+            <div class="funnel-count" id="aguilera-hot">0</div>
+          </div>
+          <div class="funnel-row">
+            <div class="funnel-label">New Booking</div>
+            <div class="funnel-bar-wrap"><div class="funnel-bar bar-booked" id="aguilera-bar-booked" style="width:0%"></div></div>
+            <div class="funnel-count" id="aguilera-booked">0</div>
+          </div>
+          <div class="funnel-row">
+            <div class="funnel-label">Sale</div>
+            <div class="funnel-bar-wrap"><div class="funnel-bar bar-sale" id="aguilera-bar-sale" style="width:0%"></div></div>
+            <div class="funnel-count" id="aguilera-sale">0</div>
+          </div>
+        </div>
+      </div>
+      <div class="client-footer">
+        <div class="client-meta"><strong id="aguilera-total">1</strong> test lead</div>
+        <div class="client-meta"><strong>bookednow.app</strong> live</div>
+        <div class="client-meta"><strong>$500</strong> due Jun 6</div>
+      </div>
+    </div>
+
+    <div class="client-card" style="opacity:0.5;">
+      <div class="client-header">
+        <div>
+          <div class="client-name">Fletcher — Dane Functional Health</div>
+          <div class="client-niche">GLP-1, Functional Medicine · Signed May 14</div>
+        </div>
+        <span class="pill pill-red">Unpaid</span>
+      </div>
+      <div class="client-body">
+        <div style="font-size:12px; color:#64748b; padding: 8px 0;">No GHL sub-account created yet. Work cannot start until $500 payment clears.</div>
+      </div>
+      <div class="client-footer">
+        <div class="client-meta red"><strong>$500 payment failed on Stripe</strong></div>
+      </div>
+    </div>
+
+    <div class="client-card" style="opacity:0.4;">
+      <div class="client-header">
+        <div>
+          <div class="client-name">Glendale's Urgent Care</div>
+          <div class="client-niche">Urgent Care · Glendale, CA</div>
+        </div>
+        <span class="pill pill-gray">Not Started</span>
+      </div>
+      <div class="client-body">
+        <div style="font-size:12px; color:#64748b; padding:8px 0;">Contract sent May 5, not yet signed (10 days). Pipeline configured. No ads started.</div>
+      </div>
+      <div class="client-footer">
+        <div class="client-meta">Awaiting contract signature</div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ── WORKFLOW STATUS ── -->
+  <div class="section-header">
+    <div class="section-title">Workflow Status — All Accounts</div>
+    <span class="section-badge pill pill-red">20/24 in draft</span>
+  </div>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Workflow</th>
+          <th>Terri</th>
+          <th>Allaphia</th>
+          <th>Thania</th>
+          <th>Aguilera</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="wf-name">Survey/Form → Opportunity</td>
+          <td class="wf-live">● LIVE</td>
+          <td class="wf-live">● LIVE</td>
+          <td class="wf-live">● LIVE</td>
+          <td class="wf-live">● LIVE</td>
+        </tr>
+        <tr>
+          <td class="wf-name">1. New Lead Nurture — Fast 5 ⚡</td>
+          <td class="wf-draft">○ DRAFT</td>
+          <td class="wf-draft">○ DRAFT</td>
+          <td class="wf-draft">○ DRAFT</td>
+          <td class="wf-draft">○ DRAFT</td>
+        </tr>
+        <tr>
+          <td class="wf-name">2. Appointment Confirmation + Reminders</td>
+          <td class="wf-draft">○ DRAFT</td>
+          <td class="wf-draft">○ DRAFT</td>
+          <td class="wf-draft">○ DRAFT</td>
+          <td class="wf-draft">○ DRAFT</td>
+        </tr>
+        <tr>
+          <td class="wf-name">3. No Show Follow-Up</td>
+          <td class="wf-draft">○ DRAFT</td>
+          <td class="wf-draft">○ DRAFT</td>
+          <td class="wf-draft">○ DRAFT</td>
+          <td class="wf-draft">○ DRAFT</td>
+        </tr>
+        <tr>
+          <td class="wf-name">4. New Sale — Review Request</td>
+          <td class="wf-draft">○ DRAFT</td>
+          <td class="wf-draft">○ DRAFT</td>
+          <td class="wf-draft">○ DRAFT</td>
+          <td class="wf-draft">○ DRAFT</td>
+        </tr>
+        <tr>
+          <td class="wf-name">5. Long-Term Nurture</td>
+          <td class="wf-draft">○ DRAFT</td>
+          <td class="wf-draft">○ DRAFT</td>
+          <td class="wf-draft">○ DRAFT</td>
+          <td class="wf-draft">○ DRAFT</td>
+        </tr>
+        <tr>
+          <td class="wf-name">6. Stale Lead Re-Engagement</td>
+          <td class="wf-draft">○ DRAFT</td>
+          <td class="wf-draft">○ DRAFT</td>
+          <td class="wf-draft">○ DRAFT</td>
+          <td class="wf-draft">○ DRAFT</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ── AGENCY PIPELINE ── -->
+  <div class="section-header">
+    <div class="section-title">Your Agency Sales Pipeline</div>
+  </div>
+
+  <div style="background:#111623; border:1px solid #1a2035; border-radius:10px; padding:20px; margin-bottom:28px;">
+    <div class="pipeline-stats">
+      <div class="pipeline-stat">
+        <div class="pipeline-num" style="color:#10b981;">17</div>
+        <div class="pipeline-label">SC Upcoming<br>🔥 Hot</div>
+      </div>
+      <div class="pipeline-stat">
+        <div class="pipeline-num" style="color:#6366f1;">11</div>
+        <div class="pipeline-label">DC Upcoming</div>
+      </div>
+      <div class="pipeline-stat">
+        <div class="pipeline-num" style="color:#f59e0b;">7</div>
+        <div class="pipeline-label">DC No-Show<br>Recover</div>
+      </div>
+      <div class="pipeline-stat">
+        <div class="pipeline-num" style="color:#34d399;">6</div>
+        <div class="pipeline-label">Won<br>(Clients)</div>
+      </div>
+      <div class="pipeline-stat">
+        <div class="pipeline-num" style="color:#f87171;">6</div>
+        <div class="pipeline-label">Lost</div>
+      </div>
+      <div class="pipeline-stat">
+        <div class="pipeline-num" style="color:#475569;">55</div>
+        <div class="pipeline-label">Total in<br>Pipeline</div>
+      </div>
+    </div>
+
+    <div class="two-col">
+      <div>
+        <div class="prospect-section">
+          <div class="prospect-label" style="color:#10b981;">SC Upcoming — 17 Hot Prospects</div>
+          <div class="prospect-list">Kira Watley · Natasha Swart · Yahaira Manon · Shamika Brown · Fletcher Munksgard · Nayson R · Cristina P · AJ Belcastro · Leonid Reznikov · Trang Ca Laube · Consuela Whitfield · Andre F · Brittany Baumer · Emily Anderson · Doyin Abi · Georges Oswald · Donna Rhodes</div>
+        </div>
+      </div>
+      <div>
+        <div class="prospect-section">
+          <div class="prospect-label" style="color:#f59e0b;">DC No-Shows — Need Recovery</div>
+          <div class="prospect-list">Deon Milardo · Ric Lontoc · Josie Desmarais · Lindsey Jiang · Mercy Canis · Esther Agbo · Tonnesha Kidd</div>
+        </div>
+        <div class="prospect-section" style="margin-top:14px;">
+          <div class="prospect-label" style="color:#34d399;">Active Clients (Won)</div>
+          <div class="prospect-list">Fletcher ($0 — unpaid) · Frank ($500) · Terri ($333) · Allaphia ($1,000) · Thania ($167) · Shawn ($500) · Angel (churned)</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="pipeline-note">
+      <strong>Note:</strong> Nnenna Obioha is marked Lost in GHL but a contract was sent May 7 — conflicting status needs to be resolved. Angel Carroll should be moved from Won to Lost/Churned in GHL.
+    </div>
+  </div>
+
+  <!-- ── ACTION PLAN ── -->
+  <div class="section-header">
+    <div class="section-title">Action Plan — Prioritised</div>
+  </div>
+
+  <div class="action-list">
+    <div class="action-item">
+      <div class="action-num num-red">1</div>
+      <div class="action-text">
+        <div class="action-title">Resend payment link to Fletcher Munksgard <span class="tag-urgent">Do Now</span></div>
+        <div class="action-desc">His $500 Stripe payment failed — no card on file. In Stripe, go to his customer page (cus_UVQcb88jp1OQqD), resend the payment link or create a new invoice. No GHL setup until this clears. Email: fmtothethird@gmail.com</div>
+      </div>
+    </div>
+    <div class="action-item">
+      <div class="action-num num-red">2</div>
+      <div class="action-text">
+        <div class="action-title">Publish "New Lead Nurture (Fast 5)" in all 4 accounts <span class="tag-urgent">Do Today</span></div>
+        <div class="action-desc">Automations → Workflows → Fast 5 → Publish. Fires within 5 minutes of form submit. Every hour in draft costs you leads going permanently cold. Do Terri first (48 stale leads).</div>
+      </div>
+    </div>
+    <div class="action-item">
+      <div class="action-num num-red">3</div>
+      <div class="action-text">
+        <div class="action-title">Publish "Appointment Confirmation + Reminders" in all 4 accounts <span class="tag-urgent">Do Today</span></div>
+        <div class="action-desc">Any leads that do book get zero confirmation without this. High no-show rate is guaranteed. Publish immediately after Fast 5.</div>
+      </div>
+    </div>
+    <div class="action-item">
+      <div class="action-num num-yellow">4</div>
+      <div class="action-text">
+        <div class="action-title">Invoice Thania $167 by May 18 <span class="tag-soon">3 Days</span></div>
+        <div class="action-desc">Second of 3 onboarding installments. Also set up bi-weekly performance invoicing (10% of attributed revenue) — this has never been done yet and is owed per contract.</div>
+      </div>
+    </div>
+    <div class="action-item">
+      <div class="action-num num-yellow">5</div>
+      <div class="action-text">
+        <div class="action-title">Manually re-engage 65 stale leads <span class="tag-soon">This Week</span></div>
+        <div class="action-desc">Terri: 48 leads, Allaphia: 11 leads, Thania: 6 leads. Send a personal text from each client's GHL number: "Hey [name], still interested in [offer]?" Move replies to Hot Lead.</div>
+      </div>
+    </div>
+    <div class="action-item">
+      <div class="action-num num-blue">6</div>
+      <div class="action-text">
+        <div class="action-title">Create Fletcher's GHL sub-account (after payment clears)</div>
+        <div class="action-desc">Signed May 14. Focus: GLP-1, functional medicine, peptide therapy. Install Claude Private Integration in his sub-account once created. Publish workflows before ads go live.</div>
+      </div>
+    </div>
+    <div class="action-item">
+      <div class="action-num num-blue">7</div>
+      <div class="action-text">
+        <div class="action-title">Chase 4 stale unsigned contracts</div>
+        <div class="action-desc">Doyinsola (28d), Emily Anderson (27d), Brittany Baumer (24d), Andre F (23d) — all going cold. Send a personal follow-up. These were all SC: Upcoming in your pipeline.</div>
+      </div>
+    </div>
+    <div class="action-item">
+      <div class="action-num num-blue">8</div>
+      <div class="action-text">
+        <div class="action-title">Clarify Shawn Dua (Skinny.com) status</div>
+        <div class="action-desc">$500 onboarding paid Apr 15 but no GHL sub-account exists. Performance-based deal — zero campaigns running means zero fees owed both ways. Either activate or formally close.</div>
+      </div>
+    </div>
+    <div class="action-item">
+      <div class="action-num num-blue">9</div>
+      <div class="action-text">
+        <div class="action-title">Fix GHL housekeeping</div>
+        <div class="action-desc">Move Angel Carroll from Won → Lost/Churned. Delete duplicate pipeline in Aguilera. Swap Thania's Mother's Day creatives (expired May 11). Fix Thania's contract branding (says "BookedJobs").</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+async function loadData() {
+  const btn = document.getElementById('refresh-btn');
+  const lu = document.getElementById('last-updated');
+  btn.disabled = true;
+  btn.textContent = 'Loading…';
+  lu.textContent = 'Refreshing…';
+
+  try {
+    const res = await fetch('/api/dashboard-data');
+    if (!res.ok) throw new Error('API error ' + res.status);
+    const data = await res.json();
+
+    // Header timestamp
+    const ts = new Date(data.generatedAt);
+    lu.textContent = 'Updated ' + ts.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+    const s = data.summary;
+
+    // Summary stats
+    document.getElementById('stat-collected').textContent =
+      '$' + (s.totalCollected || 0).toLocaleString('en-US', { maximumFractionDigits: 0 });
+    document.getElementById('stat-total-leads').textContent = s.totalLeads ?? '—';
+    document.getElementById('stat-leads-sub').textContent = 'Across active accounts';
+    document.getElementById('stat-stuck').textContent = s.stuckLeads ?? '—';
+    document.getElementById('stat-stuck-sub').textContent =
+      (s.stuckPct ?? 0) + '% — zero follow-up sent';
+
+    // Client funnel cards
+    const CLIENTS = ['terri', 'allaphia', 'thania', 'aguilera'];
+    for (const client of data.clients) {
+      const k = client.key;
+      if (!CLIENTS.includes(k)) continue;
+      const leads = client.leads;
+      if (!leads) continue;
+      const total = leads.total || 1; // avoid div/0
+
+      const set = (id, val) => {
+        const el = document.getElementById(id);
+        if (el) el.textContent = val;
+      };
+      const setBar = (id, pct) => {
+        const el = document.getElementById(id);
+        if (el) el.style.width = pct + '%';
+      };
+
+      const newPct  = Math.round((leads.new  / total) * 100);
+      const hotPct  = Math.round((leads.hot  / total) * 100);
+      const bkdPct  = Math.round((leads.booked / total) * 100);
+      const salePct = Math.round((leads.sale / total) * 100);
+
+      set(`${k}-new`,    leads.new);
+      set(`${k}-hot`,    leads.hot);
+      set(`${k}-booked`, leads.booked);
+      set(`${k}-sale`,   leads.sale);
+      set(`${k}-total`,  leads.total);
+
+      setBar(`${k}-bar-new`,    newPct);
+      setBar(`${k}-bar-hot`,    hotPct);
+      setBar(`${k}-bar-booked`, bkdPct);
+      setBar(`${k}-bar-sale`,   salePct);
+    }
+  } catch (err) {
+    lu.textContent = 'Failed to load — ' + err.message;
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Refresh';
+  }
+}
+
+document.addEventListener('DOMContentLoaded', loadData);
+</script>
+</body>
+</html>
