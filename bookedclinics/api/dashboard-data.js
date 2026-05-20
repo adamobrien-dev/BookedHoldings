@@ -59,9 +59,9 @@ const FLETCHER_STRIPE_ID = 'cus_UVQcb88jp1OQqD';
 const BILLING_CONFIG = [
   { key: 'fletcher', name: 'Fletcher Munksgard', biz: 'Dane Functional Health · GLP-1, Functional Medicine', stripeId: FLETCHER_STRIPE_ID, deal: 'Flat $500/mo', dealSub: 'No onboarding fee', cycleDays: 30, retainerAmount: 500 },
   { key: 'aguilera', name: 'Frank Aguilera', biz: 'Aguilera Health & Wellness · Chiropractic · Bakersfield, CA', stripeId: 'cus_UTCCPxtx3eoza7', deal: 'Flat $500/mo', dealSub: 'Onboarding waived', cycleDays: 30, retainerAmount: 500 },
-  { key: 'terri', name: 'Terri Mignot', biz: 'Get Body Sculpted · Body Contouring · Tucker, GA', stripeId: 'cus_UR9Pr9Dxonz3SN', deal: '$1k setup + $500/mo', dealSub: '3 × $333 installments', cycleDays: 30, retainerAmount: 500 },
+  { key: 'terri', name: 'Terri Mignot', biz: 'Get Body Sculpted · Body Contouring · Tucker, GA', stripeId: 'cus_UR9Pr9Dxonz3SN', deal: '$1k setup + $500/mo', dealSub: '3 × $333 installments', cycleDays: 30, retainerAmount: 500, installments: { total: 3, amount: 333 } },
   { key: 'allaphia', name: 'Allaphia Richards', biz: 'Paradise Healing LLC · Boston, MA', stripeId: 'cus_UOulmSIDAPiGuI', deal: '$1k setup + $500/mo', dealSub: 'Setup fully paid', cycleDays: 30, retainerAmount: 500 },
-  { key: 'thania', name: 'Thania Ramirez', biz: 'Tiali Beauty Lounge · Med-Spa · Warwick, RI', stripeId: 'cus_UMJQDHYQPyci1p', deal: '$500 setup + 10% rev', dealSub: 'Performance only', cycleDays: 30, retainerAmount: null },
+  { key: 'thania', name: 'Thania Ramirez', biz: 'Tiali Beauty Lounge · Med-Spa · Warwick, RI', stripeId: 'cus_UMJQDHYQPyci1p', deal: '$500 setup + 10% rev', dealSub: 'Performance only', cycleDays: 30, retainerAmount: null, installments: { total: 3, amount: 167 } },
 ];
 
 const STALE_CONTRACTS = [
@@ -227,8 +227,9 @@ async function getStripeData() {
   for (const p of payments) {
     const clientKey = stripeIdToKey[p.customer];
     if (!clientKey) continue;
-    if (!perClient[clientKey]) perClient[clientKey] = { lastSucceeded: null, hasFailed: false };
+    if (!perClient[clientKey]) perClient[clientKey] = { lastSucceeded: null, succeededCount: 0, hasFailed: false };
     if (p.status === 'succeeded') {
+      perClient[clientKey].succeededCount++;
       if (!perClient[clientKey].lastSucceeded || p.created > perClient[clientKey].lastSucceeded.created) {
         perClient[clientKey].lastSucceeded = { amountCents: p.amount, created: p.created };
       }
@@ -292,7 +293,7 @@ async function getPaypalData() {
 module.exports = async function handler(req, res) {
   if (req.method !== 'GET') return res.status(405).end();
 
-  res.setHeader('Cache-Control', 's-maxage=300, stale-while-revalidate=60');
+  res.setHeader('Cache-Control', 's-maxage=60, stale-while-revalidate=30');
   res.setHeader('Access-Control-Allow-Origin', '*');
 
   try {
@@ -339,7 +340,13 @@ module.exports = async function handler(req, res) {
             if (paymentStatus === 'failed') { statusLabel = 'Needs Action'; statusClass = 'pill-red'; }
             else if (cd?.workflows?.fast5 === 'LIVE') { statusLabel = 'Ads Live'; statusClass = 'pill-blue'; }
             else if (cd?.status === 'setup' || cd?.status === 'pending') { statusLabel = 'Setting Up'; statusClass = 'pill-yellow'; }
-            return { key: bc.key, name: bc.name, biz: bc.biz, deal: bc.deal, dealSub: bc.dealSub, retainerAmount: bc.retainerAmount, lastPaidAmountCents, lastPaidDate, nextDueDate, paymentStatus, statusLabel, statusClass };
+            // Installment progress: count succeeded payments against total installments
+            let installmentPaid = null, installmentTotal = null;
+            if (bc.installments && stripe?.succeededCount) {
+              installmentPaid  = Math.min(stripe.succeededCount, bc.installments.total);
+              installmentTotal = bc.installments.total;
+            }
+            return { key: bc.key, name: bc.name, biz: bc.biz, deal: bc.deal, dealSub: bc.dealSub, retainerAmount: bc.retainerAmount, lastPaidAmountCents, lastPaidDate, nextDueDate, paymentStatus, statusLabel, statusClass, installmentPaid, installmentTotal };
           });
         })(),
         staleContracts: (() => {

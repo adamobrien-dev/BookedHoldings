@@ -865,8 +865,10 @@ function renderBillingRows(rows) {
       paidSub  = 'Stripe — payment failed';
     } else if (r.lastPaidAmountCents) {
       const warn = r.paymentStatus === 'warn' ? ' · ⚠ recent failure' : '';
+      const installStr = r.installmentPaid && r.installmentTotal
+        ? ' · Installment ' + r.installmentPaid + '/' + r.installmentTotal : '';
       paidPill = '<span class="pill pill-green">✓ ' + fmtAmt(r.lastPaidAmountCents) + '</span>';
-      paidSub  = 'Stripe · ' + fmtDate(r.lastPaidDate) + warn;
+      paidSub  = 'Stripe · ' + fmtDate(r.lastPaidDate) + installStr + warn;
     } else {
       paidPill = '<span class="pill pill-gray">—</span>';
       paidSub  = 'No payment on record';
@@ -986,6 +988,7 @@ async function loadData() {
     const ts = new Date(data.generatedAt);
     lu.textContent = 'Updated ' + ts.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
+    _lastLoadTime = Date.now();
     const s = data.summary;
 
     // SC recovery alert
@@ -1293,9 +1296,19 @@ function copyReport() {
   });
 }
 
+let _lastLoadTime = 0;
+
 document.addEventListener('DOMContentLoaded', () => {
   try { initRangePicker(); } catch(e) { console.warn('Range picker init error:', e); }
   loadData();
+
+  // Auto-refresh every 5 minutes
+  setInterval(loadData, 5 * 60 * 1000);
+
+  // Refresh when tab becomes visible after being away (e.g. switching back on mobile)
+  document.addEventListener('visibilitychange', () => {
+    if (!document.hidden && Date.now() - _lastLoadTime > 60 * 1000) loadData();
+  });
 
   document.querySelectorAll('.nav-tab').forEach(tab => {
     tab.addEventListener('click', () => {
