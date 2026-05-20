@@ -4,6 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>BookedClinics — Agency Dashboard</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/themes/dark.css">
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #0a0d14; color: #e2e8f0; min-height: 100vh; }
@@ -19,6 +21,11 @@
   .nav-tab { font-size: 12px; font-weight: 500; color: #64748b; padding: 10px 14px; border-bottom: 2px solid transparent; cursor: pointer; white-space: nowrap; transition: color 0.15s; }
   .nav-tab.active { color: #6366f1; border-bottom-color: #6366f1; }
   .nav-tab:hover { color: #94a3b8; }
+  .tab-section { display: none; }
+  .tab-section.active { display: block; }
+  .range-btn { font-size:11px;color:#64748b;background:none;border:1px solid #1a2035;border-radius:6px;padding:4px 10px;cursor:pointer;transition:all 0.15s; }
+  .range-btn.active { color:#6366f1;border-color:#6366f1; }
+  .range-btn:hover { color:#94a3b8; }
 
   /* ── LAYOUT ── */
   .container { max-width: 1200px; margin: 0 auto; padding: 24px; }
@@ -196,15 +203,17 @@
 </header>
 
 <div class="nav-tabs">
-  <div class="nav-tab active">Overview</div>
-  <div class="nav-tab">Billing</div>
-  <div class="nav-tab">Clients</div>
-  <div class="nav-tab">Pipeline</div>
-  <div class="nav-tab">Actions</div>
+  <div class="nav-tab active" data-tab="overview">Overview</div>
+  <div class="nav-tab" data-tab="billing">Billing</div>
+  <div class="nav-tab" data-tab="clients">Clients</div>
+  <div class="nav-tab" data-tab="pipeline">Pipeline</div>
+  <div class="nav-tab" data-tab="actions">Actions</div>
+  <div class="nav-tab" data-tab="weekly">Weekly Report</div>
 </div>
 
 <div class="container">
 
+<div class="tab-section active" id="tab-overview">
   <!-- ── ALERTS ── -->
   <div class="alerts">
     <div class="alert alert-red">
@@ -226,6 +235,13 @@
       <div class="alert-content">
         <div class="alert-title">All follow-up workflows are in DRAFT across every client account</div>
         <div class="alert-body"><strong>65 of 75 leads (87%) sitting in New Lead with zero outreach sent.</strong> No SMS, no email, nothing. This is the same pattern that caused Angel to churn. Publish Fast 5 in all 4 accounts today.</div>
+      </div>
+    </div>
+    <div class="alert alert-red" id="alert-sc-recovery" style="display:none;">
+      <div class="alert-icon">🚨</div>
+      <div class="alert-content">
+        <div class="alert-title" id="alert-sc-recovery-title">SC: Upcoming contacts with no call booked</div>
+        <div class="alert-body" id="alert-sc-recovery-body"></div>
       </div>
     </div>
   </div>
@@ -254,6 +270,9 @@
     </div>
   </div>
 
+</div><!-- /tab-overview -->
+
+<div class="tab-section" id="tab-billing">
   <!-- ── BILLING STATUS ── -->
   <div class="section-header">
     <div class="section-title">Billing Status — All Clients</div>
@@ -572,6 +591,9 @@
     </div>
   </div>
 
+</div><!-- /tab-billing -->
+
+<div class="tab-section" id="tab-clients">
   <!-- ── CLIENT PIPELINE ── -->
   <div class="section-header">
     <div class="section-title">Client Lead Pipelines</div>
@@ -841,6 +863,9 @@
     </table>
   </div>
 
+</div><!-- /tab-clients -->
+
+<div class="tab-section" id="tab-pipeline">
   <!-- ── AGENCY PIPELINE ── -->
   <div class="section-header">
     <div class="section-title">Your Agency Sales Pipeline</div>
@@ -898,6 +923,9 @@
     </div>
   </div>
 
+</div><!-- /tab-pipeline -->
+
+<div class="tab-section" id="tab-actions">
   <!-- ── ACTION PLAN ── -->
   <div class="section-header">
     <div class="section-title">Action Plan — Prioritised</div>
@@ -969,7 +997,87 @@
     </div>
   </div>
 
-</div>
+</div><!-- /tab-actions -->
+
+<div class="tab-section" id="tab-weekly">
+  <div class="section-header" style="margin-top:24px;">
+    <div class="section-title">Automate Clients — Weekly Revenue Report</div>
+    <button onclick="loadWeeklyReport()" id="weekly-refresh-btn" style="font-size:11px;color:#6366f1;background:none;border:1px solid #6366f1;border-radius:6px;padding:4px 10px;cursor:pointer;">Refresh</button>
+  </div>
+
+  <div style="display:flex;align-items:center;gap:10px;margin-bottom:20px;flex-wrap:wrap;">
+    <div style="display:flex;gap:6px;">
+      <button class="range-btn active" data-days="7" onclick="setRange(7)">Last 7 days</button>
+      <button class="range-btn" data-days="14" onclick="setRange(14)">Last 14 days</button>
+      <button class="range-btn" data-days="30" onclick="setRange(30)">Last 30 days</button>
+    </div>
+    <div style="display:flex;align-items:center;gap:6px;">
+      <input type="text" id="range-picker" placeholder="Pick date range…" readonly style="background:#111623;border:1px solid #1a2035;color:#e2e8f0;padding:4px 10px;border-radius:6px;font-size:11px;width:200px;cursor:pointer;">
+    </div>
+  </div>
+
+  <p style="font-size:12px;color:#64748b;margin-bottom:20px;" id="weekly-period">Loading...</p>
+
+  <div class="stats-grid" style="margin-bottom:20px;">
+    <div class="stat-card">
+      <div class="stat-label">First Calls Booked</div>
+      <div class="stat-value" id="wr-dc-booked">—</div>
+      <div class="stat-sub" id="wr-dc-booked-names" style="font-size:10px;line-height:1.6;"></div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">First Calls Showed</div>
+      <div class="stat-value green" id="wr-dc-showed">—</div>
+      <div class="stat-sub" id="wr-dc-showed-names" style="font-size:10px;line-height:1.6;"></div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">First Calls Cancelled / No-Show</div>
+      <div class="stat-value yellow" id="wr-dc-cancelled">—</div>
+      <div class="stat-sub" id="wr-dc-cancelled-names" style="font-size:10px;line-height:1.6;"></div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">First Calls Qualified</div>
+      <div class="stat-value blue" id="wr-dc-qualified">—</div>
+      <div class="stat-sub" id="wr-dc-qualified-names" style="font-size:10px;line-height:1.6;"></div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Second Calls Booked</div>
+      <div class="stat-value" id="wr-sc-booked">—</div>
+      <div class="stat-sub" id="wr-sc-booked-names" style="font-size:10px;line-height:1.6;"></div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Second Calls Taken</div>
+      <div class="stat-value green" id="wr-sc-taken">—</div>
+      <div class="stat-sub" id="wr-sc-taken-names" style="font-size:10px;line-height:1.6;"></div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Calls Closed</div>
+      <div class="stat-value green" id="wr-closed">—</div>
+      <div class="stat-sub" id="wr-closed-names" style="font-size:10px;line-height:1.6;"></div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">SC Cancelled / No-Show</div>
+      <div class="stat-value yellow" id="wr-sc-cancelled">—</div>
+      <div class="stat-sub" id="wr-sc-cancelled-names" style="font-size:10px;line-height:1.6;"></div>
+    </div>
+  </div>
+
+  <div class="stat-card" style="margin-bottom:24px;">
+    <div class="stat-label">Cash Collected This Week</div>
+    <div class="stat-value green" id="wr-cash">—</div>
+    <div class="stat-sub">Stripe (past 7 days)</div>
+  </div>
+
+  <div class="section-header">
+    <div class="section-title">Copy-Ready Report</div>
+    <button onclick="copyReport()" style="font-size:11px;color:#34d399;background:none;border:1px solid #34d399;border-radius:6px;padding:4px 10px;cursor:pointer;">Copy to Clipboard</button>
+  </div>
+  <div style="background:#111623;border:1px solid #1a2035;border-radius:10px;padding:20px;margin-bottom:28px;">
+    <pre id="wr-copy-text" style="font-family:inherit;font-size:12px;color:#94a3b8;white-space:pre-wrap;line-height:1.8;">Loading report...</pre>
+  </div>
+
+</div><!-- /tab-weekly -->
+
+</div><!-- /container -->
 
 <script>
 async function loadData() {
@@ -989,6 +1097,20 @@ async function loadData() {
     lu.textContent = 'Updated ' + ts.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
     const s = data.summary;
+
+    // SC recovery alert
+    const scR = s.scRecovery;
+    const recoveryEl = document.getElementById('alert-sc-recovery');
+    if (scR && scR.needsRecovery.length > 0) {
+      const names = scR.needsRecovery.map(c => c.name).join(' · ');
+      document.getElementById('alert-sc-recovery-title').textContent =
+        scR.needsRecovery.length + ' contacts in SC: Upcoming with no call actually booked — need recovery';
+      document.getElementById('alert-sc-recovery-body').innerHTML =
+        '<strong>' + names + '</strong><br>These are stuck in the wrong stage. Reschedule or move them to SC: No Show.';
+      recoveryEl.style.display = 'flex';
+    } else if (scR) {
+      recoveryEl.style.display = 'none';
+    }
 
     // Summary stats
     document.getElementById('stat-collected').textContent =
@@ -1041,7 +1163,147 @@ async function loadData() {
   }
 }
 
-document.addEventListener('DOMContentLoaded', loadData);
+let _weeklyDays = 7;
+let _weeklyStart = null;
+let _weeklyEnd = null;
+let _rangePicker = null;
+
+function initRangePicker() {
+  _rangePicker = flatpickr('#range-picker', {
+    mode: 'range',
+    dateFormat: 'Y-m-d',
+    maxDate: 'today',
+    disableMobile: true,
+    onClose(dates) {
+      if (dates.length === 2) {
+        _weeklyStart = dates[0].toISOString().split('T')[0];
+        _weeklyEnd   = dates[1].toISOString().split('T')[0];
+        _weeklyDays  = null;
+        document.querySelectorAll('.range-btn').forEach(b => b.classList.remove('active'));
+        loadWeeklyReport();
+      }
+    },
+  });
+}
+
+function setRange(days) {
+  _weeklyDays  = days;
+  _weeklyStart = null;
+  _weeklyEnd   = null;
+  if (_rangePicker) _rangePicker.clear();
+  document.querySelectorAll('.range-btn').forEach(b => b.classList.toggle('active', parseInt(b.dataset.days) === days));
+  loadWeeklyReport();
+}
+
+async function loadWeeklyReport() {
+  const btn = document.getElementById('weekly-refresh-btn');
+  btn.disabled = true;
+  btn.textContent = 'Loading…';
+
+  let url = '/api/weekly-report';
+  if (_weeklyStart && _weeklyEnd) {
+    url += '?start=' + _weeklyStart + '&end=' + _weeklyEnd;
+  } else {
+    url += '?days=' + (_weeklyDays || 7);
+  }
+
+  try {
+    const res = await fetch(url);
+    if (!res.ok) throw new Error('API error ' + res.status);
+    const d = await res.json();
+    const m = d.metrics;
+
+    const weekStart = new Date(d.weekStart);
+    const weekEnd = new Date(d.generatedAt);
+    const fmt = dt => dt.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+    document.getElementById('weekly-period').textContent =
+      'Week: ' + fmt(weekStart) + ' → ' + fmt(weekEnd) + ' · pulled live from GHL + Stripe';
+
+    const set = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
+    const setNames = (id, names) => {
+      const el = document.getElementById(id);
+      if (el) el.textContent = names.length ? names.join(' · ') : '';
+    };
+
+    set('wr-dc-booked',    m.dcBooked.count);
+    set('wr-dc-showed',    m.dcShowed.count);
+    set('wr-dc-cancelled', m.dcCancelledOrNoShow.count);
+    set('wr-dc-qualified', m.dcQualified.count);
+    set('wr-sc-booked',    m.scBooked.count);
+    set('wr-sc-taken',     m.scTaken.count);
+    set('wr-sc-cancelled', m.scCancelledOrNoShow.count);
+    set('wr-closed',       m.closed.count);
+    set('wr-cash',         '$' + (m.cashCollected || 0).toLocaleString('en-US', { minimumFractionDigits: 0 }));
+
+    setNames('wr-dc-booked-names',    m.dcBooked.names);
+    setNames('wr-dc-showed-names',    m.dcShowed.names);
+    setNames('wr-dc-cancelled-names', m.dcCancelledOrNoShow.names);
+    setNames('wr-dc-qualified-names', m.dcQualified.names);
+    setNames('wr-sc-booked-names',    m.scBooked.names);
+    setNames('wr-sc-taken-names',     m.scTaken.names);
+    setNames('wr-sc-cancelled-names', m.scCancelledOrNoShow.names);
+    setNames('wr-closed-names',       m.closed.names);
+
+    const today = new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+    document.getElementById('wr-copy-text').textContent = [
+      'First and Last Name: Adam O\'Brien',
+      'Business Name: BookedClinics',
+      'Date of Submission: ' + today,
+      '',
+      'First calls booked (last 7 days): ' + m.dcBooked.count,
+      'First calls showed up (last 7 days): ' + m.dcShowed.count,
+      'Cancelled / rescheduled (last 7 days): ' + m.dcCancelledOrNoShow.count,
+      'First calls qualified (last 7 days): ' + m.dcQualified.count,
+      '',
+      'Second calls booked (last 7 days): ' + m.scBooked.count,
+      'Second calls taken (last 7 days): ' + m.scTaken.count,
+      'First or second calls closed (last 7 days): ' + m.closed.count,
+      'Second calls cancelled / rescheduled (last 7 days): ' + m.scCancelledOrNoShow.count,
+      '',
+      'Cash collected (last 7 days): $' + (m.cashCollected || 0).toLocaleString(),
+      '',
+      'Main bottlenecks: [fill in manually]',
+      '',
+      'Followed sales SOP: [Yes / No]',
+      'Sales calls uploaded to Automate Objections: [Yes / No]',
+      '',
+      'Anything to bring up: [fill in manually]',
+    ].join('\n');
+
+  } catch (err) {
+    document.getElementById('wr-copy-text').textContent = 'Failed to load: ' + err.message;
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Refresh';
+  }
+}
+
+function copyReport() {
+  const text = document.getElementById('wr-copy-text').textContent;
+  navigator.clipboard.writeText(text).then(() => {
+    const btn = event.target;
+    btn.textContent = 'Copied!';
+    setTimeout(() => btn.textContent = 'Copy to Clipboard', 2000);
+  });
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  initRangePicker();
+  loadData();
+
+  document.querySelectorAll('.nav-tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.tab-section').forEach(s => s.classList.remove('active'));
+      tab.classList.add('active');
+      document.getElementById('tab-' + tab.dataset.tab).classList.add('active');
+      if (tab.dataset.tab === 'weekly' && !tab.dataset.loaded) {
+        tab.dataset.loaded = '1';
+        loadWeeklyReport();
+      }
+    });
+  });
+});
 </script>
 </body>
 </html>

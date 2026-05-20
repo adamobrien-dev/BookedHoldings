@@ -56,6 +56,33 @@ const CLIENTS = [
 
 const FLETCHER_STRIPE_ID = 'cus_UVQcb88jp1OQqD';
 
+const AGENCY_LOC = 'NKpzhLv8iNQ0c9Ge3QAR';
+const AGENCY_PIT = 'pit-6aacb9ad-ed6a-4266-beb3-e261c49afe6b';
+const SC_UPCOMING_STAGE = '8216ee1d-73eb-4a3e-b53b-8b8cf0942256';
+
+async function getScRecovery() {
+  const oppsData = await ghlFetch(`/opportunities/search?location_id=${AGENCY_LOC}&limit=100`, AGENCY_PIT);
+  const scOpps = (oppsData?.opportunities || []).filter(o => o.pipelineStageId === SC_UPCOMING_STAGE);
+
+  const now = new Date();
+  const results = await Promise.all(scOpps.map(async o => {
+    const apData = await ghlFetch(`/contacts/${o.contact.id}/appointments`, AGENCY_PIT);
+    const future = (apData?.events || []).filter(e => new Date(e.startTime || e.endTime) > now);
+    return {
+      name: o.contact.name,
+      phone: o.contact.phone,
+      contactId: o.contact.id,
+      hasFutureAppt: future.length > 0,
+      nextAppt: future.sort((a, b) => new Date(a.startTime || a.endTime) - new Date(b.startTime || b.endTime))[0]?.startTime || null,
+    };
+  }));
+
+  return {
+    needsRecovery: results.filter(r => !r.hasFutureAppt),
+    confirmed: results.filter(r => r.hasFutureAppt),
+  };
+}
+
 async function ghlFetch(path, pit) {
   try {
     const res = await fetch(`${GHL_API}${path}`, {
@@ -204,10 +231,11 @@ module.exports = async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
 
   try {
-    const [clientsData, stripeData, paypalData] = await Promise.all([
+    const [clientsData, stripeData, paypalData, scRecovery] = await Promise.all([
       Promise.all(CLIENTS.map(getClientData)),
       getStripeData(),
       getPaypalData(),
+      getScRecovery(),
     ]);
 
     const totalLeads = clientsData.reduce((s, c) => s + (c.leads?.total || 0), 0);
@@ -224,6 +252,7 @@ module.exports = async function handler(req, res) {
         totalCollected: stripeCollected + paypalCollected,
         stripeBalanceCents: stripeData?.balanceCents ?? null,
         fletcherFailed: stripeData?.fletcherFailed ?? null,
+        scRecovery: scRecovery ?? null,
       },
       clients: clientsData,
     });
