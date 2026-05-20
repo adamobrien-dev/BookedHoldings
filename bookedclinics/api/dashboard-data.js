@@ -76,16 +76,30 @@ const STALE_CONTRACTS = [
 
 const AGENCY_LOC = 'NKpzhLv8iNQ0c9Ge3QAR';
 const AGENCY_PIT = 'pit-6aacb9ad-ed6a-4266-beb3-e261c49afe6b';
-const SC_UPCOMING_STAGE = '8216ee1d-73eb-4a3e-b53b-8b8cf0942256';
+const AGENCY_STAGES = {
+  DC_UPCOMING:  'd0065956-d245-4c34-8bcd-4414a3a2c408',
+  DC_NOSHOW:    'f7a093f3-799e-4c00-826b-886c41199063',
+  SC_UPCOMING:  '8216ee1d-73eb-4a3e-b53b-8b8cf0942256',
+};
 
-async function getScRecovery() {
+async function getAgencyData() {
   const oppsData = await ghlFetch(`/opportunities/search?location_id=${AGENCY_LOC}&limit=100`, AGENCY_PIT);
-  const scOpps = (oppsData?.opportunities || []).filter(o => o.pipelineStageId === SC_UPCOMING_STAGE);
+  const opps = oppsData?.opportunities || [];
+
+  const scOpps       = opps.filter(o => o.pipelineStageId === AGENCY_STAGES.SC_UPCOMING);
+  const dcUpcoming   = opps.filter(o => o.pipelineStageId === AGENCY_STAGES.DC_UPCOMING);
+  const dcNoShow     = opps.filter(o => o.pipelineStageId === AGENCY_STAGES.DC_NOSHOW);
+  const wonOpps      = opps.filter(o => o.status === 'won');
+  const lostOpps     = opps.filter(o => o.status === 'lost');
+  const names = arr => arr.map(o => o.contact?.name || 'Unknown');
 
   const now = new Date();
-  const results = await Promise.all(scOpps.map(async o => {
+  const scRecovery = await Promise.all(scOpps.map(async o => {
     const apData = await ghlFetch(`/contacts/${o.contact.id}/appointments`, AGENCY_PIT);
-    const future = (apData?.events || []).filter(e => new Date(e.startTime || e.endTime) > now);
+    const future = (apData?.events || []).filter(e => {
+      const t = new Date(e.startTime || e.endTime);
+      return !isNaN(t) && t > now;
+    });
     return {
       name: o.contact.name,
       phone: o.contact.phone,
@@ -96,8 +110,21 @@ async function getScRecovery() {
   }));
 
   return {
-    needsRecovery: results.filter(r => !r.hasFutureAppt),
-    confirmed: results.filter(r => r.hasFutureAppt),
+    pipeline: {
+      scUpcoming: scOpps.length,
+      dcUpcoming: dcUpcoming.length,
+      dcNoShow: dcNoShow.length,
+      won: wonOpps.length,
+      lost: lostOpps.length,
+      total: opps.filter(o => o.status !== 'lost').length,
+      scNames: names(scOpps),
+      dcNoShowNames: names(dcNoShow),
+      wonNames: names(wonOpps),
+    },
+    scRecovery: {
+      needsRecovery: scRecovery.filter(r => !r.hasFutureAppt),
+      confirmed: scRecovery.filter(r => r.hasFutureAppt),
+    },
   };
 }
 
@@ -269,12 +296,13 @@ module.exports = async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
 
   try {
-    const [clientsData, stripeData, paypalData, scRecovery] = await Promise.all([
+    const [clientsData, stripeData, paypalData, agencyData] = await Promise.all([
       Promise.all(CLIENTS.map(getClientData)),
       getStripeData(),
       getPaypalData(),
-      getScRecovery(),
+      getAgencyData(),
     ]);
+    const scRecovery = agencyData?.scRecovery ?? null;
 
     const totalLeads = clientsData.reduce((s, c) => s + (c.leads?.total || 0), 0);
     const stuckLeads = clientsData.reduce((s, c) => s + (c.leads?.new || 0), 0);
@@ -321,6 +349,7 @@ module.exports = async function handler(req, res) {
             daysSinceSent: Math.floor((todayMs - new Date(sc.sentDate).setHours(0, 0, 0, 0)) / 86400000),
           }));
         })(),
+        agencyPipeline: agencyData?.pipeline ?? null,
       },
       clients: clientsData,
     });

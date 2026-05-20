@@ -254,9 +254,9 @@
       <div class="stat-sub">Stripe + PayPal verified</div>
     </div>
     <div class="stat-card">
-      <div class="stat-label">Guaranteed MRR (June)</div>
-      <div class="stat-value blue">~$2,500</div>
-      <div class="stat-sub">+ Thania % performance</div>
+      <div class="stat-label">Guaranteed MRR</div>
+      <div class="stat-value blue" id="stat-mrr">—</div>
+      <div class="stat-sub">Active retainers only</div>
     </div>
     <div class="stat-card">
       <div class="stat-label">Total Leads</div>
@@ -374,7 +374,7 @@
           <div class="client-name">Terri — Get Body Sculpted</div>
           <div class="client-niche">Body Sculpting · Tucker, GA</div>
         </div>
-        <span class="pill pill-blue">Ads Live</span>
+        <span class="pill pill-blue" id="card-status-terri">Ads Live</span>
       </div>
       <div class="client-body">
         <div class="funnel">
@@ -402,8 +402,8 @@
       </div>
       <div class="client-footer">
         <div class="client-meta"><strong id="terri-total">55</strong> total</div>
-        <div class="client-meta"><strong>9</strong> wf — all draft</div>
-        <div class="client-meta"><strong>$833</strong> due Jun 1</div>
+        <div class="client-meta" id="terri-wf-meta">— wf</div>
+        <div class="client-meta" id="terri-due-meta">—</div>
       </div>
     </div>
 
@@ -413,7 +413,7 @@
           <div class="client-name">Allaphia — Paradise Healing</div>
           <div class="client-niche">Healing & Wellness · Boston, MA</div>
         </div>
-        <span class="pill pill-blue">Ads Live</span>
+        <span class="pill pill-blue" id="card-status-allaphia">Ads Live</span>
       </div>
       <div class="client-body">
         <div class="funnel">
@@ -441,8 +441,8 @@
       </div>
       <div class="client-footer">
         <div class="client-meta"><strong id="allaphia-total">12</strong> total</div>
-        <div class="client-meta"><strong>7</strong> wf — all draft</div>
-        <div class="client-meta"><strong>$500</strong> due Jun 5</div>
+        <div class="client-meta" id="allaphia-wf-meta">— wf</div>
+        <div class="client-meta" id="allaphia-due-meta">—</div>
       </div>
     </div>
 
@@ -452,7 +452,7 @@
           <div class="client-name">Thania — Tiali Beauty Lounge</div>
           <div class="client-niche">Beauty / Med-Spa · Warwick, RI</div>
         </div>
-        <span class="pill pill-blue">Ads Live</span>
+        <span class="pill pill-blue" id="card-status-thania">Ads Live</span>
       </div>
       <div class="client-body">
         <div class="funnel">
@@ -480,8 +480,8 @@
       </div>
       <div class="client-footer">
         <div class="client-meta"><strong id="thania-total">7</strong> total</div>
-        <div class="client-meta"><strong>7</strong> wf — all draft</div>
-        <div class="client-meta red"><strong>$167</strong> due May 18</div>
+        <div class="client-meta" id="thania-wf-meta">— wf</div>
+        <div class="client-meta" id="thania-due-meta">—</div>
       </div>
     </div>
 
@@ -491,7 +491,7 @@
           <div class="client-name">Aguilera Health & Wellness</div>
           <div class="client-niche">Chiropractic · Bakersfield, CA</div>
         </div>
-        <span class="pill pill-yellow">Setting Up</span>
+        <span class="pill pill-yellow" id="card-status-aguilera">Setting Up</span>
       </div>
       <div class="client-body">
         <div class="funnel">
@@ -518,25 +518,25 @@
         </div>
       </div>
       <div class="client-footer">
-        <div class="client-meta"><strong id="aguilera-total">1</strong> test lead</div>
-        <div class="client-meta"><strong>bookednow.app</strong> live</div>
-        <div class="client-meta"><strong>$500</strong> due Jun 6</div>
+        <div class="client-meta"><strong id="aguilera-total">1</strong> total</div>
+        <div class="client-meta" id="aguilera-wf-meta">— wf</div>
+        <div class="client-meta" id="aguilera-due-meta">—</div>
       </div>
     </div>
 
-    <div class="client-card" style="opacity:0.5;">
+    <div class="client-card" id="card-fletcher" style="opacity:0.5;">
       <div class="client-header">
         <div>
           <div class="client-name">Fletcher — Dane Functional Health</div>
           <div class="client-niche">GLP-1, Functional Medicine · Signed May 14</div>
         </div>
-        <span class="pill pill-red">Unpaid</span>
+        <span class="pill pill-red" id="card-status-fletcher">Unpaid</span>
       </div>
       <div class="client-body">
-        <div style="font-size:12px; color:#64748b; padding: 8px 0;">No GHL sub-account created yet. Work cannot start until $500 payment clears.</div>
+        <div id="fletcher-note" style="font-size:12px; color:#64748b; padding: 8px 0;">No GHL sub-account created yet. Work cannot start until $500 payment clears.</div>
       </div>
       <div class="client-footer">
-        <div class="client-meta red"><strong>$500 payment failed on Stripe</strong></div>
+        <div class="client-meta" id="fletcher-footer-meta"><span class="red">$500 payment failed on Stripe</span></div>
       </div>
     </div>
 
@@ -549,7 +549,7 @@
         <span class="pill pill-gray">Not Started</span>
       </div>
       <div class="client-body">
-        <div style="font-size:12px; color:#64748b; padding:8px 0;">Contract sent May 5, not yet signed (10 days). Pipeline configured. No ads started.</div>
+        <div id="glendale-note" style="font-size:12px; color:#64748b; padding:8px 0;">Contract sent May 5, not yet signed. Pipeline configured. No ads started.</div>
       </div>
       <div class="client-footer">
         <div class="client-meta">Awaiting contract signature</div>
@@ -561,7 +561,7 @@
   <!-- ── WORKFLOW STATUS ── -->
   <div class="section-header">
     <div class="section-title">Workflow Status — All Accounts</div>
-    <span class="section-badge pill pill-red">20/24 in draft</span>
+    <span class="section-badge pill pill-red" id="wf-badge">— in draft</span>
   </div>
 
   <div class="table-wrap">
@@ -585,45 +585,45 @@
         </tr>
         <tr>
           <td class="wf-name">1. New Lead Nurture — Fast 5 ⚡</td>
-          <td class="wf-draft">○ DRAFT</td>
-          <td class="wf-draft">○ DRAFT</td>
-          <td class="wf-draft">○ DRAFT</td>
-          <td class="wf-draft">○ DRAFT</td>
+          <td class="wf-draft" id="wf-terri-fast5">○ DRAFT</td>
+          <td class="wf-draft" id="wf-allaphia-fast5">○ DRAFT</td>
+          <td class="wf-draft" id="wf-thania-fast5">○ DRAFT</td>
+          <td class="wf-draft" id="wf-aguilera-fast5">○ DRAFT</td>
         </tr>
         <tr>
           <td class="wf-name">2. Appointment Confirmation + Reminders</td>
-          <td class="wf-draft">○ DRAFT</td>
-          <td class="wf-draft">○ DRAFT</td>
-          <td class="wf-draft">○ DRAFT</td>
-          <td class="wf-draft">○ DRAFT</td>
+          <td class="wf-draft" id="wf-terri-confirmation">○ DRAFT</td>
+          <td class="wf-draft" id="wf-allaphia-confirmation">○ DRAFT</td>
+          <td class="wf-draft" id="wf-thania-confirmation">○ DRAFT</td>
+          <td class="wf-draft" id="wf-aguilera-confirmation">○ DRAFT</td>
         </tr>
         <tr>
           <td class="wf-name">3. No Show Follow-Up</td>
-          <td class="wf-draft">○ DRAFT</td>
-          <td class="wf-draft">○ DRAFT</td>
-          <td class="wf-draft">○ DRAFT</td>
-          <td class="wf-draft">○ DRAFT</td>
+          <td class="wf-draft" id="wf-terri-noshow">○ DRAFT</td>
+          <td class="wf-draft" id="wf-allaphia-noshow">○ DRAFT</td>
+          <td class="wf-draft" id="wf-thania-noshow">○ DRAFT</td>
+          <td class="wf-draft" id="wf-aguilera-noshow">○ DRAFT</td>
         </tr>
         <tr>
           <td class="wf-name">4. New Sale — Review Request</td>
-          <td class="wf-draft">○ DRAFT</td>
-          <td class="wf-draft">○ DRAFT</td>
-          <td class="wf-draft">○ DRAFT</td>
-          <td class="wf-draft">○ DRAFT</td>
+          <td class="wf-draft" id="wf-terri-review">○ DRAFT</td>
+          <td class="wf-draft" id="wf-allaphia-review">○ DRAFT</td>
+          <td class="wf-draft" id="wf-thania-review">○ DRAFT</td>
+          <td class="wf-draft" id="wf-aguilera-review">○ DRAFT</td>
         </tr>
         <tr>
           <td class="wf-name">5. Long-Term Nurture</td>
-          <td class="wf-draft">○ DRAFT</td>
-          <td class="wf-draft">○ DRAFT</td>
-          <td class="wf-draft">○ DRAFT</td>
-          <td class="wf-draft">○ DRAFT</td>
+          <td class="wf-draft" id="wf-terri-nurture">○ DRAFT</td>
+          <td class="wf-draft" id="wf-allaphia-nurture">○ DRAFT</td>
+          <td class="wf-draft" id="wf-thania-nurture">○ DRAFT</td>
+          <td class="wf-draft" id="wf-aguilera-nurture">○ DRAFT</td>
         </tr>
         <tr>
           <td class="wf-name">6. Stale Lead Re-Engagement</td>
-          <td class="wf-draft">○ DRAFT</td>
-          <td class="wf-draft">○ DRAFT</td>
-          <td class="wf-draft">○ DRAFT</td>
-          <td class="wf-draft">○ DRAFT</td>
+          <td class="wf-draft" id="wf-terri-stale">○ DRAFT</td>
+          <td class="wf-draft" id="wf-allaphia-stale">○ DRAFT</td>
+          <td class="wf-draft" id="wf-thania-stale">○ DRAFT</td>
+          <td class="wf-draft" id="wf-aguilera-stale">○ DRAFT</td>
         </tr>
       </tbody>
     </table>
@@ -640,27 +640,27 @@
   <div style="background:#111623; border:1px solid #1a2035; border-radius:10px; padding:20px; margin-bottom:28px;">
     <div class="pipeline-stats">
       <div class="pipeline-stat">
-        <div class="pipeline-num" style="color:#10b981;">17</div>
+        <div class="pipeline-num" id="pipe-sc-upcoming" style="color:#10b981;">—</div>
         <div class="pipeline-label">SC Upcoming<br>🔥 Hot</div>
       </div>
       <div class="pipeline-stat">
-        <div class="pipeline-num" style="color:#6366f1;">11</div>
+        <div class="pipeline-num" id="pipe-dc-upcoming" style="color:#6366f1;">—</div>
         <div class="pipeline-label">DC Upcoming</div>
       </div>
       <div class="pipeline-stat">
-        <div class="pipeline-num" style="color:#f59e0b;">7</div>
+        <div class="pipeline-num" id="pipe-dc-noshow" style="color:#f59e0b;">—</div>
         <div class="pipeline-label">DC No-Show<br>Recover</div>
       </div>
       <div class="pipeline-stat">
-        <div class="pipeline-num" style="color:#34d399;">6</div>
+        <div class="pipeline-num" id="pipe-won" style="color:#34d399;">—</div>
         <div class="pipeline-label">Won<br>(Clients)</div>
       </div>
       <div class="pipeline-stat">
-        <div class="pipeline-num" style="color:#f87171;">6</div>
+        <div class="pipeline-num" id="pipe-lost" style="color:#f87171;">—</div>
         <div class="pipeline-label">Lost</div>
       </div>
       <div class="pipeline-stat">
-        <div class="pipeline-num" style="color:#475569;">55</div>
+        <div class="pipeline-num" id="pipe-total" style="color:#475569;">—</div>
         <div class="pipeline-label">Total in<br>Pipeline</div>
       </div>
     </div>
@@ -668,18 +668,18 @@
     <div class="two-col">
       <div>
         <div class="prospect-section">
-          <div class="prospect-label" style="color:#10b981;">SC Upcoming — 17 Hot Prospects</div>
-          <div class="prospect-list">Kira Watley · Natasha Swart · Yahaira Manon · Shamika Brown · Fletcher Munksgard · Nayson R · Cristina P · AJ Belcastro · Leonid Reznikov · Trang Ca Laube · Consuela Whitfield · Andre F · Brittany Baumer · Emily Anderson · Doyin Abi · Georges Oswald · Donna Rhodes</div>
+          <div class="prospect-label" id="pipe-sc-label" style="color:#10b981;">SC Upcoming</div>
+          <div class="prospect-list" id="pipe-sc-names">Loading...</div>
         </div>
       </div>
       <div>
         <div class="prospect-section">
-          <div class="prospect-label" style="color:#f59e0b;">DC No-Shows — Need Recovery</div>
-          <div class="prospect-list">Deon Milardo · Ric Lontoc · Josie Desmarais · Lindsey Jiang · Mercy Canis · Esther Agbo · Tonnesha Kidd</div>
+          <div class="prospect-label" id="pipe-dcnoshow-label" style="color:#f59e0b;">DC No-Shows — Need Recovery</div>
+          <div class="prospect-list" id="pipe-dcnoshow-names">Loading...</div>
         </div>
         <div class="prospect-section" style="margin-top:14px;">
           <div class="prospect-label" style="color:#34d399;">Active Clients (Won)</div>
-          <div class="prospect-list">Fletcher ($0 — unpaid) · Frank ($500) · Terri ($333) · Allaphia ($1,000) · Thania ($167) · Shawn ($500) · Angel (churned)</div>
+          <div class="prospect-list" id="pipe-won-names">Loading...</div>
         </div>
       </div>
     </div>
@@ -1050,6 +1050,114 @@ async function loadData() {
     renderUpcoming(s.billingRows || []);
     renderContracts(s.staleContracts || []);
 
+    // MRR — sum retainers where payment is not failed
+    const mrrTotal = (s.billingRows || [])
+      .filter(r => r.paymentStatus !== 'failed' && r.retainerAmount)
+      .reduce((sum, r) => sum + r.retainerAmount, 0);
+    const mrrEl = document.getElementById('stat-mrr');
+    if (mrrEl) mrrEl.textContent = '$' + mrrTotal.toLocaleString();
+
+    // Client cards: status pill, workflow meta, next-due meta
+    const WF_KEYS = ['fast5','confirmation','noshow','review','nurture','stale'];
+    const CARD_CLIENTS = ['terri','allaphia','thania','aguilera'];
+    for (const client of data.clients) {
+      const k = client.key;
+      if (!CARD_CLIENTS.includes(k)) continue;
+      const wfs = client.workflows || {};
+
+      // Status pill
+      const pill = document.getElementById('card-status-' + k);
+      const billing = (s.billingRows || []).find(r => r.key === k);
+      if (pill && billing) { pill.className = 'pill ' + billing.statusClass; pill.textContent = billing.statusLabel; }
+
+      // Workflow count
+      const liveCount = WF_KEYS.filter(w => wfs[w] === 'LIVE').length;
+      const totalWf   = WF_KEYS.filter(w => wfs[w]).length;
+      const wfMeta = document.getElementById(k + '-wf-meta');
+      if (wfMeta) wfMeta.innerHTML = '<strong>' + liveCount + '/' + (totalWf || 6) + '</strong> wf live';
+
+      // Next due
+      const dueMeta = document.getElementById(k + '-due-meta');
+      if (dueMeta && billing) {
+        if (billing.paymentStatus === 'failed') {
+          dueMeta.innerHTML = '<strong style="color:#f87171">payment failed</strong>';
+        } else if (billing.nextDueDate) {
+          const due = new Date(billing.nextDueDate);
+          const daysUntil = Math.ceil((due - new Date()) / 86400000);
+          const color = daysUntil < 0 ? '#f87171' : daysUntil <= 7 ? '#f59e0b' : '';
+          const amt = billing.retainerAmount ? '$' + billing.retainerAmount + ' ' : '';
+          dueMeta.innerHTML = '<strong' + (color ? ' style="color:' + color + '"' : '') + '>' + amt + 'due ' + fmtDate(billing.nextDueDate) + '</strong>';
+        }
+      }
+
+      // Workflow table cells
+      for (const wfKey of WF_KEYS) {
+        const cell = document.getElementById('wf-' + k + '-' + wfKey);
+        if (!cell) continue;
+        const status = wfs[wfKey];
+        if (status === 'LIVE')      { cell.className = 'wf-live';  cell.textContent = '● LIVE'; }
+        else if (status === 'DRAFT'){ cell.className = 'wf-draft'; cell.textContent = '○ DRAFT'; }
+        else                        { cell.className = '';          cell.textContent = '—'; }
+      }
+    }
+
+    // Workflow badge
+    let wfDraft = 0, wfTotal = 0;
+    for (const client of data.clients) {
+      if (!CARD_CLIENTS.includes(client.key)) continue;
+      for (const w of WF_KEYS) {
+        if (client.workflows?.[w]) { wfTotal++; if (client.workflows[w] === 'DRAFT') wfDraft++; }
+      }
+    }
+    const wfBadge = document.getElementById('wf-badge');
+    if (wfBadge) { wfBadge.textContent = wfDraft + '/' + wfTotal + ' in draft'; wfBadge.className = 'section-badge pill ' + (wfDraft === 0 ? 'pill-green' : 'pill-red'); }
+
+    // Fletcher card
+    const fletcherB = (s.billingRows || []).find(r => r.key === 'fletcher');
+    if (fletcherB) {
+      const fc = document.getElementById('card-fletcher');
+      const fp = document.getElementById('card-status-fletcher');
+      const fn = document.getElementById('fletcher-note');
+      const ff = document.getElementById('fletcher-footer-meta');
+      if (fletcherB.paymentStatus === 'ok' || fletcherB.paymentStatus === 'warn') {
+        if (fc) fc.style.opacity = '1';
+        if (fp) { fp.className = 'pill pill-yellow'; fp.textContent = 'Setting Up'; }
+        if (fn) fn.textContent = 'Payment cleared — setting up GHL sub-account.';
+        if (ff) ff.innerHTML = '<strong style="color:#10b981">✓ Payment received</strong>';
+      } else {
+        if (fc) fc.style.opacity = '0.5';
+        if (fp) { fp.className = 'pill pill-red'; fp.textContent = 'Unpaid'; }
+        if (fn) fn.textContent = 'No GHL sub-account created yet. Work cannot start until $500 payment clears.';
+        if (ff) ff.innerHTML = '<strong style="color:#f87171">$500 payment failed on Stripe</strong>';
+      }
+    }
+
+    // Glendale — compute days from stale contracts
+    const glendaleC = (s.staleContracts || []).find(c => c.name === 'Nayson Rouhipour');
+    const glendaleNote = document.getElementById('glendale-note');
+    if (glendaleC && glendaleNote) {
+      glendaleNote.textContent = 'Contract sent ' + fmtDate(glendaleC.sentDate) + ', not yet signed (' + glendaleC.daysSinceSent + 'd ago). Pipeline configured. No ads started.';
+    }
+
+    // Agency pipeline
+    const ap = s.agencyPipeline;
+    if (ap) {
+      const setEl = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = v; };
+      setEl('pipe-sc-upcoming', ap.scUpcoming);
+      setEl('pipe-dc-upcoming', ap.dcUpcoming);
+      setEl('pipe-dc-noshow',   ap.dcNoShow);
+      setEl('pipe-won',         ap.won);
+      setEl('pipe-lost',        ap.lost);
+      setEl('pipe-total',       ap.total);
+      const scLabel = document.getElementById('pipe-sc-label');
+      if (scLabel) scLabel.textContent = 'SC Upcoming — ' + ap.scUpcoming + ' Hot Prospects';
+      const dcLabel = document.getElementById('pipe-dcnoshow-label');
+      if (dcLabel) dcLabel.textContent = 'DC No-Shows — Need Recovery (' + ap.dcNoShow + ')';
+      setEl('pipe-sc-names',      ap.scNames.join(' · ') || 'None');
+      setEl('pipe-dcnoshow-names', ap.dcNoShowNames.join(' · ') || 'None');
+      setEl('pipe-won-names',     ap.wonNames.join(' · ') || 'None');
+    }
+
   } catch (err) {
     lu.textContent = 'Failed to load — ' + err.message;
   } finally {
@@ -1112,10 +1220,10 @@ async function loadWeeklyReport() {
     const m = d.metrics;
 
     const weekStart = new Date(d.weekStart);
-    const weekEnd = new Date(d.generatedAt);
+    const weekEnd   = new Date(d.weekEnd);
     const fmt = dt => dt.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
     document.getElementById('weekly-period').textContent =
-      'Week: ' + fmt(weekStart) + ' → ' + fmt(weekEnd) + ' · pulled live from GHL + Stripe';
+      fmt(weekStart) + ' → ' + fmt(weekEnd) + ' · pulled live from GHL + Stripe';
 
     const set = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
     const setNames = (id, names) => {
@@ -1142,11 +1250,11 @@ async function loadWeeklyReport() {
     setNames('wr-sc-cancelled-names', m.scCancelledOrNoShow.names);
     setNames('wr-closed-names',       m.closed.names);
 
-    const today = new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+    const submissionDate = weekEnd.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
     document.getElementById('wr-copy-text').textContent = [
       'First and Last Name: Adam O\'Brien',
       'Business Name: BookedClinics',
-      'Date of Submission: ' + today,
+      'Date of Submission: ' + submissionDate,
       '',
       'First calls booked (last 7 days): ' + m.dcBooked.count,
       'First calls showed up (last 7 days): ' + m.dcShowed.count,
