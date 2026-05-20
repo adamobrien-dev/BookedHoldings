@@ -56,6 +56,24 @@ const CLIENTS = [
 
 const FLETCHER_STRIPE_ID = 'cus_UVQcb88jp1OQqD';
 
+const BILLING_CONFIG = [
+  { key: 'fletcher', name: 'Fletcher Munksgard', biz: 'Dane Functional Health · GLP-1, Functional Medicine', stripeId: FLETCHER_STRIPE_ID, deal: 'Flat $500/mo', dealSub: 'No onboarding fee', cycleDays: 30, retainerAmount: 500 },
+  { key: 'aguilera', name: 'Frank Aguilera', biz: 'Aguilera Health & Wellness · Chiropractic · Bakersfield, CA', stripeId: 'cus_UTCCPxtx3eoza7', deal: 'Flat $500/mo', dealSub: 'Onboarding waived', cycleDays: 30, retainerAmount: 500 },
+  { key: 'terri', name: 'Terri Mignot', biz: 'Get Body Sculpted · Body Contouring · Tucker, GA', stripeId: 'cus_UR9Pr9Dxonz3SN', deal: '$1k setup + $500/mo', dealSub: '3 × $333 installments', cycleDays: 30, retainerAmount: 500 },
+  { key: 'allaphia', name: 'Allaphia Richards', biz: 'Paradise Healing LLC · Boston, MA', stripeId: 'cus_UOulmSIDAPiGuI', deal: '$1k setup + $500/mo', dealSub: 'Setup fully paid', cycleDays: 30, retainerAmount: 500 },
+  { key: 'thania', name: 'Thania Ramirez', biz: 'Tiali Beauty Lounge · Med-Spa · Warwick, RI', stripeId: 'cus_UMJQDHYQPyci1p', deal: '$500 setup + 10% rev', dealSub: 'Performance only', cycleDays: 30, retainerAmount: null },
+];
+
+const STALE_CONTRACTS = [
+  { name: 'Doyinsola Abikoye', biz: 'No business name on file', sentDate: '2026-04-17' },
+  { name: 'Emily Anderson', biz: 'Renew Chiropractic', sentDate: '2026-04-18' },
+  { name: 'Brittany Baumer', biz: 'The Skin & Body Spa', sentDate: '2026-04-21' },
+  { name: 'Andre F', biz: 'Clear Cost Telehealth', sentDate: '2026-04-22' },
+  { name: 'Nayson Rouhipour', biz: "Glendale's Urgent Care", sentDate: '2026-05-05' },
+  { name: 'Nnenna Obioha', biz: 'Marked Lost in GHL but contract was sent after', sentDate: '2026-05-07' },
+  { name: 'Yahaira Manon', biz: '2 ad images in Drive folder', sentDate: '2026-05-13' },
+];
+
 const AGENCY_LOC = 'NKpzhLv8iNQ0c9Ge3QAR';
 const AGENCY_PIT = 'pit-6aacb9ad-ed6a-4266-beb3-e261c49afe6b';
 const SC_UPCOMING_STAGE = '8216ee1d-73eb-4a3e-b53b-8b8cf0942256';
@@ -273,7 +291,36 @@ module.exports = async function handler(req, res) {
         stripeBalanceCents: stripeData?.balanceCents ?? null,
         fletcherFailed: stripeData?.fletcherFailed ?? null,
         scRecovery: scRecovery ?? null,
-        stripePerClient: stripeData?.perClient ?? null,
+        billingRows: (() => {
+          const spc = stripeData?.perClient || {};
+          return BILLING_CONFIG.map(bc => {
+            const stripe = spc[bc.key] || null;
+            const cd = clientsData.find(c => c.key === bc.key);
+            let lastPaidAmountCents = null, lastPaidDate = null, nextDueDate = null, paymentStatus = 'none';
+            if (stripe?.lastSucceeded) {
+              lastPaidAmountCents = stripe.lastSucceeded.amountCents;
+              lastPaidDate = new Date(stripe.lastSucceeded.created * 1000).toISOString();
+              nextDueDate = bc.cycleDays
+                ? new Date((stripe.lastSucceeded.created + bc.cycleDays * 24 * 3600) * 1000).toISOString()
+                : null;
+              paymentStatus = stripe.hasFailed ? 'warn' : 'ok';
+            } else if (stripe?.hasFailed) {
+              paymentStatus = 'failed';
+            }
+            let statusLabel = 'Active', statusClass = 'pill-green';
+            if (paymentStatus === 'failed') { statusLabel = 'Needs Action'; statusClass = 'pill-red'; }
+            else if (cd?.workflows?.fast5 === 'LIVE') { statusLabel = 'Ads Live'; statusClass = 'pill-blue'; }
+            else if (cd?.status === 'setup' || cd?.status === 'pending') { statusLabel = 'Setting Up'; statusClass = 'pill-yellow'; }
+            return { key: bc.key, name: bc.name, biz: bc.biz, deal: bc.deal, dealSub: bc.dealSub, retainerAmount: bc.retainerAmount, lastPaidAmountCents, lastPaidDate, nextDueDate, paymentStatus, statusLabel, statusClass };
+          });
+        })(),
+        staleContracts: (() => {
+          const todayMs = new Date().setHours(0, 0, 0, 0);
+          return STALE_CONTRACTS.map(sc => ({
+            ...sc,
+            daysSinceSent: Math.floor((todayMs - new Date(sc.sentDate).setHours(0, 0, 0, 0)) / 86400000),
+          }));
+        })(),
       },
       clients: clientsData,
     });

@@ -280,140 +280,8 @@
 
   <div class="billing-grid">
 
-    <!-- Fletcher — FAILED -->
-    <div class="billing-row alert-row" id="billing-row-fletcher">
-      <div class="billing-client">
-        <div class="billing-name">Fletcher Munksgard</div>
-        <div class="billing-niche">Dane Functional Health · GLP-1, Functional Medicine</div>
-      </div>
-      <div>
-        <div class="billing-col-label">Payment</div>
-        <div id="billing-pill-fletcher"><span class="pill pill-red">❌ Failed</span></div>
-        <div class="billing-col-sub" id="billing-sub-fletcher">$500 on Stripe</div>
-      </div>
-      <div>
-        <div class="billing-col-label">Deal</div>
-        <div class="billing-col-value">Flat $500/mo</div>
-        <div class="billing-col-sub">No onboarding fee</div>
-      </div>
-      <div>
-        <div class="billing-col-label">Next Due</div>
-        <div class="billing-col-value red">Now</div>
-        <div class="billing-col-sub">Payment never collected</div>
-      </div>
-      <div>
-        <div class="billing-col-label">Status</div>
-        <div><span class="pill pill-red">Needs Action</span></div>
-      </div>
-    </div>
-
-    <!-- Frank -->
-    <div class="billing-row">
-      <div class="billing-client">
-        <div class="billing-name">Frank Aguilera</div>
-        <div class="billing-niche">Aguilera Health & Wellness · Chiropractic · Bakersfield, CA</div>
-      </div>
-      <div>
-        <div class="billing-col-label">Paid</div>
-        <div id="billing-pill-aguilera"><span class="pill pill-green">✓ $500</span></div>
-        <div class="billing-col-sub" id="billing-sub-aguilera">Stripe · May 6</div>
-      </div>
-      <div>
-        <div class="billing-col-label">Deal</div>
-        <div class="billing-col-value">Flat $500/mo</div>
-        <div class="billing-col-sub">Onboarding waived</div>
-      </div>
-      <div>
-        <div class="billing-col-label">Next Due</div>
-        <div class="billing-col-value">~Jun 6</div>
-        <div class="billing-col-sub">$500 retainer</div>
-      </div>
-      <div>
-        <div class="billing-col-label">Status</div>
-        <div><span class="pill pill-yellow">Setting Up</span></div>
-      </div>
-    </div>
-
-    <!-- Terri -->
-    <div class="billing-row">
-      <div class="billing-client">
-        <div class="billing-name">Terri Mignot</div>
-        <div class="billing-niche">Get Body Sculpted · Body Contouring · Tucker, GA</div>
-      </div>
-      <div>
-        <div class="billing-col-label">Paid</div>
-        <div id="billing-pill-terri"><span class="pill pill-green">✓ $333</span></div>
-        <div class="billing-col-sub" id="billing-sub-terri">Stripe · May 1 · Installment 1/3</div>
-      </div>
-      <div>
-        <div class="billing-col-label">Deal</div>
-        <div class="billing-col-value">$1k setup + $500/mo</div>
-        <div class="billing-col-sub">3 × $333 installments</div>
-      </div>
-      <div>
-        <div class="billing-col-label">Next Due</div>
-        <div class="billing-col-value">~Jun 1</div>
-        <div class="billing-col-sub">$333 install. + $500 retainer = $833</div>
-      </div>
-      <div>
-        <div class="billing-col-label">Status</div>
-        <div><span class="pill pill-blue">Ads Live</span></div>
-      </div>
-    </div>
-
-    <!-- Allaphia -->
-    <div class="billing-row">
-      <div class="billing-client">
-        <div class="billing-name">Allaphia Richards</div>
-        <div class="billing-niche">Paradise Healing LLC · Boston, MA</div>
-      </div>
-      <div>
-        <div class="billing-col-label">Paid</div>
-        <div id="billing-pill-allaphia"><span class="pill pill-green">✓ $1,000</span></div>
-        <div class="billing-col-sub" id="billing-sub-allaphia">Stripe · Apr 30 · Full onboarding</div>
-      </div>
-      <div>
-        <div class="billing-col-label">Deal</div>
-        <div class="billing-col-value">$1k setup + $500/mo</div>
-        <div class="billing-col-sub">Lump sum — fully paid</div>
-      </div>
-      <div>
-        <div class="billing-col-label">Next Due</div>
-        <div class="billing-col-value">~Jun 5</div>
-        <div class="billing-col-sub">$500 retainer month 1</div>
-      </div>
-      <div>
-        <div class="billing-col-label">Status</div>
-        <div><span class="pill pill-blue">Ads Live</span></div>
-      </div>
-    </div>
-
-    <!-- Thania -->
-    <div class="billing-row">
-      <div class="billing-client">
-        <div class="billing-name">Thania Ramirez</div>
-        <div class="billing-niche">Tiali Beauty Lounge · Med-Spa · Warwick, RI</div>
-      </div>
-      <div>
-        <div class="billing-col-label">Paid</div>
-        <div id="billing-pill-thania"><span class="pill pill-green">✓ $167</span></div>
-        <div class="billing-col-sub" id="billing-sub-thania">Stripe · Apr 18 · Installment 1/3</div>
-      </div>
-      <div>
-        <div class="billing-col-label">Deal</div>
-        <div class="billing-col-value">$500 setup + 10% rev</div>
-        <div class="billing-col-sub">Performance only — no retainer</div>
-      </div>
-      <div>
-        <div class="billing-col-label">Next Due</div>
-        <div class="billing-col-value yellow">May 18</div>
-        <div class="billing-col-sub">$167 installment 2/3</div>
-      </div>
-      <div>
-        <div class="billing-col-label">Status</div>
-        <div><span class="pill pill-blue">Ads Live</span></div>
-      </div>
-    </div>
+    <!-- Dynamic rows injected by loadData() -->
+    <div id="billing-rows-dynamic"></div>
 
     <!-- Shawn -->
     <div class="billing-row">
@@ -476,119 +344,17 @@
     <div class="section-title">Upcoming Invoice Schedule</div>
   </div>
 
-  <div class="upcoming-list">
-    <div class="upcoming-item upcoming-urgent">
-      <div class="upcoming-date">NOW</div>
-      <div class="upcoming-client">Fletcher Munksgard</div>
-      <div class="upcoming-desc">$500 payment failed on Stripe — resend link immediately</div>
-      <div class="upcoming-amount red">$500</div>
-    </div>
-    <div class="upcoming-item upcoming-urgent">
-      <div class="upcoming-date">May 18</div>
-      <div class="upcoming-client">Thania Ramirez</div>
-      <div class="upcoming-desc">Onboarding installment 2/3 — invoice via Stripe</div>
-      <div class="upcoming-amount yellow">$167</div>
-    </div>
-    <div class="upcoming-item">
-      <div class="upcoming-date">Jun 1</div>
-      <div class="upcoming-client">Terri Mignot</div>
-      <div class="upcoming-desc">Onboarding installment 2/3 ($333) + retainer month 1 ($500)</div>
-      <div class="upcoming-amount">$833</div>
-    </div>
-    <div class="upcoming-item">
-      <div class="upcoming-date">Jun 5</div>
-      <div class="upcoming-client">Allaphia Richards</div>
-      <div class="upcoming-desc">Retainer month 1 — 30 days after campaign launch ~May 5</div>
-      <div class="upcoming-amount">$500</div>
-    </div>
-    <div class="upcoming-item">
-      <div class="upcoming-date">Jun 6</div>
-      <div class="upcoming-client">Frank Aguilera</div>
-      <div class="upcoming-desc">Retainer month 2</div>
-      <div class="upcoming-amount">$500</div>
-    </div>
-    <div class="upcoming-item">
-      <div class="upcoming-date">Jun 14</div>
-      <div class="upcoming-client">Fletcher Munksgard</div>
-      <div class="upcoming-desc">Retainer month 2 (assuming payment fixed)</div>
-      <div class="upcoming-amount">$500</div>
-    </div>
-    <div class="upcoming-item">
-      <div class="upcoming-date">Jun 18</div>
-      <div class="upcoming-client">Thania Ramirez</div>
-      <div class="upcoming-desc">Onboarding installment 3/3 (final)</div>
-      <div class="upcoming-amount">$167</div>
-    </div>
-    <div class="upcoming-item">
-      <div class="upcoming-date">Jul 1</div>
-      <div class="upcoming-client">Terri Mignot</div>
-      <div class="upcoming-desc">Onboarding installment 3/3 ($333) + retainer month 2 ($500)</div>
-      <div class="upcoming-amount">$833</div>
-    </div>
+  <div class="upcoming-list" id="upcoming-dynamic">
+    <!-- populated by loadData() -->
   </div>
 
   <!-- ── STALE CONTRACTS ── -->
   <div class="section-header">
     <div class="section-title">Unsigned Contracts — Going Stale</div>
-    <span class="section-badge pill pill-red">4 critical</span>
+    <span class="section-badge pill pill-red" id="contracts-badge"></span>
   </div>
-  <div class="contracts-list">
-    <div class="contract-item">
-      <div class="contract-days days-critical">28d</div>
-      <div class="contract-info">
-        <div class="contract-name">Doyinsola Abikoye</div>
-        <div class="contract-biz">Sent Apr 17 — no business name on file</div>
-      </div>
-      <span class="pill pill-red">Critical</span>
-    </div>
-    <div class="contract-item">
-      <div class="contract-days days-critical">27d</div>
-      <div class="contract-info">
-        <div class="contract-name">Emily Anderson</div>
-        <div class="contract-biz">Renew Chiropractic · Sent Apr 18</div>
-      </div>
-      <span class="pill pill-red">Critical</span>
-    </div>
-    <div class="contract-item">
-      <div class="contract-days days-critical">24d</div>
-      <div class="contract-info">
-        <div class="contract-name">Brittany Baumer</div>
-        <div class="contract-biz">The Skin & Body Spa · Sent Apr 21</div>
-      </div>
-      <span class="pill pill-red">Critical</span>
-    </div>
-    <div class="contract-item">
-      <div class="contract-days days-critical">23d</div>
-      <div class="contract-info">
-        <div class="contract-name">Andre F</div>
-        <div class="contract-biz">Clear Cost Telehealth · Sent Apr 22</div>
-      </div>
-      <span class="pill pill-red">Critical</span>
-    </div>
-    <div class="contract-item">
-      <div class="contract-days days-warn">10d</div>
-      <div class="contract-info">
-        <div class="contract-name">Nayson Rouhipour</div>
-        <div class="contract-biz">Glendale's Urgent Care · Sent May 5</div>
-      </div>
-      <span class="pill pill-yellow">Warming</span>
-    </div>
-    <div class="contract-item">
-      <div class="contract-days days-warn">8d</div>
-      <div class="contract-info">
-        <div class="contract-name">Nnenna Obioha</div>
-        <div class="contract-biz">Sent May 7 — marked Lost in GHL but contract was sent after</div>
-      </div>
-      <span class="pill pill-yellow">Conflicted</span>
-    </div>
-    <div class="contract-item">
-      <div class="contract-days" style="color:#64748b;">2d</div>
-      <div class="contract-info">
-        <div class="contract-name">Yahaira Manon</div>
-        <div class="contract-biz">Sent May 13 — 2 ad images in Drive folder</div>
-      </div>
-      <span class="pill pill-gray">Recent</span>
-    </div>
+  <div class="contracts-list" id="contracts-dynamic">
+    <!-- populated by loadData() -->
   </div>
 
 </div><!-- /tab-billing -->
@@ -1080,6 +846,130 @@
 </div><!-- /container -->
 
 <script>
+function fmtDate(iso) {
+  return new Date(iso).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+}
+function fmtAmt(cents) {
+  return '$' + (cents / 100).toLocaleString('en-US', { maximumFractionDigits: 0 });
+}
+
+function renderBillingRows(rows) {
+  const container = document.getElementById('billing-rows-dynamic');
+  if (!container) return;
+  const now = new Date();
+  container.innerHTML = rows.map(r => {
+    const isAlert = r.paymentStatus === 'failed';
+    let paidPill, paidSub;
+    if (r.paymentStatus === 'failed') {
+      paidPill = '<span class="pill pill-red">❌ Failed</span>';
+      paidSub  = 'Stripe — payment failed';
+    } else if (r.lastPaidAmountCents) {
+      const warn = r.paymentStatus === 'warn' ? ' · ⚠ recent failure' : '';
+      paidPill = '<span class="pill pill-green">✓ ' + fmtAmt(r.lastPaidAmountCents) + '</span>';
+      paidSub  = 'Stripe · ' + fmtDate(r.lastPaidDate) + warn;
+    } else {
+      paidPill = '<span class="pill pill-gray">—</span>';
+      paidSub  = 'No payment on record';
+    }
+    let nextVal, nextSub, nextColor = '';
+    if (r.paymentStatus === 'failed') {
+      nextVal = 'Now'; nextSub = 'Payment failed — resend link'; nextColor = 'red';
+    } else if (r.nextDueDate) {
+      const due = new Date(r.nextDueDate);
+      const daysUntil = Math.ceil((due - now) / 86400000);
+      nextVal = fmtDate(r.nextDueDate);
+      if (daysUntil < 0) { nextSub = Math.abs(daysUntil) + 'd overdue'; nextColor = 'red'; }
+      else if (daysUntil <= 7) { nextSub = 'Due in ' + daysUntil + 'd'; nextColor = 'yellow'; }
+      else { nextSub = r.retainerAmount ? '$' + r.retainerAmount + ' retainer' : 'No fixed retainer'; }
+    } else {
+      nextVal = '—'; nextSub = 'No fixed cycle';
+    }
+    return `<div class="billing-row${isAlert ? ' alert-row' : ''}">
+      <div class="billing-client">
+        <div class="billing-name">${r.name}</div>
+        <div class="billing-niche">${r.biz}</div>
+      </div>
+      <div>
+        <div class="billing-col-label">Paid</div>
+        <div>${paidPill}</div>
+        <div class="billing-col-sub">${paidSub}</div>
+      </div>
+      <div>
+        <div class="billing-col-label">Deal</div>
+        <div class="billing-col-value">${r.deal}</div>
+        <div class="billing-col-sub">${r.dealSub}</div>
+      </div>
+      <div>
+        <div class="billing-col-label">Next Due</div>
+        <div class="billing-col-value${nextColor ? ' ' + nextColor : ''}">${nextVal}</div>
+        <div class="billing-col-sub">${nextSub}</div>
+      </div>
+      <div>
+        <div class="billing-col-label">Status</div>
+        <div><span class="pill ${r.statusClass}">${r.statusLabel}</span></div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function renderUpcoming(rows) {
+  const container = document.getElementById('upcoming-dynamic');
+  if (!container) return;
+  const now = new Date();
+  const items = rows
+    .filter(r => r.nextDueDate || r.paymentStatus === 'failed')
+    .map(r => {
+      const dueDate = r.paymentStatus === 'failed' ? now : new Date(r.nextDueDate);
+      const daysUntil = Math.ceil((dueDate - now) / 86400000);
+      const overdue = daysUntil < 0;
+      const urgent  = daysUntil <= 3;
+      let dateLabel, amtColor = '', desc;
+      if (r.paymentStatus === 'failed') {
+        dateLabel = 'NOW';
+        amtColor  = 'red';
+        desc      = 'Payment failed on Stripe — resend link immediately';
+      } else {
+        dateLabel = fmtDate(r.nextDueDate);
+        if (overdue)      { amtColor = 'red';    desc = Math.abs(daysUntil) + 'd overdue — follow up now'; }
+        else if (daysUntil <= 7) { amtColor = 'yellow'; desc = 'Due in ' + daysUntil + 'd — invoice via Stripe'; }
+        else              { desc = 'Upcoming retainer'; }
+      }
+      const amt = r.retainerAmount ? '$' + r.retainerAmount : '—';
+      return { dueDate, dateLabel, name: r.name, desc, amt, amtColor, urgent: urgent || overdue || r.paymentStatus === 'failed' };
+    })
+    .sort((a, b) => a.dueDate - b.dueDate);
+  container.innerHTML = items.map(i =>
+    `<div class="upcoming-item${i.urgent ? ' upcoming-urgent' : ''}">
+      <div class="upcoming-date">${i.dateLabel}</div>
+      <div class="upcoming-client">${i.name}</div>
+      <div class="upcoming-desc">${i.desc}</div>
+      <div class="upcoming-amount${i.amtColor ? ' ' + i.amtColor : ''}">${i.amt}</div>
+    </div>`
+  ).join('') || '<div style="color:#475569;padding:16px;">No upcoming payments tracked.</div>';
+}
+
+function renderContracts(contracts) {
+  const container = document.getElementById('contracts-dynamic');
+  const badge = document.getElementById('contracts-badge');
+  if (!container) return;
+  const critical = contracts.filter(c => c.daysSinceSent >= 21);
+  if (badge) badge.textContent = critical.length + ' critical';
+  container.innerHTML = contracts.map(c => {
+    let daysClass, pillClass, pillLabel;
+    if (c.daysSinceSent >= 21)     { daysClass = 'days-critical'; pillClass = 'pill-red';    pillLabel = 'Critical'; }
+    else if (c.daysSinceSent >= 10) { daysClass = 'days-warn';     pillClass = 'pill-yellow'; pillLabel = 'Warming'; }
+    else                            { daysClass = '';               pillClass = 'pill-gray';   pillLabel = 'Recent'; }
+    return `<div class="contract-item">
+      <div class="contract-days ${daysClass}">${c.daysSinceSent}d</div>
+      <div class="contract-info">
+        <div class="contract-name">${c.name}</div>
+        <div class="contract-biz">${c.biz} · Sent ${fmtDate(c.sentDate)}</div>
+      </div>
+      <span class="pill ${pillClass}">${pillLabel}</span>
+    </div>`;
+  }).join('');
+}
+
 async function loadData() {
   const btn = document.getElementById('refresh-btn');
   const lu = document.getElementById('last-updated');
@@ -1155,31 +1045,10 @@ async function loadData() {
       setBar(`${k}-bar-booked`, bkdPct);
       setBar(`${k}-bar-sale`,   salePct);
     }
-    // Live billing: update paid pill + date for clients with Stripe IDs
-    const spc = s.stripePerClient;
-    if (spc) {
-      const billingKeys = ['fletcher', 'aguilera', 'terri', 'allaphia', 'thania'];
-      for (const key of billingKeys) {
-        const pillEl = document.getElementById('billing-pill-' + key);
-        const subEl  = document.getElementById('billing-sub-' + key);
-        if (!pillEl) continue;
-        const cd = spc[key];
-        if (!cd) continue;
-        const row = document.getElementById('billing-row-' + key);
-        if (cd.hasFailed && !cd.lastSucceeded) {
-          pillEl.innerHTML = '<span class="pill pill-red">❌ Failed</span>';
-          if (subEl) subEl.textContent = 'Stripe — payment failed';
-          if (row) { row.classList.add('alert-row'); }
-        } else if (cd.lastSucceeded) {
-          const amt = '$' + (cd.lastSucceeded.amountCents / 100).toLocaleString('en-US', { maximumFractionDigits: 0 });
-          const dt  = new Date(cd.lastSucceeded.created * 1000).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-          const hasFailed = cd.hasFailed ? ' · ⚠ recent failure' : '';
-          pillEl.innerHTML = '<span class="pill pill-green">✓ ' + amt + '</span>';
-          if (subEl) subEl.textContent = 'Stripe · ' + dt + hasFailed;
-          if (row) row.classList.remove('alert-row');
-        }
-      }
-    }
+    // Dynamic billing rows
+    renderBillingRows(s.billingRows || []);
+    renderUpcoming(s.billingRows || []);
+    renderContracts(s.staleContracts || []);
 
   } catch (err) {
     lu.textContent = 'Failed to load — ' + err.message;
