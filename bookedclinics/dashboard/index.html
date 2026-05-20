@@ -1169,21 +1169,24 @@ let _weeklyEnd = null;
 let _rangePicker = null;
 
 function initRangePicker() {
-  _rangePicker = flatpickr('#range-picker', {
-    mode: 'range',
-    dateFormat: 'Y-m-d',
-    maxDate: 'today',
-    disableMobile: true,
-    onClose(dates) {
-      if (dates.length === 2) {
-        _weeklyStart = dates[0].toISOString().split('T')[0];
-        _weeklyEnd   = dates[1].toISOString().split('T')[0];
-        _weeklyDays  = null;
-        document.querySelectorAll('.range-btn').forEach(b => b.classList.remove('active'));
-        loadWeeklyReport();
-      }
-    },
-  });
+  if (typeof flatpickr === 'undefined') return;
+  try {
+    _rangePicker = flatpickr('#range-picker', {
+      mode: 'range',
+      dateFormat: 'Y-m-d',
+      maxDate: 'today',
+      disableMobile: true,
+      onClose(dates) {
+        if (dates.length === 2) {
+          _weeklyStart = dates[0].toISOString().split('T')[0];
+          _weeklyEnd   = dates[1].toISOString().split('T')[0];
+          _weeklyDays  = null;
+          document.querySelectorAll('.range-btn').forEach(b => b.classList.remove('active'));
+          loadWeeklyReport();
+        }
+      },
+    });
+  } catch(e) { console.warn('Flatpickr init failed:', e); }
 }
 
 function setRange(days) {
@@ -1288,7 +1291,7 @@ function copyReport() {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-  initRangePicker();
+  try { initRangePicker(); } catch(e) { console.warn('Range picker init error:', e); }
   loadData();
 
   document.querySelectorAll('.nav-tab').forEach(tab => {
