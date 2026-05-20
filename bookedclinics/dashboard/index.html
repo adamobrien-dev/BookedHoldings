@@ -215,28 +215,8 @@
 
 <div class="tab-section active" id="tab-overview">
   <!-- ── ALERTS ── -->
-  <div class="alerts">
-    <div class="alert alert-red">
-      <div class="alert-icon">🚨</div>
-      <div class="alert-content">
-        <div class="alert-title">Fletcher Munksgard — $500 payment FAILED</div>
-        <div class="alert-body">Stripe shows <strong>requires_payment_method</strong> — no card attached or declined. Signed May 14. Contract says no work begins until payment received. Send a new payment link today before setting up his GHL account.</div>
-      </div>
-    </div>
-    <div class="alert alert-yellow">
-      <div class="alert-icon">⚠️</div>
-      <div class="alert-content">
-        <div class="alert-title">Thania — $167 installment due May 18 (3 days)</div>
-        <div class="alert-body">Second of 3 onboarding installments. Stripe shows first $167 collected. Her deal is performance-only — <strong>no flat retainer</strong>. Bi-weekly performance invoices also not being sent yet.</div>
-      </div>
-    </div>
-    <div class="alert alert-purple">
-      <div class="alert-icon">⚡</div>
-      <div class="alert-content">
-        <div class="alert-title">All follow-up workflows are in DRAFT across every client account</div>
-        <div class="alert-body"><strong>65 of 75 leads (87%) sitting in New Lead with zero outreach sent.</strong> No SMS, no email, nothing. This is the same pattern that caused Angel to churn. Publish Fast 5 in all 4 accounts today.</div>
-      </div>
-    </div>
+  <div class="alerts" id="overview-alerts">
+    <!-- populated by loadData() -->
     <div class="alert alert-red" id="alert-sc-recovery" style="display:none;">
       <div class="alert-icon">🚨</div>
       <div class="alert-content">
@@ -281,7 +261,7 @@
   <div class="billing-grid">
 
     <!-- Dynamic rows injected by loadData() -->
-    <div id="billing-rows-dynamic"></div>
+    <div id="billing-rows-dynamic" style="display:contents"></div>
 
     <!-- Shawn -->
     <div class="billing-row">
@@ -853,6 +833,81 @@ function fmtAmt(cents) {
   return '$' + (cents / 100).toLocaleString('en-US', { maximumFractionDigits: 0 });
 }
 
+function renderOverviewAlerts(billingRows, clients) {
+  const container = document.getElementById('overview-alerts');
+  if (!container) return;
+  const alerts = [];
+  const now = new Date();
+
+  // Failed payments
+  (billingRows || []).filter(r => r.paymentStatus === 'failed').forEach(r => {
+    alerts.push({ type: 'alert-red', icon: '🚨',
+      title: r.name + ' — payment FAILED',
+      body: 'Stripe shows a failed charge. No work should begin until $' + (r.retainerAmount || 500) + ' clears. Resend the payment link immediately.',
+    });
+  });
+
+  // Overdue payments
+  (billingRows || []).filter(r => r.nextDueDate && r.paymentStatus !== 'failed').forEach(r => {
+    const due = new Date(r.nextDueDate);
+    const days = Math.ceil((due - now) / 86400000);
+    if (days < 0) {
+      alerts.push({ type: 'alert-red', icon: '🚨',
+        title: r.name + ' — payment ' + Math.abs(days) + 'd overdue',
+        body: (r.retainerAmount ? '$' + r.retainerAmount : 'Payment') + ' was due ' + fmtDate(r.nextDueDate) + '. Follow up now.',
+      });
+    } else if (days <= 5) {
+      alerts.push({ type: 'alert-yellow', icon: '⚠️',
+        title: r.name + ' — payment due in ' + days + ' day' + (days === 1 ? '' : 's'),
+        body: (r.retainerAmount ? '$' + r.retainerAmount : 'Payment') + ' due ' + fmtDate(r.nextDueDate) + '. Invoice via Stripe.',
+      });
+    }
+  });
+
+  // Draft workflows
+  const WF_KEYS = ['fast5','confirmation','noshow','review','nurture','stale'];
+  const CLIENT_KEYS = ['terri','allaphia','thania','aguilera'];
+  let draftClients = [];
+  (clients || []).forEach(c => {
+    if (!CLIENT_KEYS.includes(c.key)) return;
+    const wfs = c.workflows || {};
+    const hasDraft = WF_KEYS.some(w => wfs[w] === 'DRAFT');
+    const hasLive  = WF_KEYS.some(w => wfs[w] === 'LIVE');
+    if (hasDraft && !hasLive) draftClients.push(c.name || c.key);
+  });
+  if (draftClients.length > 0) {
+    alerts.push({ type: 'alert-purple', icon: '⚡',
+      title: draftClients.length + ' account' + (draftClients.length > 1 ? 's have' : ' has') + ' no live workflows',
+      body: '<strong>' + draftClients.join(', ') + '</strong> — leads entering with zero follow-up. Publish Fast 5 immediately.',
+    });
+  }
+
+  // Stuck leads
+  const totalLeads = (clients || []).reduce((s, c) => s + (c.leads?.total || 0), 0);
+  const stuckLeads = (clients || []).reduce((s, c) => s + (c.leads?.new   || 0), 0);
+  if (totalLeads > 0 && stuckLeads / totalLeads > 0.5) {
+    const pct = Math.round((stuckLeads / totalLeads) * 100);
+    alerts.push({ type: 'alert-yellow', icon: '📊',
+      title: pct + '% of leads stuck with no action taken',
+      body: stuckLeads + ' of ' + totalLeads + ' leads are sitting in New Lead — no SMS, no email, no booking attempt.',
+    });
+  }
+
+  const html = alerts.map(a =>
+    `<div class="alert ${a.type}">
+      <div class="alert-icon">${a.icon}</div>
+      <div class="alert-content">
+        <div class="alert-title">${a.title}</div>
+        <div class="alert-body">${a.body}</div>
+      </div>
+    </div>`
+  ).join('');
+
+  // Prepend dynamic alerts before the SC recovery alert
+  const scAlert = document.getElementById('alert-sc-recovery');
+  if (scAlert) scAlert.insertAdjacentHTML('beforebegin', html);
+}
+
 function renderBillingRows(rows) {
   const container = document.getElementById('billing-rows-dynamic');
   if (!container) return;
@@ -1048,6 +1103,10 @@ async function loadData() {
       setBar(`${k}-bar-booked`, bkdPct);
       setBar(`${k}-bar-sale`,   salePct);
     }
+    // Clear and re-render dynamic alerts (remove previously injected ones on refresh)
+    document.querySelectorAll('#overview-alerts .alert:not(#alert-sc-recovery)').forEach(el => el.remove());
+    renderOverviewAlerts(s.billingRows, data.clients);
+
     // Dynamic billing rows
     renderBillingRows(s.billingRows || []);
     renderUpcoming(s.billingRows || []);
