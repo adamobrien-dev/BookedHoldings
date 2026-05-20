@@ -174,11 +174,31 @@ async function getStripeData() {
 
   const fletcherFailed = failed.some(p => p.customerId === FLETCHER_STRIPE_ID);
 
+  // Build per-client last payment + failed flag from the same payment list
+  const stripeIdToKey = { [FLETCHER_STRIPE_ID]: 'fletcher' };
+  CLIENTS.forEach(c => { if (c.stripeId) stripeIdToKey[c.stripeId] = c.key; });
+
+  const perClient = {};
+  for (const p of payments) {
+    const clientKey = stripeIdToKey[p.customer];
+    if (!clientKey) continue;
+    if (!perClient[clientKey]) perClient[clientKey] = { lastSucceeded: null, hasFailed: false };
+    if (p.status === 'succeeded') {
+      if (!perClient[clientKey].lastSucceeded || p.created > perClient[clientKey].lastSucceeded.created) {
+        perClient[clientKey].lastSucceeded = { amountCents: p.amount, created: p.created };
+      }
+    }
+    if (p.status === 'requires_payment_method') {
+      perClient[clientKey].hasFailed = true;
+    }
+  }
+
   return {
     balanceCents: balance?.available?.find(b => b.currency === 'usd')?.amount ?? 0,
     collectedCents,
     failed,
     fletcherFailed,
+    perClient,
   };
 }
 
@@ -253,6 +273,7 @@ module.exports = async function handler(req, res) {
         stripeBalanceCents: stripeData?.balanceCents ?? null,
         fletcherFailed: stripeData?.fletcherFailed ?? null,
         scRecovery: scRecovery ?? null,
+        stripePerClient: stripeData?.perClient ?? null,
       },
       clients: clientsData,
     });

@@ -281,15 +281,15 @@
   <div class="billing-grid">
 
     <!-- Fletcher — FAILED -->
-    <div class="billing-row alert-row">
+    <div class="billing-row alert-row" id="billing-row-fletcher">
       <div class="billing-client">
         <div class="billing-name">Fletcher Munksgard</div>
         <div class="billing-niche">Dane Functional Health · GLP-1, Functional Medicine</div>
       </div>
       <div>
         <div class="billing-col-label">Payment</div>
-        <div><span class="pill pill-red">❌ Failed</span></div>
-        <div class="billing-col-sub">$500 on Stripe</div>
+        <div id="billing-pill-fletcher"><span class="pill pill-red">❌ Failed</span></div>
+        <div class="billing-col-sub" id="billing-sub-fletcher">$500 on Stripe</div>
       </div>
       <div>
         <div class="billing-col-label">Deal</div>
@@ -315,8 +315,8 @@
       </div>
       <div>
         <div class="billing-col-label">Paid</div>
-        <div><span class="pill pill-green">✓ $500</span></div>
-        <div class="billing-col-sub">Stripe · May 6</div>
+        <div id="billing-pill-aguilera"><span class="pill pill-green">✓ $500</span></div>
+        <div class="billing-col-sub" id="billing-sub-aguilera">Stripe · May 6</div>
       </div>
       <div>
         <div class="billing-col-label">Deal</div>
@@ -342,8 +342,8 @@
       </div>
       <div>
         <div class="billing-col-label">Paid</div>
-        <div><span class="pill pill-green">✓ $333</span></div>
-        <div class="billing-col-sub">Stripe · May 1 · Installment 1/3</div>
+        <div id="billing-pill-terri"><span class="pill pill-green">✓ $333</span></div>
+        <div class="billing-col-sub" id="billing-sub-terri">Stripe · May 1 · Installment 1/3</div>
       </div>
       <div>
         <div class="billing-col-label">Deal</div>
@@ -369,8 +369,8 @@
       </div>
       <div>
         <div class="billing-col-label">Paid</div>
-        <div><span class="pill pill-green">✓ $1,000</span></div>
-        <div class="billing-col-sub">Stripe · Apr 30 · Full onboarding</div>
+        <div id="billing-pill-allaphia"><span class="pill pill-green">✓ $1,000</span></div>
+        <div class="billing-col-sub" id="billing-sub-allaphia">Stripe · Apr 30 · Full onboarding</div>
       </div>
       <div>
         <div class="billing-col-label">Deal</div>
@@ -396,8 +396,8 @@
       </div>
       <div>
         <div class="billing-col-label">Paid</div>
-        <div><span class="pill pill-green">✓ $167</span></div>
-        <div class="billing-col-sub">Stripe · Apr 18 · Installment 1/3</div>
+        <div id="billing-pill-thania"><span class="pill pill-green">✓ $167</span></div>
+        <div class="billing-col-sub" id="billing-sub-thania">Stripe · Apr 18 · Installment 1/3</div>
       </div>
       <div>
         <div class="billing-col-label">Deal</div>
@@ -1155,6 +1155,32 @@ async function loadData() {
       setBar(`${k}-bar-booked`, bkdPct);
       setBar(`${k}-bar-sale`,   salePct);
     }
+    // Live billing: update paid pill + date for clients with Stripe IDs
+    const spc = s.stripePerClient;
+    if (spc) {
+      const billingKeys = ['fletcher', 'aguilera', 'terri', 'allaphia', 'thania'];
+      for (const key of billingKeys) {
+        const pillEl = document.getElementById('billing-pill-' + key);
+        const subEl  = document.getElementById('billing-sub-' + key);
+        if (!pillEl) continue;
+        const cd = spc[key];
+        if (!cd) continue;
+        const row = document.getElementById('billing-row-' + key);
+        if (cd.hasFailed && !cd.lastSucceeded) {
+          pillEl.innerHTML = '<span class="pill pill-red">❌ Failed</span>';
+          if (subEl) subEl.textContent = 'Stripe — payment failed';
+          if (row) { row.classList.add('alert-row'); }
+        } else if (cd.lastSucceeded) {
+          const amt = '$' + (cd.lastSucceeded.amountCents / 100).toLocaleString('en-US', { maximumFractionDigits: 0 });
+          const dt  = new Date(cd.lastSucceeded.created * 1000).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+          const hasFailed = cd.hasFailed ? ' · ⚠ recent failure' : '';
+          pillEl.innerHTML = '<span class="pill pill-green">✓ ' + amt + '</span>';
+          if (subEl) subEl.textContent = 'Stripe · ' + dt + hasFailed;
+          if (row) row.classList.remove('alert-row');
+        }
+      }
+    }
+
   } catch (err) {
     lu.textContent = 'Failed to load — ' + err.message;
   } finally {
