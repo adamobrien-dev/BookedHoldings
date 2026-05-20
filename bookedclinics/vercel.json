@@ -1,0 +1,6 @@
+{
+  "rewrites": [
+    { "source": "/platform", "destination": "/dashboard" },
+    { "source": "/platform/", "destination": "/dashboard" }
+  ]
+}
