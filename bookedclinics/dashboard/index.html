@@ -147,6 +147,7 @@
   .action-desc { font-size: 12px; color: #64748b; line-height: 1.6; }
   .tag-urgent { background: #7f1d1d; color: #fca5a5; font-size: 9px; font-weight: 700; padding: 2px 6px; border-radius: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
   .tag-soon { background: #78350f; color: #fbbf24; font-size: 9px; font-weight: 700; padding: 2px 6px; border-radius: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
+  .tag-week { background: #1e3a5f; color: #93c5fd; font-size: 9px; font-weight: 700; padding: 2px 6px; border-radius: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
 
   /* ── STALE CONTRACTS ── */
   .contracts-list { display: flex; flex-direction: column; gap: 8px; margin-bottom: 28px; }
@@ -230,7 +231,7 @@
   <div class="stats-grid">
     <div class="stat-card">
       <div class="stat-label">Total Collected</div>
-      <div class="stat-value green" id="stat-collected">$2,800</div>
+      <div class="stat-value green" id="stat-collected">—</div>
       <div class="stat-sub">Stripe + PayPal verified</div>
     </div>
     <div class="stat-card">
@@ -240,13 +241,13 @@
     </div>
     <div class="stat-card">
       <div class="stat-label">Total Leads</div>
-      <div class="stat-value" id="stat-total-leads">75</div>
+      <div class="stat-value" id="stat-total-leads">—</div>
       <div class="stat-sub" id="stat-leads-sub">Across active accounts</div>
     </div>
     <div class="stat-card">
       <div class="stat-label">Leads Stuck</div>
-      <div class="stat-value red" id="stat-stuck">65</div>
-      <div class="stat-sub red" id="stat-stuck-sub">87% — zero follow-up sent</div>
+      <div class="stat-value red" id="stat-stuck">—</div>
+      <div class="stat-sub red" id="stat-stuck-sub">—</div>
     </div>
   </div>
 
@@ -343,7 +344,7 @@
   <!-- ── CLIENT PIPELINE ── -->
   <div class="section-header">
     <div class="section-title">Client Lead Pipelines</div>
-    <span class="section-badge pill pill-red">87% stuck</span>
+    <span class="section-badge pill pill-red" id="clients-stuck-badge">—</span>
   </div>
 
   <div class="client-grid">
@@ -664,9 +665,6 @@
       </div>
     </div>
 
-    <div class="pipeline-note">
-      <strong>Note:</strong> Nnenna Obioha is marked Lost in GHL but a contract was sent May 7 — conflicting status needs to be resolved. Angel Carroll should be moved from Won to Lost/Churned in GHL.
-    </div>
   </div>
 
 </div><!-- /tab-pipeline -->
@@ -675,70 +673,13 @@
   <!-- ── ACTION PLAN ── -->
   <div class="section-header">
     <div class="section-title">Action Plan — Prioritised</div>
+    <span class="section-badge pill pill-gray" id="actions-badge">Loading...</span>
   </div>
 
-  <div class="action-list">
+  <div id="actions-dynamic" class="action-list">
     <div class="action-item">
-      <div class="action-num num-red">1</div>
       <div class="action-text">
-        <div class="action-title">Resend payment link to Fletcher Munksgard <span class="tag-urgent">Do Now</span></div>
-        <div class="action-desc">His $500 Stripe payment failed — no card on file. In Stripe, go to his customer page (cus_UVQcb88jp1OQqD), resend the payment link or create a new invoice. No GHL setup until this clears. Email: fmtothethird@gmail.com</div>
-      </div>
-    </div>
-    <div class="action-item">
-      <div class="action-num num-red">2</div>
-      <div class="action-text">
-        <div class="action-title">Publish "New Lead Nurture (Fast 5)" in all 4 accounts <span class="tag-urgent">Do Today</span></div>
-        <div class="action-desc">Automations → Workflows → Fast 5 → Publish. Fires within 5 minutes of form submit. Every hour in draft costs you leads going permanently cold. Do Terri first (48 stale leads).</div>
-      </div>
-    </div>
-    <div class="action-item">
-      <div class="action-num num-red">3</div>
-      <div class="action-text">
-        <div class="action-title">Publish "Appointment Confirmation + Reminders" in all 4 accounts <span class="tag-urgent">Do Today</span></div>
-        <div class="action-desc">Any leads that do book get zero confirmation without this. High no-show rate is guaranteed. Publish immediately after Fast 5.</div>
-      </div>
-    </div>
-    <div class="action-item">
-      <div class="action-num num-yellow">4</div>
-      <div class="action-text">
-        <div class="action-title">Invoice Thania $167 by May 18 <span class="tag-soon">3 Days</span></div>
-        <div class="action-desc">Second of 3 onboarding installments. Also set up bi-weekly performance invoicing (10% of attributed revenue) — this has never been done yet and is owed per contract.</div>
-      </div>
-    </div>
-    <div class="action-item">
-      <div class="action-num num-yellow">5</div>
-      <div class="action-text">
-        <div class="action-title">Manually re-engage 65 stale leads <span class="tag-soon">This Week</span></div>
-        <div class="action-desc">Terri: 48 leads, Allaphia: 11 leads, Thania: 6 leads. Send a personal text from each client's GHL number: "Hey [name], still interested in [offer]?" Move replies to Hot Lead.</div>
-      </div>
-    </div>
-    <div class="action-item">
-      <div class="action-num num-blue">6</div>
-      <div class="action-text">
-        <div class="action-title">Create Fletcher's GHL sub-account (after payment clears)</div>
-        <div class="action-desc">Signed May 14. Focus: GLP-1, functional medicine, peptide therapy. Install Claude Private Integration in his sub-account once created. Publish workflows before ads go live.</div>
-      </div>
-    </div>
-    <div class="action-item">
-      <div class="action-num num-blue">7</div>
-      <div class="action-text">
-        <div class="action-title">Chase 4 stale unsigned contracts</div>
-        <div class="action-desc">Doyinsola (28d), Emily Anderson (27d), Brittany Baumer (24d), Andre F (23d) — all going cold. Send a personal follow-up. These were all SC: Upcoming in your pipeline.</div>
-      </div>
-    </div>
-    <div class="action-item">
-      <div class="action-num num-blue">8</div>
-      <div class="action-text">
-        <div class="action-title">Clarify Shawn Dua (Skinny.com) status</div>
-        <div class="action-desc">$500 onboarding paid Apr 15 but no GHL sub-account exists. Performance-based deal — zero campaigns running means zero fees owed both ways. Either activate or formally close.</div>
-      </div>
-    </div>
-    <div class="action-item">
-      <div class="action-num num-blue">9</div>
-      <div class="action-text">
-        <div class="action-title">Fix GHL housekeeping</div>
-        <div class="action-desc">Move Angel Carroll from Won → Lost/Churned. Delete duplicate pipeline in Aguilera. Swap Thania's Mother's Day creatives (expired May 11). Fix Thania's contract branding (says "BookedJobs").</div>
+        <div class="action-desc" style="color:#475569;padding:4px 0;">Loading actions from live data...</div>
       </div>
     </div>
   </div>
@@ -1027,6 +968,123 @@ function renderContracts(contracts) {
   }).join('');
 }
 
+function renderActions(s, clients) {
+  const container = document.getElementById('actions-dynamic');
+  const badge = document.getElementById('actions-badge');
+  if (!container) return;
+  const now = new Date();
+  const actions = [];
+  const WF_KEYS = ['fast5','confirmation','noshow','review','nurture','stale'];
+  const ACTIVE_CLIENTS = ['terri','allaphia','thania','aguilera'];
+
+  // ── DO NOW (red) ──────────────────────────────────────────────────────────
+  (s.billingRows || []).filter(r => r.paymentStatus === 'failed').forEach(r => {
+    actions.push({ color: 'red', tagLabel: 'Do Now',
+      title: 'Resend payment link to ' + r.name,
+      desc: 'Stripe shows a failed charge for $' + (r.retainerAmount || 500) + '. Go to Stripe → Customers → ' + r.name + ' and resend the payment link or create a new invoice. No work starts until payment clears.',
+    });
+  });
+
+  const scR = s.scRecovery;
+  if (scR && scR.needsRecovery && scR.needsRecovery.length > 0) {
+    const names = scR.needsRecovery.map(c => c.name).join(', ');
+    actions.push({ color: 'red', tagLabel: 'Do Now',
+      title: scR.needsRecovery.length + ' SC: Upcoming contact' + (scR.needsRecovery.length > 1 ? 's' : '') + ' with no call booked',
+      desc: names + ' — marked SC: Upcoming but no future appointment exists. Call or text now to reschedule, or move them to SC: No Show.',
+    });
+  }
+
+  (s.billingRows || []).filter(r => r.nextDueDate && r.paymentStatus !== 'failed').forEach(r => {
+    const days = Math.ceil((new Date(r.nextDueDate) - now) / 86400000);
+    if (days < 0) {
+      actions.push({ color: 'red', tagLabel: 'Do Now',
+        title: r.name + ' — invoice ' + Math.abs(days) + 'd overdue',
+        desc: (r.retainerAmount ? '$' + r.retainerAmount : 'Payment') + ' was due ' + fmtDate(r.nextDueDate) + '. Send invoice via Stripe immediately.',
+      });
+    }
+  });
+
+  // ── DO TODAY (yellow) ─────────────────────────────────────────────────────
+  (s.billingRows || []).filter(r => r.nextDueDate && r.paymentStatus !== 'failed').forEach(r => {
+    const days = Math.ceil((new Date(r.nextDueDate) - now) / 86400000);
+    if (days >= 0 && days <= 5) {
+      actions.push({ color: 'yellow', tagLabel: 'Do Today',
+        title: r.name + ' — $' + (r.retainerAmount || '?') + ' due in ' + days + ' day' + (days === 1 ? '' : 's'),
+        desc: 'Invoice due ' + fmtDate(r.nextDueDate) + '. Send via Stripe before it goes overdue.',
+      });
+    }
+  });
+
+  const noWfClients = [];
+  (clients || []).forEach(c => {
+    if (!ACTIVE_CLIENTS.includes(c.key)) return;
+    const liveCount = WF_KEYS.filter(w => (c.workflows || {})[w] === 'LIVE').length;
+    if (liveCount === 0 && (c.leads?.new || 0) > 0) noWfClients.push(c);
+  });
+  if (noWfClients.length > 0) {
+    const names = noWfClients.map(c => (c.name || c.key) + ' (' + (c.leads?.new || 0) + ' stuck)').join(', ');
+    actions.push({ color: 'yellow', tagLabel: 'Do Today',
+      title: 'Publish workflows — ' + noWfClients.length + ' account' + (noWfClients.length > 1 ? 's' : '') + ' with zero automations live',
+      desc: names + ' — leads entering with zero follow-up. Start with Fast 5 (fires within 5 min of form submit), then Confirmation + Reminders.',
+    });
+  }
+
+  // ── THIS WEEK (blue) ──────────────────────────────────────────────────────
+  const staleContracts = (s.staleContracts || []).filter(c => c.daysSinceSent >= 7);
+  if (staleContracts.length > 0) {
+    const names = staleContracts.map(c => c.name + ' (' + c.daysSinceSent + 'd)').join(', ');
+    actions.push({ color: 'blue', tagLabel: 'This Week',
+      title: 'Follow up on ' + staleContracts.length + ' unsigned contract' + (staleContracts.length > 1 ? 's' : ''),
+      desc: names + ' — send a personal follow-up. The longer a contract sits unsigned the colder it gets.',
+    });
+  }
+
+  const totalStuck = (clients || []).reduce((sum, c) => sum + (c.leads?.new || 0), 0);
+  if (totalStuck > 5) {
+    const breakdown = (clients || [])
+      .filter(c => ACTIVE_CLIENTS.includes(c.key) && (c.leads?.new || 0) > 0)
+      .map(c => (c.name || c.key).split(' — ')[0] + ': ' + c.leads.new)
+      .join(', ');
+    actions.push({ color: 'blue', tagLabel: 'This Week',
+      title: 'Manually re-engage ' + totalStuck + ' stale leads',
+      desc: breakdown + ' — send a personal text from each client\'s GHL number: "Hey [name], still interested in [offer]?" Move replies to Hot Lead.',
+    });
+  }
+
+  (clients || []).filter(c => c.status === 'setup').forEach(c => {
+    const billing = (s.billingRows || []).find(r => r.key === c.key);
+    if (billing && billing.paymentStatus !== 'failed') {
+      actions.push({ color: 'blue', tagLabel: 'This Week',
+        title: 'Complete setup for ' + (c.name || c.key),
+        desc: c.biz + ' — payment cleared but setup in progress. Create GHL sub-account, configure pipeline, and publish workflows before launching ads.',
+      });
+    }
+  });
+
+  if (badge) {
+    const urgent = actions.filter(a => a.color === 'red').length;
+    badge.textContent = urgent > 0 ? urgent + ' urgent' : actions.length + ' tasks';
+    badge.className = 'section-badge pill ' + (urgent > 0 ? 'pill-red' : actions.length > 0 ? 'pill-yellow' : 'pill-green');
+  }
+
+  if (actions.length === 0) {
+    container.innerHTML = '<div class="action-item"><div class="action-text"><div class="action-title" style="color:#34d399;">✓ All clear — nothing urgent right now</div><div class="action-desc">No failed payments, no overdue invoices, no SC recovery needed.</div></div></div>';
+    return;
+  }
+
+  container.innerHTML = actions.map((a, i) => {
+    const numClass = a.color === 'red' ? 'num-red' : a.color === 'yellow' ? 'num-yellow' : 'num-blue';
+    const tagClass = a.color === 'red' ? 'tag-urgent' : a.color === 'yellow' ? 'tag-soon' : 'tag-week';
+    return `<div class="action-item">
+      <div class="action-num ${numClass}">${i + 1}</div>
+      <div class="action-text">
+        <div class="action-title">${a.title} <span class="${tagClass}">${a.tagLabel}</span></div>
+        <div class="action-desc">${a.desc}</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
 async function loadData() {
   const btn = document.getElementById('refresh-btn');
   const lu = document.getElementById('last-updated');
@@ -1111,6 +1169,7 @@ async function loadData() {
     renderBillingRows(s.billingRows || []);
     renderUpcoming(s.billingRows || []);
     renderContracts(s.staleContracts || []);
+    renderActions(s, data.clients);
 
     // MRR — sum retainers where payment is not failed
     const mrrTotal = (s.billingRows || [])
@@ -1118,6 +1177,13 @@ async function loadData() {
       .reduce((sum, r) => sum + r.retainerAmount, 0);
     const mrrEl = document.getElementById('stat-mrr');
     if (mrrEl) mrrEl.textContent = '$' + mrrTotal.toLocaleString();
+
+    // Clients tab stuck badge
+    const stuckBadge = document.getElementById('clients-stuck-badge');
+    if (stuckBadge) {
+      stuckBadge.textContent = (s.stuckPct ?? 0) + '% stuck';
+      stuckBadge.className = 'section-badge pill ' + ((s.stuckPct || 0) > 60 ? 'pill-red' : (s.stuckPct || 0) > 30 ? 'pill-yellow' : 'pill-green');
+    }
 
     // Client cards: status pill, workflow meta, next-due meta
     const WF_KEYS = ['fast5','confirmation','noshow','review','nurture','stale'];
