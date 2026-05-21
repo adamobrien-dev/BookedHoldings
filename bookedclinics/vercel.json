@@ -2,5 +2,11 @@
   "rewrites": [
     { "source": "/platform", "destination": "/dashboard" },
     { "source": "/platform/", "destination": "/dashboard" }
+  ],
+  "crons": [
+    {
+      "path": "/api/bots/daily-briefing",
+      "schedule": "0 13 * * *"
+    }
   ]
 }
