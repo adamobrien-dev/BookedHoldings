@@ -142,7 +142,7 @@ function buildAlex(meta) {
 }
 
 // ── RILEY — Agency Sales Pipeline ───────────────────────────────────────────
-function buildRiley(dash) {
+function buildRiley(dash, rec) {
   const ap = dash.summary.agencyPipeline || {};
   const lines = [`📈 <b>Riley — Agency Pipeline</b>`, ``];
 
@@ -162,11 +162,24 @@ function buildRiley(dash) {
   lines.push(``);
   lines.push(`Won: <b>${ap.won ?? 0}</b> clients · Lost: <b>${ap.lost ?? 0}</b> · Total in pipeline: <b>${ap.total ?? 0}</b>`);
 
-  const stale = (dash.summary.staleContracts || []).filter(c => c.daysSinceSent >= 7);
-  if (stale.length > 0) {
+  // Recovery data
+  if (rec) {
+    const s = rec.summary || {};
     lines.push(``);
-    lines.push(`📄 <b>Unsigned contracts (${stale.length})</b>`);
-    stale.forEach(c => lines.push(`   • ${c.name} — ${c.daysSinceSent}d ago`));
+    lines.push(`<b>🚨 Recovery Queue</b>`);
+    if (s.scNoCall > 0) {
+      lines.push(`• SC no call booked: <b>${s.scNoCall}</b> — ${rec.scNoCall.map(c => c.name).join(', ')}`);
+    }
+    if (s.dcNoShows > 0) {
+      lines.push(`• DC no-shows: <b>${s.dcNoShows}</b> — ${rec.dcNoShows.map(c => c.name).join(', ')}`);
+    }
+    if (s.staleContracts > 0) {
+      const critical = s.criticalContracts > 0 ? ` (${s.criticalContracts} critical >14d)` : '';
+      lines.push(`• Unsigned contracts: <b>${s.staleContracts}</b>${critical}`);
+    }
+    if (s.totalRecoverable === 0) {
+      lines.push(`• All clear — nothing in the recovery queue`);
+    }
   }
 
   return lines.join('\n');
@@ -206,19 +219,21 @@ module.exports = async function handler(req, res) {
   res.setHeader('Cache-Control', 'no-store');
 
   try {
-    const [dashRes, metaRes] = await Promise.all([
+    const [dashRes, metaRes, recRes] = await Promise.all([
       fetch(`${BASE}/api/dashboard-data`),
       fetch(`${BASE}/api/meta-ads`),
+      fetch(`${BASE}/api/recovery`),
     ]);
 
     const dash = await dashRes.json();
     const meta = await metaRes.json();
+    const rec  = recRes.ok ? await recRes.json() : null;
 
     await Promise.all([
       send('jordan', buildJordan(dash, meta)),
       send('morgan', buildMorgan(dash)),
       send('alex',   buildAlex(meta)),
-      send('riley',  buildRiley(dash)),
+      send('riley',  buildRiley(dash, rec)),
       send('casey',  buildCasey(dash)),
     ]);
 

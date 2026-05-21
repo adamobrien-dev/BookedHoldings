@@ -160,6 +160,39 @@
   .days-critical { color: #f87171; }
   .days-warn { color: #fbbf24; }
 
+  /* ── RECOVERY ── */
+  .recovery-section { margin-bottom: 28px; }
+  .recovery-script { background: #0a0f1a; border: 1px solid #1a2035; border-radius: 8px; padding: 12px 16px; margin-bottom: 14px; display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
+  .recovery-script-text { font-size: 12px; color: #64748b; line-height: 1.6; flex: 1; font-style: italic; }
+  .recovery-script-text strong { color: #94a3b8; font-style: normal; }
+  .copy-script-btn { font-size: 10px; color: #6366f1; background: none; border: 1px solid #6366f1; border-radius: 5px; padding: 4px 10px; cursor: pointer; white-space: nowrap; flex-shrink: 0; }
+  .copy-script-btn:hover { background: #6366f120; }
+  .recovery-list { display: flex; flex-direction: column; gap: 8px; }
+  .recovery-item { background: #111623; border: 1px solid #1a2035; border-radius: 10px; padding: 14px 18px; display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+  .recovery-item.status-contacted { border-color: #78350f; background: #110c00; }
+  .recovery-item.status-responded { border-color: #166534; background: #0a1f10; }
+  .recovery-item.status-dead { opacity: 0.4; }
+  .recovery-info { flex: 1; min-width: 180px; }
+  .recovery-name { font-size: 13px; font-weight: 600; color: #e2e8f0; }
+  .recovery-biz { font-size: 11px; color: #475569; margin-top: 2px; }
+  .recovery-phone { font-size: 12px; color: #6366f1; font-weight: 600; text-decoration: none; white-space: nowrap; }
+  .recovery-phone:hover { color: #818cf8; }
+  .recovery-days { font-size: 18px; font-weight: 700; width: 46px; text-align: center; flex-shrink: 0; }
+  .days-hot { color: #f87171; }
+  .days-warm { color: #fbbf24; }
+  .days-cool { color: #60a5fa; }
+  .recovery-status { flex-shrink: 0; }
+  .recovery-actions { display: flex; gap: 6px; flex-shrink: 0; }
+  .rac-btn { font-size: 10px; font-weight: 600; padding: 4px 10px; border-radius: 6px; border: 1px solid; cursor: pointer; background: none; transition: all 0.15s; white-space: nowrap; }
+  .rac-btn.contacted { color: #fbbf24; border-color: #78350f; }
+  .rac-btn.contacted:hover, .rac-btn.contacted.active { background: #78350f; color: #fbbf24; }
+  .rac-btn.responded { color: #34d399; border-color: #166534; }
+  .rac-btn.responded:hover, .rac-btn.responded.active { background: #166534; color: #34d399; }
+  .rac-btn.dead { color: #64748b; border-color: #2d3748; }
+  .rac-btn.dead:hover, .rac-btn.dead.active { background: #1a1f2e; color: #64748b; }
+  .recovery-confirmed { background: #071a10; border: 1px solid #166534; border-radius: 8px; padding: 10px 14px; font-size: 12px; color: #34d399; margin-bottom: 10px; }
+  .recovery-empty { padding: 20px; text-align: center; font-size: 12px; color: #34d399; }
+
   /* ── META ADS ROW ── */
   .meta-row { padding: 10px 18px; border-top: 1px solid #1a2035; background: #0c1220; display: flex; gap: 20px; flex-wrap: wrap; }
   .meta-block { }
@@ -218,6 +251,7 @@
   <div class="nav-tab" data-tab="billing">Billing</div>
   <div class="nav-tab" data-tab="clients">Clients</div>
   <div class="nav-tab" data-tab="pipeline">Pipeline</div>
+  <div class="nav-tab" data-tab="recovery">Recovery <span id="recovery-nav-badge" style="display:none;background:#7f1d1d;color:#fca5a5;font-size:9px;font-weight:700;padding:1px 5px;border-radius:10px;margin-left:4px;"></span></div>
   <div class="nav-tab" data-tab="actions">Actions</div>
   <div class="nav-tab" data-tab="weekly">Weekly Report</div>
 </div>
@@ -682,6 +716,49 @@
   </div>
 
 </div><!-- /tab-pipeline -->
+
+<div class="tab-section" id="tab-recovery">
+  <div class="section-header">
+    <div class="section-title">Recovery Pipeline</div>
+    <span class="section-badge pill pill-red" id="recovery-total-badge">Loading...</span>
+  </div>
+
+  <!-- SC: Qualified — No Call Booked -->
+  <div class="recovery-section">
+    <div class="section-header" style="margin-top:0;">
+      <div class="section-title" style="color:#f87171;">🔥 SC Qualified — No Call Booked <span id="sc-nocall-count"></span></div>
+    </div>
+    <div class="recovery-script">
+      <div class="recovery-script-text"><strong>Script:</strong> "Hey [name], it's Adam from BookedClinics — we spoke a while back and I have a couple of strategy call spots open this week. Want to grab one? Takes 30 mins."</div>
+      <button class="copy-script-btn" onclick="copyScript(this, 'Hey [name], it\'s Adam from BookedClinics — we spoke a while back and I have a couple of strategy call spots open this week. Want to grab one? Takes 30 mins.')">Copy</button>
+    </div>
+    <div class="recovery-list" id="sc-nocall-list"><div style="color:#475569;padding:16px;font-size:12px;">Loading...</div></div>
+  </div>
+
+  <!-- DC: No-Shows -->
+  <div class="recovery-section">
+    <div class="section-header">
+      <div class="section-title" style="color:#fbbf24;">👻 DC No-Shows — Re-book <span id="dc-noshow-count"></span></div>
+    </div>
+    <div class="recovery-script">
+      <div class="recovery-script-text"><strong>Script:</strong> "Hey [name], we had a call scheduled and missed each other — totally understand life gets busy. Would you still like to connect? I have a few spots open this week."</div>
+      <button class="copy-script-btn" onclick="copyScript(this, 'Hey [name], we had a call scheduled and missed each other — totally understand life gets busy. Would you still like to connect? I have a few spots open this week.')">Copy</button>
+    </div>
+    <div class="recovery-list" id="dc-noshow-list"><div style="color:#475569;padding:16px;font-size:12px;">Loading...</div></div>
+  </div>
+
+  <!-- Stale Contracts -->
+  <div class="recovery-section">
+    <div class="section-header">
+      <div class="section-title" style="color:#60a5fa;">📄 Unsigned Contracts <span id="contracts-stale-count"></span></div>
+    </div>
+    <div class="recovery-script">
+      <div class="recovery-script-text"><strong>Script:</strong> "Hey [name], just checking in on the contract I sent over. Still interested in moving forward? Happy to jump on a quick call if you have any questions."</div>
+      <button class="copy-script-btn" onclick="copyScript(this, 'Hey [name], just checking in on the contract I sent over. Still interested in moving forward? Happy to jump on a quick call if you have any questions.')">Copy</button>
+    </div>
+    <div class="recovery-list" id="contracts-stale-list"><div style="color:#475569;padding:16px;font-size:12px;">Loading...</div></div>
+  </div>
+</div><!-- /tab-recovery -->
 
 <div class="tab-section" id="tab-actions">
   <!-- ── ACTION PLAN ── -->
@@ -1539,9 +1616,158 @@ document.addEventListener('DOMContentLoaded', () => {
         tab.dataset.loaded = '1';
         loadWeeklyReport();
       }
+      if (tab.dataset.tab === 'recovery' && !tab.dataset.loaded) {
+        tab.dataset.loaded = '1';
+        loadRecovery();
+      }
     });
   });
 });
+
+// ── RECOVERY TAB ─────────────────────────────────────────────────────────────
+
+const REC_KEY = 'bc_recovery_status';
+
+function getRecoveryStatuses() {
+  try { return JSON.parse(localStorage.getItem(REC_KEY) || '{}'); } catch { return {}; }
+}
+
+function saveRecoveryStatus(id, status) {
+  const s = getRecoveryStatuses();
+  if (status === null) delete s[id]; else s[id] = status;
+  localStorage.setItem(REC_KEY, JSON.stringify(s));
+}
+
+function copyScript(btn, text) {
+  navigator.clipboard.writeText(text).then(() => {
+    const orig = btn.textContent;
+    btn.textContent = 'Copied!';
+    btn.style.color = '#34d399';
+    setTimeout(() => { btn.textContent = orig; btn.style.color = ''; }, 1800);
+  });
+}
+
+function updateStatus(id, status) {
+  const s = getRecoveryStatuses();
+  const current = s[id];
+  const next = current === status ? null : status;
+  saveRecoveryStatus(id, next);
+  const item = document.getElementById('rec-' + id);
+  if (!item) return;
+  item.className = 'recovery-item' + (next ? ' status-' + next : '');
+  item.querySelectorAll('.rac-btn').forEach(b => b.classList.remove('active'));
+  if (next) {
+    const active = item.querySelector('.rac-btn.' + next);
+    if (active) active.classList.add('active');
+  }
+}
+
+function dayTier(days) {
+  if (days >= 14) return 'hot';
+  if (days >= 7)  return 'warm';
+  return 'cool';
+}
+
+function fmtPhone(phone) {
+  if (!phone) return '';
+  return phone.replace(/\D/g, '').replace(/^1?(\d{3})(\d{3})(\d{4})$/, '($1) $2-$3') || phone;
+}
+
+function renderRecoveryItem(person, statusMap, segment) {
+  const id = person.contactId || (segment + '-' + person.name.replace(/\s+/g, '-').toLowerCase());
+  const status = statusMap[id] || '';
+  const days = person.daysInStage ?? person.daysSinceSent ?? 0;
+  const tier = dayTier(days);
+  const phone = person.phone || '';
+  const biz   = person.biz || '';
+
+  return `<div class="recovery-item${status ? ' status-' + status : ''}" id="rec-${id}">
+    <div class="recovery-days days-${tier}">${days}d</div>
+    <div class="recovery-info">
+      <div class="recovery-name">${person.name}</div>
+      ${biz ? `<div class="recovery-biz">${biz}</div>` : ''}
+    </div>
+    ${phone ? `<a class="recovery-phone" href="tel:${phone}">${fmtPhone(phone)}</a>` : '<span class="recovery-phone" style="color:#475569">no phone</span>'}
+    <div class="recovery-actions">
+      <button class="rac-btn contacted${status === 'contacted' ? ' active' : ''}" onclick="updateStatus('${id}','contacted')">✓ Contacted</button>
+      <button class="rac-btn responded${status === 'responded' ? ' active' : ''}" onclick="updateStatus('${id}','responded')">↩ Responded</button>
+      <button class="rac-btn dead${status === 'dead' ? ' active' : ''}" onclick="updateStatus('${id}','dead')">✕ Dead</button>
+    </div>
+  </div>`;
+}
+
+function renderRecovery(data) {
+  const statuses = getRecoveryStatuses();
+
+  // SC No-Call
+  const scList = document.getElementById('sc-nocall-list');
+  const scCount = document.getElementById('sc-nocall-count');
+  if (data.scNoCall?.length > 0) {
+    scCount.textContent = '(' + data.scNoCall.length + ')';
+    scList.innerHTML = data.scNoCall.map(p => renderRecoveryItem(p, statuses, 'sc')).join('');
+  } else {
+    scCount.textContent = '(0)';
+    scList.innerHTML = '<div class="recovery-empty">All SC contacts have a call booked</div>';
+  }
+
+  // SC Confirmed — show as a green block below the no-call list
+  if (data.scConfirmed?.length > 0) {
+    const confirmed = data.scConfirmed.map(p => {
+      const appt = p.nextAppt ? new Date(p.nextAppt).toLocaleDateString('en-US',{month:'short',day:'numeric',hour:'numeric',minute:'2-digit'}) : '';
+      return `<span style="color:#e2e8f0;font-weight:600">${p.name}</span>${appt ? ' — ' + appt : ''}`;
+    }).join('<br>');
+    scList.insertAdjacentHTML('afterend', `<div class="recovery-confirmed" style="margin-top:10px">✓ ${data.scConfirmed.length} confirmed: ${confirmed}</div>`);
+  }
+
+  // DC No-Shows
+  const dcList = document.getElementById('dc-noshow-list');
+  const dcCount = document.getElementById('dc-noshow-count');
+  if (data.dcNoShows?.length > 0) {
+    dcCount.textContent = '(' + data.dcNoShows.length + ')';
+    dcList.innerHTML = data.dcNoShows.map(p => renderRecoveryItem(p, statuses, 'dc')).join('');
+  } else {
+    dcCount.textContent = '(0)';
+    dcList.innerHTML = '<div class="recovery-empty">No DC no-shows to recover</div>';
+  }
+
+  // Stale Contracts
+  const ctList = document.getElementById('contracts-stale-list');
+  const ctCount = document.getElementById('contracts-stale-count');
+  if (data.staleContracts?.length > 0) {
+    ctCount.textContent = '(' + data.staleContracts.length + ')';
+    ctList.innerHTML = data.staleContracts.map(p => renderRecoveryItem(p, statuses, 'ct')).join('');
+  } else {
+    ctCount.textContent = '(0)';
+    ctList.innerHTML = '<div class="recovery-empty">No unsigned contracts</div>';
+  }
+
+  // Badge
+  const total = data.summary?.totalRecoverable ?? 0;
+  const navBadge = document.getElementById('recovery-nav-badge');
+  const totalBadge = document.getElementById('recovery-total-badge');
+  if (total > 0) {
+    navBadge.textContent = total;
+    navBadge.style.display = '';
+    totalBadge.textContent = total + ' need attention';
+    totalBadge.style.background = '#7f1d1d';
+  } else {
+    navBadge.style.display = 'none';
+    totalBadge.textContent = 'All clear';
+    totalBadge.style.background = '#166534';
+  }
+}
+
+async function loadRecovery() {
+  try {
+    const res = await fetch('/api/recovery');
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    const data = await res.json();
+    renderRecovery(data);
+  } catch (e) {
+    console.warn('Recovery load failed:', e);
+    document.getElementById('sc-nocall-list').innerHTML = '<div style="color:#ef4444;padding:16px;font-size:12px;">Failed to load recovery data</div>';
+  }
+}
 </script>
 </body>
 </html>
