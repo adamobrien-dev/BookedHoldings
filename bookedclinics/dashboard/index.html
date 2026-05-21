@@ -160,6 +160,16 @@
   .days-critical { color: #f87171; }
   .days-warn { color: #fbbf24; }
 
+  /* ── META ADS ROW ── */
+  .meta-row { padding: 10px 18px; border-top: 1px solid #1a2035; background: #0c1220; display: flex; gap: 20px; flex-wrap: wrap; }
+  .meta-block { }
+  .meta-block-label { font-size: 10px; text-transform: uppercase; letter-spacing: 0.6px; color: #475569; margin-bottom: 3px; }
+  .meta-block-value { font-size: 14px; font-weight: 700; color: #e2e8f0; line-height: 1; }
+  .meta-block-sub { font-size: 10px; color: #475569; margin-top: 2px; }
+  .meta-block-value.green { color: #34d399; }
+  .meta-block-value.yellow { color: #fbbf24; }
+  .meta-block-value.red { color: #f87171; }
+
   /* ── RESPONSIVE ── */
   @media (max-width: 900px) {
     .stats-grid { grid-template-columns: repeat(2, 1fr); }
@@ -381,6 +391,7 @@
           </div>
         </div>
       </div>
+      <div class="meta-row" id="terri-meta-row" style="display:none;"></div>
       <div class="client-footer">
         <div class="client-meta"><strong id="terri-total">55</strong> total</div>
         <div class="client-meta" id="terri-wf-meta">— wf</div>
@@ -420,6 +431,7 @@
           </div>
         </div>
       </div>
+      <div class="meta-row" id="allaphia-meta-row" style="display:none;"></div>
       <div class="client-footer">
         <div class="client-meta"><strong id="allaphia-total">12</strong> total</div>
         <div class="client-meta" id="allaphia-wf-meta">— wf</div>
@@ -459,6 +471,7 @@
           </div>
         </div>
       </div>
+      <div class="meta-row" id="thania-meta-row" style="display:none;"></div>
       <div class="client-footer">
         <div class="client-meta"><strong id="thania-total">7</strong> total</div>
         <div class="client-meta" id="thania-wf-meta">— wf</div>
@@ -498,6 +511,7 @@
           </div>
         </div>
       </div>
+      <div class="meta-row" id="aguilera-meta-row" style="display:none;"></div>
       <div class="client-footer">
         <div class="client-meta"><strong id="aguilera-total">1</strong> total</div>
         <div class="client-meta" id="aguilera-wf-meta">— wf</div>
@@ -968,7 +982,7 @@ function renderContracts(contracts) {
   }).join('');
 }
 
-function renderActions(s, clients) {
+function renderActions(s, clients, metaAccounts) {
   const container = document.getElementById('actions-dynamic');
   const badge = document.getElementById('actions-badge');
   if (!container) return;
@@ -1004,6 +1018,18 @@ function renderActions(s, clients) {
     }
   });
 
+  // Meta account billing failures (unsettled / disabled)
+  (metaAccounts || []).forEach(a => {
+    if (a.isUnsettled || a.isDisabled) {
+      actions.push({ color: 'red', tagLabel: 'Do Now',
+        title: 'Fix Meta billing — ' + a.name,
+        desc: a.isDisabled
+          ? 'Ad account is DISABLED. Go to Meta Business Manager → Ad Accounts → ' + a.name + ' and resolve the issue to resume campaigns.'
+          : 'Ad account UNSETTLED — payment failed. Go to Meta → Billing and update the payment method before ads pause.',
+      });
+    }
+  });
+
   // ── DO TODAY (yellow) ─────────────────────────────────────────────────────
   (s.billingRows || []).filter(r => r.nextDueDate && r.paymentStatus !== 'failed').forEach(r => {
     const days = Math.ceil((new Date(r.nextDueDate) - now) / 86400000);
@@ -1028,6 +1054,16 @@ function renderActions(s, clients) {
       desc: names + ' — leads entering with zero follow-up. Start with Fast 5 (fires within 5 min of form submit), then Confirmation + Reminders.',
     });
   }
+
+  // Meta spend with zero leads
+  (metaAccounts || []).forEach(a => {
+    if (a.spend != null && a.spend > 50 && (a.leads === 0 || a.leads == null) && a.isActive) {
+      actions.push({ color: 'yellow', tagLabel: 'Do Today',
+        title: a.name + ' — $' + a.spend.toFixed(0) + ' spent, 0 leads (7d)',
+        desc: 'Ads are spending but no lead form submissions recorded. Check the campaign creative, targeting, and landing page — something is broken in the funnel.',
+      });
+    }
+  });
 
   // ── THIS WEEK (blue) ──────────────────────────────────────────────────────
   const staleContracts = (s.staleContracts || []).filter(c => c.daysSinceSent >= 7);
@@ -1166,10 +1202,12 @@ async function loadData() {
     renderOverviewAlerts(s.billingRows, data.clients);
 
     // Dynamic billing rows
+    _lastSummary = s;
+    _lastClients = data.clients;
     renderBillingRows(s.billingRows || []);
     renderUpcoming(s.billingRows || []);
     renderContracts(s.staleContracts || []);
-    renderActions(s, data.clients);
+    renderActions(s, data.clients, _metaAccounts);
 
     // MRR — sum retainers where payment is not failed
     const mrrTotal = (s.billingRows || [])
@@ -1422,10 +1460,66 @@ function copyReport() {
 }
 
 let _lastLoadTime = 0;
+let _lastSummary = null;
+let _lastClients = null;
+let _metaAccounts = null;
+
+function fmtSpend(n) { return n == null ? '—' : '$' + n.toLocaleString('en-US', { maximumFractionDigits: 0 }); }
+
+async function loadMetaData() {
+  try {
+    const res = await fetch('/api/meta-ads');
+    if (!res.ok) return;
+    const data = await res.json();
+    if (!data.accounts) return;
+
+    _metaAccounts = data.accounts;
+
+    for (const a of data.accounts) {
+      const row = document.getElementById(a.key + '-meta-row');
+      if (!row) continue;
+
+      const statusColor = a.isDisabled ? 'red' : a.isUnsettled ? 'yellow' : 'green';
+      const statusText  = a.isDisabled ? '✕ Disabled' : a.isUnsettled ? '⚠ Unsettled' : '● Active';
+      const cplColor    = a.cpl == null ? '' : a.cpl > 75 ? 'red' : a.cpl > 40 ? 'yellow' : 'green';
+      const leadsColor  = a.leads == null ? '' : a.leads === 0 && a.spend > 50 ? 'red' : a.leads > 0 ? 'green' : '';
+
+      row.innerHTML = `
+        <div class="meta-block">
+          <div class="meta-block-label">Spend (7d)</div>
+          <div class="meta-block-value">${fmtSpend(a.spend)}</div>
+          <div class="meta-block-sub">Meta Ads</div>
+        </div>
+        <div class="meta-block">
+          <div class="meta-block-label">Leads (7d)</div>
+          <div class="meta-block-value${leadsColor ? ' ' + leadsColor : ''}">${a.leads ?? '—'}</div>
+          <div class="meta-block-sub">from ad forms</div>
+        </div>
+        <div class="meta-block">
+          <div class="meta-block-label">CPL</div>
+          <div class="meta-block-value${cplColor ? ' ' + cplColor : ''}">${a.cpl != null ? '$' + a.cpl.toFixed(0) : '—'}</div>
+          <div class="meta-block-sub">cost per lead</div>
+        </div>
+        <div class="meta-block">
+          <div class="meta-block-label">Account</div>
+          <div class="meta-block-value ${statusColor}">${statusText}</div>
+          <div class="meta-block-sub">${a.error ? 'API error' : 'live status'}</div>
+        </div>`;
+      row.style.display = 'flex';
+    }
+
+    // Re-render actions now that meta data is available
+    if (_lastSummary) renderActions(_lastSummary, _lastClients, _metaAccounts);
+
+  } catch (e) {
+    console.warn('Meta data load failed:', e);
+  }
+}
 
 document.addEventListener('DOMContentLoaded', () => {
   try { initRangePicker(); } catch(e) { console.warn('Range picker init error:', e); }
   loadData();
+  loadMetaData();
 
   // Auto-refresh every 5 minutes
   setInterval(loadData, 5 * 60 * 1000);
