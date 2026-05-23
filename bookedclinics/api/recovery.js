@@ -7,7 +7,8 @@ const STAGES = {
   DC_NOSHOW:   'f7a093f3-799e-4c00-826b-886c41199063',
 };
 
-const STALE_CONTRACTS = [
+// Fallback list used only if Dropbox Sign API key is not set
+const STALE_CONTRACTS_FALLBACK = [
   { name: 'Doyinsola Abikoye', biz: 'No business name on file', sentDate: '2026-04-17' },
   { name: 'Emily Anderson',    biz: 'Renew Chiropractic',       sentDate: '2026-04-18' },
   { name: 'Brittany Baumer',   biz: 'The Skin & Body Spa',      sentDate: '2026-04-21' },
@@ -16,6 +17,35 @@ const STALE_CONTRACTS = [
   { name: 'Nnenna Obioha',     biz: 'Lost in GHL — contract sent after', sentDate: '2026-05-07' },
   { name: 'Yahaira Manon',     biz: '2 ad images in Drive',     sentDate: '2026-05-13' },
 ];
+
+async function getDropboxSignContracts() {
+  const apiKey = process.env.DROPBOX_SIGN_API_KEY;
+  if (!apiKey) return null;
+
+  try {
+    const auth = 'Basic ' + Buffer.from(apiKey + ':').toString('base64');
+    const res = await fetch('https://api.hellosign.com/v3/signature_request/list?page_size=50', {
+      headers: { Authorization: auth },
+    });
+    if (!res.ok) return null;
+    const data = await res.json();
+
+    return (data.signature_requests || [])
+      .filter(r => !r.is_complete && !r.is_declined)
+      .map(r => {
+        const signer = r.signers?.[0] || {};
+        const sentDate = new Date(r.created_at * 1000).toISOString().split('T')[0];
+        return {
+          name: signer.name || r.title || 'Unknown',
+          biz:  r.title || '',
+          sentDate,
+          signatureRequestId: r.signature_request_id,
+        };
+      });
+  } catch {
+    return null;
+  }
+}
 
 async function ghlFetch(path, pit) {
   try {
@@ -78,16 +108,18 @@ module.exports = async function handler(req, res) {
     }))
     .sort((a, b) => b.daysInStage - a.daysInStage);
 
-  // ── Stale Contracts — cross-reference SC list for phone numbers ───────────
+  // ── Stale Contracts — live from Dropbox Sign, fallback to static list ────────
   const scByName = {};
   scResults.forEach(r => { scByName[r.name?.toLowerCase().trim()] = r; });
 
-  const staleContracts = STALE_CONTRACTS.map(c => {
+  const rawContracts = (await getDropboxSignContracts()) ?? STALE_CONTRACTS_FALLBACK;
+
+  const staleContracts = rawContracts.map(c => {
     const match = scByName[c.name?.toLowerCase().trim()];
     return {
       ...c,
       daysSinceSent: daysSince(c.sentDate),
-      phone:         match?.phone    || null,
+      phone:         match?.phone     || null,
       contactId:     match?.contactId || null,
     };
   }).sort((a, b) => b.daysSinceSent - a.daysSinceSent);
