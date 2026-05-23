@@ -3,33 +3,108 @@
 //
 // Step 1: Set GHL_AGENCY_KEY + GHL_COMPANY_ID, then run → creates the sub-account.
 // Step 2: Paste the returned Location ID below, set GHL_CLIENT_PIT, then re-run →
-//         applies the snapshot, creates the contact, and adds the opportunity.
+//         applies the snapshot (if set), creates the contact, and adds the opportunity.
+//
+// Optional fields (snapshotId, pipelineId, stageId) can be left null to skip those steps.
 
 const GHL_API = 'https://services.leadconnectorhq.com';
 const GHL_VERSION = '2021-07-28';
 
 // ── CLIENT CONFIG ─────────────────────────────────────────────────────────────
+// Current config: TEST — Thompson Chiropractic (Austin, TX)
+// Replace all values with the real client before running for production.
 const CLIENT = {
-  name:         'TODO: Full Name',          // e.g. 'Jane Smith'
-  businessName: 'TODO: Business Name',      // e.g. 'Smith Chiropractic'
-  email:        'TODO: client@email.com',
-  phone:        'TODO: +1XXXXXXXXXX',
-  niche:        'TODO: Niche',              // e.g. 'Chiropractic'
-  city:         'TODO: City',
-  state:        'TODO: ST',                 // 2-letter, e.g. 'TX'
-  zip:          'TODO: ZIP',
-  website:      'TODO: https://...',
-  timezone:     'TODO: America/Chicago',    // IANA timezone
+  name:         'Dr. Alex Thompson',
+  businessName: 'Thompson Chiropractic',
+  email:        'alex@thompsonchiro.test',
+  phone:        '+15125550100',
+  niche:        'Chiropractic',
+  city:         'Austin',
+  state:        'TX',
+  zip:          '78701',
+  website:      'https://thompsonchiro.com',
+  timezone:     'America/Chicago',
 
-  // Fill these in from your GHL agency dashboard:
-  snapshotId:   'TODO: GHL snapshot ID',
-  pipelineId:   'TODO: GHL pipeline ID',
-  stageId:      'TODO: first stage ID',     // e.g. 'Setting Up' stage
-  dealValue:    500,                         // monthly retainer $ — adjust as needed
+  // Optional GHL IDs — set to null to skip that step
+  snapshotId:   null,   // paste snapshot ID here once built in GHL (see GHL_SETUP_GUIDE below)
+  pipelineId:   null,   // paste pipeline ID from GHL agency dashboard
+  stageId:      null,   // paste first pipeline stage ID (e.g. 'Setting Up')
+  dealValue:    500,    // monthly retainer $ — adjust per deal
 
-  // Fill after Step 1 completes:
-  locationId:   null,                        // paste returned location ID here before Step 2
+  // Filled automatically after Step 1 — paste locationId here before re-running Step 2
+  locationId:   null,
 };
+
+// ── GHL SETUP GUIDE ───────────────────────────────────────────────────────────
+// After Step 1 creates the sub-account, log into GHL and build the following
+// inside the new sub-account. When done, save everything as a snapshot so
+// future clients can be fully provisioned automatically.
+//
+// SURVEY (Sites → Surveys → New Survey)
+// ──────────────────────────────────────
+// Name: "New Patient Intake"
+// Pages: 1 page, 10 questions
+//
+//  Q1  Short Answer  — "What's your full name?" [required]
+//  Q2  Short Answer  — "Email address?" [required]
+//  Q3  Short Answer  — "Best phone number?" [required]
+//  Q4  Single Select — "What's your main concern?"
+//        Back pain | Neck pain | Headaches/migraines | Sciatica | Sports injury | Other
+//  Q5  Single Select — "How long have you had this issue?"
+//        Less than a week | 1–4 weeks | 1–3 months | More than 3 months
+//  Q6  Single Select — "Rate your pain right now (1–10)"
+//        1–2 (mild) | 3–5 (moderate) | 6–8 (severe) | 9–10 (unbearable)
+//  Q7  Single Select — "Have you seen a chiropractor before?"
+//        Yes | No
+//  Q8  Single Select — "Are you currently insured?"
+//        Yes | No | Not sure
+//  Q9  Single Select — "How did you hear about us?"
+//        Google search | Google Maps | Facebook/Instagram | Friend or family | Other
+//  Q10 Single Select — "Ready to book your free consultation?"
+//        Yes, contact me to book | I have a few questions first
+//
+// Redirect on submit → Thank You page URL (see site structure below)
+// Notification → email to client + internal lead notification
+//
+// SITE / FUNNEL (Sites → Funnels → New Funnel)
+// ─────────────────────────────────────────────
+// Name: "Thompson Chiro — New Patient"
+// Domain: connect client's domain or use GHL subdomain for test
+//
+// Page 1 — Home / Landing Page (path: /)
+//   Hero:    "Get Out of Pain. Book Your Free Chiropractic Consultation."
+//   Sub:     "We help Austin patients with back pain, neck pain, sciatica & more.
+//             No pressure. Same-week appointments available."
+//   CTA btn: "Take the Free Pain Assessment →" → links to Survey page
+//   Section: 3 trust icons (Licensed, Insurance Accepted, Same-Week Appts)
+//   Section: Before/After or pain-relief photo + short bio of Dr. Thompson
+//   Section: Services (Back & Neck Pain, Sciatica, Headaches, Sports Injuries)
+//   Section: Google reviews widget (min 5 stars shown)
+//   Section: Final CTA — "Ready to feel better? Take 60 seconds →" button
+//
+// Page 2 — Survey / Intake (path: /intake)
+//   Embed the "New Patient Intake" survey built above
+//   Headline: "Tell us about your pain — takes 60 seconds"
+//
+// Page 3 — Thank You (path: /thank-you)
+//   Headline: "We got it! Expect a call within 24 hours."
+//   Sub:     "While you wait, save our number: [phone]"
+//   Optional: embed a Calendly/GHL calendar for self-booking
+//
+// WORKFLOW (Automations → Workflows → New)
+// ─────────────────────────────────────────
+// Trigger: Survey submitted (New Patient Intake)
+// Actions:
+//   1. Create / update contact (map Q1=name, Q2=email, Q3=phone)
+//   2. Add tag: "new-lead"
+//   3. Add to pipeline: New Patient → stage "New Lead"
+//   4. Wait 5 min → SMS: "Hi [name], Dr. Thompson's team here! We saw your intake form.
+//      Are you free for a quick call today or tomorrow?"
+//   5. Wait 1 day (no reply) → SMS: follow-up
+//   6. Internal notification → email to clinic
+//
+// Once ALL of the above is built and tested, save the sub-account as a GHL snapshot,
+// then paste the snapshot ID into CLIENT.snapshotId above.
 // ─────────────────────────────────────────────────────────────────────────────
 
 const AGENCY_KEY = process.env.GHL_AGENCY_KEY;   // agency-level API key
@@ -56,7 +131,7 @@ async function ghlRequest(method, path, body, token) {
 
 // ── STEP 1: Create sub-account ────────────────────────────────────────────────
 async function createLocation() {
-  console.log('\n[1/4] Creating sub-account (location)...');
+  console.log('\n[1] Creating sub-account (location)...');
 
   const data = await ghlRequest('POST', '/locations/', {
     name: CLIENT.businessName,
@@ -81,16 +156,23 @@ async function createLocation() {
   console.log(`\n  Sub-account created!`);
   console.log(`  Location ID: ${locationId}`);
   console.log(`\n  Next steps:`);
-  console.log(`    1. Paste the Location ID into CLIENT.locationId in this file.`);
-  console.log(`    2. Generate a PIT for the new sub-account in GHL Settings → Integrations.`);
-  console.log(`    3. Set GHL_CLIENT_PIT=<pit> and re-run to finish provisioning.`);
+  console.log(`    1. Paste the location ID into CLIENT.locationId in this file.`);
+  console.log(`    2. Log into GHL and build the survey + funnel inside this sub-account`);
+  console.log(`       (see GHL_SETUP_GUIDE in this file for the exact structure).`);
+  console.log(`    3. Generate a PIT: GHL → Settings → Integrations → Private Integrations.`);
+  console.log(`    4. Set GHL_CLIENT_PIT=<pit> and re-run to finish.`);
 
   return locationId;
 }
 
-// ── STEP 2: Apply snapshot ────────────────────────────────────────────────────
+// ── STEP 2: Apply snapshot (optional) ────────────────────────────────────────
 async function applySnapshot(locationId) {
-  console.log('\n[2/4] Applying snapshot...');
+  if (!CLIENT.snapshotId) {
+    console.log('\n[2] Snapshot — skipped (no snapshotId set).');
+    return;
+  }
+
+  console.log('\n[2] Applying snapshot...');
 
   await ghlRequest('POST', '/snapshots/apply', {
     type: 'own_location',
@@ -104,7 +186,7 @@ async function applySnapshot(locationId) {
 
 // ── STEP 3: Create contact ────────────────────────────────────────────────────
 async function createContact(locationId) {
-  console.log('\n[3/4] Creating client contact...');
+  console.log('\n[3] Creating client contact...');
 
   const [firstName, ...rest] = CLIENT.name.split(' ');
   const lastName = rest.join(' ');
@@ -134,9 +216,14 @@ async function createContact(locationId) {
   return contactId;
 }
 
-// ── STEP 4: Add to pipeline ───────────────────────────────────────────────────
+// ── STEP 4: Add to pipeline (optional) ───────────────────────────────────────
 async function createOpportunity(locationId, contactId) {
-  console.log('\n[4/4] Adding to pipeline...');
+  if (!CLIENT.pipelineId || !CLIENT.stageId) {
+    console.log('\n[4] Pipeline — skipped (no pipelineId/stageId set).');
+    return null;
+  }
+
+  console.log('\n[4] Adding to pipeline...');
 
   const data = await ghlRequest('POST', '/opportunities/', {
     locationId,
@@ -158,29 +245,16 @@ async function createOpportunity(locationId, contactId) {
 
 // ── MAIN ──────────────────────────────────────────────────────────────────────
 async function main() {
-  // Validate required env vars
   if (!AGENCY_KEY) { console.error('Error: GHL_AGENCY_KEY is not set.'); process.exit(1); }
   if (!COMPANY_ID) { console.error('Error: GHL_COMPANY_ID is not set.'); process.exit(1); }
 
-  // Validate TODOs in CLIENT config
-  const missingFields = Object.entries(CLIENT)
-    .filter(([, v]) => typeof v === 'string' && v.startsWith('TODO:'))
-    .map(([k]) => k);
-
-  // Allow locationId to be null on first run (Step 1)
-  const critical = missingFields.filter(f => f !== 'locationId');
-  if (critical.length > 0) {
-    console.error(`Error: Fill in the following CLIENT fields before running:\n  ${critical.join(', ')}`);
-    process.exit(1);
-  }
-
   try {
-    // ── STEP 1 ────────────────────────────────────────────────
     let { locationId } = CLIENT;
 
+    // ── STEP 1 ────────────────────────────────────────────────
     if (!locationId) {
       await createLocation();
-      process.exit(0); // pause for user to fill in locationId + PIT
+      process.exit(0);
     }
 
     // ── STEPS 2-4 (requires CLIENT_PIT) ───────────────────────
@@ -194,10 +268,9 @@ async function main() {
     await createOpportunity(locationId, contactId);
 
     // ── DONE ───────────────────────────────────────────────────
-    const clientKey = CLIENT.businessName.split(' ')[0].toLowerCase();
-    const pitEnvKey = `GHL_PIT_${CLIENT.name.split(' ')[0].toUpperCase()}`;
-    console.log('\n  Client provisioned successfully!\n');
-    console.log('  Add this entry to CLIENTS in dashboard-data.js:');
+    const clientKey = CLIENT.businessName.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+    const pitEnvKey = `GHL_PIT_${CLIENT.name.replace(/^Dr\.\s*/i, '').split(' ')[0].toUpperCase()}`;
+    console.log('\n  Done! Add this to CLIENTS in dashboard-data.js:\n');
     console.log(`  {`);
     console.log(`    key: '${clientKey}',`);
     console.log(`    name: '${CLIENT.name}',`);
@@ -207,8 +280,8 @@ async function main() {
     console.log(`    pitEnv: '${pitEnvKey}',`);
     console.log(`    stripeId: null,`);
     console.log(`    status: 'setup',`);
-    console.log(`  }`);
-    console.log(`\n  Also set env var: ${pitEnvKey}=<pit>\n`);
+    console.log(`  }\n`);
+    console.log(`  Also add env var: ${pitEnvKey}=<pit>\n`);
 
   } catch (err) {
     console.error('\nError:', err.message);
