@@ -92,7 +92,11 @@ module.exports = async function handler(req, res) {
   const onlyStage = req.query.only?.toUpperCase() || null; // e.g. ?only=SC_UPCOMING
   const sevenDaysAgo = Date.now() - 7 * 24 * 60 * 60 * 1000;
 
-  const { data: oppsData } = await ghl('GET', `/opportunities/search?location_id=${AGENCY_LOC}&limit=100`, null, pit);
+  const oppsResult = await ghl('GET', `/opportunities/search?location_id=${AGENCY_LOC}&limit=100`, null, pit);
+  const oppsData = oppsResult.data;
+  if (!oppsResult.ok) {
+    return res.status(502).json({ error: 'GHL API error', status: oppsResult.status, detail: oppsData });
+  }
   const opps = (oppsData?.opportunities || []).filter(o => o.status !== 'lost');
 
   const sent = [];
