@@ -67,34 +67,28 @@ async function getUnsignedContracts(apiKey) {
     }));
 }
 
-async function findGhlContact(email, name, pit) {
-  // Try email first (exact)
-  if (email) {
-    const r = await fetch(
-      `${GHL_API}/contacts/?locationId=${AGENCY_LOC}&query=${encodeURIComponent(email)}&limit=5`,
-      { headers: { Authorization: `Bearer ${pit}`, Version: GHL_VERSION } }
-    );
-    if (r.ok) {
-      const data = await r.json();
-      const match = (data?.contacts || []).find(c =>
-        c.email?.toLowerCase() === email.toLowerCase()
-      );
-      if (match) return match;
-    }
+function buildContactIndex(opps) {
+  const byEmail = new Map();
+  const byFirst = new Map();
+  for (const opp of opps) {
+    const c = opp.contact;
+    if (!c) continue;
+    if (c.email) byEmail.set(c.email.toLowerCase(), c);
+    const first = (c.name || '').toLowerCase().split(' ')[0];
+    if (first) byFirst.set(first, c);
   }
-  // Fall back to name search
+  return { byEmail, byFirst };
+}
+
+function lookupContact(index, email, name) {
+  if (email) {
+    const match = index.byEmail.get(email.toLowerCase());
+    if (match) return match;
+  }
   if (name) {
-    const r = await fetch(
-      `${GHL_API}/contacts/?locationId=${AGENCY_LOC}&query=${encodeURIComponent(name)}&limit=5`,
-      { headers: { Authorization: `Bearer ${pit}`, Version: GHL_VERSION } }
-    );
-    if (r.ok) {
-      const data = await r.json();
-      const lower = name.toLowerCase();
-      return (data?.contacts || []).find(c =>
-        (c.name || '').toLowerCase().includes(lower.split(' ')[0])
-      ) || null;
-    }
+    const first = name.toLowerCase().split(' ')[0];
+    const match = index.byFirst.get(first);
+    if (match) return match;
   }
   return null;
 }
@@ -137,31 +131,35 @@ module.exports = async function handler(req, res) {
     return res.status(502).json({ error: err.message });
   }
 
+  // Build contact index from GHL opportunities (known-working endpoint)
+  const oppsData = await ghl(`/opportunities/search?location_id=${AGENCY_LOC}&limit=100`, pit);
+  const index    = buildContactIndex(oppsData?.opportunities || []);
+
   const sent    = [];
   const skipped = [];
 
   for (const contract of contracts) {
-    const days = daysSince(contract.createdAt);
-    const contact = await findGhlContact(contract.signerEmail, contract.signerName, pit);
+    const days    = daysSince(contract.createdAt);
+    const seq     = days <= 7 ? 1 : days <= 14 ? 2 : days <= 21 ? 3 : 4;
+    const message = pickMessage(contract.signerName, days);
+    const contact = lookupContact(index, contract.signerEmail, contract.signerName);
 
     if (!contact) {
-      skipped.push({ signerName: contract.signerName, signerEmail: contract.signerEmail, contractAge: `${days}d`, reason: 'not found in GHL' });
+      skipped.push({ signerName: contract.signerName, signerEmail: contract.signerEmail, contractTitle: contract.title, contractAge: `${days}d`, sequence: seq, message, reason: 'not found in GHL — no phone' });
       continue;
     }
     if (!contact.phone) {
-      skipped.push({ name: contact.name, contractAge: `${days}d`, reason: 'no phone in GHL' });
+      skipped.push({ name: contact.name, contractTitle: contract.title, contractAge: `${days}d`, sequence: seq, message, reason: 'no phone in GHL' });
       continue;
     }
 
-    const message = pickMessage(contact.name, days);
-    const result  = await sendSms(contact.id, message, pit, dry);
-
+    const result = await sendSms(contact.id, message, pit, dry);
     sent.push({
       name: contact.name,
       phone: contact.phone,
       contractTitle: contract.title,
       contractAge: `${days} days`,
-      sequence: days <= 7 ? 1 : days <= 14 ? 2 : days <= 21 ? 3 : 4,
+      sequence: seq,
       message,
       ...result,
     });
