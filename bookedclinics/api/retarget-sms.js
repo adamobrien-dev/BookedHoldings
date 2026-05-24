@@ -89,6 +89,7 @@ module.exports = async function handler(req, res) {
 
   const pit = process.env.GHL_PIT_AGENCY || 'pit-50489259-62a0-4120-9323-81362a9806ac';
   const dry = req.query.send !== 'true';
+  const onlyStage = req.query.only?.toUpperCase() || null; // e.g. ?only=SC_UPCOMING
   const sevenDaysAgo = Date.now() - 7 * 24 * 60 * 60 * 1000;
 
   const { data: oppsData } = await ghl('GET', `/opportunities/search?location_id=${AGENCY_LOC}&limit=100`, null, pit);
@@ -101,6 +102,12 @@ module.exports = async function handler(req, res) {
     const { id: contactId, name, phone } = opp.contact || {};
     const stage = classify(opp.pipelineStageName || '');
     const createdAt = new Date(opp.dateAdded || opp.createdAt || 0).getTime();
+
+    // Filter to specific stage if ?only= param provided
+    if (onlyStage && stage !== onlyStage) {
+      skipped.push({ name, stage: opp.pipelineStageName, reason: `filtered — only targeting ${onlyStage}` });
+      continue;
+    }
 
     // Skip — don't disrupt active or won contacts
     if (stage === 'WON' || stage === 'DC_UPCOMING') {
