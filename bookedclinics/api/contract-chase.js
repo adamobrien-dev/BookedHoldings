@@ -14,7 +14,6 @@
 const GHL_API = 'https://services.leadconnectorhq.com';
 const GHL_VERSION = '2021-07-28';
 const AGENCY_LOC = 'NKpzhLv8iNQ0c9Ge3QAR';
-const SC_UPCOMING_STAGE = '8216ee1d-73eb-4a3e-b53b-8b8cf0942256';
 
 function firstName(name = '') {
   return name.trim().replace(/^Dr\.\s*/i, '').split(' ')[0] || name;
@@ -120,10 +119,10 @@ module.exports = async function handler(req, res) {
   const { error: dsError, contracts } = await getUnsignedContracts(dsKey);
   if (dsError) return res.status(502).json({ error: dsError });
 
-  // ── 2. Fetch SC: Upcoming contacts from GHL ────────────────────────────────
+  // ── 2. Fetch all open contacts from GHL (any stage, not won/lost) ──────────
   const oppsData = await ghl(`/opportunities/search?location_id=${AGENCY_LOC}&limit=100`, pit);
   const scOpps = (oppsData?.opportunities || []).filter(
-    o => o.pipelineStageId === SC_UPCOMING_STAGE && o.status !== 'lost'
+    o => o.status !== 'lost' && o.status !== 'won'
   );
 
   // ── 3. Cross-reference ─────────────────────────────────────────────────────
@@ -162,7 +161,7 @@ module.exports = async function handler(req, res) {
   res.status(200).json({
     dry,
     dropboxContracts: contracts.length,
-    scUpcominContacts: scOpps.length,
+    openPipelineContacts: scOpps.length,
     summary: { sent: sent.length, skipped: skipped.length },
     sent,
     skipped,
