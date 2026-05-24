@@ -93,6 +93,14 @@ function lookupContact(index, email, name) {
   return null;
 }
 
+async function ghl(path, pit) {
+  const r = await fetch(`${GHL_API}${path}`, {
+    headers: { Authorization: `Bearer ${pit}`, Version: GHL_VERSION },
+  });
+  if (!r.ok) return null;
+  return r.json();
+}
+
 async function sendSms(contactId, message, pit, dry) {
   if (dry) return { dry: true };
   const r = await fetch(`${GHL_API}/conversations/messages`, {
