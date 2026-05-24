@@ -75,7 +75,7 @@ const STALE_CONTRACTS = [
 ];
 
 const AGENCY_LOC = 'NKpzhLv8iNQ0c9Ge3QAR';
-const AGENCY_PIT = 'pit-6aacb9ad-ed6a-4266-beb3-e261c49afe6b';
+const AGENCY_PIT = process.env.GHL_PIT_AGENCY || 'pit-50489259-62a0-4120-9323-81362a9806ac';
 const AGENCY_STAGES = {
   DC_UPCOMING:  'd0065956-d245-4c34-8bcd-4414a3a2c408',
   DC_NOSHOW:    'f7a093f3-799e-4c00-826b-886c41199063',
