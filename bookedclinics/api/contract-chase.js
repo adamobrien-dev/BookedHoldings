@@ -45,8 +45,10 @@ function pickMessage(name, days) {
 
 async function getUnsignedContracts(apiKey) {
   const auth = 'Basic ' + Buffer.from(apiKey + ':').toString('base64');
+  // Fetch all contracts (no status filter — API treats query as text search only)
+  // Filter client-side for incomplete/unsigned
   const r = await fetch(
-    'https://api.hellosign.com/v3/signature_request/list?query=status%3Aawaiting_signature&page_size=100',
+    'https://api.hellosign.com/v3/signature_request/list?page_size=100',
     { headers: { Authorization: auth } }
   );
   if (!r.ok) {
@@ -54,13 +56,15 @@ async function getUnsignedContracts(apiKey) {
     throw new Error(`Dropbox Sign ${r.status}: ${t.slice(0, 200)}`);
   }
   const data = await r.json();
-  return (data?.signature_requests || []).map(sr => ({
-    id: sr.signature_request_id,
-    title: sr.title,
-    createdAt: sr.created_at,
-    signerName:  sr.signatures?.[0]?.signer_name || null,
-    signerEmail: sr.signatures?.[0]?.signer_email_address || null,
-  }));
+  return (data?.signature_requests || [])
+    .filter(sr => !sr.is_complete && !sr.is_declined)
+    .map(sr => ({
+      id: sr.signature_request_id,
+      title: sr.title,
+      createdAt: sr.created_at,
+      signerName:  sr.signatures?.[0]?.signer_name || null,
+      signerEmail: sr.signatures?.[0]?.signer_email_address || null,
+    }));
 }
 
 async function findGhlContact(email, name, pit) {
