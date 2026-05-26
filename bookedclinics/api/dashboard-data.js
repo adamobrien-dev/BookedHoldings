@@ -29,31 +29,45 @@ async function getStripeData() {
   const auth = 'Basic ' + Buffer.from(key + ':').toString('base64');
   const headers = { Authorization: auth };
 
-  const [balRes, customersRes, invoicesRes, piRes] = await Promise.all([
+  const [balRes, customersRes, invoicesRes, piRes, subsRes] = await Promise.all([
     fetch('https://api.stripe.com/v1/balance', { headers }),
     fetch('https://api.stripe.com/v1/customers?limit=100', { headers }),
     fetch('https://api.stripe.com/v1/invoices?limit=100', { headers }),
     fetch('https://api.stripe.com/v1/payment_intents?limit=100', { headers }),
+    fetch('https://api.stripe.com/v1/subscriptions?limit=100&status=all', { headers }),
   ]);
 
-  const balance   = balRes.ok       ? await balRes.json()       : null;
-  const customers = customersRes.ok ? (await customersRes.json()).data || [] : [];
-  const invoices  = invoicesRes.ok  ? (await invoicesRes.json()).data || [] : [];
-  const payments  = piRes.ok        ? (await piRes.json()).data  || [] : [];
+  const balance       = balRes.ok       ? await balRes.json()           : null;
+  const customers     = customersRes.ok ? (await customersRes.json()).data || [] : [];
+  const invoices      = invoicesRes.ok  ? (await invoicesRes.json()).data  || [] : [];
+  const payments      = piRes.ok        ? (await piRes.json()).data        || [] : [];
+  const subscriptions = subsRes.ok      ? (await subsRes.json()).data      || [] : [];
 
   // Build per-customer invoice summary
   const customerMap = {};
   for (const c of customers) {
     customerMap[c.id] = {
-      id:    c.id,
-      name:  c.name  || c.email || c.id,
-      email: c.email || null,
+      id:            c.id,
+      name:          c.name  || c.email || c.id,
+      email:         c.email || null,
       openInvoices:  [],
       paidInvoices:  [],
       lastPaidAt:    null,
       lastPaidCents: null,
       hasFailed:     false,
+      nextDueDate:   null,
+      retainerAmount: null,
     };
+  }
+
+  // Attach subscription data — next billing date + amount
+  for (const sub of subscriptions) {
+    const c = customerMap[sub.customer];
+    if (!c || sub.status === 'canceled') continue;
+    c.nextDueDate   = new Date(sub.current_period_end * 1000).toISOString();
+    c.retainerAmount = sub.items?.data?.[0]?.price?.unit_amount
+      ? Math.round(sub.items.data[0].price.unit_amount / 100)
+      : null;
   }
 
   for (const inv of invoices) {

@@ -1240,10 +1240,10 @@ async function loadData() {
           biz: c.email || '',
           deal: openInv?.description || allDescs[0]?.description || '—',
           dealSub: openInv ? 'Open invoice' : (c.lastPaidAt ? 'Last paid ' + fmtDate(c.lastPaidAt) : null),
-          retainerAmount: openInv ? Math.round(openInv.amountCents/100) : (c.lastPaidCents ? Math.round(c.lastPaidCents/100) : null),
+          retainerAmount: c.retainerAmount || (openInv ? Math.round(openInv.amountCents/100) : (c.lastPaidCents ? Math.round(c.lastPaidCents/100) : null)),
           lastPaidAmountCents: c.lastPaidCents || null,
           lastPaidDate: c.lastPaidAt || null,
-          nextDueDate: openInv?.dueDate || null,
+          nextDueDate: c.nextDueDate || openInv?.dueDate || null,
           paymentStatus, statusLabel, statusClass,
           installmentPaid: null, installmentTotal: null,
         };
