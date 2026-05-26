@@ -193,6 +193,28 @@
   .recovery-confirmed { background: #071a10; border: 1px solid #166534; border-radius: 8px; padding: 10px 14px; font-size: 12px; color: #34d399; margin-bottom: 10px; }
   .recovery-empty { padding: 20px; text-align: center; font-size: 12px; color: #34d399; }
 
+  /* ── PULSE TAB ── */
+  .pulse-list { display: flex; flex-direction: column; gap: 8px; margin-bottom: 28px; }
+  .pulse-empty { color: #475569; padding: 16px; font-size: 13px; }
+  .pulse-call { background: #111623; border: 1px solid #1a2035; border-radius: 10px; padding: 14px 18px; display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+  .pulse-call.confirmed  { border-color: #166534; background: #0a1f10; }
+  .pulse-call.unconfirmed { border-color: #78350f; background: #110c00; }
+  .pulse-call-time { font-size: 15px; font-weight: 700; color: #e2e8f0; min-width: 56px; }
+  .pulse-call-name { font-size: 14px; font-weight: 600; color: #e2e8f0; flex: 1; }
+  .pulse-call-msg  { font-size: 12px; color: #475569; margin-top: 2px; max-width: 420px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .pulse-msg  { background: #111623; border: 1px solid #1e3a5f; border-radius: 10px; padding: 14px 18px; display: flex; align-items: flex-start; gap: 14px; flex-wrap: wrap; }
+  .pulse-msg-badge { background: #1e3a5f; color: #60a5fa; font-size: 11px; font-weight: 700; padding: 2px 7px; border-radius: 10px; flex-shrink: 0; margin-top: 2px; }
+  .pulse-msg-name  { font-size: 14px; font-weight: 600; color: #e2e8f0; }
+  .pulse-msg-text  { font-size: 12px; color: #94a3b8; margin-top: 3px; max-width: 480px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .pulse-msg-time  { font-size: 11px; color: #475569; margin-top: 2px; }
+  .pulse-stuck { background: #111623; border: 1px solid #1a2035; border-radius: 10px; padding: 14px 18px; display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+  .pulse-stuck.hot { border-color: #7f1d1d; background: #140a0a; }
+  .pulse-stuck-days { font-size: 20px; font-weight: 800; color: #f87171; min-width: 46px; }
+  .pulse-stuck-days.warn { color: #fbbf24; }
+  .pulse-stuck-name  { font-size: 14px; font-weight: 600; color: #e2e8f0; }
+  .pulse-stuck-stage { font-size: 11px; color: #475569; margin-top: 2px; }
+  .pulse-stuck-msg   { font-size: 12px; color: #94a3b8; margin-top: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 380px; }
+
   /* ── META ADS ROW ── */
   .meta-row { padding: 10px 18px; border-top: 1px solid #1a2035; background: #0c1220; display: flex; gap: 20px; flex-wrap: wrap; }
   .meta-block { }
@@ -248,6 +270,7 @@
 
 <div class="nav-tabs">
   <div class="nav-tab active" data-tab="overview">Overview</div>
+  <div class="nav-tab" data-tab="pulse">Pulse <span id="pulse-nav-badge" style="display:none;background:#1e3a5f;color:#60a5fa;font-size:9px;font-weight:700;padding:1px 5px;border-radius:10px;margin-left:4px;"></span></div>
   <div class="nav-tab" data-tab="billing">Billing</div>
   <div class="nav-tab" data-tab="clients">Clients</div>
   <div class="nav-tab" data-tab="pipeline">Pipeline</div>
@@ -296,6 +319,36 @@
   </div>
 
 </div><!-- /tab-overview -->
+
+<div class="tab-section" id="tab-pulse">
+
+  <div class="section-header">
+    <div class="section-title">Today's Calls <span id="calls-today-count" style="color:#475569;font-weight:400;"></span></div>
+    <button onclick="loadPulse()" style="font-size:11px;color:#6366f1;background:none;border:1px solid #6366f1;border-radius:6px;padding:4px 10px;cursor:pointer;">Refresh</button>
+  </div>
+  <div class="pulse-list" id="calls-today-list"><div class="pulse-empty">Loading…</div></div>
+
+  <div class="section-header">
+    <div class="section-title">Unread Messages <span id="unread-msg-count" style="color:#475569;font-weight:400;"></span></div>
+  </div>
+  <div class="pulse-list" id="unread-msg-list"><div class="pulse-empty">Loading…</div></div>
+
+  <div class="section-header">
+    <div class="section-title">Stuck in Stage <span id="stuck-count" style="color:#475569;font-weight:400;"></span></div>
+    <span style="font-size:11px;color:#475569;">5+ days no movement</span>
+  </div>
+  <div class="pulse-list" id="stuck-list"><div class="pulse-empty">Loading…</div></div>
+
+  <div class="section-header" style="margin-top:8px;">
+    <div class="section-title">Reply Tag Sync</div>
+  </div>
+  <div style="padding:12px 0;display:flex;gap:12px;align-items:center;flex-wrap:wrap;">
+    <button onclick="runSyncTags(false)" style="font-size:12px;color:#6366f1;background:none;border:1px solid #6366f1;border-radius:6px;padding:6px 14px;cursor:pointer;">Dry Run</button>
+    <button onclick="runSyncTags(true)"  style="font-size:12px;color:#fff;background:#6366f1;border:none;border-radius:6px;padding:6px 14px;cursor:pointer;">Apply Tags</button>
+    <span id="sync-tags-result" style="font-size:12px;color:#94a3b8;"></span>
+  </div>
+
+</div><!-- /tab-pulse -->
 
 <div class="tab-section" id="tab-billing">
   <!-- ── BILLING STATUS ── -->
@@ -1491,9 +1544,119 @@ document.addEventListener('DOMContentLoaded', () => {
         tab.dataset.loaded = '1';
         loadRecovery();
       }
+      if (tab.dataset.tab === 'pulse') {
+        loadPulse();
+      }
     });
   });
 });
+
+// ── PULSE TAB ────────────────────────────────────────────────────────────────
+
+function fmtTime(iso) {
+  if (!iso) return '';
+  const d = new Date(iso);
+  return d.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+}
+
+function fmtAgo(ts) {
+  if (!ts) return '';
+  const mins = Math.floor((Date.now() - ts) / 60000);
+  if (mins < 60)  return mins + 'm ago';
+  if (mins < 1440) return Math.floor(mins / 60) + 'h ago';
+  return Math.floor(mins / 1440) + 'd ago';
+}
+
+async function loadPulse() {
+  try {
+    const res  = await fetch('/api/pipeline-pulse');
+    if (!res.ok) throw new Error('API error ' + res.status);
+    const data = await res.json();
+
+    // Badge
+    const badge = document.getElementById('pulse-nav-badge');
+    const total = data.summary.unread + data.summary.callsToday;
+    if (total > 0) { badge.textContent = total; badge.style.display = 'inline'; }
+    else badge.style.display = 'none';
+
+    // Today's calls
+    const callsEl = document.getElementById('calls-today-list');
+    document.getElementById('calls-today-count').textContent = data.callsToday.length ? '(' + data.callsToday.length + ')' : '';
+    if (!data.callsToday.length) {
+      callsEl.innerHTML = '<div class="pulse-empty">No calls scheduled today.</div>';
+    } else {
+      callsEl.innerHTML = data.callsToday.map(c => {
+        const cls = c.confirmed ? 'confirmed' : 'unconfirmed';
+        const pill = c.confirmed
+          ? '<span class="pill pill-green" style="flex-shrink:0;">✓ Confirmed</span>'
+          : '<span class="pill pill-yellow" style="flex-shrink:0;">? Unconfirmed</span>';
+        return `<div class="pulse-call ${cls}">
+          <div class="pulse-call-time">${fmtTime(c.time)}</div>
+          <div style="flex:1;min-width:0;">
+            <div class="pulse-call-name">${c.name}${c.phone ? ' · <a href="tel:' + c.phone + '" style="color:#6366f1;text-decoration:none;">' + c.phone + '</a>' : ''}</div>
+            ${c.lastMessage ? '<div class="pulse-call-msg">' + c.lastMessage.replace(/</g,'&lt;').slice(0,120) + '</div>' : ''}
+          </div>
+          ${pill}
+        </div>`;
+      }).join('');
+    }
+
+    // Unread messages
+    const unreadEl = document.getElementById('unread-msg-list');
+    document.getElementById('unread-msg-count').textContent = data.unreadMessages.length ? '(' + data.unreadMessages.length + ')' : '';
+    if (!data.unreadMessages.length) {
+      unreadEl.innerHTML = '<div class="pulse-empty">No unread messages.</div>';
+    } else {
+      unreadEl.innerHTML = data.unreadMessages.map(m => {
+        return `<div class="pulse-msg">
+          <div class="pulse-msg-badge">${m.unreadCount} new</div>
+          <div style="flex:1;min-width:0;">
+            <div class="pulse-msg-name">${m.name}${m.phone ? ' · <a href="tel:' + m.phone + '" style="color:#6366f1;text-decoration:none;">' + fmtPhone(m.phone) + '</a>' : ''}</div>
+            <div class="pulse-msg-text">${(m.lastMessage || '').replace(/</g,'&lt;').slice(0,160)}</div>
+            <div class="pulse-msg-time">${fmtAgo(m.lastMessageAt)}</div>
+          </div>
+        </div>`;
+      }).join('');
+    }
+
+    // Stuck leads
+    const stuckEl = document.getElementById('stuck-list');
+    document.getElementById('stuck-count').textContent = data.stuckLeads.length ? '(' + data.stuckLeads.length + ')' : '';
+    if (!data.stuckLeads.length) {
+      stuckEl.innerHTML = '<div class="pulse-empty">No leads stuck 5+ days.</div>';
+    } else {
+      stuckEl.innerHTML = data.stuckLeads.map(s => {
+        const hot = s.daysInStage >= 14;
+        const daysCls = hot ? '' : 'warn';
+        return `<div class="pulse-stuck${hot ? ' hot' : ''}">
+          <div class="pulse-stuck-days ${daysCls}">${s.daysInStage}d</div>
+          <div style="flex:1;min-width:0;">
+            <div class="pulse-stuck-name">${s.name}${s.phone ? ' · <a href="tel:' + s.phone + '" style="color:#6366f1;text-decoration:none;">' + fmtPhone(s.phone) + '</a>' : ''}</div>
+            <div class="pulse-stuck-stage">${s.stage || '—'}</div>
+            ${s.lastMessage ? '<div class="pulse-stuck-msg">' + s.lastMessage.replace(/</g,'&lt;').slice(0,120) + '</div>' : ''}
+          </div>
+          ${s.unreadCount > 0 ? '<span class="pill pill-green" style="flex-shrink:0;">↩ Replied</span>' : ''}
+        </div>`;
+      }).join('');
+    }
+
+  } catch(e) {
+    document.getElementById('calls-today-list').innerHTML = '<div class="pulse-empty">Failed: ' + e.message + '</div>';
+  }
+}
+
+async function runSyncTags(apply) {
+  const el = document.getElementById('sync-tags-result');
+  el.textContent = apply ? 'Applying tags…' : 'Running dry run…';
+  try {
+    const res  = await fetch('/api/sync-reply-tags' + (apply ? '?apply=true' : ''));
+    const data = await res.json();
+    el.textContent = (apply ? 'Done — ' : 'Dry run — ') +
+      data.summary.replied + ' replied, ' + data.summary.noReply + ' need follow-up';
+  } catch(e) {
+    el.textContent = 'Error: ' + e.message;
+  }
+}
 
 // ── RECOVERY TAB ─────────────────────────────────────────────────────────────
 
