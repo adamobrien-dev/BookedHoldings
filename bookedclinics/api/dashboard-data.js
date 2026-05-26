@@ -86,10 +86,24 @@ async function getStripeData() {
     .filter(p => p.status === 'succeeded')
     .reduce((s, p) => s + p.amount, 0);
 
+  const allClients = Object.values(customerMap).sort((a, b) => (a.name || '').localeCompare(b.name || ''));
+
+  const unpaid = allClients
+    .filter(c => c.openInvoices.length > 0 || c.hasFailed)
+    .map(c => ({
+      name:          c.name,
+      email:         c.email,
+      hasFailed:     c.hasFailed,
+      openInvoices:  c.openInvoices,
+      totalOwedCents: c.openInvoices.reduce((s, inv) => s + inv.amountCents, 0),
+    }))
+    .sort((a, b) => b.totalOwedCents - a.totalOwedCents);
+
   return {
     balanceCents: balance?.available?.find(b => b.currency === 'usd')?.amount ?? 0,
     collectedCents,
-    clients: Object.values(customerMap).sort((a, b) => (a.name || '').localeCompare(b.name || '')),
+    unpaid,
+    clients: allClients,
   };
 }
 
@@ -192,9 +206,10 @@ module.exports = async function handler(req, res) {
     res.status(200).json({
       generatedAt: new Date().toISOString(),
       stripe: {
-        balanceCents:    stripeData?.balanceCents    ?? null,
-        collectedCents:  stripeData?.collectedCents  ?? null,
-        clients:         stripeData?.clients         ?? [],
+        balanceCents:   stripeData?.balanceCents   ?? null,
+        collectedCents: stripeData?.collectedCents ?? null,
+        unpaid:         stripeData?.unpaid         ?? [],
+        clients:        stripeData?.clients        ?? [],
       },
       contracts: contractsData,
       agencyPipeline: agencyData?.pipeline  ?? null,
