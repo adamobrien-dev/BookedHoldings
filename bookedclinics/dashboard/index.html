@@ -1316,7 +1316,6 @@ async function loadData() {
       setBar(`${k}-bar-booked`, bkdPct);
       setBar(`${k}-bar-sale`,   salePct);
     }
-    } // end if(false)
 
     // Clear and re-render dynamic alerts (remove previously injected ones on refresh)
     document.querySelectorAll('#overview-alerts .alert:not(#alert-sc-recovery)').forEach(el => el.remove());
