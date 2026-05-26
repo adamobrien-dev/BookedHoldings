@@ -40,7 +40,7 @@ module.exports = async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   if (req.method !== 'GET') return res.status(405).end();
 
-  const pitRead  = process.env.GHL_PIT_AGENCY    || 'pit-50489259-62a0-4120-9323-81362a9806ac';
+  const pitRead  = process.env.GHL_PIT_AGENCY    || 'pit-6aacb9ad-ed6a-4266-beb3-e261c49afe6b';
   const pitWrite = process.env.GHL_PIT_CONTACTS  || pitRead;
   const dry = req.query.apply !== 'true';
 

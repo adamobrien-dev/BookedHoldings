@@ -87,7 +87,7 @@ module.exports = async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   if (req.method !== 'GET') return res.status(405).end();
 
-  const pit = process.env.GHL_PIT_AGENCY || 'pit-50489259-62a0-4120-9323-81362a9806ac';
+  const pit = process.env.GHL_PIT_AGENCY || 'pit-6aacb9ad-ed6a-4266-beb3-e261c49afe6b';
   const dry = req.query.send !== 'true';
   const onlyStage = req.query.only?.toUpperCase() || null; // e.g. ?only=SC_UPCOMING
   const sevenDaysAgo = Date.now() - 7 * 24 * 60 * 60 * 1000;

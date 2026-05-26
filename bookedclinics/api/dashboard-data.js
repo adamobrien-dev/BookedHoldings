@@ -1,7 +1,7 @@
 const GHL_API = 'https://services.leadconnectorhq.com';
 const GHL_VERSION = '2021-07-28';
 const AGENCY_LOC = 'NKpzhLv8iNQ0c9Ge3QAR';
-const AGENCY_PIT = process.env.GHL_PIT_AGENCY || 'pit-50489259-62a0-4120-9323-81362a9806ac';
+const AGENCY_PIT = process.env.GHL_PIT_AGENCY || 'pit-6aacb9ad-ed6a-4266-beb3-e261c49afe6b';
 const CLIENTS = require('../config/clients.json');
 
 async function ghlFetch(path, pit) {
