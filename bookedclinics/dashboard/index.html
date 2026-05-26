@@ -1218,36 +1218,7 @@ async function loadData() {
 
     // ── Build compatibility layer from new API structure ──────────────────────
     const stripe = data.stripe || {};
-    const allStripeClients = stripe.clients || [];
-
-    const billingRows = allStripeClients
-      .filter(c => c.lastPaidCents || c.openInvoices?.length || c.hasFailed)
-      .map(c => {
-        const openInv = c.openInvoices?.[0] || null;
-        let paymentStatus = 'none';
-        if (c.hasFailed) paymentStatus = 'failed';
-        else if (c.lastPaidAt && !openInv) paymentStatus = 'ok';
-        else if (openInv) paymentStatus = 'warn';
-        let statusLabel, statusClass;
-        if (paymentStatus === 'failed')      { statusLabel = 'Payment Failed'; statusClass = 'pill-red'; }
-        else if (paymentStatus === 'ok')     { statusLabel = 'Paid';           statusClass = 'pill-green'; }
-        else if (paymentStatus === 'warn')   { statusLabel = 'Invoice Open';   statusClass = 'pill-yellow'; }
-        else                                 { statusLabel = 'No Activity';    statusClass = 'pill-gray'; }
-        const allDescs = [...(c.paidInvoices||[]), ...(c.openInvoices||[])];
-        return {
-          key: c.email?.split('@')[0] || c.name?.toLowerCase().replace(/\s+/g,''),
-          name: c.name,
-          biz: c.email || '',
-          deal: openInv?.description || allDescs[0]?.description || '—',
-          dealSub: openInv ? 'Open invoice' : (c.lastPaidAt ? 'Last paid ' + fmtDate(c.lastPaidAt) : null),
-          retainerAmount: c.retainerAmount || (openInv ? Math.round(openInv.amountCents/100) : (c.lastPaidCents ? Math.round(c.lastPaidCents/100) : null)),
-          lastPaidAmountCents: c.lastPaidCents || null,
-          lastPaidDate: c.lastPaidAt || null,
-          nextDueDate: c.nextDueDate || openInv?.dueDate || null,
-          paymentStatus, statusLabel, statusClass,
-          installmentPaid: null, installmentTotal: null,
-        };
-      });
+    const billingRows = data.billingRows || [];
 
     const staleContracts = (data.contracts?.unsigned || []).map(c => ({
       name: c.signerName || 'Unknown',

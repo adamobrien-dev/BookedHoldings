@@ -2,6 +2,7 @@ const GHL_API = 'https://services.leadconnectorhq.com';
 const GHL_VERSION = '2021-07-28';
 const AGENCY_LOC = 'NKpzhLv8iNQ0c9Ge3QAR';
 const AGENCY_PIT = process.env.GHL_PIT_AGENCY || 'pit-50489259-62a0-4120-9323-81362a9806ac';
+const CLIENTS = require('../config/clients.json');
 
 async function ghlFetch(path, pit) {
   try {
@@ -70,14 +71,6 @@ async function getStripeData() {
       : null;
   }
 
-  // Fallback for manually invoiced clients: next due = last paid + 30 days
-  for (const c of Object.values(customerMap)) {
-    if (c.nextDueDate) continue; // already set from subscription
-    if (!c.lastPaidAt) continue; // no payment history
-    c.nextDueDate    = new Date(new Date(c.lastPaidAt).getTime() + 30 * 24 * 3600 * 1000).toISOString();
-    c.retainerAmount = c.retainerAmount || (c.lastPaidCents ? Math.round(c.lastPaidCents / 100) : null);
-  }
-
   for (const inv of invoices) {
     const c = customerMap[inv.customer];
     if (!c) continue;
@@ -121,11 +114,49 @@ async function getStripeData() {
     }))
     .sort((a, b) => b.totalOwedCents - a.totalOwedCents);
 
+  // Build billing rows from clients.json config + live Stripe data
+  const billingRows = CLIENTS.map(bc => {
+    const c = bc.stripeId ? (customerMap[bc.stripeId] || {}) : {};
+    const openInv = c.openInvoices?.[0] || null;
+
+    let paymentStatus = 'none';
+    if (c.hasFailed)                      paymentStatus = 'failed';
+    else if (c.lastPaidAt && !openInv)    paymentStatus = 'ok';
+    else if (openInv)                     paymentStatus = 'warn';
+
+    let statusLabel, statusClass;
+    if (paymentStatus === 'failed')      { statusLabel = 'Payment Failed'; statusClass = 'pill-red'; }
+    else if (paymentStatus === 'ok')     { statusLabel = 'Paid';           statusClass = 'pill-green'; }
+    else if (paymentStatus === 'warn')   { statusLabel = 'Invoice Open';   statusClass = 'pill-yellow'; }
+    else                                 { statusLabel = 'No Activity';    statusClass = 'pill-gray'; }
+
+    // next due: subscription > manually invoiced (lastPaid + cycleDays) > open invoice due date
+    let nextDueDate = c.nextDueDate || null;
+    if (!nextDueDate && c.lastPaidAt && bc.cycleDays) {
+      nextDueDate = new Date(new Date(c.lastPaidAt).getTime() + bc.cycleDays * 24 * 3600 * 1000).toISOString();
+    }
+    if (!nextDueDate && openInv?.dueDate) nextDueDate = openInv.dueDate;
+
+    return {
+      key:                bc.key,
+      name:               bc.name,
+      biz:                bc.biz,
+      deal:               bc.deal || '—',
+      dealSub:            bc.dealSub || null,
+      retainerAmount:     bc.retainerAmount || (c.lastPaidCents ? Math.round(c.lastPaidCents / 100) : null),
+      lastPaidAmountCents: c.lastPaidCents || null,
+      lastPaidDate:       c.lastPaidAt || null,
+      nextDueDate,
+      paymentStatus, statusLabel, statusClass,
+    };
+  });
+
   return {
     balanceCents: balance?.available?.find(b => b.currency === 'usd')?.amount ?? 0,
     collectedCents,
     unpaid,
     clients: allClients,
+    billingRows,
   };
 }
 
@@ -233,7 +264,8 @@ module.exports = async function handler(req, res) {
         unpaid:         stripeData?.unpaid         ?? [],
         clients:        stripeData?.clients        ?? [],
       },
-      contracts: contractsData,
+      billingRows:    stripeData?.billingRows    ?? [],
+      contracts:      contractsData,
       agencyPipeline: agencyData?.pipeline  ?? null,
       scRecovery:     agencyData?.scRecovery ?? null,
     });
