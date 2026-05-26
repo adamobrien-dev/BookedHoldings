@@ -64,10 +64,18 @@ async function getStripeData() {
   for (const sub of subscriptions) {
     const c = customerMap[sub.customer];
     if (!c || sub.status === 'canceled') continue;
-    c.nextDueDate   = new Date(sub.current_period_end * 1000).toISOString();
+    c.nextDueDate    = new Date(sub.current_period_end * 1000).toISOString();
     c.retainerAmount = sub.items?.data?.[0]?.price?.unit_amount
       ? Math.round(sub.items.data[0].price.unit_amount / 100)
       : null;
+  }
+
+  // Fallback for manually invoiced clients: next due = last paid + 30 days
+  for (const c of Object.values(customerMap)) {
+    if (c.nextDueDate) continue; // already set from subscription
+    if (!c.lastPaidAt) continue; // no payment history
+    c.nextDueDate    = new Date(new Date(c.lastPaidAt).getTime() + 30 * 24 * 3600 * 1000).toISOString();
+    c.retainerAmount = c.retainerAmount || (c.lastPaidCents ? Math.round(c.lastPaidCents / 100) : null);
   }
 
   for (const inv of invoices) {
