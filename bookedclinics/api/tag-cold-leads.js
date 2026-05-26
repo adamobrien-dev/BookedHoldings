@@ -40,10 +40,11 @@ module.exports = async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   if (req.method !== 'GET') return res.status(405).end();
 
-  const pit = process.env.GHL_PIT_AGENCY || 'pit-50489259-62a0-4120-9323-81362a9806ac';
+  const pitRead  = process.env.GHL_PIT_AGENCY    || 'pit-50489259-62a0-4120-9323-81362a9806ac';
+  const pitWrite = process.env.GHL_PIT_CONTACTS  || pitRead;
   const dry = req.query.apply !== 'true';
 
-  const oppsResult = await ghl('GET', `/opportunities/search?location_id=${AGENCY_LOC}&limit=100`, null, pit);
+  const oppsResult = await ghl('GET', `/opportunities/search?location_id=${AGENCY_LOC}&limit=100`, null, pitRead);
   if (!oppsResult.ok) {
     return res.status(502).json({ error: 'GHL API error', status: oppsResult.status, detail: oppsResult.data });
   }
@@ -60,13 +61,13 @@ module.exports = async function handler(req, res) {
       continue;
     }
 
-    const hasAppt = await hasFutureAppointment(contactId, pit);
+    const hasAppt = await hasFutureAppointment(contactId, pitRead);
     if (hasAppt) {
       skipped.push({ name, phone, stage: opp.pipelineStageName, reason: 'has upcoming appointment' });
       continue;
     }
 
-    const result = await addTag(contactId, pit, dry);
+    const result = await addTag(contactId, pitWrite, dry);
     tagged.push({ name, phone, stage: opp.pipelineStageName, tag: TAG, ...result });
   }
 
