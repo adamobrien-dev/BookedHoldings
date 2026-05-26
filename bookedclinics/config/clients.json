@@ -1,0 +1,82 @@
+[
+  {
+    "key": "terri",
+    "name": "Terri Mignot",
+    "biz": "Get Body Sculpted · Body Contouring · Tucker, GA",
+    "niche": "Body Sculpting · Tucker, GA",
+    "locationId": "y1yUn5PVAMq0PEAtHdoa",
+    "pitEnv": "GHL_PIT_TERRI",
+    "stripeId": "cus_UR9Pr9Dxonz3SN",
+    "deal": "$1k setup + $500/mo",
+    "dealSub": "3 × $333 installments",
+    "cycleDays": 30,
+    "retainerAmount": 500,
+    "installments": { "total": 3, "amount": 333 }
+  },
+  {
+    "key": "allaphia",
+    "name": "Allaphia Richards",
+    "biz": "Paradise Healing LLC · Boston, MA",
+    "niche": "Healing & Wellness · Boston, MA",
+    "locationId": "0U66FTyg5WJhqyyzIbqM",
+    "pitEnv": "GHL_PIT_ALLAPHIA",
+    "stripeId": "cus_UOulmSIDAPiGuI",
+    "deal": "$1k setup + $500/mo",
+    "dealSub": "Setup fully paid",
+    "cycleDays": 30,
+    "retainerAmount": 500
+  },
+  {
+    "key": "thania",
+    "name": "Thania Ramirez",
+    "biz": "Tiali Beauty Lounge · Med-Spa · Warwick, RI",
+    "niche": "Med-Spa · Warwick, RI",
+    "locationId": "ZbBlLQsUabCGBXdSXcVq",
+    "pitEnv": "GHL_PIT_THANIA",
+    "stripeId": "cus_UMJQDHYQPyci1p",
+    "deal": "$500 setup + 10% rev",
+    "dealSub": "Performance only",
+    "cycleDays": 30,
+    "retainerAmount": null,
+    "installments": { "total": 3, "amount": 167 }
+  },
+  {
+    "key": "aguilera",
+    "name": "Frank Aguilera",
+    "biz": "Aguilera Health & Wellness · Chiropractic · Bakersfield, CA",
+    "niche": "Chiropractic · Bakersfield, CA",
+    "locationId": "fl8EgJBlFzCy65y6wNyS",
+    "pitEnv": "GHL_PIT_AGUILERA",
+    "stripeId": "cus_UTCCPxtx3eoza7",
+    "deal": "Flat $500/mo",
+    "dealSub": "Onboarding waived",
+    "cycleDays": 30,
+    "retainerAmount": 500
+  },
+  {
+    "key": "glendale",
+    "name": "Glendale's Urgent Care",
+    "biz": "Glendale's Urgent Care · Urgent Care · Glendale, CA",
+    "niche": "Urgent Care · Glendale, CA",
+    "locationId": "DTaKXJaCm5a7xHfXMU2v",
+    "pitEnv": "GHL_PIT_GLENDALE",
+    "stripeId": null,
+    "deal": "Pending",
+    "dealSub": null,
+    "cycleDays": 30,
+    "retainerAmount": null
+  },
+  {
+    "key": "fletcher",
+    "name": "Fletcher Munksgard",
+    "biz": "Dane Functional Health · GLP-1, Functional Medicine",
+    "niche": "GLP-1, Functional Medicine",
+    "locationId": null,
+    "pitEnv": "GHL_PIT_FLETCHER",
+    "stripeId": "cus_UVQcb88jp1OQqD",
+    "deal": "Flat $500/mo",
+    "dealSub": "No onboarding fee",
+    "cycleDays": 30,
+    "retainerAmount": 500
+  }
+]

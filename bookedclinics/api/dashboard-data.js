@@ -1,96 +1,178 @@
 const GHL_API = 'https://services.leadconnectorhq.com';
 const GHL_VERSION = '2021-07-28';
-
-const CLIENTS = [
-  {
-    key: 'terri',
-    name: 'Terri Mignot',
-    biz: 'Get Body Sculpted',
-    niche: 'Body Sculpting · Tucker, GA',
-    locationId: 'y1yUn5PVAMq0PEAtHdoa',
-    pitEnv: 'GHL_PIT_TERRI',
-    stripeId: 'cus_UR9Pr9Dxonz3SN',
-    status: 'live',
-  },
-  {
-    key: 'allaphia',
-    name: 'Allaphia Richards',
-    biz: 'Paradise Healing',
-    niche: 'Healing & Wellness · Boston, MA',
-    locationId: '0U66FTyg5WJhqyyzIbqM',
-    pitEnv: 'GHL_PIT_ALLAPHIA',
-    stripeId: 'cus_UOulmSIDAPiGuI',
-    status: 'live',
-  },
-  {
-    key: 'thania',
-    name: 'Thania Ramirez',
-    biz: 'Tiali Beauty Lounge',
-    niche: 'Med-Spa · Warwick, RI',
-    locationId: 'ZbBlLQsUabCGBXdSXcVq',
-    pitEnv: 'GHL_PIT_THANIA',
-    stripeId: 'cus_UMJQDHYQPyci1p',
-    status: 'live',
-  },
-  {
-    key: 'aguilera',
-    name: 'Frank Aguilera',
-    biz: 'Aguilera Health & Wellness',
-    niche: 'Chiropractic · Bakersfield, CA',
-    locationId: 'fl8EgJBlFzCy65y6wNyS',
-    pitEnv: 'GHL_PIT_AGUILERA',
-    stripeId: 'cus_UTCCPxtx3eoza7',
-    status: 'setup',
-  },
-  {
-    key: 'glendale',
-    name: "Glendale's Urgent Care",
-    biz: "Glendale's Urgent Care",
-    niche: 'Urgent Care · Glendale, CA',
-    locationId: 'DTaKXJaCm5a7xHfXMU2v',
-    pitEnv: 'GHL_PIT_GLENDALE',
-    stripeId: null,
-    status: 'pending',
-  },
-];
-
-const FLETCHER_STRIPE_ID = 'cus_UVQcb88jp1OQqD';
-
-const BILLING_CONFIG = [
-  { key: 'fletcher', name: 'Fletcher Munksgard', biz: 'Dane Functional Health · GLP-1, Functional Medicine', stripeId: FLETCHER_STRIPE_ID, deal: 'Flat $500/mo', dealSub: 'No onboarding fee', cycleDays: 30, retainerAmount: 500 },
-  { key: 'aguilera', name: 'Frank Aguilera', biz: 'Aguilera Health & Wellness · Chiropractic · Bakersfield, CA', stripeId: 'cus_UTCCPxtx3eoza7', deal: 'Flat $500/mo', dealSub: 'Onboarding waived', cycleDays: 30, retainerAmount: 500 },
-  { key: 'terri', name: 'Terri Mignot', biz: 'Get Body Sculpted · Body Contouring · Tucker, GA', stripeId: 'cus_UR9Pr9Dxonz3SN', deal: '$1k setup + $500/mo', dealSub: '3 × $333 installments', cycleDays: 30, retainerAmount: 500, installments: { total: 3, amount: 333 } },
-  { key: 'allaphia', name: 'Allaphia Richards', biz: 'Paradise Healing LLC · Boston, MA', stripeId: 'cus_UOulmSIDAPiGuI', deal: '$1k setup + $500/mo', dealSub: 'Setup fully paid', cycleDays: 30, retainerAmount: 500 },
-  { key: 'thania', name: 'Thania Ramirez', biz: 'Tiali Beauty Lounge · Med-Spa · Warwick, RI', stripeId: 'cus_UMJQDHYQPyci1p', deal: '$500 setup + 10% rev', dealSub: 'Performance only', cycleDays: 30, retainerAmount: null, installments: { total: 3, amount: 167 } },
-];
-
-const STALE_CONTRACTS = [
-  { name: 'Doyinsola Abikoye', biz: 'No business name on file', sentDate: '2026-04-17' },
-  { name: 'Emily Anderson', biz: 'Renew Chiropractic', sentDate: '2026-04-18' },
-  { name: 'Brittany Baumer', biz: 'The Skin & Body Spa', sentDate: '2026-04-21' },
-  { name: 'Andre F', biz: 'Clear Cost Telehealth', sentDate: '2026-04-22' },
-  { name: 'Nayson Rouhipour', biz: "Glendale's Urgent Care", sentDate: '2026-05-05' },
-  { name: 'Nnenna Obioha', biz: 'Marked Lost in GHL but contract was sent after', sentDate: '2026-05-07' },
-  { name: 'Yahaira Manon', biz: '2 ad images in Drive folder', sentDate: '2026-05-13' },
-];
-
 const AGENCY_LOC = 'NKpzhLv8iNQ0c9Ge3QAR';
 const AGENCY_PIT = process.env.GHL_PIT_AGENCY || 'pit-50489259-62a0-4120-9323-81362a9806ac';
-const AGENCY_STAGES = {
-  DC_UPCOMING:  'd0065956-d245-4c34-8bcd-4414a3a2c408',
-  DC_NOSHOW:    'f7a093f3-799e-4c00-826b-886c41199063',
-  SC_UPCOMING:  '8216ee1d-73eb-4a3e-b53b-8b8cf0942256',
-};
+
+// Add new clients to config/clients.json — no code changes needed
+const CLIENTS = require('../config/clients.json');
+
+async function ghlFetch(path, pit) {
+  try {
+    const res = await fetch(`${GHL_API}${path}`, {
+      headers: { Authorization: `Bearer ${pit}`, Version: GHL_VERSION },
+    });
+    if (!res.ok) return null;
+    return res.json();
+  } catch { return null; }
+}
+
+function classifyAgencyStage(stageName = '') {
+  const s = stageName.toLowerCase();
+  if (s.includes('won') || s.includes('client')) return 'WON';
+  if (s.includes('dc') && s.includes('upcoming')) return 'DC_UPCOMING';
+  if (s.includes('dc') && s.includes('no show')) return 'DC_NOSHOW';
+  if (s.includes('sc') && s.includes('upcoming')) return 'SC_UPCOMING';
+  return 'OTHER';
+}
+
+function classifyLeadStage(stageName = '') {
+  const s = stageName.toLowerCase();
+  if (s.includes('hot')) return 'hot';
+  if (s.includes('book') || s.includes('scheduled') || s.includes('appt')) return 'booked';
+  if (s.includes('attend') || s.includes('visit')) return 'attended';
+  if (s.includes('sale') || s.includes('won') || s.includes('review')) return 'sale';
+  return 'new';
+}
+
+async function getContractsData() {
+  const apiKey = process.env.DROPBOX_SIGN_API_KEY || '0c7c0852c085eeeb45c29567517edd91fe42cde48870c1d3bf0971dda88e6f11';
+  const auth = 'Basic ' + Buffer.from(apiKey + ':').toString('base64');
+  try {
+    const r = await fetch('https://api.hellosign.com/v3/signature_request/list?page_size=100', {
+      headers: { Authorization: auth },
+    });
+    if (!r.ok) return { signed: [], unsigned: [] };
+    const data = await r.json();
+    const requests = data?.signature_requests || [];
+
+    const signed = requests
+      .filter(sr => sr.is_complete)
+      .map(sr => ({
+        title: sr.title,
+        signerName: sr.signatures?.[0]?.signer_name || null,
+        signerEmail: sr.signatures?.[0]?.signer_email_address || null,
+        signedAt: sr.signatures?.[0]?.signed_at
+          ? new Date(sr.signatures[0].signed_at * 1000).toISOString()
+          : null,
+      }));
+
+    const unsigned = requests
+      .filter(sr => !sr.is_complete && !sr.is_declined)
+      .map(sr => ({
+        title: sr.title,
+        signerName: sr.signatures?.[0]?.signer_name || null,
+        signerEmail: sr.signatures?.[0]?.signer_email_address || null,
+        daysSinceSent: Math.floor((Date.now() - sr.created_at * 1000) / 86400000),
+      }))
+      .sort((a, b) => b.daysSinceSent - a.daysSinceSent);
+
+    return { signed, unsigned };
+  } catch { return { signed: [], unsigned: [] }; }
+}
+
+async function getStripeData() {
+  const key = process.env.STRIPE_SECRET_KEY;
+  if (!key) return null;
+
+  const auth = 'Basic ' + Buffer.from(key + ':').toString('base64');
+  const headers = { Authorization: auth };
+
+  const [balRes, piRes, invRes] = await Promise.all([
+    fetch('https://api.stripe.com/v1/balance', { headers }),
+    fetch('https://api.stripe.com/v1/payment_intents?limit=100', { headers }),
+    fetch('https://api.stripe.com/v1/invoices?limit=100&status=open', { headers }),
+  ]);
+
+  const balance = balRes.ok ? await balRes.json() : null;
+  const pi = piRes.ok ? await piRes.json() : null;
+  const openInvoices = invRes.ok ? ((await invRes.json()).data || []) : [];
+
+  const payments = pi?.data || [];
+  const collectedCents = payments
+    .filter(p => p.status === 'succeeded')
+    .reduce((s, p) => s + p.amount, 0);
+
+  const failed = payments
+    .filter(p => p.status === 'requires_payment_method')
+    .map(p => ({ id: p.id, amountCents: p.amount, customerId: p.customer }));
+
+  // Build per-client payment summary keyed by client key
+  const stripeIdToKey = {};
+  CLIENTS.forEach(c => { if (c.stripeId) stripeIdToKey[c.stripeId] = c.key; });
+
+  const perClient = {};
+  for (const p of payments) {
+    const k = stripeIdToKey[p.customer];
+    if (!k) continue;
+    if (!perClient[k]) perClient[k] = { lastSucceeded: null, succeededCount: 0, hasFailed: false };
+    if (p.status === 'succeeded') {
+      perClient[k].succeededCount++;
+      if (!perClient[k].lastSucceeded || p.created > perClient[k].lastSucceeded.created) {
+        perClient[k].lastSucceeded = { amountCents: p.amount, created: p.created };
+      }
+    }
+    if (p.status === 'requires_payment_method') perClient[k].hasFailed = true;
+  }
+
+  // Build billing rows from clients.json — no hardcoded billing config
+  const billingRows = CLIENTS.map(bc => {
+    const stripe = perClient[bc.key] || null;
+    let lastPaidAmountCents = null, lastPaidDate = null, nextDueDate = null, paymentStatus = 'none';
+    if (stripe?.lastSucceeded) {
+      lastPaidAmountCents = stripe.lastSucceeded.amountCents;
+      lastPaidDate = new Date(stripe.lastSucceeded.created * 1000).toISOString();
+      nextDueDate = bc.cycleDays
+        ? new Date((stripe.lastSucceeded.created + bc.cycleDays * 24 * 3600) * 1000).toISOString()
+        : null;
+      paymentStatus = stripe.hasFailed ? 'warn' : 'ok';
+    } else if (stripe?.hasFailed) {
+      paymentStatus = 'failed';
+    }
+    let installmentPaid = null, installmentTotal = null;
+    if (bc.installments && stripe?.succeededCount) {
+      installmentPaid = Math.min(stripe.succeededCount, bc.installments.total);
+      installmentTotal = bc.installments.total;
+    }
+    return {
+      key: bc.key,
+      name: bc.name,
+      biz: bc.biz,
+      deal: bc.deal,
+      dealSub: bc.dealSub,
+      retainerAmount: bc.retainerAmount,
+      lastPaidAmountCents,
+      lastPaidDate,
+      nextDueDate,
+      paymentStatus,
+      installmentPaid,
+      installmentTotal,
+      openInvoices: openInvoices
+        .filter(inv => inv.customer === bc.stripeId)
+        .map(inv => ({
+          id: inv.id,
+          amountDueCents: inv.amount_due,
+          dueDate: inv.due_date ? new Date(inv.due_date * 1000).toISOString() : null,
+        })),
+    };
+  });
+
+  return {
+    balanceCents: balance?.available?.find(b => b.currency === 'usd')?.amount ?? 0,
+    collectedCents,
+    failed,
+    billingRows,
+  };
+}
 
 async function getAgencyData() {
   const oppsData = await ghlFetch(`/opportunities/search?location_id=${AGENCY_LOC}&limit=100`, AGENCY_PIT);
   const opps = oppsData?.opportunities || [];
 
-  const scOpps       = opps.filter(o => o.pipelineStageId === AGENCY_STAGES.SC_UPCOMING);
-  const dcUpcoming   = opps.filter(o => o.pipelineStageId === AGENCY_STAGES.DC_UPCOMING);
-  const dcNoShow     = opps.filter(o => o.pipelineStageId === AGENCY_STAGES.DC_NOSHOW);
-  const wonOpps      = opps.filter(o => o.status === 'won');
-  const lostOpps     = opps.filter(o => o.status === 'lost');
+  const scOpps     = opps.filter(o => classifyAgencyStage(o.pipelineStageName) === 'SC_UPCOMING');
+  const dcUpcoming = opps.filter(o => classifyAgencyStage(o.pipelineStageName) === 'DC_UPCOMING');
+  const dcNoShow   = opps.filter(o => classifyAgencyStage(o.pipelineStageName) === 'DC_NOSHOW');
+  const wonOpps    = opps.filter(o => classifyAgencyStage(o.pipelineStageName) === 'WON');
+  const lostOpps   = opps.filter(o => o.status === 'lost');
   const names = arr => arr.map(o => o.contact?.name || 'Unknown');
 
   const now = new Date();
@@ -128,30 +210,9 @@ async function getAgencyData() {
   };
 }
 
-async function ghlFetch(path, pit) {
-  try {
-    const res = await fetch(`${GHL_API}${path}`, {
-      headers: { Authorization: `Bearer ${pit}`, Version: GHL_VERSION },
-    });
-    if (!res.ok) return null;
-    return res.json();
-  } catch {
-    return null;
-  }
-}
-
-function classifyStage(stageName = '') {
-  const s = stageName.toLowerCase();
-  if (s.includes('hot')) return 'hot';
-  if (s.includes('book') || s.includes('scheduled') || s.includes('appt')) return 'booked';
-  if (s.includes('attend') || s.includes('visit')) return 'attended';
-  if (s.includes('sale') || s.includes('won') || s.includes('review')) return 'sale';
-  return 'new';
-}
-
 async function getClientData(client) {
   const pit = process.env[client.pitEnv];
-  if (!pit) return { ...client, leads: null, workflows: null, error: 'missing_pit' };
+  if (!pit || !client.locationId) return { ...client, leads: null, workflows: null, error: !pit ? 'missing_pit' : 'no_location' };
 
   const [oppsData, wfData] = await Promise.all([
     ghlFetch(`/opportunities/search?location_id=${client.locationId}&limit=100`, pit),
@@ -164,18 +225,17 @@ async function getClientData(client) {
       leads.total++;
       if (opp.status === 'won') { leads.sale++; continue; }
       if (opp.status === 'lost') { leads.total--; continue; }
-      const bucket = classifyStage(opp.pipelineStageName || '');
-      leads[bucket]++;
+      leads[classifyLeadStage(opp.pipelineStageName || '')]++;
     }
   }
 
   const WF_MAP = [
-    { key: 'fast5', patterns: ['fast 5', 'fast5', 'new lead nurture'] },
+    { key: 'fast5',        patterns: ['fast 5', 'fast5', 'new lead nurture'] },
     { key: 'confirmation', patterns: ['confirmation', 'reminder'] },
-    { key: 'noshow', patterns: ['no show', 'noshow', 'no-show'] },
-    { key: 'review', patterns: ['review', 'new sale'] },
-    { key: 'nurture', patterns: ['long-term', 'longterm', 'long term'] },
-    { key: 'stale', patterns: ['stale', 're-engage', 'reengage'] },
+    { key: 'noshow',       patterns: ['no show', 'noshow', 'no-show'] },
+    { key: 'review',       patterns: ['review', 'new sale'] },
+    { key: 'nurture',      patterns: ['long-term', 'longterm', 'long term'] },
+    { key: 'stale',        patterns: ['stale', 're-engage', 'reengage'] },
   ];
 
   const workflows = {};
@@ -193,103 +253,6 @@ async function getClientData(client) {
   return { ...client, leads, workflows };
 }
 
-async function getStripeData() {
-  const key = process.env.STRIPE_SECRET_KEY;
-  if (!key) return null;
-
-  const auth = 'Basic ' + Buffer.from(key + ':').toString('base64');
-  const headers = { Authorization: auth };
-
-  const [balRes, piRes] = await Promise.all([
-    fetch('https://api.stripe.com/v1/balance', { headers }),
-    fetch('https://api.stripe.com/v1/payment_intents?limit=100', { headers }),
-  ]);
-
-  const balance = balRes.ok ? await balRes.json() : null;
-  const pi = piRes.ok ? await piRes.json() : null;
-
-  const payments = pi?.data || [];
-  const collectedCents = payments
-    .filter(p => p.status === 'succeeded')
-    .reduce((s, p) => s + p.amount, 0);
-
-  const failed = payments
-    .filter(p => p.status === 'requires_payment_method')
-    .map(p => ({ id: p.id, amountCents: p.amount, customerId: p.customer }));
-
-  const fletcherFailed = failed.some(p => p.customerId === FLETCHER_STRIPE_ID);
-
-  // Build per-client last payment + failed flag from the same payment list
-  const stripeIdToKey = { [FLETCHER_STRIPE_ID]: 'fletcher' };
-  CLIENTS.forEach(c => { if (c.stripeId) stripeIdToKey[c.stripeId] = c.key; });
-
-  const perClient = {};
-  for (const p of payments) {
-    const clientKey = stripeIdToKey[p.customer];
-    if (!clientKey) continue;
-    if (!perClient[clientKey]) perClient[clientKey] = { lastSucceeded: null, succeededCount: 0, hasFailed: false };
-    if (p.status === 'succeeded') {
-      perClient[clientKey].succeededCount++;
-      if (!perClient[clientKey].lastSucceeded || p.created > perClient[clientKey].lastSucceeded.created) {
-        perClient[clientKey].lastSucceeded = { amountCents: p.amount, created: p.created };
-      }
-    }
-    if (p.status === 'requires_payment_method') {
-      perClient[clientKey].hasFailed = true;
-    }
-  }
-
-  return {
-    balanceCents: balance?.available?.find(b => b.currency === 'usd')?.amount ?? 0,
-    collectedCents,
-    failed,
-    fletcherFailed,
-    perClient,
-  };
-}
-
-async function getPaypalData() {
-  const clientId = process.env.PAYPAL_CLIENT_ID;
-  const secret = process.env.PAYPAL_CLIENT_SECRET;
-  if (!clientId || !secret) return null;
-
-  try {
-    const tokenRes = await fetch('https://api.paypal.com/v1/oauth2/token', {
-      method: 'POST',
-      headers: {
-        Authorization: 'Basic ' + Buffer.from(`${clientId}:${secret}`).toString('base64'),
-        'Content-Type': 'application/x-www-form-urlencoded',
-      },
-      body: 'grant_type=client_credentials',
-    });
-    if (!tokenRes.ok) return null;
-    const { access_token } = await tokenRes.json();
-
-    const end = new Date();
-    const start = new Date();
-    start.setDate(start.getDate() - 31);
-
-    const txRes = await fetch(
-      `https://api.paypal.com/v1/reporting/transactions?start_date=${start.toISOString().split('.')[0]}Z&end_date=${end.toISOString().split('.')[0]}Z&page_size=100`,
-      { headers: { Authorization: `Bearer ${access_token}` } }
-    );
-    if (!txRes.ok) return null;
-    const data = await txRes.json();
-
-    const collectedUSD = (data.transaction_details || [])
-      .filter(t =>
-        t.transaction_info.transaction_event_code === 'T0006' &&
-        t.transaction_info.transaction_status === 'S' &&
-        t.transaction_info.transaction_amount.currency_code === 'USD'
-      )
-      .reduce((s, t) => s + parseFloat(t.transaction_info.transaction_amount.value), 0);
-
-    return { collectedUSD };
-  } catch {
-    return null;
-  }
-}
-
 module.exports = async function handler(req, res) {
   if (req.method !== 'GET') return res.status(405).end();
 
@@ -297,18 +260,16 @@ module.exports = async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
 
   try {
-    const [clientsData, stripeData, paypalData, agencyData] = await Promise.all([
+    const [clientsData, stripeData, contractsData, agencyData] = await Promise.all([
       Promise.all(CLIENTS.map(getClientData)),
       getStripeData(),
-      getPaypalData(),
+      getContractsData(),
       getAgencyData(),
     ]);
-    const scRecovery = agencyData?.scRecovery ?? null;
 
     const totalLeads = clientsData.reduce((s, c) => s + (c.leads?.total || 0), 0);
     const stuckLeads = clientsData.reduce((s, c) => s + (c.leads?.new || 0), 0);
     const stripeCollected = (stripeData?.collectedCents || 0) / 100;
-    const paypalCollected = paypalData?.collectedUSD || 0;
 
     res.status(200).json({
       generatedAt: new Date().toISOString(),
@@ -316,47 +277,12 @@ module.exports = async function handler(req, res) {
         totalLeads,
         stuckLeads,
         stuckPct: totalLeads > 0 ? Math.round((stuckLeads / totalLeads) * 100) : 0,
-        totalCollected: stripeCollected + paypalCollected,
+        totalCollected: stripeCollected,
         stripeBalanceCents: stripeData?.balanceCents ?? null,
-        fletcherFailed: stripeData?.fletcherFailed ?? null,
-        scRecovery: scRecovery ?? null,
-        billingRows: (() => {
-          const spc = stripeData?.perClient || {};
-          return BILLING_CONFIG.map(bc => {
-            const stripe = spc[bc.key] || null;
-            const cd = clientsData.find(c => c.key === bc.key);
-            let lastPaidAmountCents = null, lastPaidDate = null, nextDueDate = null, paymentStatus = 'none';
-            if (stripe?.lastSucceeded) {
-              lastPaidAmountCents = stripe.lastSucceeded.amountCents;
-              lastPaidDate = new Date(stripe.lastSucceeded.created * 1000).toISOString();
-              nextDueDate = bc.cycleDays
-                ? new Date((stripe.lastSucceeded.created + bc.cycleDays * 24 * 3600) * 1000).toISOString()
-                : null;
-              paymentStatus = stripe.hasFailed ? 'warn' : 'ok';
-            } else if (stripe?.hasFailed) {
-              paymentStatus = 'failed';
-            }
-            let statusLabel = 'Active', statusClass = 'pill-green';
-            if (paymentStatus === 'failed') { statusLabel = 'Needs Action'; statusClass = 'pill-red'; }
-            else if (cd?.workflows?.fast5 === 'LIVE') { statusLabel = 'Ads Live'; statusClass = 'pill-blue'; }
-            else if (cd?.status === 'setup' || cd?.status === 'pending') { statusLabel = 'Setting Up'; statusClass = 'pill-yellow'; }
-            // Installment progress: count succeeded payments against total installments
-            let installmentPaid = null, installmentTotal = null;
-            if (bc.installments && stripe?.succeededCount) {
-              installmentPaid  = Math.min(stripe.succeededCount, bc.installments.total);
-              installmentTotal = bc.installments.total;
-            }
-            return { key: bc.key, name: bc.name, biz: bc.biz, deal: bc.deal, dealSub: bc.dealSub, retainerAmount: bc.retainerAmount, lastPaidAmountCents, lastPaidDate, nextDueDate, paymentStatus, statusLabel, statusClass, installmentPaid, installmentTotal };
-          });
-        })(),
-        staleContracts: (() => {
-          const todayMs = new Date().setHours(0, 0, 0, 0);
-          return STALE_CONTRACTS.map(sc => ({
-            ...sc,
-            daysSinceSent: Math.floor((todayMs - new Date(sc.sentDate).setHours(0, 0, 0, 0)) / 86400000),
-          }));
-        })(),
+        billingRows: stripeData?.billingRows ?? [],
+        contracts: contractsData,
         agencyPipeline: agencyData?.pipeline ?? null,
+        scRecovery: agencyData?.scRecovery ?? null,
       },
       clients: clientsData,
     });
