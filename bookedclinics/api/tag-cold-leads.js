@@ -5,7 +5,7 @@
 const GHL_API = 'https://services.leadconnectorhq.com';
 const GHL_VERSION = '2021-07-28';
 const AGENCY_LOC = 'NKpzhLv8iNQ0c9Ge3QAR';
-const TAG = 'cold clinic lead';
+const TAG = 'follow up needed';
 
 async function ghl(method, path, body, pit) {
   const r = await fetch(`${GHL_API}${path}`, {
