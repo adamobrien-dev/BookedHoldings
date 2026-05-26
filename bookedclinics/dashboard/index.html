@@ -1215,7 +1215,55 @@ async function loadData() {
     lu.textContent = 'Updated ' + ts.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
     _lastLoadTime = Date.now();
-    const s = data.summary;
+
+    // ── Build compatibility layer from new API structure ──────────────────────
+    const stripe = data.stripe || {};
+    const allStripeClients = stripe.clients || [];
+
+    const billingRows = allStripeClients
+      .filter(c => c.lastPaidCents || c.openInvoices?.length || c.hasFailed)
+      .map(c => {
+        const openInv = c.openInvoices?.[0] || null;
+        let paymentStatus = 'none';
+        if (c.hasFailed) paymentStatus = 'failed';
+        else if (c.lastPaidAt && !openInv) paymentStatus = 'ok';
+        else if (openInv) paymentStatus = 'warn';
+        let statusLabel, statusClass;
+        if (paymentStatus === 'failed')      { statusLabel = 'Payment Failed'; statusClass = 'pill-red'; }
+        else if (paymentStatus === 'ok')     { statusLabel = 'Paid';           statusClass = 'pill-green'; }
+        else if (paymentStatus === 'warn')   { statusLabel = 'Invoice Open';   statusClass = 'pill-yellow'; }
+        else                                 { statusLabel = 'No Activity';    statusClass = 'pill-gray'; }
+        const allDescs = [...(c.paidInvoices||[]), ...(c.openInvoices||[])];
+        return {
+          key: c.email?.split('@')[0] || c.name?.toLowerCase().replace(/\s+/g,''),
+          name: c.name,
+          biz: c.email || '',
+          deal: openInv?.description || allDescs[0]?.description || '—',
+          dealSub: openInv ? 'Open invoice' : (c.lastPaidAt ? 'Last paid ' + fmtDate(c.lastPaidAt) : null),
+          retainerAmount: openInv ? Math.round(openInv.amountCents/100) : (c.lastPaidCents ? Math.round(c.lastPaidCents/100) : null),
+          lastPaidAmountCents: c.lastPaidCents || null,
+          lastPaidDate: c.lastPaidAt || null,
+          nextDueDate: openInv?.dueDate || null,
+          paymentStatus, statusLabel, statusClass,
+          installmentPaid: null, installmentTotal: null,
+        };
+      });
+
+    const staleContracts = (data.contracts?.unsigned || []).map(c => ({
+      name: c.signerName || 'Unknown',
+      biz: c.title,
+      sentDate: new Date(Date.now() - c.daysSinceSent * 86400000).toISOString().split('T')[0],
+      daysSinceSent: c.daysSinceSent,
+    }));
+
+    const s = {
+      scRecovery:     data.scRecovery,
+      agencyPipeline: data.agencyPipeline,
+      totalCollected: (stripe.collectedCents || 0) / 100,
+      billingRows,
+      staleContracts,
+    };
+    // ─────────────────────────────────────────────────────────────────────────
 
     // SC recovery alert
     const scR = s.scRecovery;
@@ -1234,21 +1282,15 @@ async function loadData() {
     // Summary stats
     document.getElementById('stat-collected').textContent =
       '$' + (s.totalCollected || 0).toLocaleString('en-US', { maximumFractionDigits: 0 });
-    document.getElementById('stat-total-leads').textContent = s.totalLeads ?? '—';
-    document.getElementById('stat-leads-sub').textContent = 'Across active accounts';
-    document.getElementById('stat-stuck').textContent = s.stuckLeads ?? '—';
-    document.getElementById('stat-stuck-sub').textContent =
-      (s.stuckPct ?? 0) + '% — zero follow-up sent';
+    document.getElementById('stat-total-leads').textContent =
+      (data.contracts?.unsigned?.length ?? 0) + ' unsigned';
+    document.getElementById('stat-leads-sub').textContent = 'Dropbox Sign contracts out';
+    document.getElementById('stat-stuck').textContent = stripe.unpaid?.length ?? '—';
+    document.getElementById('stat-stuck-sub').textContent = 'Stripe invoices unpaid';
 
-    // Client funnel cards
-    const CLIENTS = ['terri', 'allaphia', 'thania', 'aguilera'];
-    for (const client of data.clients) {
-      const k = client.key;
-      if (!CLIENTS.includes(k)) continue;
-      const leads = client.leads;
-      if (!leads) continue;
-      const total = leads.total || 1; // avoid div/0
-
+    // Client funnel cards — skipped (per-client GHL data not fetched)
+    // Stats above are now Stripe/contract based
+    if (false) {
       const set = (id, val) => {
         const el = document.getElementById(id);
         if (el) el.textContent = val;
@@ -1274,9 +1316,11 @@ async function loadData() {
       setBar(`${k}-bar-booked`, bkdPct);
       setBar(`${k}-bar-sale`,   salePct);
     }
+    } // end if(false)
+
     // Clear and re-render dynamic alerts (remove previously injected ones on refresh)
     document.querySelectorAll('#overview-alerts .alert:not(#alert-sc-recovery)').forEach(el => el.remove());
-    renderOverviewAlerts(s.billingRows, data.clients);
+    renderOverviewAlerts(s.billingRows, []);
 
     // Dynamic billing rows
     _lastSummary = s;
@@ -1284,7 +1328,7 @@ async function loadData() {
     renderBillingRows(s.billingRows || []);
     renderUpcoming(s.billingRows || []);
     renderContracts(s.staleContracts || []);
-    renderActions(s, data.clients, _metaAccounts);
+    renderActions(s, [], _metaAccounts);
 
     // MRR — sum retainers where payment is not failed
     const mrrTotal = (s.billingRows || [])
@@ -1293,97 +1337,8 @@ async function loadData() {
     const mrrEl = document.getElementById('stat-mrr');
     if (mrrEl) mrrEl.textContent = '$' + mrrTotal.toLocaleString();
 
-    // Clients tab stuck badge
-    const stuckBadge = document.getElementById('clients-stuck-badge');
-    if (stuckBadge) {
-      stuckBadge.textContent = (s.stuckPct ?? 0) + '% stuck';
-      stuckBadge.className = 'section-badge pill ' + ((s.stuckPct || 0) > 60 ? 'pill-red' : (s.stuckPct || 0) > 30 ? 'pill-yellow' : 'pill-green');
-    }
-
-    // Client cards: status pill, workflow meta, next-due meta
-    const WF_KEYS = ['fast5','confirmation','noshow','review','nurture','stale'];
-    const CARD_CLIENTS = ['terri','allaphia','thania','aguilera'];
-    for (const client of data.clients) {
-      const k = client.key;
-      if (!CARD_CLIENTS.includes(k)) continue;
-      const wfs = client.workflows || {};
-
-      // Status pill
-      const pill = document.getElementById('card-status-' + k);
-      const billing = (s.billingRows || []).find(r => r.key === k);
-      if (pill && billing) { pill.className = 'pill ' + billing.statusClass; pill.textContent = billing.statusLabel; }
-
-      // Workflow count
-      const liveCount = WF_KEYS.filter(w => wfs[w] === 'LIVE').length;
-      const totalWf   = WF_KEYS.filter(w => wfs[w]).length;
-      const wfMeta = document.getElementById(k + '-wf-meta');
-      if (wfMeta) wfMeta.innerHTML = '<strong>' + liveCount + '/' + (totalWf || 6) + '</strong> wf live';
-
-      // Next due
-      const dueMeta = document.getElementById(k + '-due-meta');
-      if (dueMeta && billing) {
-        if (billing.paymentStatus === 'failed') {
-          dueMeta.innerHTML = '<strong style="color:#f87171">payment failed</strong>';
-        } else if (billing.nextDueDate) {
-          const due = new Date(billing.nextDueDate);
-          const daysUntil = Math.ceil((due - new Date()) / 86400000);
-          const color = daysUntil < 0 ? '#f87171' : daysUntil <= 7 ? '#f59e0b' : '';
-          const amt = billing.retainerAmount ? '$' + billing.retainerAmount + ' ' : '';
-          dueMeta.innerHTML = '<strong' + (color ? ' style="color:' + color + '"' : '') + '>' + amt + 'due ' + fmtDate(billing.nextDueDate) + '</strong>';
-        }
-      }
-
-      // Workflow table cells
-      for (const wfKey of WF_KEYS) {
-        const cell = document.getElementById('wf-' + k + '-' + wfKey);
-        if (!cell) continue;
-        const status = wfs[wfKey];
-        if (status === 'LIVE')      { cell.className = 'wf-live';  cell.textContent = '● LIVE'; }
-        else if (status === 'DRAFT'){ cell.className = 'wf-draft'; cell.textContent = '○ DRAFT'; }
-        else                        { cell.className = '';          cell.textContent = '—'; }
-      }
-    }
-
-    // Workflow badge
-    let wfDraft = 0, wfTotal = 0;
-    for (const client of data.clients) {
-      if (!CARD_CLIENTS.includes(client.key)) continue;
-      for (const w of WF_KEYS) {
-        if (client.workflows?.[w]) { wfTotal++; if (client.workflows[w] === 'DRAFT') wfDraft++; }
-      }
-    }
-    const wfBadge = document.getElementById('wf-badge');
-    if (wfBadge) { wfBadge.textContent = wfDraft + '/' + wfTotal + ' in draft'; wfBadge.className = 'section-badge pill ' + (wfDraft === 0 ? 'pill-green' : 'pill-red'); }
-
-    // Fletcher card
-    const fletcherB = (s.billingRows || []).find(r => r.key === 'fletcher');
-    if (fletcherB) {
-      const fc = document.getElementById('card-fletcher');
-      const fp = document.getElementById('card-status-fletcher');
-      const fn = document.getElementById('fletcher-note');
-      const ff = document.getElementById('fletcher-footer-meta');
-      if (fletcherB.paymentStatus === 'ok' || fletcherB.paymentStatus === 'warn') {
-        if (fc) fc.style.opacity = '1';
-        if (fp) { fp.className = 'pill pill-yellow'; fp.textContent = 'Setting Up'; }
-        if (fn) fn.textContent = 'Payment cleared — setting up GHL sub-account.';
-        if (ff) ff.innerHTML = '<strong style="color:#10b981">✓ Payment received</strong>';
-      } else {
-        if (fc) fc.style.opacity = '0.5';
-        if (fp) { fp.className = 'pill pill-red'; fp.textContent = 'Unpaid'; }
-        if (fn) fn.textContent = 'No GHL sub-account created yet. Work cannot start until $500 payment clears.';
-        if (ff) ff.innerHTML = '<strong style="color:#f87171">$500 payment failed on Stripe</strong>';
-      }
-    }
-
-    // Glendale — compute days from stale contracts
-    const glendaleC = (s.staleContracts || []).find(c => c.name === 'Nayson Rouhipour');
-    const glendaleNote = document.getElementById('glendale-note');
-    if (glendaleC && glendaleNote) {
-      glendaleNote.textContent = 'Contract sent ' + fmtDate(glendaleC.sentDate) + ', not yet signed (' + glendaleC.daysSinceSent + 'd ago). Pipeline configured. No ads started.';
-    }
-
     // Agency pipeline
-    const ap = s.agencyPipeline;
+    const ap = data.agencyPipeline;
     if (ap) {
       const setEl = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = v; };
       setEl('pipe-sc-upcoming', ap.scUpcoming);
