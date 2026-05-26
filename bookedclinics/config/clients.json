@@ -78,5 +78,18 @@
     "dealSub": "No onboarding fee",
     "cycleDays": 30,
     "retainerAmount": 500
+  },
+  {
+    "key": "shawn",
+    "name": "Shawn Dua",
+    "biz": "Skinny Ventures LLC · Skinny.com · Weight Loss",
+    "niche": "Weight Loss",
+    "locationId": null,
+    "pitEnv": "GHL_PIT_SHAWN",
+    "stripeId": null,
+    "deal": "$500 setup + rev %",
+    "dealSub": "10% d1-7, 5% d8-30",
+    "cycleDays": 30,
+    "retainerAmount": null
   }
 ]
