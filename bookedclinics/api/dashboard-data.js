@@ -119,6 +119,19 @@ async function getStripeData() {
     const c = bc.stripeId ? (customerMap[bc.stripeId] || {}) : {};
     const openInv = c.openInvoices?.[0] || null;
 
+    // Installment tracking — count paid invoices matching the installment amount (±20%)
+    let installmentPaid = null, installmentTotal = null;
+    if (bc.installments) {
+      installmentTotal = bc.installments.total;
+      const targetCents = bc.installments.amount * 100;
+      installmentPaid = Math.min(
+        (c.paidInvoices || []).filter(inv => Math.abs(inv.amountCents - targetCents) / targetCents <= 0.2).length,
+        installmentTotal
+      );
+    }
+
+    const inInstallmentPhase = installmentPaid !== null && installmentPaid < installmentTotal;
+
     let paymentStatus = 'none';
     if (c.hasFailed)                      paymentStatus = 'failed';
     else if (c.lastPaidAt && !openInv)    paymentStatus = 'ok';
@@ -137,6 +150,9 @@ async function getStripeData() {
     }
     if (!nextDueDate && openInv?.dueDate) nextDueDate = openInv.dueDate;
 
+    // For installment-phase clients the "next amount" is the installment, not the retainer
+    const nextAmount = inInstallmentPhase ? bc.installments.amount : (bc.retainerAmount || null);
+
     return {
       key:                bc.key,
       name:               bc.name,
@@ -144,6 +160,9 @@ async function getStripeData() {
       deal:               bc.deal || '—',
       dealSub:            bc.dealSub || null,
       retainerAmount:     bc.retainerAmount || (c.lastPaidCents ? Math.round(c.lastPaidCents / 100) : null),
+      nextAmount,
+      installmentPaid,
+      installmentTotal,
       lastPaidAmountCents: c.lastPaidCents || null,
       lastPaidDate:       c.lastPaidAt || null,
       nextDueDate,

@@ -874,7 +874,7 @@ function renderOverviewAlerts(billingRows, clients) {
   (billingRows || []).filter(r => r.paymentStatus === 'failed').forEach(r => {
     alerts.push({ type: 'alert-red', icon: '🚨',
       title: r.name + ' — payment FAILED',
-      body: 'Stripe shows a failed charge. No work should begin until $' + (r.retainerAmount || 500) + ' clears. Resend the payment link immediately.',
+      body: 'Stripe shows a failed charge. No work should begin until $' + (r.nextAmount || r.retainerAmount || 500) + ' clears. Resend the payment link immediately.',
     });
   });
 
@@ -885,12 +885,12 @@ function renderOverviewAlerts(billingRows, clients) {
     if (days < 0) {
       alerts.push({ type: 'alert-red', icon: '🚨',
         title: r.name + ' — payment ' + Math.abs(days) + 'd overdue',
-        body: (r.retainerAmount ? '$' + r.retainerAmount : 'Payment') + ' was due ' + fmtDate(r.nextDueDate) + '. Follow up now.',
+        body: (r.nextAmount ? '$' + r.nextAmount : 'Payment') + ' was due ' + fmtDate(r.nextDueDate) + '. Follow up now.',
       });
     } else if (days <= 5) {
       alerts.push({ type: 'alert-yellow', icon: '⚠️',
         title: r.name + ' — payment due in ' + days + ' day' + (days === 1 ? '' : 's'),
-        body: (r.retainerAmount ? '$' + r.retainerAmount : 'Payment') + ' due ' + fmtDate(r.nextDueDate) + '. Invoice via Stripe.',
+        body: (r.nextAmount ? '$' + r.nextAmount : 'Payment') + ' due ' + fmtDate(r.nextDueDate) + '. Invoice via Stripe.',
       });
     }
   });
@@ -951,7 +951,7 @@ function renderBillingRows(rows) {
       paidSub  = 'Stripe — payment failed';
     } else if (r.lastPaidAmountCents) {
       const warn = r.paymentStatus === 'warn' ? ' · ⚠ recent failure' : '';
-      const installStr = r.installmentPaid && r.installmentTotal
+      const installStr = (r.installmentPaid != null && r.installmentTotal)
         ? ' · Installment ' + r.installmentPaid + '/' + r.installmentTotal : '';
       paidPill = '<span class="pill pill-green">✓ ' + fmtAmt(r.lastPaidAmountCents) + '</span>';
       paidSub  = 'Stripe · ' + fmtDate(r.lastPaidDate) + installStr + warn;
@@ -968,7 +968,9 @@ function renderBillingRows(rows) {
       nextVal = fmtDate(r.nextDueDate);
       if (daysUntil < 0) { nextSub = Math.abs(daysUntil) + 'd overdue'; nextColor = 'red'; }
       else if (daysUntil <= 7) { nextSub = 'Due in ' + daysUntil + 'd'; nextColor = 'yellow'; }
-      else { nextSub = r.retainerAmount ? '$' + r.retainerAmount + ' retainer' : 'No fixed retainer'; }
+      else if (r.installmentPaid != null && r.installmentPaid < r.installmentTotal) {
+        nextSub = '$' + r.nextAmount + ' · Installment ' + (r.installmentPaid + 1) + '/' + r.installmentTotal;
+      } else { nextSub = r.nextAmount ? '$' + r.nextAmount + ' retainer' : 'No fixed retainer'; }
     } else {
       nextVal = '—'; nextSub = 'No fixed cycle';
     }
@@ -1020,9 +1022,11 @@ function renderUpcoming(rows) {
         dateLabel = fmtDate(r.nextDueDate);
         if (overdue)      { amtColor = 'red';    desc = Math.abs(daysUntil) + 'd overdue — follow up now'; }
         else if (daysUntil <= 7) { amtColor = 'yellow'; desc = 'Due in ' + daysUntil + 'd — invoice via Stripe'; }
-        else              { desc = 'Upcoming retainer'; }
+        else if (r.installmentPaid != null && r.installmentPaid < r.installmentTotal) {
+          desc = 'Installment ' + (r.installmentPaid + 1) + '/' + r.installmentTotal;
+        } else { desc = 'Upcoming retainer'; }
       }
-      const amt = r.retainerAmount ? '$' + r.retainerAmount : '—';
+      const amt = r.nextAmount ? '$' + r.nextAmount : '—';
       return { dueDate, dateLabel, name: r.name, desc, amt, amtColor, urgent: urgent || overdue || r.paymentStatus === 'failed' };
     })
     .sort((a, b) => a.dueDate - b.dueDate);
