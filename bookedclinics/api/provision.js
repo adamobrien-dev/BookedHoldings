@@ -54,7 +54,7 @@ async function createLocation(client, agencyPit, companyId) {
     },
   }, agencyPit);
 
-  const locationId = data?.location?.id;
+  const locationId = data?.location?.id || data?.id;
   if (!locationId) throw new Error(`No locationId in response: ${JSON.stringify(data)}`);
   return locationId;
 }
