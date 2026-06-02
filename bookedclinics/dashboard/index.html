@@ -1063,6 +1063,7 @@
     <thead>
       <tr>
         <th class="col-client">Client</th>
+        <th>Ad Strategy</th>
         <th>FB Ad Access</th>
         <th>GHL Account</th>
         <th>FB Campaigns</th>
@@ -2313,6 +2314,7 @@ async function runProvision() {
   const API    = '/api/tasks?secret=' + SECRET + '&type=onboarding';
   const LS_KEY = 'bc-onboarding';
   const STEPS  = [
+    { key: 'adStrategy',  label: 'Ad Strategy'   },
     { key: 'fbAccess',    label: 'FB Ad Access'  },
     { key: 'ghlAccount',  label: 'GHL Account'   },
     { key: 'fbCampaigns', label: 'FB Campaigns'  },
