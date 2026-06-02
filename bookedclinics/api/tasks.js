@@ -1,6 +1,8 @@
-// GET  /api/tasks?secret=bc2026          — fetch all tasks
-// POST /api/tasks?secret=bc2026          — overwrite all tasks (body: { tasks: [...] })
-// Backed by Vercel KV (Upstash REST). Enable KV in Vercel dashboard to activate.
+// GET  /api/tasks?secret=bc2026               — fetch tasks
+// POST /api/tasks?secret=bc2026               — save tasks  { tasks: [...] }
+// GET  /api/tasks?secret=bc2026&type=onboarding — fetch onboarding state
+// POST /api/tasks?secret=bc2026&type=onboarding — save onboarding state { data: {...} }
+// Backed by Vercel KV. Enable KV in Vercel dashboard to activate.
 
 module.exports = async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -12,30 +14,31 @@ module.exports = async function handler(req, res) {
 
   const KV_URL   = process.env.KV_REST_API_URL;
   const KV_TOKEN = process.env.KV_REST_API_TOKEN;
+  const isOnboarding = req.query.type === 'onboarding';
+  const kvKey = isOnboarding ? 'bc-onboarding' : 'bc-tasks';
 
   if (!KV_URL || !KV_TOKEN) {
-    // KV not configured — return empty store so client falls back to localStorage
-    if (req.method === 'GET') return res.status(200).json({ tasks: [], kvConfigured: false });
+    if (req.method === 'GET') return res.status(200).json(isOnboarding ? { data: {}, kvConfigured: false } : { tasks: [], kvConfigured: false });
     return res.status(200).json({ ok: true, kvConfigured: false });
   }
 
   const kvHeaders = { Authorization: `Bearer ${KV_TOKEN}`, 'Content-Type': 'application/json' };
 
   if (req.method === 'GET') {
-    const r = await fetch(`${KV_URL}/get/bc-tasks`, { headers: kvHeaders });
+    const r = await fetch(`${KV_URL}/get/${kvKey}`, { headers: kvHeaders });
     const { result } = await r.json();
+    if (isOnboarding) {
+      const data = result ? JSON.parse(result) : {};
+      return res.status(200).json({ data, kvConfigured: true });
+    }
     const tasks = result ? JSON.parse(result) : [];
     return res.status(200).json({ tasks, kvConfigured: true });
   }
 
   if (req.method === 'POST') {
-    const tasks = req.body?.tasks ?? [];
-    await fetch(`${KV_URL}/set/bc-tasks`, {
-      method: 'POST',
-      headers: kvHeaders,
-      body: JSON.stringify(tasks),
-    });
-    return res.status(200).json({ ok: true, saved: tasks.length });
+    const body = isOnboarding ? JSON.stringify(req.body?.data ?? {}) : JSON.stringify(req.body?.tasks ?? []);
+    await fetch(`${KV_URL}/set/${kvKey}`, { method: 'POST', headers: kvHeaders, body });
+    return res.status(200).json({ ok: true });
   }
 
   return res.status(405).end();

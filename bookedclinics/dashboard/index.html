@@ -278,6 +278,7 @@
   <div class="nav-tab" data-tab="actions">Actions</div>
   <div class="nav-tab" data-tab="weekly">Weekly Report</div>
   <div class="nav-tab" data-tab="tasks">Tasks <span id="tasks-nav-badge" style="display:none;background:#1e3a5f;color:#60a5fa;font-size:9px;font-weight:700;padding:1px 5px;border-radius:10px;margin-left:4px;"></span></div>
+  <div class="nav-tab" data-tab="onboarding">Onboarding</div>
 </div>
 
 <div class="container">
@@ -1022,6 +1023,61 @@
   <div class="tasks-status" id="tasks-status"></div>
 </div>
 </div><!-- /tab-tasks -->
+
+<!-- ══════════════════════════════ ONBOARDING TAB ══════════════════════════════ -->
+<div class="tab-section" id="tab-onboarding">
+<style>
+.ob-wrap { padding: 24px 0; overflow-x: auto; }
+.ob-table { width: 100%; border-collapse: collapse; min-width: 700px; }
+.ob-table th {
+  font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.6px;
+  color: #475569; padding: 8px 10px; text-align: center; border-bottom: 1px solid #1a2035;
+  white-space: nowrap;
+}
+.ob-table th.col-client { text-align: left; min-width: 140px; }
+.ob-table td {
+  padding: 10px; border-bottom: 1px solid #0f1623; text-align: center; vertical-align: middle;
+}
+.ob-table td.col-client {
+  text-align: left; font-size: 12px; font-weight: 600; color: #e2e8f0; white-space: nowrap;
+}
+.ob-table td.col-client .ob-biz { font-size: 10px; color: #475569; font-weight: 400; margin-top: 2px; }
+.ob-table tr:hover td { background: #0a0f1a; }
+.ob-check {
+  width: 22px; height: 22px; border-radius: 5px; border: 1.5px solid #1e3a5f;
+  background: #0d1117; cursor: pointer; margin: 0 auto; display: flex;
+  align-items: center; justify-content: center; transition: all 0.12s; flex-shrink: 0;
+}
+.ob-check.done { background: #166534; border-color: #16a34a; }
+.ob-check.done::after { content: '✓'; color: #4ade80; font-size: 13px; font-weight: 700; }
+.ob-check:hover:not(.done) { border-color: #3b82f6; background: #0f1f3d; }
+.ob-progress {
+  font-size: 10px; font-weight: 700; color: #64748b; white-space: nowrap;
+}
+.ob-progress.complete { color: #4ade80; }
+.ob-save-status { font-size: 11px; color: #334155; text-align: right; margin-top: 10px; }
+</style>
+
+<div class="ob-wrap">
+  <table class="ob-table" id="ob-table">
+    <thead>
+      <tr>
+        <th class="col-client">Client</th>
+        <th>FB Ad Access</th>
+        <th>GHL Account</th>
+        <th>FB Campaigns</th>
+        <th>GHL Site</th>
+        <th>GHL Survey</th>
+        <th>Pixel Setup</th>
+        <th>Pixel Tested</th>
+        <th>Progress</th>
+      </tr>
+    </thead>
+    <tbody id="ob-body"></tbody>
+  </table>
+  <div class="ob-save-status" id="ob-status"></div>
+</div>
+</div><!-- /tab-onboarding -->
 
 </div><!-- /container -->
 
@@ -2246,6 +2302,151 @@ async function runProvision() {
       tabEl.addEventListener('click', () => { if (!synced) initTasks(); });
     }
     if (document.getElementById('tab-tasks')?.classList.contains('active')) initTasks();
+  });
+})();
+
+// ══════════════════════════════ ONBOARDING ══════════════════════════════
+(function () {
+  const SECRET = 'bc2026';
+  const API    = '/api/tasks?secret=' + SECRET + '&type=onboarding';
+  const LS_KEY = 'bc-onboarding';
+  const STEPS  = [
+    { key: 'fbAccess',    label: 'FB Ad Access'  },
+    { key: 'ghlAccount',  label: 'GHL Account'   },
+    { key: 'fbCampaigns', label: 'FB Campaigns'  },
+    { key: 'ghlSite',     label: 'GHL Site'      },
+    { key: 'ghlSurvey',   label: 'GHL Survey'    },
+    { key: 'pixelSetup',  label: 'Pixel Setup'   },
+    { key: 'pixelTested', label: 'Pixel Tested'  },
+  ];
+
+  let state    = {};  // { clientKey: { stepKey: bool } }
+  let kvReady  = false;
+  let loaded   = false;
+
+  function lsLoad()  { try { return JSON.parse(localStorage.getItem(LS_KEY) || '{}'); } catch { return {}; } }
+  function lsSave(s) { localStorage.setItem(LS_KEY, JSON.stringify(s)); }
+
+  async function kvLoad() {
+    try {
+      const r = await fetch(API);
+      if (!r.ok) return null;
+      const { data, kvConfigured } = await r.json();
+      kvReady = !!kvConfigured;
+      return kvConfigured ? data : null;
+    } catch { return null; }
+  }
+
+  async function kvSave(s) {
+    if (!kvReady) return;
+    try {
+      await fetch(API, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ data: s }),
+      });
+    } catch {}
+  }
+
+  function setStatus(msg) {
+    const el = document.getElementById('ob-status');
+    if (el) el.textContent = msg;
+  }
+
+  function toggle(clientKey, stepKey) {
+    if (!state[clientKey]) state[clientKey] = {};
+    state[clientKey][stepKey] = !state[clientKey][stepKey];
+    lsSave(state);
+    kvSave(state);
+    renderRow(clientKey);
+    setStatus(kvReady ? 'Saved ✓' : 'Saved locally');
+  }
+
+  function getStep(clientKey, stepKey) {
+    // Auto-detect ghlAccount from billingRows locationId presence
+    if (stepKey === 'ghlAccount') {
+      const row = (window._CLIENTS || []).find(r => r.key === clientKey);
+      if (state[clientKey]?.ghlAccount === true) return true;
+      // If not explicitly set, use locationId as signal but don't auto-check it
+    }
+    return !!(state[clientKey]?.[stepKey]);
+  }
+
+  function renderRow(clientKey) {
+    const row = document.getElementById('ob-row-' + clientKey);
+    if (!row) return;
+    STEPS.forEach(step => {
+      const cell = row.querySelector('[data-step="' + step.key + '"]');
+      if (!cell) return;
+      const check = cell.querySelector('.ob-check');
+      const done  = getStep(clientKey, step.key);
+      if (check) check.className = 'ob-check' + (done ? ' done' : '');
+    });
+    // Progress
+    const prog = row.querySelector('.ob-progress');
+    if (prog) {
+      const done  = STEPS.filter(s => getStep(clientKey, s.key)).length;
+      const total = STEPS.length;
+      prog.textContent  = done + '/' + total;
+      prog.className    = 'ob-progress' + (done === total ? ' complete' : '');
+    }
+  }
+
+  function renderTable() {
+    const tbody = document.getElementById('ob-body');
+    if (!tbody) return;
+    const clients = (window._CLIENTS || []).filter(c => c.key !== 'fletcher');
+    tbody.innerHTML = '';
+    clients.forEach(c => {
+      const tr = document.createElement('tr');
+      tr.id = 'ob-row-' + c.key;
+
+      const nameTd = document.createElement('td');
+      nameTd.className = 'col-client';
+      nameTd.innerHTML = c.name + '<div class="ob-biz">' + (c.biz || '').split('·')[0].trim() + '</div>';
+      tr.appendChild(nameTd);
+
+      STEPS.forEach(step => {
+        const td = document.createElement('td');
+        td.dataset.step = step.key;
+        const check = document.createElement('div');
+        check.className = 'ob-check' + (getStep(c.key, step.key) ? ' done' : '');
+        check.onclick   = () => toggle(c.key, step.key);
+        td.appendChild(check);
+        tr.appendChild(td);
+      });
+
+      const progTd = document.createElement('td');
+      const done   = STEPS.filter(s => getStep(c.key, s.key)).length;
+      progTd.innerHTML = '<span class="ob-progress' + (done === STEPS.length ? ' complete' : '') + '">' + done + '/' + STEPS.length + '</span>';
+      tr.appendChild(progTd);
+
+      tbody.appendChild(tr);
+    });
+  }
+
+  async function initOnboarding() {
+    if (loaded) return;
+    loaded = true;
+    state = lsLoad();
+    renderTable();
+    setStatus('Loading…');
+    const remote = await kvLoad();
+    if (remote !== null) {
+      // Merge: remote wins, but preserve any local keys not in remote
+      state = Object.assign({}, state, remote);
+      lsSave(state);
+      setStatus('Synced ✓');
+    } else {
+      setStatus(kvReady === false ? 'Local only (KV not configured)' : 'Loaded locally');
+    }
+    renderTable();
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    const tabEl = document.querySelector('[data-tab="onboarding"]');
+    if (tabEl) tabEl.addEventListener('click', initOnboarding);
+    if (document.getElementById('tab-onboarding')?.classList.contains('active')) initOnboarding();
   });
 })();
 </script>
