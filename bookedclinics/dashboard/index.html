@@ -2399,7 +2399,7 @@ async function runProvision() {
   function renderTable() {
     const tbody = document.getElementById('ob-body');
     if (!tbody) return;
-    const clients = (window._CLIENTS || []).filter(c => c.key !== 'fletcher');
+    const clients = (window._CLIENTS || []).filter(c => !['fletcher', 'shawn', 'glendale'].includes(c.key));
     tbody.innerHTML = '';
     clients.forEach(c => {
       const tr = document.createElement('tr');
