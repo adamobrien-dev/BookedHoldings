@@ -113,10 +113,10 @@
     "locationId": "jXhJSq0AENZ4RGbeT4O7",
     "pitEnv": "GHL_PIT_STEPHANIE",
     "stripeId": "cus_UbTQByfHBIDZMD",
-    "deal": "Flat $500/mo",
-    "dealSub": null,
+    "deal": "$40/patient",
+    "dealSub": "Profit share per patient",
     "cycleDays": 30,
-    "retainerAmount": 500,
+    "retainerAmount": null,
     "_provision": {
       "phone": "+17133226640",
       "city": "Houston",
