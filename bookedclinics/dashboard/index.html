@@ -381,7 +381,83 @@
     <!-- populated by loadData() -->
   </div>
 
+  <!-- ── PROVISION NEW CLIENT ── -->
+  <div class="section-header" style="margin-top:28px;">
+    <div class="section-title">Provision New GHL Sub-Account</div>
+    <button onclick="document.getElementById('provision-modal').style.display='flex'"
+      style="background:#2563eb;color:#fff;border:none;border-radius:7px;padding:8px 18px;font-size:13px;font-weight:600;cursor:pointer;">
+      + New Client
+    </button>
+  </div>
+  <div id="provision-pending" style="color:#475569;font-size:13px;padding:8px 0 4px;">
+    Clients without a GHL sub-account (locationId = null) will appear here once data loads.
+  </div>
 </div><!-- /tab-billing -->
+
+<!-- ── PROVISION MODAL ── -->
+<div id="provision-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:999;align-items:center;justify-content:center;">
+  <div style="background:#0f1623;border:1px solid #1e293b;border-radius:14px;padding:28px 32px;width:480px;max-height:90vh;overflow-y:auto;">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+      <div style="font-size:16px;font-weight:700;color:#e2e8f0;">Provision GHL Sub-Account</div>
+      <button onclick="document.getElementById('provision-modal').style.display='none'"
+        style="background:none;border:none;color:#64748b;font-size:20px;cursor:pointer;">✕</button>
+    </div>
+    <div style="display:grid;gap:12px;">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+        <div><label style="font-size:11px;color:#64748b;display:block;margin-bottom:4px;">Full Name *</label>
+          <input id="pv-name" style="width:100%;background:#1a2035;border:1px solid #2d3748;border-radius:6px;padding:8px 10px;color:#e2e8f0;font-size:13px;box-sizing:border-box;" placeholder="Sarah Purdy"></div>
+        <div><label style="font-size:11px;color:#64748b;display:block;margin-bottom:4px;">Business Name *</label>
+          <input id="pv-biz" style="width:100%;background:#1a2035;border:1px solid #2d3748;border-radius:6px;padding:8px 10px;color:#e2e8f0;font-size:13px;box-sizing:border-box;" placeholder="Today Telemedicine"></div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+        <div><label style="font-size:11px;color:#64748b;display:block;margin-bottom:4px;">Email *</label>
+          <input id="pv-email" style="width:100%;background:#1a2035;border:1px solid #2d3748;border-radius:6px;padding:8px 10px;color:#e2e8f0;font-size:13px;box-sizing:border-box;" placeholder="sarah@example.com"></div>
+        <div><label style="font-size:11px;color:#64748b;display:block;margin-bottom:4px;">Phone * (E.164)</label>
+          <input id="pv-phone" style="width:100%;background:#1a2035;border:1px solid #2d3748;border-radius:6px;padding:8px 10px;color:#e2e8f0;font-size:13px;box-sizing:border-box;" placeholder="+18009518257"></div>
+      </div>
+      <div><label style="font-size:11px;color:#64748b;display:block;margin-bottom:4px;">Niche / Industry *</label>
+        <input id="pv-niche" style="width:100%;background:#1a2035;border:1px solid #2d3748;border-radius:6px;padding:8px 10px;color:#e2e8f0;font-size:13px;box-sizing:border-box;" placeholder="Telemedicine"></div>
+      <div style="display:grid;grid-template-columns:2fr 1fr 1fr;gap:12px;">
+        <div><label style="font-size:11px;color:#64748b;display:block;margin-bottom:4px;">City *</label>
+          <input id="pv-city" style="width:100%;background:#1a2035;border:1px solid #2d3748;border-radius:6px;padding:8px 10px;color:#e2e8f0;font-size:13px;box-sizing:border-box;" placeholder="Orlando"></div>
+        <div><label style="font-size:11px;color:#64748b;display:block;margin-bottom:4px;">State *</label>
+          <input id="pv-state" style="width:100%;background:#1a2035;border:1px solid #2d3748;border-radius:6px;padding:8px 10px;color:#e2e8f0;font-size:13px;box-sizing:border-box;" placeholder="FL"></div>
+        <div><label style="font-size:11px;color:#64748b;display:block;margin-bottom:4px;">Zip *</label>
+          <input id="pv-zip" style="width:100%;background:#1a2035;border:1px solid #2d3748;border-radius:6px;padding:8px 10px;color:#e2e8f0;font-size:13px;box-sizing:border-box;" placeholder="32801"></div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+        <div><label style="font-size:11px;color:#64748b;display:block;margin-bottom:4px;">Timezone *</label>
+          <select id="pv-tz" style="width:100%;background:#1a2035;border:1px solid #2d3748;border-radius:6px;padding:8px 10px;color:#e2e8f0;font-size:13px;box-sizing:border-box;">
+            <option value="America/New_York">Eastern (ET)</option>
+            <option value="America/Chicago">Central (CT)</option>
+            <option value="America/Denver">Mountain (MT)</option>
+            <option value="America/Los_Angeles">Pacific (PT)</option>
+          </select></div>
+        <div><label style="font-size:11px;color:#64748b;display:block;margin-bottom:4px;">Website</label>
+          <input id="pv-website" style="width:100%;background:#1a2035;border:1px solid #2d3748;border-radius:6px;padding:8px 10px;color:#e2e8f0;font-size:13px;box-sizing:border-box;" placeholder="https://..."></div>
+      </div>
+      <div style="display:flex;gap:8px;margin-top:4px;">
+        <button onclick="prefillProvision('sarah')"
+          style="flex:1;background:#1a2035;border:1px solid #2d3748;border-radius:7px;padding:8px;color:#94a3b8;font-size:12px;cursor:pointer;">
+          ⚡ Pre-fill: Sarah Purdy
+        </button>
+        <button onclick="prefillProvision('stephanie')"
+          style="flex:1;background:#1a2035;border:1px solid #2d3748;border-radius:7px;padding:8px;color:#94a3b8;font-size:12px;cursor:pointer;">
+          ⚡ Pre-fill: Stephanie
+        </button>
+      </div>
+    </div>
+    <div id="provision-result" style="margin-top:14px;font-size:12px;color:#64748b;"></div>
+    <div style="display:flex;gap:10px;margin-top:18px;">
+      <button onclick="document.getElementById('provision-modal').style.display='none'"
+        style="flex:1;background:#1a2035;border:1px solid #2d3748;border-radius:7px;padding:10px;color:#64748b;font-size:13px;cursor:pointer;">Cancel</button>
+      <button onclick="runProvision()"
+        style="flex:2;background:#2563eb;color:#fff;border:none;border-radius:7px;padding:10px;font-size:13px;font-weight:600;cursor:pointer;">
+        Create Sub-Account
+      </button>
+    </div>
+  </div>
+</div>
 
 <div class="tab-section" id="tab-clients">
   <!-- ── CLIENT PIPELINE ── -->
@@ -1805,6 +1881,76 @@ async function loadRecovery() {
     console.warn('Recovery load failed:', e);
     document.getElementById('sc-nocall-list').innerHTML = '<div style="color:#ef4444;padding:16px;font-size:12px;">Failed to load recovery data</div>';
   }
+}
+
+const PROVISION_PRESETS = {
+  sarah: {
+    name: 'Sarah Purdy', biz: 'Today Telemedicine', email: 'sarahpurdy@todaytelemedicine.com',
+    phone: '+18009518257', niche: 'Telemedicine', city: 'Orlando', state: 'FL', zip: '32801',
+    tz: 'America/New_York', website: 'https://www.todaytelemedicine.com',
+  },
+  stephanie: {
+    name: 'Stephanie Alvarenga', biz: 'RTB Spa', email: 'sma@rtbspa.com',
+    phone: '+17133226640', niche: 'Spa & Massage Therapy', city: 'Houston', state: 'TX', zip: '77079',
+    tz: 'America/Chicago', website: 'https://www.rtbspa.com',
+  },
+};
+
+function prefillProvision(key) {
+  const p = PROVISION_PRESETS[key];
+  if (!p) return;
+  document.getElementById('pv-name').value    = p.name;
+  document.getElementById('pv-biz').value     = p.biz;
+  document.getElementById('pv-email').value   = p.email;
+  document.getElementById('pv-phone').value   = p.phone;
+  document.getElementById('pv-niche').value   = p.niche;
+  document.getElementById('pv-city').value    = p.city;
+  document.getElementById('pv-state').value   = p.state;
+  document.getElementById('pv-zip').value     = p.zip;
+  document.getElementById('pv-tz').value      = p.tz;
+  document.getElementById('pv-website').value = p.website;
+}
+
+async function runProvision() {
+  const el = id => document.getElementById(id).value.trim();
+  const payload = {
+    name: el('pv-name'), businessName: el('pv-biz'), email: el('pv-email'),
+    phone: el('pv-phone'), niche: el('pv-niche'), city: el('pv-city'),
+    state: el('pv-state'), zip: el('pv-zip'), timezone: el('pv-tz'),
+    website: el('pv-website'),
+  };
+  const missing = ['name','businessName','email','phone','niche','city','state','zip','timezone']
+    .filter(k => !payload[k]);
+  if (missing.length) {
+    document.getElementById('provision-result').innerHTML =
+      '<span style="color:#ef4444;">Missing: ' + missing.join(', ') + '</span>';
+    return;
+  }
+  const btn = document.querySelector('#provision-modal button[onclick="runProvision()"]');
+  btn.textContent = 'Creating...';
+  btn.disabled = true;
+  document.getElementById('provision-result').innerHTML = '<span style="color:#64748b;">Calling GHL API...</span>';
+  try {
+    const r = await fetch('/api/provision', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    });
+    const d = await r.json();
+    if (d.success) {
+      document.getElementById('provision-result').innerHTML =
+        '<span style="color:#22c55e;">✓ Sub-account created! locationId: <strong>' + d.locationId + '</strong></span>' +
+        '<br><span style="color:#64748b;font-size:11px;">Add this locationId to clients.json for ' + payload.name + '</span>';
+    } else {
+      document.getElementById('provision-result').innerHTML =
+        '<span style="color:#ef4444;">Error: ' + (d.error || JSON.stringify(d)) + '</span>';
+    }
+  } catch (e) {
+    document.getElementById('provision-result').innerHTML =
+      '<span style="color:#ef4444;">Request failed: ' + e.message + '</span>';
+  }
+  btn.textContent = 'Create Sub-Account';
+  btn.disabled = false;
 }
 </script>
 </body>

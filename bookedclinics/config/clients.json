@@ -104,5 +104,47 @@
     "dealSub": null,
     "cycleDays": 30,
     "retainerAmount": 500
+  },
+  {
+    "key": "stephanie",
+    "name": "Stephanie Alvarenga",
+    "biz": "RTB Spa · Massage & Wellness · Houston, TX",
+    "niche": "Spa & Massage · Houston, TX",
+    "locationId": null,
+    "pitEnv": "GHL_PIT_STEPHANIE",
+    "stripeId": "cus_UbTQByfHBIDZMD",
+    "deal": "Flat $500/mo",
+    "dealSub": null,
+    "cycleDays": 30,
+    "retainerAmount": 500,
+    "_provision": {
+      "phone": "+17133226640",
+      "city": "Houston",
+      "state": "TX",
+      "zip": "77079",
+      "timezone": "America/Chicago",
+      "website": "https://www.rtbspa.com"
+    }
+  },
+  {
+    "key": "sarah",
+    "name": "Sarah Purdy",
+    "biz": "Today Telemedicine · Women's Telepsychiatry · Florida",
+    "niche": "Telemedicine · Florida",
+    "locationId": null,
+    "pitEnv": "GHL_PIT_SARAH",
+    "stripeId": "cus_UcXUrIqz1uTXqJ",
+    "deal": "Flat $500/mo",
+    "dealSub": null,
+    "cycleDays": 30,
+    "retainerAmount": 500,
+    "_provision": {
+      "phone": "+18009518257",
+      "city": "Orlando",
+      "state": "FL",
+      "zip": "32801",
+      "timezone": "America/New_York",
+      "website": "https://www.todaytelemedicine.com"
+    }
   }
 ]
