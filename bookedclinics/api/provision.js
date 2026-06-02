@@ -111,14 +111,54 @@ async function createOpportunity(client, locationId, contactId, clientPit) {
 
 module.exports = async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
 
   if (req.method === 'OPTIONS') return res.status(200).end();
-  if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
   const AGENCY_PIT = process.env.GHL_PIT_AGENCY || 'pit-4c3b0e38-6f82-4429-a33a-b54628e9a03d';
   const COMPANY_ID = process.env.GHL_COMPANY_ID || 'MSYotuf1a5FAsGdPRMfP';
+
+  // GET ?secret=bc2026&pending=true — provision all _provision entries without a locationId
+  if (req.method === 'GET') {
+    if (req.query.secret !== 'bc2026') return res.status(401).json({ error: 'unauthorized' });
+    if (req.query.pending !== 'true') return res.status(400).json({ error: 'add &pending=true to confirm' });
+
+    const CLIENTS = require('../config/clients.json');
+    const pending = CLIENTS.filter(c => !c.locationId && c._provision);
+    if (!pending.length) return res.status(200).json({ message: 'No pending clients', results: [] });
+
+    const results = await Promise.allSettled(pending.map(async bc => {
+      const p = bc._provision;
+      const bizName = bc.biz.split('·')[0].trim();
+      const clientData = {
+        name: bc.name,
+        businessName: bizName,
+        email: `${bc.key}@bookedclinics.ca`,
+        phone: p.phone,
+        niche: bc.niche || 'general',
+        city: p.city,
+        state: p.state,
+        zip: p.zip,
+        timezone: p.timezone,
+        website: p.website || '',
+      };
+      const locationId = await createLocation(clientData, AGENCY_PIT, COMPANY_ID);
+      const contactId = await createContact(clientData, locationId, AGENCY_PIT);
+      return { key: bc.key, name: bc.name, locationId, contactId };
+    }));
+
+    return res.status(200).json({
+      results: results.map((r, i) => ({
+        key: pending[i].key,
+        name: pending[i].name,
+        status: r.status,
+        ...(r.status === 'fulfilled' ? r.value : { error: r.reason?.message }),
+      })),
+    });
+  }
+
+  if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
   const client = req.body;
   const required = ['name', 'businessName', 'email', 'phone', 'niche', 'city', 'state', 'zip', 'timezone'];
