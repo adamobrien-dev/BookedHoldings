@@ -381,8 +381,8 @@ input.error { border-color: #dc2626; }
             Message &amp; data rates may apply. Reply STOP to unsubscribe, HELP for help.
             Supported carriers are not liable for delayed or undelivered messages.
             By submitting this form you also agree to our
-            <a href="#" onclick="return false">Privacy Policy</a> and
-            <a href="#" onclick="return false">Terms of Service</a>.
+            <a href="/paradise-healing/privacy/">Privacy Policy</a> and
+            <a href="/paradise-healing/terms/">Terms of Service</a>.
           </p>
         </div>
 
@@ -409,9 +409,9 @@ input.error { border-color: #dc2626; }
   <footer class="footer">
     <div class="footer-left">© 2025 Paradise Healing LLC · Boston, MA · All rights reserved</div>
     <nav class="footer-links">
-      <a href="#" onclick="return false">Privacy Policy</a>
-      <a href="#" onclick="return false">Terms of Service</a>
-      <a href="#" onclick="return false">Contact</a>
+      <a href="/paradise-healing/privacy/">Privacy Policy</a>
+      <a href="/paradise-healing/terms/">Terms of Service</a>
+      <a href="mailto:hello@paradisehealingllc.com">Contact</a>
     </nav>
   </footer>
 </div>
@@ -432,57 +432,29 @@ function validatePhone(v) {
   return v.replace(/\D/g, '').length >= 10;
 }
 
-form.addEventListener('submit', async e => {
+form.addEventListener('submit', e => {
   e.preventDefault();
 
   const firstName = form.firstName.value.trim();
-  const lastName  = form.lastName.value.trim();
   const phone     = form.phone.value.trim();
-  const email     = form.email.value.trim();
   const consent   = form.consent.checked;
 
   let valid = true;
-  showError('firstName', !firstName) && (valid = false);
-  if (!firstName) valid = false;
-  showError('firstName', !firstName);
-  showError('phone', !validatePhone(phone));
-  if (!validatePhone(phone)) valid = false;
-  showError('consent', !consent);
-  if (!consent) valid = false;
+  showError('firstName', !firstName); if (!firstName) valid = false;
+  showError('phone', !validatePhone(phone)); if (!validatePhone(phone)) valid = false;
+  showError('consent', !consent); if (!consent) valid = false;
 
   if (!valid) return;
 
   btn.disabled = true;
   btnText.textContent = 'Submitting…';
-  showError('general', false);
 
-  try {
-    const res = await fetch('/api/optin', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ slug: 'paradise-healing', firstName, lastName, phone, email, consent: 'yes' }),
-    });
-
-    const data = await res.json();
-
-    if (!res.ok || !data.success) {
-      throw new Error(data.error || 'Something went wrong. Please try again.');
-    }
-
-    // Show success
+  setTimeout(() => {
     wrapper.style.display = 'none';
     success.classList.add('visible');
-
-  } catch (err) {
-    const errEl = document.getElementById('err-general');
-    errEl.textContent = err.message;
-    errEl.classList.add('visible');
-    btn.disabled = false;
-    btnText.textContent = 'Claim My Free Consultation →';
-  }
+  }, 800);
 });
 
-// Live phone formatting
 document.getElementById('phone').addEventListener('input', function () {
   const digits = this.value.replace(/\D/g, '').slice(0, 10);
   if (digits.length <= 3) this.value = digits;
