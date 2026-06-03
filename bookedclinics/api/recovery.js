@@ -2,21 +2,6 @@ const GHL_API = 'https://services.leadconnectorhq.com';
 const GHL_VERSION = '2021-07-28';
 const AGENCY_LOC = 'NKpzhLv8iNQ0c9Ge3QAR';
 
-const STAGES = {
-  SC_UPCOMING: '8216ee1d-73eb-4a3e-b53b-8b8cf0942256',
-  DC_NOSHOW:   'f7a093f3-799e-4c00-826b-886c41199063',
-};
-
-const STALE_CONTRACTS = [
-  { name: 'Doyinsola Abikoye', biz: 'No business name on file', sentDate: '2026-04-17' },
-  { name: 'Emily Anderson',    biz: 'Renew Chiropractic',       sentDate: '2026-04-18' },
-  { name: 'Brittany Baumer',   biz: 'The Skin & Body Spa',      sentDate: '2026-04-21' },
-  { name: 'Andre F',           biz: 'Clear Cost Telehealth',    sentDate: '2026-04-22' },
-  { name: 'Nayson Rouhipour',  biz: "Glendale's Urgent Care",   sentDate: '2026-05-05' },
-  { name: 'Nnenna Obioha',     biz: 'Lost in GHL — contract sent after', sentDate: '2026-05-07' },
-  { name: 'Yahaira Manon',     biz: '2 ad images in Drive',     sentDate: '2026-05-13' },
-];
-
 async function ghlFetch(path, pit) {
   try {
     const r = await fetch(`${GHL_API}${path}`, {
@@ -27,8 +12,36 @@ async function ghlFetch(path, pit) {
   } catch { return null; }
 }
 
+function classifyStage(stageName = '') {
+  const s = stageName.toLowerCase();
+  if (s.includes('sc') && s.includes('upcoming')) return 'SC_UPCOMING';
+  if (s.includes('dc') && s.includes('no show')) return 'DC_NOSHOW';
+  return 'OTHER';
+}
+
 function daysSince(iso) {
   return Math.floor((Date.now() - new Date(iso).getTime()) / 86400000);
+}
+
+async function getUnsignedContracts() {
+  const apiKey = process.env.DROPBOX_SIGN_API_KEY || '0c7c0852c085eeeb45c29567517edd91fe42cde48870c1d3bf0971dda88e6f11';
+  const auth = 'Basic ' + Buffer.from(apiKey + ':').toString('base64');
+  try {
+    const r = await fetch('https://api.hellosign.com/v3/signature_request/list?page_size=100', {
+      headers: { Authorization: auth },
+    });
+    if (!r.ok) return [];
+    const data = await r.json();
+    return (data?.signature_requests || [])
+      .filter(sr => !sr.is_complete && !sr.is_declined)
+      .map(sr => ({
+        name:         sr.signatures?.[0]?.signer_name || 'Unknown',
+        email:        sr.signatures?.[0]?.signer_email_address || null,
+        title:        sr.title,
+        daysSinceSent: Math.floor((Date.now() - sr.created_at * 1000) / 86400000),
+      }))
+      .sort((a, b) => b.daysSinceSent - a.daysSinceSent);
+  } catch { return []; }
 }
 
 module.exports = async function handler(req, res) {
@@ -37,16 +50,18 @@ module.exports = async function handler(req, res) {
   res.setHeader('Cache-Control', 's-maxage=120, stale-while-revalidate=60');
   res.setHeader('Access-Control-Allow-Origin', '*');
 
-  const pit = process.env.GHL_PIT_AGENCY || 'pit-6aacb9ad-ed6a-4266-beb3-e261c49afe6b';
+  const pit = process.env.GHL_PIT_AGENCY || 'pit-4c3b0e38-6f82-4429-a33a-b54628e9a03d';
 
-  // Fetch all agency opps once
-  const oppsData = await ghlFetch(`/opportunities/search?location_id=${AGENCY_LOC}&limit=100`, pit);
+  const [oppsData, unsignedContracts] = await Promise.all([
+    ghlFetch(`/opportunities/search?location_id=${AGENCY_LOC}&limit=100`, pit),
+    getUnsignedContracts(),
+  ]);
   const opps = oppsData?.opportunities || [];
 
   const now = new Date();
 
-  // ── SC: Upcoming — check each contact for a future appointment ─────────────
-  const scOpps = opps.filter(o => o.pipelineStageId === STAGES.SC_UPCOMING);
+  // ── SC: Upcoming ──────────────────────────────────────────────────────────
+  const scOpps = opps.filter(o => classifyStage(o.pipelineStageName) === 'SC_UPCOMING');
 
   const scResults = await Promise.all(scOpps.map(async o => {
     const apData = await ghlFetch(`/contacts/${o.contact.id}/appointments`, pit);
@@ -63,17 +78,17 @@ module.exports = async function handler(req, res) {
     };
   }));
 
-  const scNoCall   = scResults.filter(r => !r.hasFutureAppt).sort((a, b) => b.daysInStage - a.daysInStage);
+  const scNoCall    = scResults.filter(r => !r.hasFutureAppt).sort((a, b) => b.daysInStage - a.daysInStage);
   const scConfirmed = scResults.filter(r =>  r.hasFutureAppt).sort((a, b) => new Date(a.nextAppt) - new Date(b.nextAppt));
 
-  // ── DC: No-Show ────────────────────────────────────────────────────────────
+  // ── DC: No-Show ───────────────────────────────────────────────────────────
   const dcNoShows = opps
-    .filter(o => o.pipelineStageId === STAGES.DC_NOSHOW)
+    .filter(o => classifyStage(o.pipelineStageName) === 'DC_NOSHOW')
     .map(o => ({
-      name:          o.contact.name || 'Unknown',
-      phone:         o.contact.phone || null,
-      contactId:     o.contact.id,
-      daysInStage:   daysSince(o.lastStageChangeAt),
+      name:             o.contact.name || 'Unknown',
+      phone:            o.contact.phone || null,
+      contactId:        o.contact.id,
+      daysInStage:      daysSince(o.lastStageChangeAt),
       lastStageChangeAt: o.lastStageChangeAt,
     }))
     .sort((a, b) => b.daysInStage - a.daysInStage);
@@ -82,17 +97,15 @@ module.exports = async function handler(req, res) {
   const scByName = {};
   scResults.forEach(r => { scByName[r.name?.toLowerCase().trim()] = r; });
 
-  const staleContracts = STALE_CONTRACTS.map(c => {
+  const staleContracts = unsignedContracts.map(c => {
     const match = scByName[c.name?.toLowerCase().trim()];
     return {
       ...c,
-      daysSinceSent: daysSince(c.sentDate),
-      phone:         match?.phone    || null,
-      contactId:     match?.contactId || null,
+      phone:     match?.phone     || null,
+      contactId: match?.contactId || null,
     };
-  }).sort((a, b) => b.daysSinceSent - a.daysSinceSent);
+  });
 
-  // ── Summary ────────────────────────────────────────────────────────────────
   const criticalContracts = staleContracts.filter(c => c.daysSinceSent >= 14).length;
 
   res.status(200).json({
