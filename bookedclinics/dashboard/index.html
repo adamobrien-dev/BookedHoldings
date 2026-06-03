@@ -276,6 +276,7 @@
   <div class="nav-tab" data-tab="pipeline">Pipeline</div>
   <div class="nav-tab" data-tab="recovery">Recovery <span id="recovery-nav-badge" style="display:none;background:#7f1d1d;color:#fca5a5;font-size:9px;font-weight:700;padding:1px 5px;border-radius:10px;margin-left:4px;"></span></div>
   <div class="nav-tab" data-tab="actions">Actions</div>
+  <div class="nav-tab" data-tab="clientreports">Client Reports <span id="clientreports-nav-badge" style="display:none;background:#7f1d1d;color:#fca5a5;font-size:9px;font-weight:700;padding:1px 5px;border-radius:10px;margin-left:4px;"></span></div>
   <div class="nav-tab" data-tab="weekly">Weekly Report</div>
   <div class="nav-tab" data-tab="tasks">Tasks <span id="tasks-nav-badge" style="display:none;background:#1e3a5f;color:#60a5fa;font-size:9px;font-weight:700;padding:1px 5px;border-radius:10px;margin-left:4px;"></span></div>
   <div class="nav-tab" data-tab="onboarding">Onboarding</div>
@@ -931,6 +932,53 @@
   </div>
 
 </div><!-- /tab-weekly -->
+
+<!-- ════════════════════════════════ CLIENT REPORTS TAB ═══════════════════════════════ -->
+<div class="tab-section" id="tab-clientreports">
+<style>
+  .cr-week { font-size:11px; color:#475569; margin-bottom:24px; margin-top:24px; }
+  .cr-card { background:#111623; border:1px solid #1a2035; border-radius:12px; padding:20px; margin-bottom:20px; }
+  .cr-card.cr-sent { border-color:#065f46; }
+  .cr-card-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:16px; }
+  .cr-client-name { font-size:14px; font-weight:700; color:#e2e8f0; }
+  .cr-client-biz { font-size:11px; color:#475569; margin-top:2px; }
+  .cr-sent-badge { font-size:10px; font-weight:700; padding:3px 10px; border-radius:20px; background:#065f46; color:#34d399; }
+  .cr-pending-badge { font-size:10px; font-weight:700; padding:3px 10px; border-radius:20px; background:#3b1f02; color:#f59e0b; }
+  .cr-stats { display:grid; grid-template-columns:repeat(auto-fill,minmax(110px,1fr)); gap:10px; margin-bottom:18px; }
+  .cr-stat { background:#0d1117; border-radius:8px; padding:10px 12px; }
+  .cr-stat-label { font-size:9px; font-weight:700; text-transform:uppercase; letter-spacing:.8px; color:#475569; margin-bottom:4px; }
+  .cr-stat-value { font-size:18px; font-weight:700; color:#e2e8f0; }
+  .cr-stat-value.green { color:#34d399; }
+  .cr-stat-value.yellow { color:#f59e0b; }
+  .cr-stat-value.red { color:#ef4444; }
+  .cr-stat-sub { font-size:9px; color:#475569; margin-top:2px; }
+  .cr-loom-row { display:flex; align-items:center; gap:10px; margin-bottom:14px; flex-wrap:wrap; }
+  .cr-loom-btn { font-size:11px; font-weight:600; background:#6366f1; color:#fff; border:none; border-radius:7px; padding:8px 14px; cursor:pointer; white-space:nowrap; }
+  .cr-loom-btn:hover { background:#4f46e5; }
+  .cr-loom-input { flex:1; min-width:180px; background:#0d1117; border:1px solid #1a2035; color:#e2e8f0; font-size:11px; border-radius:7px; padding:8px 10px; outline:none; }
+  .cr-loom-input:focus { border-color:#6366f1; }
+  .cr-msg-wrap { position:relative; }
+  .cr-msg { width:100%; background:#0d1117; border:1px solid #1a2035; color:#94a3b8; font-size:11px; font-family:inherit; border-radius:8px; padding:12px; line-height:1.7; resize:vertical; min-height:130px; box-sizing:border-box; }
+  .cr-msg-actions { display:flex; gap:8px; margin-top:10px; }
+  .cr-copy-btn { font-size:11px; color:#60a5fa; background:none; border:1px solid #60a5fa; border-radius:6px; padding:5px 12px; cursor:pointer; }
+  .cr-copy-btn:hover { background:#1e3a5f; }
+  .cr-mark-btn { font-size:11px; color:#34d399; background:none; border:1px solid #34d399; border-radius:6px; padding:5px 12px; cursor:pointer; }
+  .cr-mark-btn:hover { background:#065f46; }
+  .cr-unmark-btn { font-size:11px; color:#475569; background:none; border:1px solid #1a2035; border-radius:6px; padding:5px 12px; cursor:pointer; }
+  .cr-no-access { font-size:11px; color:#ef4444; background:#3b0a0a; border-radius:6px; padding:6px 10px; margin-bottom:14px; }
+</style>
+
+  <div class="section-header" style="margin-top:24px;">
+    <div class="section-title">Client Marketing Reports</div>
+    <button onclick="loadClientReports()" id="cr-refresh-btn" style="font-size:11px;color:#6366f1;background:none;border:1px solid #6366f1;border-radius:6px;padding:4px 10px;cursor:pointer;">Refresh</button>
+  </div>
+  <p class="cr-week" id="cr-week-label">Loading...</p>
+
+  <div id="cr-cards-container">
+    <div style="color:#475569;font-size:12px;padding:20px 0;">Loading client data...</div>
+  </div>
+
+</div><!-- /tab-clientreports -->
 
 <!-- ═══════════════════════════════════ TASKS TAB ══════════════════════════════════ -->
 <div class="tab-section" id="tab-tasks">
@@ -2461,6 +2509,284 @@ async function runProvision() {
     const tabEl = document.querySelector('[data-tab="onboarding"]');
     if (tabEl) tabEl.addEventListener('click', initOnboarding);
     if (document.getElementById('tab-onboarding')?.classList.contains('active')) initOnboarding();
+  });
+})();
+
+// ════════════════════════ CLIENT REPORTS ════════════════════════
+(function() {
+  const CLIENTS = [
+    { key:'terri',    name:'Terri',     biz:'Get Body Sculpted',              firstName:'Terri' },
+    { key:'allaphia', name:'Allaphia',  biz:'Paradise Healing',               firstName:'Allaphia' },
+    { key:'thania',   name:'Thania',    biz:'Tiali Beauty Lounge',            firstName:'Thania' },
+    { key:'aguilera', name:'Frank',     biz:'Aguilera Health & Wellness',     firstName:'Frank' },
+    { key:'sandy',    name:'Sandy',     biz:'My Adult Primary Care',          firstName:'Sandy' },
+  ];
+
+  function weekKey() {
+    const d = new Date();
+    const jan1 = new Date(d.getFullYear(), 0, 1);
+    const week = Math.ceil(((d - jan1) / 86400000 + jan1.getDay() + 1) / 7);
+    return d.getFullYear() + '-W' + String(week).padStart(2, '0');
+  }
+
+  function getSentState() {
+    try { return JSON.parse(localStorage.getItem('cr-sent-' + weekKey()) || '{}'); } catch { return {}; }
+  }
+
+  function setSent(key, val) {
+    const s = getSentState();
+    s[key] = val;
+    localStorage.setItem('cr-sent-' + weekKey(), JSON.stringify(s));
+    updateNavBadge();
+  }
+
+  function getLoomUrl(key) {
+    return localStorage.getItem('cr-loom-' + weekKey() + '-' + key) || '';
+  }
+
+  function setLoomUrl(key, url) {
+    localStorage.setItem('cr-loom-' + weekKey() + '-' + key, url);
+  }
+
+  function updateNavBadge() {
+    const sent = getSentState();
+    const pending = CLIENTS.filter(c => !sent[c.key]).length;
+    const badge = document.getElementById('clientreports-nav-badge');
+    if (!badge) return;
+    if (pending > 0) {
+      badge.style.display = 'inline';
+      badge.textContent = pending;
+    } else {
+      badge.style.display = 'none';
+    }
+  }
+
+  function buildMessage(client, meta, ghlClient, loomUrl) {
+    const firstName = client.firstName;
+    const spend  = meta?.spend  != null ? '$' + meta.spend.toLocaleString('en-US', { maximumFractionDigits: 0 }) : null;
+    const leads  = meta?.leads  != null ? meta.leads : null;
+    const cpl    = meta?.cpl    != null ? '$' + meta.cpl.toFixed(0) : null;
+    const newLeads = ghlClient?.leads?.new ?? null;
+    const booked   = ghlClient?.leads?.booked ?? null;
+
+    const lines = [
+      `Hi ${firstName}! 👋`,
+      '',
+      `Here's your marketing update for the week:`,
+      '',
+    ];
+
+    if (spend || leads || cpl) {
+      lines.push('📊 Ad Performance (Last 7 Days)');
+      if (spend)  lines.push(`• Ad Spend: ${spend}`);
+      if (leads != null) lines.push(`• Leads Generated: ${leads}`);
+      if (cpl)    lines.push(`• Cost Per Lead: ${cpl}`);
+      lines.push('');
+    }
+
+    lines.push('📋 Pipeline');
+    if (newLeads != null) lines.push(`• Leads awaiting contact: ${newLeads}`);
+    if (booked   != null) lines.push(`• Appointments booked: ${booked}`);
+    if (newLeads == null && booked == null) lines.push('• [pipeline data unavailable]');
+    lines.push('');
+
+    if (loomUrl) {
+      lines.push(`🎥 Full breakdown: ${loomUrl}`);
+      lines.push('');
+    } else {
+      lines.push('🎥 Full video breakdown: [paste Loom link above]');
+      lines.push('');
+    }
+
+    lines.push('Let me know if you have any questions!');
+    lines.push('— Adam');
+
+    return lines.join('\n');
+  }
+
+  function renderCard(client, meta, ghlClient, sent) {
+    const isSent = !!sent[client.key];
+    const loomUrl = getLoomUrl(client.key);
+    const msg = buildMessage(client, meta, ghlClient, loomUrl);
+
+    const spend = meta?.spend  != null ? '$' + meta.spend.toLocaleString('en-US',{maximumFractionDigits:0}) : '—';
+    const leads = meta?.leads  != null ? meta.leads : '—';
+    const cpl   = meta?.cpl   != null ? '$' + meta.cpl.toFixed(0) : '—';
+    const cplClass = meta?.cpl == null ? '' : meta.cpl > 75 ? 'red' : meta.cpl > 40 ? 'yellow' : 'green';
+    const newLeads = ghlClient?.leads?.new    ?? '—';
+    const booked   = ghlClient?.leads?.booked ?? '—';
+    const metaErr  = !meta || meta.error;
+
+    return `
+<div class="cr-card ${isSent ? 'cr-sent' : ''}" id="cr-card-${client.key}">
+  <div class="cr-card-header">
+    <div>
+      <div class="cr-client-name">${client.name} — ${client.biz}</div>
+    </div>
+    <div id="cr-badge-${client.key}" class="${isSent ? 'cr-sent-badge' : 'cr-pending-badge'}">${isSent ? '✓ Sent' : 'Pending'}</div>
+  </div>
+
+  ${metaErr ? `<div class="cr-no-access">⚠ No Meta access — ${meta?.error || 'not connected'}</div>` : ''}
+
+  <div class="cr-stats">
+    <div class="cr-stat">
+      <div class="cr-stat-label">Ad Spend</div>
+      <div class="cr-stat-value">${spend}</div>
+      <div class="cr-stat-sub">Last 7 days</div>
+    </div>
+    <div class="cr-stat">
+      <div class="cr-stat-label">Leads</div>
+      <div class="cr-stat-value ${leads > 0 ? 'green' : ''}">${leads}</div>
+      <div class="cr-stat-sub">From our campaigns</div>
+    </div>
+    <div class="cr-stat">
+      <div class="cr-stat-label">Cost / Lead</div>
+      <div class="cr-stat-value ${cplClass}">${cpl}</div>
+      <div class="cr-stat-sub">Meta CPL</div>
+    </div>
+    <div class="cr-stat">
+      <div class="cr-stat-label">In Pipeline</div>
+      <div class="cr-stat-value">${newLeads}</div>
+      <div class="cr-stat-sub">New / waiting</div>
+    </div>
+    <div class="cr-stat">
+      <div class="cr-stat-label">Booked</div>
+      <div class="cr-stat-value ${booked > 0 ? 'green' : ''}">${booked}</div>
+      <div class="cr-stat-sub">Appointments</div>
+    </div>
+  </div>
+
+  <div class="cr-loom-row">
+    <button class="cr-loom-btn" onclick="window.open('https://www.loom.com/record','_blank')">🎥 Record Loom</button>
+    <input class="cr-loom-input" id="cr-loom-${client.key}" type="url" placeholder="Paste Loom URL after recording…" value="${loomUrl}"
+      oninput="crOnLoomInput('${client.key}')">
+  </div>
+
+  <div class="cr-msg-wrap">
+    <textarea class="cr-msg" id="cr-msg-${client.key}">${msg}</textarea>
+  </div>
+  <div class="cr-msg-actions">
+    <button class="cr-copy-btn" onclick="crCopy('${client.key}')">Copy Message</button>
+    ${isSent
+      ? `<button class="cr-unmark-btn" onclick="crUnmark('${client.key}')">Undo Sent</button>`
+      : `<button class="cr-mark-btn" onclick="crMarkSent('${client.key}')">✓ Mark Sent</button>`
+    }
+  </div>
+</div>`;
+  }
+
+  window.crOnLoomInput = function(key) {
+    const url = document.getElementById('cr-loom-' + key)?.value || '';
+    setLoomUrl(key, url);
+    // Rebuild message with new URL
+    const textarea = document.getElementById('cr-msg-' + key);
+    if (!textarea) return;
+    const client = CLIENTS.find(c => c.key === key);
+    const meta = (_crMetaMap || {})[key];
+    const ghl  = (_crGhlMap  || {})[key];
+    if (client) textarea.value = buildMessage(client, meta, ghl, url);
+  };
+
+  window.crCopy = function(key) {
+    const text = document.getElementById('cr-msg-' + key)?.value || '';
+    navigator.clipboard.writeText(text).then(() => {
+      const btn = document.querySelector(`#cr-card-${key} .cr-copy-btn`);
+      if (!btn) return;
+      btn.textContent = 'Copied!';
+      setTimeout(() => btn.textContent = 'Copy Message', 2000);
+    });
+  };
+
+  window.crMarkSent = function(key) {
+    setSent(key, true);
+    const card = document.getElementById('cr-card-' + key);
+    const badge = document.getElementById('cr-badge-' + key);
+    if (card)  card.classList.add('cr-sent');
+    if (badge) { badge.className = 'cr-sent-badge'; badge.textContent = '✓ Sent'; }
+    // Swap button
+    const actions = card?.querySelector('.cr-msg-actions');
+    if (actions) {
+      const markBtn = actions.querySelector('.cr-mark-btn');
+      if (markBtn) {
+        markBtn.className = 'cr-unmark-btn';
+        markBtn.textContent = 'Undo Sent';
+        markBtn.onclick = () => crUnmark(key);
+      }
+    }
+  };
+
+  window.crUnmark = function(key) {
+    setSent(key, false);
+    const card = document.getElementById('cr-card-' + key);
+    const badge = document.getElementById('cr-badge-' + key);
+    if (card)  card.classList.remove('cr-sent');
+    if (badge) { badge.className = 'cr-pending-badge'; badge.textContent = 'Pending'; }
+    const actions = card?.querySelector('.cr-msg-actions');
+    if (actions) {
+      const unmarkBtn = actions.querySelector('.cr-unmark-btn');
+      if (unmarkBtn) {
+        unmarkBtn.className = 'cr-mark-btn';
+        unmarkBtn.textContent = '✓ Mark Sent';
+        unmarkBtn.onclick = () => crMarkSent(key);
+      }
+    }
+  };
+
+  let _crMetaMap = {};
+  let _crGhlMap  = {};
+
+  window.loadClientReports = async function() {
+    const btn = document.getElementById('cr-refresh-btn');
+    const container = document.getElementById('cr-cards-container');
+    if (btn) { btn.disabled = true; btn.textContent = 'Loading…'; }
+
+    // Week label
+    const now = new Date();
+    const weekStart = new Date(now);
+    weekStart.setDate(now.getDate() - now.getDay() + 1); // Monday
+    const weekEnd = new Date(weekStart);
+    weekEnd.setDate(weekStart.getDate() + 6);
+    const fmt = d => d.toLocaleDateString('en-US', { month:'short', day:'numeric' });
+    const label = document.getElementById('cr-week-label');
+    if (label) label.textContent = `Week of ${fmt(weekStart)} – ${fmt(weekEnd)} · resets every Monday`;
+
+    try {
+      const [metaRes, dashRes] = await Promise.all([
+        fetch('/api/meta-ads?preset=last_7d'),
+        fetch('/api/dashboard-data'),
+      ]);
+
+      const metaData = metaRes.ok ? await metaRes.json() : { accounts: [] };
+      const dashData = dashRes.ok ? await dashRes.json() : { clients: [] };
+
+      _crMetaMap = {};
+      for (const a of (metaData.accounts || [])) _crMetaMap[a.key] = a;
+
+      _crGhlMap = {};
+      for (const c of (dashData.clients || [])) _crGhlMap[c.key] = c;
+
+      const sent = getSentState();
+      container.innerHTML = CLIENTS.map(client =>
+        renderCard(client, _crMetaMap[client.key] || null, _crGhlMap[client.key] || null, sent)
+      ).join('');
+
+      updateNavBadge();
+    } catch (err) {
+      container.innerHTML = `<div style="color:#ef4444;font-size:12px;">Failed to load: ${err.message}</div>`;
+    } finally {
+      if (btn) { btn.disabled = false; btn.textContent = 'Refresh'; }
+    }
+  };
+
+  // Load when tab is clicked
+  document.addEventListener('DOMContentLoaded', () => {
+    updateNavBadge();
+    const tabEl = document.querySelector('[data-tab="clientreports"]');
+    if (tabEl) tabEl.addEventListener('click', () => {
+      if (!document.getElementById('cr-cards-container')?.querySelector('.cr-card')) {
+        loadClientReports();
+      }
+    });
   });
 })();
 </script>

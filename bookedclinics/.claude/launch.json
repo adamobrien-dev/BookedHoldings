@@ -2,6 +2,12 @@
   "version": "0.0.1",
   "configurations": [
     {
+      "name": "dashboard",
+      "runtimeExecutable": "npx",
+      "runtimeArgs": ["serve", ".", "-p", "3458", "--no-clipboard"],
+      "port": 3458
+    },
+    {
       "name": "demo-massage",
       "runtimeExecutable": "npx",
       "runtimeArgs": ["serve", ".", "-p", "3457", "--no-clipboard"],
