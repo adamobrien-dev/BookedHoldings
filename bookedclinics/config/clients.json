@@ -103,15 +103,17 @@
   {
     "key": "sandy",
     "name": "Sandy Sullivan",
-    "biz": "BookedJobs Patient Acquisition",
-    "niche": null,
-    "locationId": null,
+    "biz": "My Adult Primary Care · StemWave · Fayetteville, TN",
+    "niche": "StemWave / Primary Care · Fayetteville, TN",
+    "locationId": "M8E6rSDwYijkpGWK1AWR",
     "pitEnv": "GHL_PIT_SANDY",
     "stripeId": "cus_UaJwH3H8f9x8je",
     "deal": "Flat $500/mo",
     "dealSub": null,
     "cycleDays": 30,
-    "retainerAmount": 500
+    "retainerAmount": 500,
+    "metaAccountId": "act_1668298057538749",
+    "metaCampaignIds": ["120245850168380276", "120245800010870276"]
   },
   {
     "key": "stephanie",
