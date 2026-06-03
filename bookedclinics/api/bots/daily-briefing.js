@@ -28,7 +28,7 @@ function today() { return new Date().toLocaleDateString('en-US', { weekday: 'lon
 
 // ── JORDAN — Morning Operations Briefing ────────────────────────────────────
 function buildJordan(dash, meta) {
-  const s = dash.summary;
+  const s = dash;
   const ap = s.agencyPipeline || {};
   const now = new Date();
   const lines = [`🌅 <b>Morning, Adam — Jordan here.</b>`, `<i>${today()}</i>`, ``];
@@ -64,9 +64,9 @@ function buildJordan(dash, meta) {
   lines.push(``);
 
   // Billing
-  const mrrTotal = (s.billingRows || []).filter(r => r.paymentStatus !== 'failed' && r.retainerAmount).reduce((s2, r) => s2 + r.retainerAmount, 0);
+  const mrrTotal = (dash.billingRows || []).filter(r => r.paymentStatus !== 'failed' && r.retainerAmount).reduce((s2, r) => s2 + r.retainerAmount, 0);
   lines.push(`<b>💳 Billing</b>`);
-  lines.push(`• MRR: <b>${fmt$(mrrTotal)}/mo</b> | Collected: <b>${fmt$(s.totalCollected)}</b>`);
+  lines.push(`• MRR: <b>${fmt$(mrrTotal)}/mo</b>`);
   const upcoming = (s.billingRows || []).filter(r => r.nextDueDate && r.paymentStatus !== 'failed').map(r => {
     const days = Math.ceil((new Date(r.nextDueDate) - now) / 86400000);
     if (days >= 0 && days <= 7) return `${r.name} in ${days}d`;
@@ -90,7 +90,7 @@ function buildJordan(dash, meta) {
 
 // ── MORGAN — Billing Update ──────────────────────────────────────────────────
 function buildMorgan(dash) {
-  const s = dash.summary;
+  const s = dash;
   const now = new Date();
   const lines = [`💳 <b>Morgan — Billing Check</b>`, ``];
 
@@ -113,7 +113,7 @@ function buildMorgan(dash) {
   });
 
   lines.push(``);
-  lines.push(`Stripe balance: <b>${fmt$(Math.round((dash.summary.stripeBalanceCents || 0) / 100))}</b>`);
+  lines.push(`Stripe balance: <b>${fmt$(Math.round(((dash.stripe || {}).balance || 0) / 100))}</b>`);
   return lines.join('\n');
 }
 
@@ -143,7 +143,7 @@ function buildAlex(meta) {
 
 // ── RILEY — Agency Sales Pipeline ───────────────────────────────────────────
 function buildRiley(dash, rec) {
-  const ap = dash.summary.agencyPipeline || {};
+  const ap = dash.agencyPipeline || {};
   const lines = [`📈 <b>Riley — Agency Pipeline</b>`, ``];
 
   if (ap.scUpcoming > 0) {
@@ -186,23 +186,50 @@ function buildRiley(dash, rec) {
 }
 
 // ── CASEY — Client Health ────────────────────────────────────────────────────
-function buildCasey(dash) {
-  const WF_KEYS = ['fast5','confirmation','noshow','review','nurture','stale'];
+const GHL_CLIENTS = [
+  { key: 'terri',     name: 'Terri — Get Body Sculpted',  locationId: 'y1yUn5PVAMq0PEAtHdoa', token: 'pit-24605178-993f-438a-867e-70e7586ddd2c' },
+  { key: 'allaphia',  name: 'Allaphia — Paradise Healing', locationId: '0U66FTyg5WJhqyyzIbqM', token: 'pit-38331ef9-0e08-476c-ba9c-b25ddd951aee' },
+  { key: 'thania',    name: 'Thania — Tiali Beauty',       locationId: 'ZbBlLQsUabCGBXdSXcVq', token: 'pit-194e1e0c-1a90-432e-8841-8db3f1fd864b' },
+  { key: 'aguilera',  name: 'Aguilera Health & Wellness',  locationId: 'fl8EgJBlFzCy65y6wNyS', token: 'pit-4eaa170b-6379-40fd-8e09-e0483c97d31e' },
+];
+
+async function buildCasey() {
   const lines = [`👥 <b>Casey — Client Health</b>`, ``];
   let totalDraft = 0;
 
-  (dash.clients || []).filter(c => ['terri','allaphia','thania','aguilera'].includes(c.key)).forEach(c => {
-    const l = c.leads || {};
-    const pct = l.total > 0 ? Math.round((l.new / l.total) * 100) : 0;
-    const stuckFlag = pct > 70 ? ` ⚠️ ${pct}% stuck` : '';
-    const liveWf = WF_KEYS.filter(w => (c.workflows || {})[w] === 'LIVE').length;
-    const draftWf = WF_KEYS.filter(w => (c.workflows || {})[w] === 'DRAFT').length;
-    totalDraft += draftWf;
-    const wfFlag = liveWf === 0 ? ` 🔴 0 wf live` : ` · ${liveWf}/6 wf`;
+  await Promise.all(GHL_CLIENTS.map(async c => {
+    try {
+      const [oppRes, wfRes] = await Promise.all([
+        fetch(`https://services.leadconnectorhq.com/opportunities/search?location_id=${c.locationId}&limit=100`, {
+          headers: { 'Authorization': `Bearer ${c.token}`, 'Version': '2021-07-28' }
+        }),
+        fetch(`https://services.leadconnectorhq.com/workflows/?locationId=${c.locationId}`, {
+          headers: { 'Authorization': `Bearer ${c.token}`, 'Version': '2021-07-28' }
+        }),
+      ]);
+      const oppData = await oppRes.json();
+      const wfData  = await wfRes.json();
 
-    lines.push(`<b>${c.name || c.key}</b>${wfFlag}${stuckFlag}`);
-    lines.push(`   ${l.total ?? 0} leads · ${l.booked ?? 0} booked · ${l.sale ?? 0} sales`);
-  });
+      const opps = oppData.opportunities || [];
+      const total = oppData.meta?.total ?? opps.length;
+      const newLeads = opps.filter(o => o.status === 'open').length;
+      const booked = opps.filter(o => o.status === 'open' && o.pipelineStageId && o.pipelineStageId !== opps[0]?.pipelineStageId).length;
+
+      const wfs = wfData.workflows || [];
+      const draftCount = wfs.filter(w => w.status === 'draft').length;
+      const liveCount  = wfs.filter(w => w.status === 'published').length;
+      totalDraft += draftCount;
+
+      const stuckPct = total > 0 ? Math.round((newLeads / total) * 100) : 0;
+      const stuckFlag = stuckPct > 70 ? ` ⚠️ ${stuckPct}% stuck` : '';
+      const wfFlag = liveCount === 0 ? ` 🔴 0 wf live` : draftCount > 0 ? ` · ${liveCount} live, ${draftCount} draft` : ` · ${liveCount} wf live`;
+
+      lines.push(`<b>${c.name}</b>${wfFlag}${stuckFlag}`);
+      lines.push(`   ${total} leads · ${newLeads} in New Lead`);
+    } catch (e) {
+      lines.push(`<b>${c.name}</b> — error fetching data`);
+    }
+  }));
 
   if (totalDraft > 0) {
     lines.push(``);
@@ -229,12 +256,13 @@ module.exports = async function handler(req, res) {
     const meta = await metaRes.json();
     const rec  = recRes.ok ? await recRes.json() : null;
 
+    const [caseyMsg] = await Promise.all([buildCasey()]);
     await Promise.all([
       send('jordan', buildJordan(dash, meta)),
       send('morgan', buildMorgan(dash)),
       send('alex',   buildAlex(meta)),
       send('riley',  buildRiley(dash, rec)),
-      send('casey',  buildCasey(dash)),
+      send('casey',  caseyMsg),
     ]);
 
     res.status(200).json({ ok: true, sent: Object.keys(BOTS), at: new Date().toISOString() });
