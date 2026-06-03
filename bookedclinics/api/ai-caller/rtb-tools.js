@@ -8,8 +8,8 @@
 const GHL_API     = 'https://services.leadconnectorhq.com';
 const GHL_VERSION = '2021-07-28';
 
-const RTB_PIT         = process.env.RTB_PIT         || 'FILL_IN_RTB_PIT';
-const RTB_CALENDAR_ID = process.env.RTB_CALENDAR_ID || 'FILL_IN_RTB_CALENDAR_ID';
+const RTB_PIT         = process.env.RTB_PIT;
+const RTB_CALENDAR_ID = process.env.RTB_CALENDAR_ID;
 
 async function ghlFetch(path, method = 'GET', body = null) {
   const opts = {

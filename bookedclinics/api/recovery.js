@@ -24,7 +24,8 @@ function daysSince(iso) {
 }
 
 async function getUnsignedContracts() {
-  const apiKey = process.env.DROPBOX_SIGN_API_KEY || '0c7c0852c085eeeb45c29567517edd91fe42cde48870c1d3bf0971dda88e6f11';
+  const apiKey = process.env.DROPBOX_SIGN_API_KEY;
+  if (!apiKey) { console.error('DROPBOX_SIGN_API_KEY not set'); return []; }
   const auth = 'Basic ' + Buffer.from(apiKey + ':').toString('base64');
   try {
     const r = await fetch('https://api.hellosign.com/v3/signature_request/list?page_size=100', {

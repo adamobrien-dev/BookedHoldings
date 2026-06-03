@@ -186,12 +186,11 @@ function buildRiley(dash, rec) {
 }
 
 // ── CASEY — Client Health ────────────────────────────────────────────────────
-const GHL_CLIENTS = [
-  { key: 'terri',     name: 'Terri — Get Body Sculpted',  locationId: 'y1yUn5PVAMq0PEAtHdoa', token: 'pit-24605178-993f-438a-867e-70e7586ddd2c' },
-  { key: 'allaphia',  name: 'Allaphia — Paradise Healing', locationId: '0U66FTyg5WJhqyyzIbqM', token: 'pit-38331ef9-0e08-476c-ba9c-b25ddd951aee' },
-  { key: 'thania',    name: 'Thania — Tiali Beauty',       locationId: 'ZbBlLQsUabCGBXdSXcVq', token: 'pit-194e1e0c-1a90-432e-8841-8db3f1fd864b' },
-  { key: 'aguilera',  name: 'Aguilera Health & Wellness',  locationId: 'fl8EgJBlFzCy65y6wNyS', token: 'pit-4eaa170b-6379-40fd-8e09-e0483c97d31e' },
-];
+const ALL_CLIENTS = require('../../config/clients.json');
+const GHL_CLIENTS = ALL_CLIENTS
+  .filter(c => c.locationId && c.pitEnv)
+  .map(c => ({ key: c.key, name: c.biz.split('·')[0].trim(), locationId: c.locationId, token: process.env[c.pitEnv] }))
+  .filter(c => c.token);
 
 async function buildCasey() {
   const lines = [`👥 <b>Casey — Client Health</b>`, ``];

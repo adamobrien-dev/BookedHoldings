@@ -7,7 +7,7 @@
 const GHL_API     = 'https://services.leadconnectorhq.com';
 const GHL_VERSION = '2021-07-28';
 
-const RTB_PIT = process.env.RTB_PIT || 'FILL_IN_RTB_PIT';
+const RTB_PIT = process.env.RTB_PIT;
 
 async function ghlPost(path, body) {
   try {

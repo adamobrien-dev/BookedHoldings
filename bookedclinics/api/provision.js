@@ -116,8 +116,9 @@ module.exports = async function handler(req, res) {
 
   if (req.method === 'OPTIONS') return res.status(200).end();
 
-  const AGENCY_PIT = process.env.GHL_PIT_AGENCY || 'pit-4c3b0e38-6f82-4429-a33a-b54628e9a03d';
+  const AGENCY_PIT = process.env.GHL_PIT_AGENCY;
   const COMPANY_ID = process.env.GHL_COMPANY_ID || 'MSYotuf1a5FAsGdPRMfP';
+  if (!AGENCY_PIT) return res.status(500).json({ error: 'GHL_PIT_AGENCY not configured' });
 
   // GET ?secret=bc2026&pending=true — provision all _provision entries without a locationId
   if (req.method === 'GET') {

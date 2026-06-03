@@ -11,10 +11,9 @@ const BLAND_API = 'https://api.bland.ai/v1';
 const GHL_API   = 'https://services.leadconnectorhq.com';
 const GHL_VERSION = '2021-07-28';
 
-// Filled in once RTB sub-account is in GHL
-const RTB_LOCATION_ID  = process.env.RTB_LOCATION_ID  || 'FILL_IN_RTB_LOCATION_ID';
-const RTB_PIT          = process.env.RTB_PIT           || 'FILL_IN_RTB_PIT';
-const RTB_CALENDAR_ID  = process.env.RTB_CALENDAR_ID   || 'FILL_IN_RTB_CALENDAR_ID';
+const RTB_LOCATION_ID  = process.env.RTB_LOCATION_ID;
+const RTB_PIT          = process.env.RTB_PIT;
+const RTB_CALENDAR_ID  = process.env.RTB_CALENDAR_ID;
 
 function baseUrl() {
   const url = process.env.APP_URL || process.env.VERCEL_URL;
