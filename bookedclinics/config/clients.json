@@ -11,7 +11,9 @@
     "dealSub": "3 × $333 installments",
     "cycleDays": 30,
     "retainerAmount": 500,
-    "installments": { "total": 3, "amount": 333 }
+    "installments": { "total": 3, "amount": 333 },
+    "metaAccountId": "act_485117883849244",
+    "metaCampaignIds": []
   },
   {
     "key": "allaphia",
@@ -24,7 +26,9 @@
     "deal": "$1k setup + $500/mo",
     "dealSub": "Setup fully paid",
     "cycleDays": 30,
-    "retainerAmount": 500
+    "retainerAmount": 500,
+    "metaAccountId": "act_1525285445041708",
+    "metaCampaignIds": ["120247945125820231"]
   },
   {
     "key": "thania",
@@ -38,7 +42,9 @@
     "dealSub": "Performance only",
     "cycleDays": 30,
     "retainerAmount": null,
-    "installments": { "total": 3, "amount": 167 }
+    "installments": { "total": 3, "amount": 167 },
+    "metaAccountId": "act_1538112044990130",
+    "metaCampaignIds": ["120247760920890127"]
   },
   {
     "key": "aguilera",
@@ -51,7 +57,9 @@
     "deal": "Flat $500/mo",
     "dealSub": "Onboarding waived",
     "cycleDays": 30,
-    "retainerAmount": 500
+    "retainerAmount": 500,
+    "metaAccountId": "act_881548277918155",
+    "metaCampaignIds": ["120247903961760325"]
   },
   {
     "key": "glendale",
