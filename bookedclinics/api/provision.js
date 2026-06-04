@@ -145,8 +145,7 @@ module.exports = async function handler(req, res) {
         website: p.website || '',
       };
       const locationId = await createLocation(clientData, AGENCY_PIT, COMPANY_ID);
-      const contactId = await createContact(clientData, locationId, AGENCY_PIT);
-      return { key: bc.key, name: bc.name, locationId, contactId };
+      return { key: bc.key, name: bc.name, locationId };
     }));
 
     return res.status(200).json({
