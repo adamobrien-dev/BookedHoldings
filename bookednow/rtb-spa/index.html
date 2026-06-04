@@ -92,6 +92,43 @@ input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px 
 .footer-links { display: flex; gap: 1.25rem; }
 .footer-links a { font-size: 0.8125rem; color: var(--faint); text-decoration: none; }
 .footer-links a:hover { color: var(--accent); }
+
+/* ── Chat Widget ── */
+#chat-widget { position: fixed; bottom: 1.5rem; right: 1.5rem; z-index: 9999; display: flex; flex-direction: column; align-items: flex-end; gap: 0.75rem; }
+#chat-bubble { width: 60px; height: 60px; border-radius: 50%; background: var(--accent); box-shadow: 0 4px 20px rgba(107,124,62,0.45); border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 1.6rem; transition: background 0.15s, transform 0.15s; }
+#chat-bubble:hover { background: var(--accent-hover); transform: scale(1.07); }
+#chat-box { width: 340px; background: var(--white); border-radius: 16px; box-shadow: 0 8px 40px rgba(28,26,21,0.18); overflow: hidden; display: none; flex-direction: column; max-height: 520px; }
+#chat-box.open { display: flex; }
+.chat-head { background: linear-gradient(135deg, #2d3a1a, #6b7c3e); padding: 1rem 1.25rem; display: flex; align-items: center; gap: 0.75rem; }
+.chat-head-avatar { width: 38px; height: 38px; border-radius: 50%; background: rgba(255,255,255,0.2); display: flex; align-items: center; justify-content: center; font-size: 1.2rem; flex-shrink: 0; }
+.chat-head-info { flex: 1; }
+.chat-head-name { font-size: 0.9375rem; font-weight: 700; color: #fff; }
+.chat-head-status { font-size: 0.75rem; color: rgba(255,255,255,0.75); display: flex; align-items: center; gap: 0.35rem; }
+.chat-head-status::before { content: ''; width: 7px; height: 7px; border-radius: 50%; background: #6ee7b7; display: inline-block; }
+.chat-close { background: none; border: none; cursor: pointer; color: rgba(255,255,255,0.8); font-size: 1.25rem; padding: 0.25rem; line-height: 1; }
+.chat-close:hover { color: #fff; }
+.chat-msgs { flex: 1; overflow-y: auto; padding: 1rem; display: flex; flex-direction: column; gap: 0.75rem; }
+.msg { max-width: 85%; }
+.msg.agent { align-self: flex-start; }
+.msg.user  { align-self: flex-end; }
+.msg-bubble { padding: 0.65rem 0.9rem; border-radius: 14px; font-size: 0.875rem; line-height: 1.55; }
+.msg.agent .msg-bubble { background: var(--surface); color: var(--ink); border-bottom-left-radius: 4px; border: 1px solid var(--line); }
+.msg.user  .msg-bubble { background: var(--accent); color: #fff; border-bottom-right-radius: 4px; }
+.chat-input-area { border-top: 1px solid var(--line); padding: 0.75rem 1rem; display: flex; gap: 0.5rem; align-items: center; }
+.chat-input-area input { flex: 1; height: 2.5rem; padding: 0 0.85rem; border: 1.5px solid var(--line); border-radius: 9999px; font: inherit; font-size: 0.9rem; color: var(--ink); background: var(--surface); outline: none; transition: border-color 0.15s; }
+.chat-input-area input:focus { border-color: var(--accent); }
+.chat-send { width: 38px; height: 38px; border-radius: 50%; background: var(--accent); border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 1rem; flex-shrink: 0; transition: background 0.15s; }
+.chat-send:hover { background: var(--accent-hover); }
+.chat-consent-area { padding: 0.75rem 1rem; border-top: 1px solid var(--line); background: var(--surface); }
+.chat-consent-check { display: flex; gap: 0.6rem; align-items: flex-start; }
+.chat-consent-check input[type="checkbox"] { width: 18px; height: 18px; margin-top: 2px; flex-shrink: 0; accent-color: var(--accent); cursor: pointer; }
+.chat-consent-check label { font-size: 0.75rem; color: var(--muted); line-height: 1.5; cursor: pointer; }
+.chat-consent-check label a { color: var(--accent); text-decoration: none; }
+.chat-submit-btn { margin-top: 0.6rem; width: 100%; height: 2.5rem; background: var(--accent); color: #fff; border: none; border-radius: 9999px; font-size: 0.875rem; font-weight: 700; cursor: pointer; transition: background 0.15s; }
+.chat-submit-btn:hover:not(:disabled) { background: var(--accent-hover); }
+.chat-submit-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+.chat-err { font-size: 0.75rem; color: #dc2626; margin-top: 0.35rem; display: none; }
+.chat-err.visible { display: block; }
 </style>
 </head>
 <body>
@@ -230,6 +267,145 @@ document.getElementById('phone').addEventListener('input', function () {
   else if (digits.length <= 6) this.value = `(${digits.slice(0,3)}) ${digits.slice(3)}`;
   else this.value = `(${digits.slice(0,3)}) ${digits.slice(3,6)}-${digits.slice(6)}`;
 });
+</script>
+
+<!-- ── Chat Widget ── -->
+<div id="chat-widget">
+  <div id="chat-box" role="dialog" aria-label="Chat with RTB Spa">
+    <div class="chat-head">
+      <div class="chat-head-avatar">🌿</div>
+      <div class="chat-head-info">
+        <div class="chat-head-name">RTB Spa Team</div>
+        <div class="chat-head-status">Online · Typically replies fast</div>
+      </div>
+      <button class="chat-close" id="chat-close-btn" aria-label="Close chat">✕</button>
+    </div>
+
+    <div class="chat-msgs" id="chat-msgs"></div>
+
+    <div id="chat-input-wrap" class="chat-input-area">
+      <input type="text" id="chat-input" placeholder="Type a message…" autocomplete="off" maxlength="160">
+      <button class="chat-send" id="chat-send-btn" aria-label="Send">➤</button>
+    </div>
+
+    <div id="chat-consent-wrap" class="chat-consent-area" style="display:none;">
+      <div class="chat-consent-check">
+        <input type="checkbox" id="chat-consent">
+        <label for="chat-consent">
+          I consent to receive SMS text messages and/or emails from <strong>RTB Spa</strong> at the number I provided.
+          Message frequency varies. Msg &amp; data rates may apply. Reply STOP to opt out.
+          See our <a href="/rtb-spa/privacy/" target="_blank">Privacy Policy</a> and
+          <a href="/rtb-spa/terms/" target="_blank">Terms of Service</a>.
+        </label>
+      </div>
+      <span class="chat-err" id="chat-consent-err">Please check the box to continue.</span>
+      <button class="chat-submit-btn" id="chat-submit-btn">Send Me the Details via Text →</button>
+    </div>
+  </div>
+
+  <button id="chat-bubble" aria-label="Chat with us">💬</button>
+</div>
+
+<script>
+(function () {
+  const bubble   = document.getElementById('chat-bubble');
+  const box      = document.getElementById('chat-box');
+  const closeBtn = document.getElementById('chat-close-btn');
+  const msgs     = document.getElementById('chat-msgs');
+  const inputEl  = document.getElementById('chat-input');
+  const sendBtn  = document.getElementById('chat-send-btn');
+  const consentWrap = document.getElementById('chat-consent-wrap');
+  const inputWrap   = document.getElementById('chat-input-wrap');
+  const submitBtn   = document.getElementById('chat-submit-btn');
+  const consentCb   = document.getElementById('chat-consent');
+  const consentErr  = document.getElementById('chat-consent-err');
+
+  let step = 0; // 0=name, 1=phone, 2=consent
+  let userName = '';
+  let userPhone = '';
+
+  function addMsg(text, who) {
+    const div = document.createElement('div');
+    div.className = 'msg ' + who;
+    div.innerHTML = `<div class="msg-bubble">${text}</div>`;
+    msgs.appendChild(div);
+    msgs.scrollTop = msgs.scrollHeight;
+  }
+
+  function agentDelay(fn, ms) { setTimeout(fn, ms || 700); }
+
+  function openChat() {
+    box.classList.add('open');
+    bubble.setAttribute('aria-expanded', 'true');
+    if (step === 0 && msgs.children.length === 0) {
+      agentDelay(() => {
+        addMsg("Hi there! 👋 I'm with RTB Spa. I'd love to help you book your <strong>free 20-minute wellness consultation</strong>. What's your first name?", 'agent');
+        inputEl.focus();
+      }, 300);
+    }
+  }
+
+  function closeChat() {
+    box.classList.remove('open');
+    bubble.setAttribute('aria-expanded', 'false');
+  }
+
+  function formatPhone(v) {
+    const d = v.replace(/\D/g, '').slice(0, 10);
+    if (d.length <= 3) return d;
+    if (d.length <= 6) return `(${d.slice(0,3)}) ${d.slice(3)}`;
+    return `(${d.slice(0,3)}) ${d.slice(3,6)}-${d.slice(6)}`;
+  }
+
+  function validPhone(v) { return v.replace(/\D/g, '').length >= 10; }
+
+  function handleSend() {
+    const val = inputEl.value.trim();
+    if (!val) return;
+    addMsg(val, 'user');
+    inputEl.value = '';
+
+    if (step === 0) {
+      userName = val;
+      step = 1;
+      agentDelay(() => {
+        addMsg(`Great to meet you, ${userName}! 🌿 What's the best mobile number to reach you?`, 'agent');
+      });
+    } else if (step === 1) {
+      const formatted = formatPhone(val);
+      if (!validPhone(val)) {
+        agentDelay(() => addMsg("Hmm, that doesn't look like a valid US number. Please try again (e.g. 713-555-0100).", 'agent'));
+        return;
+      }
+      userPhone = formatted;
+      step = 2;
+      agentDelay(() => {
+        addMsg(`Perfect! Last step — just confirm below that it's okay to text you, and we'll get your spot reserved. 👇`, 'agent');
+        inputWrap.style.display = 'none';
+        consentWrap.style.display = 'block';
+      });
+    }
+  }
+
+  sendBtn.addEventListener('click', handleSend);
+  inputEl.addEventListener('keydown', e => { if (e.key === 'Enter') handleSend(); });
+
+  submitBtn.addEventListener('click', () => {
+    if (!consentCb.checked) {
+      consentErr.classList.add('visible');
+      return;
+    }
+    consentErr.classList.remove('visible');
+    submitBtn.disabled = true;
+    consentWrap.style.display = 'none';
+    agentDelay(() => {
+      addMsg(`You're all set, ${userName}! ✅ We'll text <strong>${userPhone}</strong> within 24 hours to schedule your free consultation. Talk soon! 🌿`, 'agent');
+    }, 400);
+  });
+
+  bubble.addEventListener('click', () => box.classList.contains('open') ? closeChat() : openChat());
+  closeBtn.addEventListener('click', closeChat);
+})();
 </script>
 </body>
 </html>
