@@ -49,16 +49,31 @@ body { font-family: var(--font); background: var(--page-bg); color: var(--ink); 
 .testimonial p { color: rgba(255,255,255,0.9); font-size: 0.9375rem; line-height: 1.65; font-style: italic; }
 .testimonial cite { display: block; margin-top: 0.85rem; color: #c8e07a; font-size: 0.8125rem; font-weight: 600; font-style: normal; }
 
-.info-section { max-width: 52rem; margin: 0 auto; padding: clamp(3rem, 6vw, 5rem) clamp(1.5rem, 4vw, 2.5rem); display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; }
-@media (max-width: 640px) { .info-section { grid-template-columns: 1fr; } }
+.content { max-width: 52rem; margin: 0 auto; padding: clamp(2.5rem, 6vw, 4rem) clamp(1.5rem, 4vw, 2.5rem); display: flex; flex-direction: column; gap: 1.5rem; }
+
+.info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+@media (max-width: 640px) { .info-grid { grid-template-columns: 1fr; } }
+
 .info-card { background: var(--white); border-radius: var(--radius); padding: 1.75rem; border: 1px solid var(--line); }
 .info-card h3 { font-size: 1.0625rem; font-weight: 700; color: var(--ink); margin-bottom: 0.75rem; }
 .info-card p { font-size: 0.9rem; color: var(--muted); line-height: 1.65; }
 .info-card ul { padding-left: 1.25rem; margin-top: 0.5rem; }
 .info-card li { font-size: 0.9rem; color: var(--muted); line-height: 1.65; margin-bottom: 0.35rem; }
+.info-card a { color: var(--accent); text-decoration: none; }
+.info-card a:hover { text-decoration: underline; }
 
-.footer { padding: 1.25rem clamp(1rem, 4vw, 2.5rem); border-top: 1px solid var(--line); display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.5rem; background: var(--white); }
+.sms-disclosure { background: var(--white); border-radius: var(--radius); padding: 1.75rem; border: 1px solid var(--line); }
+.sms-disclosure h3 { font-size: 1.0625rem; font-weight: 700; color: var(--ink); margin-bottom: 0.75rem; }
+.sms-disclosure p { font-size: 0.875rem; color: var(--muted); line-height: 1.7; }
+.sms-disclosure p + p { margin-top: 0.65rem; }
+.sms-disclosure a { color: var(--accent); text-decoration: none; }
+.sms-disclosure a:hover { text-decoration: underline; }
+.sms-disclosure strong { color: var(--ink); font-weight: 600; }
+
+.footer { padding: 1.5rem clamp(1rem, 4vw, 2.5rem); border-top: 1px solid var(--line); background: var(--white); }
+.footer-top { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.75rem; margin-bottom: 0.75rem; }
 .footer-left { font-size: 0.8125rem; color: var(--faint); }
+.footer-legal { font-size: 0.75rem; color: var(--faint); }
 .footer-links { display: flex; gap: 1.25rem; }
 .footer-links a { font-size: 0.8125rem; color: var(--faint); text-decoration: none; }
 .footer-links a:hover { color: var(--accent); }
@@ -84,7 +99,7 @@ body { font-family: var(--font); background: var(--page-bg); color: var(--ink); 
     </div>
     <div class="benefit-card">
       <div class="benefit-icon">✦</div>
-      <p>Find the right massage modality for your goals</p>
+      <p>Swedish, deep tissue, and therapeutic massage modalities</p>
     </div>
     <div class="benefit-card">
       <div class="benefit-icon">✦</div>
@@ -102,32 +117,68 @@ body { font-family: var(--font); background: var(--page-bg); color: var(--ink); 
   </div>
 </section>
 
-<div class="info-section">
-  <div class="info-card">
-    <h3>🌿 What to Expect</h3>
-    <p>Your free consultation includes:</p>
-    <ul>
-      <li>A 20-minute one-on-one session with a licensed therapist</li>
-      <li>Full-body wellness assessment</li>
-      <li>Personalized treatment recommendations</li>
-      <li>A custom wellness plan — no strings attached</li>
-    </ul>
+<div class="content">
+
+  <div class="info-grid">
+    <div class="info-card">
+      <h3>🌿 Our Services</h3>
+      <p>RTB Spa specializes in licensed therapeutic massage and full-body wellness services, including:</p>
+      <ul>
+        <li>Swedish &amp; Relaxation Massage</li>
+        <li>Deep Tissue &amp; Sports Massage</li>
+        <li>Prenatal Massage</li>
+        <li>Cupping Therapy</li>
+        <li>Personalized Wellness Consultations</li>
+      </ul>
+    </div>
+    <div class="info-card">
+      <h3>📍 Contact Us</h3>
+      <p><strong>RTB Spa</strong><br>
+      14511 Old Katy Rd, Suite 232<br>
+      Houston, TX 77079</p>
+      <p style="margin-top:0.75rem;">
+        📞 <a href="tel:+17133226640">(713) 322-6640</a><br>
+        ✉️ <a href="mailto:hello@rtbspa.com">hello@rtbspa.com</a>
+      </p>
+      <p style="margin-top:0.75rem; font-size:0.8125rem; color:var(--faint);">
+        Mon–Sat: 9am – 7pm CT<br>
+        Sun: 10am – 5pm CT
+      </p>
+    </div>
   </div>
-  <div class="info-card">
-    <h3>📍 Visit Us</h3>
-    <p>RTB Spa<br>14511 Old Katy Rd, Suite 232<br>Houston, TX 77079</p>
-    <p style="margin-top:0.75rem;">📞 <a href="tel:+17133226640" style="color:var(--accent);text-decoration:none;">(713) 322-6640</a><br>
-    ✉️ <a href="mailto:hello@rtbspa.com" style="color:var(--accent);text-decoration:none;">hello@rtbspa.com</a></p>
+
+  <div class="sms-disclosure">
+    <h3>📱 SMS Messaging Program</h3>
+    <p>
+      <strong>SMS Clear Concepts LLC</strong> (operating as RTB Spa) runs an SMS messaging program to help clients book appointments, receive wellness tips, and stay informed about special offers.
+      By opting in via our chat widget, you agree to receive recurring automated SMS text messages from <strong>RTB Spa / SMS Clear Concepts LLC</strong> at the mobile number you provide.
+    </p>
+    <p>
+      <strong>Message frequency varies.</strong> Message and data rates may apply.
+      Reply <strong>STOP</strong> to cancel at any time. Reply <strong>HELP</strong> for assistance.
+      Supported carriers are not liable for delayed or undelivered messages.
+      Consent is not a condition of purchase.
+    </p>
+    <p>
+      For full details, see our <a href="/rtb-spa/privacy/">Privacy Policy</a> and <a href="/rtb-spa/terms/">Terms of Service</a>.
+      To contact us directly: <a href="mailto:hello@rtbspa.com">hello@rtbspa.com</a> or <a href="tel:+17133226640">(713) 322-6640</a>.
+    </p>
   </div>
+
 </div>
 
 <footer class="footer">
-  <div class="footer-left">© 2025 RTB Spa · Houston, TX · All rights reserved</div>
-  <nav class="footer-links">
-    <a href="/rtb-spa/privacy/">Privacy Policy</a>
-    <a href="/rtb-spa/terms/">Terms of Service</a>
-    <a href="mailto:hello@rtbspa.com">Contact</a>
-  </nav>
+  <div class="footer-top">
+    <div class="footer-left">© 2025 RTB Spa · SMS Clear Concepts LLC · All rights reserved</div>
+    <nav class="footer-links">
+      <a href="/rtb-spa/privacy/">Privacy Policy</a>
+      <a href="/rtb-spa/terms/">Terms of Service</a>
+      <a href="mailto:hello@rtbspa.com">Contact</a>
+    </nav>
+  </div>
+  <div class="footer-legal">
+    SMS Clear Concepts LLC · 14511 Old Katy Rd, Suite 232, Houston, TX 77079 · <a href="tel:+17133226640" style="color:inherit;">(713) 322-6640</a>
+  </div>
 </footer>
 
 <!-- LeadConnector Chat Widget -->
