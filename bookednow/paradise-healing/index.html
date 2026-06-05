@@ -19,6 +19,8 @@
   --accent: #7c3aed;
   --accent-hover: #6d28d9;
   --accent-soft: rgba(124, 58, 237, 0.1);
+  --gold: #d97706;
+  --gold-soft: rgba(217, 119, 6, 0.1);
   --white: #ffffff;
   --radius: 14px;
   --font: "Manrope", system-ui, sans-serif;
@@ -27,64 +29,66 @@
 html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
 body { font-family: var(--font); background: var(--page-bg); color: var(--ink); min-height: 100vh; -webkit-font-smoothing: antialiased; }
 
-.header { padding: 1.25rem clamp(1rem, 4vw, 2.5rem); display: flex; align-items: center; gap: 0.75rem; background: var(--white); border-bottom: 1px solid var(--line); }
+.page { min-height: 100vh; display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: auto 1fr auto; }
+@media (max-width: 780px) { .page { grid-template-columns: 1fr; } .hero { display: none; } }
+
+.header { grid-column: 1 / -1; padding: 1.25rem clamp(1rem, 4vw, 2rem); display: flex; align-items: center; gap: 0.75rem; background: var(--white); border-bottom: 1px solid var(--line); }
 .logo-mark { width: 38px; height: 38px; background: var(--accent-soft); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1.25rem; }
 .logo-text { font-weight: 800; font-size: 1rem; color: var(--ink); }
 .logo-text span { color: var(--faint); font-weight: 500; }
 
-.hero { background: linear-gradient(155deg, #2e1065 0%, #5b21b6 50%, #7c3aed 100%); padding: clamp(3rem, 8vw, 6rem) clamp(1.5rem, 5vw, 4rem); display: flex; flex-direction: column; align-items: center; text-align: center; gap: 2rem; position: relative; overflow: hidden; }
+.hero { background: linear-gradient(155deg, #2e1065 0%, #5b21b6 50%, #7c3aed 100%); padding: clamp(2rem, 6vw, 4rem) clamp(1.5rem, 4vw, 3rem); display: flex; flex-direction: column; justify-content: center; gap: 2rem; position: relative; overflow: hidden; }
 .hero::before { content: ''; position: absolute; inset: 0; background: url("data:image/svg+xml,%3Csvg width='80' height='80' viewBox='0 0 80 80' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Ccircle cx='40' cy='40' r='3'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E"); }
-.hero-badge { display: inline-flex; align-items: center; gap: 0.5rem; background: rgba(255,255,255,0.15); color: #ddd6fe; font-size: 0.8125rem; font-weight: 600; padding: 0.4rem 1rem; border-radius: 9999px; border: 1px solid rgba(255,255,255,0.2); }
-.hero h1 { font-size: clamp(2rem, 5vw, 3rem); font-weight: 800; color: #fff; line-height: 1.2; max-width: 36rem; }
+.hero-badge { display: inline-flex; align-items: center; gap: 0.5rem; background: rgba(255,255,255,0.15); color: #ddd6fe; font-size: 0.8125rem; font-weight: 600; padding: 0.35rem 0.85rem; border-radius: 9999px; border: 1px solid rgba(255,255,255,0.2); width: fit-content; }
+.hero h1 { font-size: clamp(1.75rem, 4vw, 2.5rem); font-weight: 800; color: #fff; line-height: 1.2; }
 .hero h1 em { font-style: normal; color: #c4b5fd; }
-.hero-sub { color: rgba(255,255,255,0.82); font-size: 1.0625rem; line-height: 1.7; max-width: 32rem; }
-.cta-note { color: rgba(255,255,255,0.65); font-size: 0.875rem; }
+.hero-sub { color: rgba(255,255,255,0.8); font-size: 1rem; line-height: 1.65; }
+.benefits { list-style: none; display: flex; flex-direction: column; gap: 0.85rem; }
+.benefits li { display: flex; align-items: flex-start; gap: 0.75rem; color: rgba(255,255,255,0.9); font-size: 0.9375rem; }
+.benefit-icon { width: 22px; height: 22px; background: rgba(255,255,255,0.2); border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px; font-size: 0.7rem; }
+.testimonial { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.15); border-radius: var(--radius); padding: 1.25rem; }
+.testimonial p { color: rgba(255,255,255,0.9); font-size: 0.9rem; line-height: 1.6; font-style: italic; }
+.testimonial cite { display: block; margin-top: 0.75rem; color: #c4b5fd; font-size: 0.8125rem; font-weight: 600; font-style: normal; }
 
-.benefits-row { display: flex; flex-wrap: wrap; justify-content: center; gap: 1rem; max-width: 48rem; }
-.benefit-card { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.15); border-radius: var(--radius); padding: 1.1rem 1.25rem; display: flex; align-items: flex-start; gap: 0.75rem; text-align: left; flex: 1 1 200px; max-width: 240px; }
-.benefit-icon { font-size: 1.25rem; flex-shrink: 0; margin-top: 1px; }
-.benefit-card p { color: rgba(255,255,255,0.88); font-size: 0.875rem; line-height: 1.55; }
+.form-panel { background: var(--white); padding: clamp(2rem, 5vw, 3.5rem) clamp(1.5rem, 4vw, 3rem); display: flex; flex-direction: column; justify-content: center; }
+.form-header { margin-bottom: 1.75rem; }
+.form-header h2 { font-size: 1.5rem; font-weight: 800; color: var(--ink); line-height: 1.3; }
+.form-header p { margin-top: 0.5rem; color: var(--muted); font-size: 0.9375rem; line-height: 1.6; }
+.offer-pill { display: inline-flex; align-items: center; gap: 0.5rem; background: var(--gold-soft); color: var(--gold); font-size: 0.8125rem; font-weight: 700; padding: 0.35rem 0.85rem; border-radius: 9999px; margin-bottom: 1rem; }
 
-.testimonial { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.15); border-radius: var(--radius); padding: 1.5rem 2rem; max-width: 34rem; }
-.testimonial p { color: rgba(255,255,255,0.9); font-size: 0.9375rem; line-height: 1.65; font-style: italic; }
-.testimonial cite { display: block; margin-top: 0.85rem; color: #c4b5fd; font-size: 0.8125rem; font-weight: 600; font-style: normal; }
+form { display: flex; flex-direction: column; gap: 1rem; }
+.field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; }
+@media (max-width: 480px) { .field-row { grid-template-columns: 1fr; } }
+.field { display: flex; flex-direction: column; gap: 0.4rem; }
+label { font-size: 0.875rem; font-weight: 600; color: var(--ink); }
+label .req { color: #dc2626; margin-left: 2px; }
+input[type="text"], input[type="email"], input[type="tel"] { height: 3rem; padding: 0 1rem; border: 1.5px solid var(--line); border-radius: 10px; font: inherit; font-size: 1rem; color: var(--ink); background: var(--surface); transition: border-color 0.15s, box-shadow 0.15s; width: 100%; }
+input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); background: #fff; }
 
-.content { max-width: 52rem; margin: 0 auto; padding: clamp(2.5rem, 6vw, 4rem) clamp(1.5rem, 4vw, 2.5rem); display: flex; flex-direction: column; gap: 1.5rem; }
+.consent-block { background: var(--surface); border: 1.5px solid var(--line); border-radius: 10px; padding: 1rem; }
+.consent-check { display: flex; gap: 0.75rem; align-items: flex-start; }
+.consent-check input[type="checkbox"] { width: 20px; height: 20px; margin-top: 2px; flex-shrink: 0; accent-color: var(--accent); cursor: pointer; }
+.consent-check label { font-size: 0.8125rem; font-weight: 400; color: var(--muted); line-height: 1.55; cursor: pointer; }
+.consent-check label strong { font-weight: 600; color: var(--ink); }
+.fine-print { font-size: 0.75rem; color: var(--faint); line-height: 1.55; margin-top: 0.75rem; }
+.fine-print a { color: var(--accent); text-decoration: none; }
+.fine-print a:hover { text-decoration: underline; }
+.error-msg { color: #dc2626; font-size: 0.8125rem; margin-top: 0.25rem; display: none; }
+.error-msg.visible { display: block; }
 
-.info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
-@media (max-width: 640px) { .info-grid { grid-template-columns: 1fr; } }
+.submit-btn { height: 3.25rem; background: var(--accent); color: #fff; border: none; border-radius: 10px; font-size: 1rem; font-weight: 700; cursor: pointer; transition: background 0.15s, transform 0.1s, box-shadow 0.15s; display: flex; align-items: center; justify-content: center; gap: 0.5rem; }
+.submit-btn:hover:not(:disabled) { background: var(--accent-hover); box-shadow: 0 4px 16px rgba(124, 58, 237, 0.35); }
+.submit-btn:active:not(:disabled) { transform: scale(0.98); }
+.submit-btn:disabled { opacity: 0.7; cursor: not-allowed; }
 
-.info-card { background: var(--white); border-radius: var(--radius); padding: 1.75rem; border: 1px solid var(--line); }
-.info-card h3 { font-size: 1.0625rem; font-weight: 700; color: var(--ink); margin-bottom: 0.75rem; }
-.info-card p { font-size: 0.9rem; color: var(--muted); line-height: 1.65; }
-.info-card ul { padding-left: 1.25rem; margin-top: 0.5rem; }
-.info-card li { font-size: 0.9rem; color: var(--muted); line-height: 1.65; margin-bottom: 0.35rem; }
-.info-card a { color: var(--accent); text-decoration: none; }
-.info-card a:hover { text-decoration: underline; }
+.success-panel { display: none; flex-direction: column; align-items: center; text-align: center; gap: 1.25rem; padding: 2rem 0; }
+.success-panel.visible { display: flex; }
+.success-icon { width: 72px; height: 72px; background: linear-gradient(135deg, #5b21b6, #7c3aed); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 2rem; }
+.success-panel h2 { font-size: 1.5rem; font-weight: 800; color: var(--ink); }
+.success-panel p { color: var(--muted); font-size: 0.9375rem; line-height: 1.6; max-width: 28rem; }
 
-.cta-section { background: var(--white); border-radius: var(--radius); padding: 1.75rem; border: 2px solid var(--accent-soft); }
-.cta-section h3 { font-size: 1.125rem; font-weight: 800; color: var(--ink); margin-bottom: 0.5rem; }
-.cta-section .cta-lead { font-size: 1rem; color: var(--muted); line-height: 1.65; margin-bottom: 1.25rem; }
-.cta-steps { display: flex; flex-direction: column; gap: 0.75rem; margin-bottom: 1.25rem; }
-.cta-step { display: flex; align-items: flex-start; gap: 0.85rem; }
-.cta-step-num { width: 28px; height: 28px; border-radius: 50%; background: var(--accent-soft); color: var(--accent); font-size: 0.8125rem; font-weight: 800; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px; }
-.cta-step p { font-size: 0.9rem; color: var(--muted); line-height: 1.6; }
-.cta-step strong { color: var(--ink); font-weight: 600; }
-.cta-consent { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 1rem 1.1rem; font-size: 0.8125rem; color: var(--muted); line-height: 1.65; }
-.cta-consent strong { color: var(--ink); font-weight: 600; }
-.cta-consent a { color: var(--accent); text-decoration: none; }
-.cta-consent a:hover { text-decoration: underline; }
-
-.sms-disclosure { background: var(--white); border-radius: var(--radius); padding: 1.75rem; border: 1px solid var(--line); }
-.sms-disclosure h3 { font-size: 1.0625rem; font-weight: 700; color: var(--ink); margin-bottom: 0.75rem; }
-.sms-disclosure p { font-size: 0.875rem; color: var(--muted); line-height: 1.7; }
-.sms-disclosure p + p { margin-top: 0.65rem; }
-.sms-disclosure a { color: var(--accent); text-decoration: none; }
-.sms-disclosure a:hover { text-decoration: underline; }
-.sms-disclosure strong { color: var(--ink); font-weight: 600; }
-
-.footer { padding: 1.5rem clamp(1rem, 4vw, 2.5rem); border-top: 1px solid var(--line); background: var(--white); }
-.footer-top { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.75rem; margin-bottom: 0.75rem; }
+.footer { grid-column: 1 / -1; padding: 1.5rem clamp(1rem, 4vw, 2rem); border-top: 1px solid var(--line); background: var(--white); }
+.footer-top { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.75rem; margin-bottom: 0.5rem; }
 .footer-left { font-size: 0.8125rem; color: var(--faint); }
 .footer-legal { font-size: 0.75rem; color: var(--faint); }
 .footer-links { display: flex; gap: 1.25rem; }
@@ -93,128 +97,147 @@ body { font-family: var(--font); background: var(--page-bg); color: var(--ink); 
 </style>
 </head>
 <body>
+<div class="page">
 
-<header class="header">
-  <div class="logo-mark">✨</div>
-  <div class="logo-text">Paradise Healing <span>· Holistic Wellness</span></div>
-</header>
+  <header class="header">
+    <div class="logo-mark">✨</div>
+    <div class="logo-text">Paradise Healing <span>· Holistic Wellness</span></div>
+  </header>
 
-<section class="hero">
-  <div class="hero-badge">✦ Limited Availability</div>
-  <h1>Heal. Balance. <em>Rediscover Your Best Self.</em></h1>
-  <p class="hero-sub">Book your free 20-minute holistic healing consultation and discover the wellness plan built for your mind, body, and spirit.</p>
-  <p class="cta-note">👇 Use the chat widget below to claim your free session</p>
-
-  <div class="benefits-row">
-    <div class="benefit-card">
-      <div class="benefit-icon">✦</div>
-      <p>Personalized holistic assessment tailored to your needs</p>
+  <section class="hero" aria-label="About this offer">
+    <div><div class="hero-badge">✦ Limited Availability</div></div>
+    <div>
+      <h1>Heal. Balance. <em>Rediscover Your Best Self.</em></h1>
+      <p class="hero-sub">Book your free 20-minute holistic healing consultation and discover the wellness plan built for your mind, body, and spirit.</p>
     </div>
-    <div class="benefit-card">
-      <div class="benefit-icon">✦</div>
-      <p>Reiki, energy healing, and holistic wellness modalities</p>
+    <ul class="benefits">
+      <li><span class="benefit-icon">✓</span>Personalized holistic assessment tailored to your needs</li>
+      <li><span class="benefit-icon">✓</span>Reiki, energy healing, and chakra balancing modalities</li>
+      <li><span class="benefit-icon">✓</span>No pressure — just a real conversation about your wellness</li>
+      <li><span class="benefit-icon">✓</span>Walk away with a clear, actionable healing plan</li>
+    </ul>
+    <div class="testimonial">
+      <p>"Paradise Healing changed my life. I came in feeling lost and depleted — now I feel grounded, energized, and completely like myself again."</p>
+      <cite>— Mariana T.</cite>
     </div>
-    <div class="benefit-card">
-      <div class="benefit-icon">✦</div>
-      <p>No pressure — just a real conversation about your wellness</p>
-    </div>
-    <div class="benefit-card">
-      <div class="benefit-icon">✦</div>
-      <p>Walk away with a clear, actionable healing plan</p>
-    </div>
-  </div>
+  </section>
 
-  <div class="testimonial">
-    <p>"Paradise Healing changed my life. I came in feeling lost and depleted — now I feel grounded, energized, and completely like myself again."</p>
-    <cite>— Mariana T.</cite>
-  </div>
-</section>
-
-<div class="content">
-
-  <div class="info-grid">
-    <div class="info-card">
-      <h3>✨ Our Services</h3>
-      <p>Paradise Healing LLC offers certified holistic healing and wellness services, including:</p>
-      <ul>
-        <li>Reiki &amp; Energy Healing</li>
-        <li>Holistic Wellness Consultations</li>
-        <li>Guided Meditation &amp; Breathwork</li>
-        <li>Chakra Balancing</li>
-        <li>Personalized Healing Plans</li>
-      </ul>
-    </div>
-    <div class="info-card">
-      <h3>📬 Contact Us</h3>
-      <p><strong>Paradise Healing LLC</strong></p>
-      <p style="margin-top:0.75rem;">
-        ✉️ <a href="mailto:info@paradisehealingllc.com">info@paradisehealingllc.com</a>
-      </p>
-      <p style="margin-top:0.75rem; font-size:0.875rem; color:var(--muted);">
-        We respond to all inquiries within 24 hours. You can also reach us directly through the chat widget on this page.
-      </p>
-    </div>
-  </div>
-
-  <!-- CTA Section — explicitly shows how users opt in to SMS -->
-  <div class="cta-section">
-    <h3>💬 How to Book Your Free Consultation</h3>
-    <p class="cta-lead">Use the chat widget in the bottom-right corner of this page to connect with our team and claim your free session. Here's how it works:</p>
-    <div class="cta-steps">
-      <div class="cta-step">
-        <div class="cta-step-num">1</div>
-        <p><strong>Open the chat widget</strong> — click the chat icon in the bottom-right corner of this page.</p>
+  <section class="form-panel" aria-label="Claim your free consultation">
+    <div id="form-wrapper">
+      <div class="form-header">
+        <div class="offer-pill">🎁 Free Consultation — No Credit Card Required</div>
+        <h2>Claim Your Free 20-Minute Healing Consultation</h2>
+        <p>Fill out the form below and our team will reach out within 24 hours to schedule your session.</p>
       </div>
-      <div class="cta-step">
-        <div class="cta-step-num">2</div>
-        <p><strong>Provide your name and mobile number</strong> — our team will use this to confirm your free consultation.</p>
-      </div>
-      <div class="cta-step">
-        <div class="cta-step-num">3</div>
-        <p><strong>Opt in to receive SMS messages</strong> — by submitting your information via the chat widget, you agree to receive SMS text messages from <strong>Paradise Healing LLC</strong> regarding your consultation, appointment reminders, wellness tips, and promotional offers.</p>
-      </div>
-    </div>
-    <div class="cta-consent">
-      By providing your mobile phone number and engaging with our chat widget, you expressly consent to receive recurring automated SMS text messages from <strong>Paradise Healing LLC</strong> at the number provided. <strong>Message frequency varies. Message and data rates may apply.</strong> Reply <strong>STOP</strong> to opt out at any time. Reply <strong>HELP</strong> for help. Consent is not a condition of purchase. See our <a href="/paradise-healing/privacy/">Privacy Policy</a> and <a href="/paradise-healing/terms/">Terms of Service</a>.
-    </div>
-  </div>
 
-  <div class="sms-disclosure">
-    <h3>📱 SMS Messaging Program</h3>
-    <p>
-      <strong>Paradise Healing LLC</strong> operates an SMS messaging program to help clients schedule consultations, receive healing tips, and stay informed about upcoming events and offers.
-      Opt-in occurs when you provide your mobile number and engage with our chat widget on this page.
-    </p>
-    <p>
-      <strong>Message frequency varies.</strong> Message and data rates may apply.
-      Reply <strong>STOP</strong> to cancel at any time. Reply <strong>HELP</strong> for assistance.
-      Supported carriers are not liable for delayed or undelivered messages.
-      Consent is not a condition of purchase.
-    </p>
-    <p>
-      For full details, see our <a href="/paradise-healing/privacy/">Privacy Policy</a> and <a href="/paradise-healing/terms/">Terms of Service</a>.
-      To contact us directly: <a href="mailto:info@paradisehealingllc.com">info@paradisehealingllc.com</a>.
-    </p>
-  </div>
+      <form id="optin-form" novalidate>
+        <div class="field-row">
+          <div class="field">
+            <label for="firstName">First Name <span class="req">*</span></label>
+            <input type="text" id="firstName" name="firstName" placeholder="Mariana" autocomplete="given-name" required>
+            <span class="error-msg" id="err-firstName">Please enter your first name.</span>
+          </div>
+          <div class="field">
+            <label for="lastName">Last Name</label>
+            <input type="text" id="lastName" name="lastName" placeholder="Torres" autocomplete="family-name">
+          </div>
+        </div>
+        <div class="field">
+          <label for="phone">Mobile Phone <span class="req">*</span></label>
+          <input type="tel" id="phone" name="phone" placeholder="(617) 555-0100" autocomplete="tel" required>
+          <span class="error-msg" id="err-phone">Please enter a valid phone number.</span>
+        </div>
+        <div class="field">
+          <label for="email">Email Address</label>
+          <input type="email" id="email" name="email" placeholder="mariana@example.com" autocomplete="email">
+        </div>
 
+        <div class="consent-block">
+          <div class="consent-check">
+            <input type="checkbox" id="consent" name="consent" required>
+            <label for="consent">
+              <strong>Yes, I consent to receive communications from Paradise Healing LLC.</strong><br>
+              By checking this box I agree to receive SMS text messages and/or emails from
+              <strong>Paradise Healing LLC</strong> at the phone number and email provided above.
+              I understand I may receive messages related to my healing consultation, appointment reminders,
+              special offers, and wellness tips. Message frequency varies.
+              I understand my consent is not a condition of purchase and I may
+              <strong>reply STOP to opt out at any time</strong>.
+            </label>
+          </div>
+          <span class="error-msg" id="err-consent">You must agree to receive communications to continue.</span>
+          <p class="fine-print">
+            Message &amp; data rates may apply. Reply STOP to unsubscribe, HELP for help.
+            Supported carriers are not liable for delayed or undelivered messages.
+            By submitting this form you also agree to our
+            <a href="/paradise-healing/privacy/">Privacy Policy</a> and
+            <a href="/paradise-healing/terms/">Terms of Service</a>.
+          </p>
+        </div>
+
+        <button type="submit" class="submit-btn" id="submit-btn">
+          <span id="btn-text">Claim My Free Consultation →</span>
+        </button>
+      </form>
+    </div>
+
+    <div class="success-panel" id="success-panel" aria-live="polite">
+      <div class="success-icon">✨</div>
+      <h2>You're all set!</h2>
+      <p>Thank you for reaching out. A member of the Paradise Healing team will contact you within 24 hours to schedule your free consultation. Check your messages!</p>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div class="footer-top">
+      <div class="footer-left">© 2025 Paradise Healing LLC · All rights reserved</div>
+      <nav class="footer-links">
+        <a href="/paradise-healing/privacy/">Privacy Policy</a>
+        <a href="/paradise-healing/terms/">Terms of Service</a>
+        <a href="mailto:info@paradisehealingllc.com">Contact</a>
+      </nav>
+    </div>
+    <div class="footer-legal">Paradise Healing LLC · <a href="mailto:info@paradisehealingllc.com" style="color:inherit;">info@paradisehealingllc.com</a></div>
+  </footer>
 </div>
 
-<footer class="footer">
-  <div class="footer-top">
-    <div class="footer-left">© 2025 Paradise Healing LLC · All rights reserved</div>
-    <nav class="footer-links">
-      <a href="/paradise-healing/privacy/">Privacy Policy</a>
-      <a href="/paradise-healing/terms/">Terms of Service</a>
-      <a href="mailto:info@paradisehealingllc.com">Contact</a>
-    </nav>
-  </div>
-  <div class="footer-legal">
-    Paradise Healing LLC · <a href="mailto:info@paradisehealingllc.com" style="color:inherit;">info@paradisehealingllc.com</a>
-  </div>
-</footer>
+<script>
+const form    = document.getElementById('optin-form');
+const btn     = document.getElementById('submit-btn');
+const btnText = document.getElementById('btn-text');
+const wrapper = document.getElementById('form-wrapper');
+const success = document.getElementById('success-panel');
+
+function showError(id, show) {
+  const el = document.getElementById('err-' + id);
+  if (el) el.classList.toggle('visible', show);
+}
+function validatePhone(v) { return v.replace(/\D/g, '').length >= 10; }
+
+form.addEventListener('submit', e => {
+  e.preventDefault();
+  const firstName = form.firstName.value.trim();
+  const phone     = form.phone.value.trim();
+  const consent   = form.consent.checked;
+  let valid = true;
+  showError('firstName', !firstName); if (!firstName) valid = false;
+  showError('phone', !validatePhone(phone)); if (!validatePhone(phone)) valid = false;
+  showError('consent', !consent); if (!consent) valid = false;
+  if (!valid) return;
+  btn.disabled = true;
+  btnText.textContent = 'Submitting…';
+  setTimeout(() => { wrapper.style.display = 'none'; success.classList.add('visible'); }, 800);
+});
+
+document.getElementById('phone').addEventListener('input', function () {
+  const digits = this.value.replace(/\D/g, '').slice(0, 10);
+  if (digits.length <= 3) this.value = digits;
+  else if (digits.length <= 6) this.value = `(${digits.slice(0,3)}) ${digits.slice(3)}`;
+  else this.value = `(${digits.slice(0,3)}) ${digits.slice(3,6)}-${digits.slice(6)}`;
+});
+</script>
 
 <!-- LeadConnector Chat Widget -->
 <script src="https://widgets.leadconnectorhq.com/loader.js" data-resources-url="https://widgets.leadconnectorhq.com/chat-widget/loader.js" data-widget-id="6a1f36906b7db7202404a064" data-source="WEB_USER"></script>
-
 </body>
 </html>
