@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Free Zero Gravity Massage Consultation — Escape Zero Gravity Massage LLC</title>
+<meta name="description" content="Claim your free consultation with Escape Zero Gravity Massage LLC in McKinney, TX. Experience the ultimate stress-relief with zero gravity massage therapy.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ink: #0f1a2e;
+  --muted: #2d4263;
+  --faint: #6b85a8;
+  --line: #d4e0f0;
+  --surface: #f2f7fd;
+  --page-bg: #e8f0fb;
+  --accent: #0e7490;
+  --accent-hover: #0c6478;
+  --accent-soft: rgba(14, 116, 144, 0.1);
+  --gold: #b45309;
+  --gold-soft: rgba(180, 83, 9, 0.08);
+  --white: #ffffff;
+  --radius: 14px;
+  --font: "Manrope", system-ui, sans-serif;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+body { font-family: var(--font); background: var(--page-bg); color: var(--ink); min-height: 100vh; -webkit-font-smoothing: antialiased; }
+
+.header { padding: 1.25rem clamp(1rem, 4vw, 2.5rem); display: flex; align-items: center; gap: 0.75rem; background: var(--white); border-bottom: 1px solid var(--line); }
+.logo-mark { width: 38px; height: 38px; background: var(--accent-soft); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1.25rem; }
+.logo-text { font-weight: 800; font-size: 1rem; color: var(--ink); }
+.logo-text span { color: var(--faint); font-weight: 500; }
+
+.hero { background: linear-gradient(155deg, #0a1628 0%, #0e3a5c 50%, #0e7490 100%); padding: clamp(3rem, 8vw, 6rem) clamp(1.5rem, 5vw, 4rem); display: flex; flex-direction: column; align-items: center; text-align: center; gap: 2rem; position: relative; overflow: hidden; }
+.hero::before { content: ''; position: absolute; inset: 0; background: url("data:image/svg+xml,%3Csvg width='80' height='80' viewBox='0 0 80 80' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Ccircle cx='40' cy='40' r='3'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E"); }
+.hero-badge { display: inline-flex; align-items: center; gap: 0.5rem; background: rgba(255,255,255,0.15); color: #a5f3fc; font-size: 0.8125rem; font-weight: 600; padding: 0.4rem 1rem; border-radius: 9999px; border: 1px solid rgba(255,255,255,0.2); }
+.hero h1 { font-size: clamp(2rem, 5vw, 3rem); font-weight: 800; color: #fff; line-height: 1.2; max-width: 38rem; }
+.hero h1 em { font-style: normal; color: #67e8f9; }
+.hero-sub { color: rgba(255,255,255,0.82); font-size: 1.0625rem; line-height: 1.7; max-width: 32rem; }
+.cta-note { color: rgba(255,255,255,0.65); font-size: 0.875rem; }
+
+.benefits-row { display: flex; flex-wrap: wrap; justify-content: center; gap: 1rem; max-width: 48rem; }
+.benefit-card { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.15); border-radius: var(--radius); padding: 1.1rem 1.25rem; display: flex; align-items: flex-start; gap: 0.75rem; text-align: left; flex: 1 1 200px; max-width: 240px; }
+.benefit-icon { font-size: 1.25rem; flex-shrink: 0; margin-top: 1px; }
+.benefit-card p { color: rgba(255,255,255,0.88); font-size: 0.875rem; line-height: 1.55; }
+
+.testimonial { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.15); border-radius: var(--radius); padding: 1.5rem 2rem; max-width: 34rem; }
+.testimonial p { color: rgba(255,255,255,0.9); font-size: 0.9375rem; line-height: 1.65; font-style: italic; }
+.testimonial cite { display: block; margin-top: 0.85rem; color: #67e8f9; font-size: 0.8125rem; font-weight: 600; font-style: normal; }
+
+.content { max-width: 52rem; margin: 0 auto; padding: clamp(2.5rem, 6vw, 4rem) clamp(1.5rem, 4vw, 2.5rem); display: flex; flex-direction: column; gap: 1.5rem; }
+
+.info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+@media (max-width: 640px) { .info-grid { grid-template-columns: 1fr; } }
+
+.info-card { background: var(--white); border-radius: var(--radius); padding: 1.75rem; border: 1px solid var(--line); }
+.info-card h3 { font-size: 1.0625rem; font-weight: 700; color: var(--ink); margin-bottom: 0.75rem; }
+.info-card p { font-size: 0.9rem; color: var(--muted); line-height: 1.65; }
+.info-card ul { padding-left: 1.25rem; margin-top: 0.5rem; }
+.info-card li { font-size: 0.9rem; color: var(--muted); line-height: 1.65; margin-bottom: 0.35rem; }
+.info-card a { color: var(--accent); text-decoration: none; }
+.info-card a:hover { text-decoration: underline; }
+
+.cta-section { background: var(--white); border-radius: var(--radius); padding: 1.75rem; border: 2px solid var(--accent-soft); }
+.cta-section h3 { font-size: 1.125rem; font-weight: 800; color: var(--ink); margin-bottom: 0.5rem; }
+.cta-section .cta-lead { font-size: 1rem; color: var(--muted); line-height: 1.65; margin-bottom: 1.25rem; }
+.cta-steps { display: flex; flex-direction: column; gap: 0.75rem; margin-bottom: 1.25rem; }
+.cta-step { display: flex; align-items: flex-start; gap: 0.85rem; }
+.cta-step-num { width: 28px; height: 28px; border-radius: 50%; background: var(--accent-soft); color: var(--accent); font-size: 0.8125rem; font-weight: 800; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px; }
+.cta-step p { font-size: 0.9rem; color: var(--muted); line-height: 1.6; }
+.cta-step strong { color: var(--ink); font-weight: 600; }
+.cta-consent { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 1rem 1.1rem; font-size: 0.8125rem; color: var(--muted); line-height: 1.65; }
+.cta-consent strong { color: var(--ink); font-weight: 600; }
+.cta-consent a { color: var(--accent); text-decoration: none; }
+.cta-consent a:hover { text-decoration: underline; }
+
+.sms-disclosure { background: var(--white); border-radius: var(--radius); padding: 1.75rem; border: 1px solid var(--line); }
+.sms-disclosure h3 { font-size: 1.0625rem; font-weight: 700; color: var(--ink); margin-bottom: 0.75rem; }
+.sms-disclosure p { font-size: 0.875rem; color: var(--muted); line-height: 1.7; }
+.sms-disclosure p + p { margin-top: 0.65rem; }
+.sms-disclosure a { color: var(--accent); text-decoration: none; }
+.sms-disclosure a:hover { text-decoration: underline; }
+.sms-disclosure strong { color: var(--ink); font-weight: 600; }
+
+.footer { padding: 1.5rem clamp(1rem, 4vw, 2.5rem); border-top: 1px solid var(--line); background: var(--white); }
+.footer-top { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.75rem; margin-bottom: 0.75rem; }
+.footer-left { font-size: 0.8125rem; color: var(--faint); }
+.footer-legal { font-size: 0.75rem; color: var(--faint); }
+.footer-links { display: flex; gap: 1.25rem; }
+.footer-links a { font-size: 0.8125rem; color: var(--faint); text-decoration: none; }
+.footer-links a:hover { color: var(--accent); }
+</style>
+</head>
+<body>
+
+<header class="header">
+  <div class="logo-mark">🌊</div>
+  <div class="logo-text">Escape Zero Gravity Massage <span>· McKinney, TX</span></div>
+</header>
+
+<section class="hero">
+  <div class="hero-badge">✦ Limited Availability</div>
+  <h1>Float. Recover. <em>Feel Weightless Again.</em></h1>
+  <p class="hero-sub">Book your free zero gravity massage consultation and discover the therapeutic experience designed to eliminate tension, restore mobility, and reset your body.</p>
+  <p class="cta-note">👇 Use the chat widget below to claim your free session</p>
+
+  <div class="benefits-row">
+    <div class="benefit-card">
+      <div class="benefit-icon">✦</div>
+      <p>Zero gravity positioning for maximum spinal decompression</p>
+    </div>
+    <div class="benefit-card">
+      <div class="benefit-icon">✦</div>
+      <p>Full-body tension relief and deep muscle recovery</p>
+    </div>
+    <div class="benefit-card">
+      <div class="benefit-icon">✦</div>
+      <p>No pressure — just a real conversation about your body</p>
+    </div>
+    <div class="benefit-card">
+      <div class="benefit-icon">✦</div>
+      <p>Walk away with a personalized recovery and wellness plan</p>
+    </div>
+  </div>
+
+  <div class="testimonial">
+    <p>"I've never felt anything like it. The zero gravity experience completely eliminated the back pain I've had for years. Absolutely life-changing."</p>
+    <cite>— David M., McKinney, TX</cite>
+  </div>
+</section>
+
+<div class="content">
+
+  <div class="info-grid">
+    <div class="info-card">
+      <h3>🌊 Our Services</h3>
+      <p>Escape Zero Gravity Massage LLC specializes in therapeutic massage and recovery services, including:</p>
+      <ul>
+        <li>Zero Gravity Massage Therapy</li>
+        <li>Deep Tissue &amp; Sports Recovery</li>
+        <li>Spinal Decompression Massage</li>
+        <li>Relaxation &amp; Stress Relief Sessions</li>
+        <li>Personalized Wellness Consultations</li>
+      </ul>
+    </div>
+    <div class="info-card">
+      <h3>📍 Contact Us</h3>
+      <p><strong>Escape Zero Gravity Massage LLC</strong><br>
+      2507 Pheasant Run Drive<br>
+      McKinney, TX 75072</p>
+      <p style="margin-top:0.75rem;">
+        📞 <a href="tel:+14699011543">(469) 901-1543</a><br>
+        ✉️ <a href="mailto:info@escapezerogravitymassage.com">info@escapezerogravitymassage.com</a>
+      </p>
+    </div>
+  </div>
+
+  <div class="cta-section">
+    <h3>💬 How to Book Your Free Consultation</h3>
+    <p class="cta-lead">Use the chat widget in the bottom-right corner of this page to connect with our team and claim your free session. Here's how it works:</p>
+    <div class="cta-steps">
+      <div class="cta-step">
+        <div class="cta-step-num">1</div>
+        <p><strong>Open the chat widget</strong> — click the chat icon in the bottom-right corner of this page.</p>
+      </div>
+      <div class="cta-step">
+        <div class="cta-step-num">2</div>
+        <p><strong>Provide your name and mobile number</strong> — our team will use this to confirm your free consultation appointment.</p>
+      </div>
+      <div class="cta-step">
+        <div class="cta-step-num">3</div>
+        <p><strong>Opt in to receive SMS messages</strong> — by submitting your information via the chat widget, you agree to receive SMS text messages from <strong>Escape Zero Gravity Massage LLC</strong> regarding your consultation, appointment reminders, wellness tips, and promotional offers.</p>
+      </div>
+    </div>
+    <div class="cta-consent">
+      By providing your mobile phone number and engaging with our chat widget, you expressly consent to receive recurring automated SMS text messages from <strong>Escape Zero Gravity Massage LLC</strong> at the number provided. <strong>Message frequency varies. Message and data rates may apply.</strong> Reply <strong>STOP</strong> to opt out at any time. Reply <strong>HELP</strong> for help. Consent is not a condition of purchase. See our <a href="/escape-zgm/privacy/">Privacy Policy</a> and <a href="/escape-zgm/terms/">Terms of Service</a>.
+    </div>
+  </div>
+
+  <div class="sms-disclosure">
+    <h3>📱 SMS Messaging Program</h3>
+    <p>
+      <strong>Escape Zero Gravity Massage LLC</strong> operates an SMS messaging program to help clients schedule consultations, receive recovery tips, and stay informed about special offers and events.
+      Opt-in occurs when you provide your mobile number and engage with our chat widget on this page.
+    </p>
+    <p>
+      <strong>Message frequency varies.</strong> Message and data rates may apply.
+      Reply <strong>STOP</strong> to cancel at any time. Reply <strong>HELP</strong> for assistance.
+      Supported carriers are not liable for delayed or undelivered messages.
+      Consent is not a condition of purchase.
+    </p>
+    <p>
+      For full details, see our <a href="/escape-zgm/privacy/">Privacy Policy</a> and <a href="/escape-zgm/terms/">Terms of Service</a>.
+      Contact us: <a href="mailto:info@escapezerogravitymassage.com">info@escapezerogravitymassage.com</a> · <a href="tel:+14699011543">(469) 901-1543</a>.
+    </p>
+  </div>
+
+</div>
+
+<footer class="footer">
+  <div class="footer-top">
+    <div class="footer-left">© 2025 Escape Zero Gravity Massage LLC · All rights reserved</div>
+    <nav class="footer-links">
+      <a href="/escape-zgm/privacy/">Privacy Policy</a>
+      <a href="/escape-zgm/terms/">Terms of Service</a>
+      <a href="mailto:info@escapezerogravitymassage.com">Contact</a>
+    </nav>
+  </div>
+  <div class="footer-legal">
+    Escape Zero Gravity Massage LLC · 2507 Pheasant Run Drive, McKinney, TX 75072 · <a href="tel:+14699011543" style="color:inherit;">(469) 901-1543</a>
+  </div>
+</footer>
+
+<!-- LeadConnector Chat Widget -->
+<script src="https://widgets.leadconnectorhq.com/loader.js" data-resources-url="https://widgets.leadconnectorhq.com/chat-widget/loader.js" data-widget-id="6a224884e53da97e71bda5e4" data-source="WEB_USER"></script>
+
+</body>
+</html>
