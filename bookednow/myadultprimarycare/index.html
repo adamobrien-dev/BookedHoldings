@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Free StemWave Consultation — My Adult Primary Care · Fayetteville, TN</title>
+<meta name="description" content="Claim your free StemWave & primary care consultation with My Adult Primary Care in Fayetteville, TN. Advanced regenerative therapy for pain relief and wellness.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ink: #0f1f3d;
+  --muted: #2c4a6e;
+  --faint: #6b8cae;
+  --line: #d0dff0;
+  --surface: #f2f7fd;
+  --page-bg: #e8f1fb;
+  --accent: #1d4ed8;
+  --accent-hover: #1e40af;
+  --accent-soft: rgba(29, 78, 216, 0.08);
+  --gold: #b45309;
+  --gold-soft: rgba(180, 83, 9, 0.08);
+  --white: #ffffff;
+  --radius: 14px;
+  --font: "Manrope", system-ui, sans-serif;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+body { font-family: var(--font); background: var(--page-bg); color: var(--ink); min-height: 100vh; -webkit-font-smoothing: antialiased; }
+
+.page { min-height: 100vh; display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: auto 1fr auto; }
+@media (max-width: 780px) { .page { grid-template-columns: 1fr; } .hero { display: none; } }
+
+.header { grid-column: 1 / -1; padding: 1.25rem clamp(1rem, 4vw, 2rem); display: flex; align-items: center; gap: 0.75rem; background: var(--white); border-bottom: 1px solid var(--line); }
+.logo-mark { width: 38px; height: 38px; background: var(--accent-soft); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1.25rem; }
+.logo-text { font-weight: 800; font-size: 1rem; color: var(--ink); }
+.logo-text span { color: var(--faint); font-weight: 500; }
+
+.hero { background: linear-gradient(155deg, #0f1f3d 0%, #1e3a6e 50%, #1d4ed8 100%); padding: clamp(2rem, 6vw, 4rem) clamp(1.5rem, 4vw, 3rem); display: flex; flex-direction: column; justify-content: center; gap: 2rem; position: relative; overflow: hidden; }
+.hero::before { content: ''; position: absolute; inset: 0; background: url("data:image/svg+xml,%3Csvg width='80' height='80' viewBox='0 0 80 80' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Ccircle cx='40' cy='40' r='3'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E"); }
+.hero-badge { display: inline-flex; align-items: center; gap: 0.5rem; background: rgba(255,255,255,0.15); color: #bfdbfe; font-size: 0.8125rem; font-weight: 600; padding: 0.35rem 0.85rem; border-radius: 9999px; border: 1px solid rgba(255,255,255,0.2); width: fit-content; }
+.hero h1 { font-size: clamp(1.75rem, 4vw, 2.5rem); font-weight: 800; color: #fff; line-height: 1.2; }
+.hero h1 em { font-style: normal; color: #93c5fd; }
+.hero-sub { color: rgba(255,255,255,0.8); font-size: 1rem; line-height: 1.65; }
+.benefits { list-style: none; display: flex; flex-direction: column; gap: 0.85rem; }
+.benefits li { display: flex; align-items: flex-start; gap: 0.75rem; color: rgba(255,255,255,0.9); font-size: 0.9375rem; }
+.benefit-icon { width: 22px; height: 22px; background: rgba(255,255,255,0.2); border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px; font-size: 0.7rem; }
+.testimonial { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.15); border-radius: var(--radius); padding: 1.25rem; }
+.testimonial p { color: rgba(255,255,255,0.9); font-size: 0.9rem; line-height: 1.6; font-style: italic; }
+.testimonial cite { display: block; margin-top: 0.75rem; color: #93c5fd; font-size: 0.8125rem; font-weight: 600; font-style: normal; }
+
+.form-panel { background: var(--white); padding: clamp(2rem, 5vw, 3.5rem) clamp(1.5rem, 4vw, 3rem); display: flex; flex-direction: column; justify-content: center; overflow-y: auto; }
+.form-header { margin-bottom: 1.5rem; }
+.form-header h2 { font-size: 1.5rem; font-weight: 800; color: var(--ink); line-height: 1.3; }
+.form-header p { margin-top: 0.5rem; color: var(--muted); font-size: 0.9375rem; line-height: 1.6; }
+.offer-pill { display: inline-flex; align-items: center; gap: 0.5rem; background: var(--gold-soft); color: var(--gold); font-size: 0.8125rem; font-weight: 700; padding: 0.35rem 0.85rem; border-radius: 9999px; margin-bottom: 1rem; }
+
+form { display: flex; flex-direction: column; gap: 1rem; }
+.field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; }
+@media (max-width: 480px) { .field-row { grid-template-columns: 1fr; } }
+.field { display: flex; flex-direction: column; gap: 0.4rem; }
+label { font-size: 0.875rem; font-weight: 600; color: var(--ink); }
+label .req { color: #dc2626; margin-left: 2px; }
+input[type="text"], input[type="email"], input[type="tel"] { height: 3rem; padding: 0 1rem; border: 1.5px solid var(--line); border-radius: 10px; font: inherit; font-size: 1rem; color: var(--ink); background: var(--surface); transition: border-color 0.15s, box-shadow 0.15s; width: 100%; }
+input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); background: #fff; }
+
+.consent-block { background: var(--surface); border: 1.5px solid var(--line); border-radius: 10px; padding: 1rem; }
+.consent-check { display: flex; gap: 0.75rem; align-items: flex-start; }
+.consent-check input[type="checkbox"] { width: 20px; height: 20px; margin-top: 2px; flex-shrink: 0; accent-color: var(--accent); cursor: pointer; }
+.consent-check label { font-size: 0.8125rem; font-weight: 400; color: var(--muted); line-height: 1.55; cursor: pointer; }
+.consent-check label strong { font-weight: 600; color: var(--ink); }
+.fine-print { font-size: 0.75rem; color: var(--faint); line-height: 1.55; margin-top: 0.75rem; }
+.fine-print a { color: var(--accent); text-decoration: none; }
+.fine-print a:hover { text-decoration: underline; }
+.error-msg { color: #dc2626; font-size: 0.8125rem; margin-top: 0.25rem; display: none; }
+.error-msg.visible { display: block; }
+
+.submit-btn { height: 3.25rem; background: var(--accent); color: #fff; border: none; border-radius: 10px; font-size: 1rem; font-weight: 700; cursor: pointer; transition: background 0.15s, transform 0.1s, box-shadow 0.15s; display: flex; align-items: center; justify-content: center; gap: 0.5rem; }
+.submit-btn:hover:not(:disabled) { background: var(--accent-hover); box-shadow: 0 4px 16px rgba(29, 78, 216, 0.3); }
+.submit-btn:active:not(:disabled) { transform: scale(0.98); }
+.submit-btn:disabled { opacity: 0.7; cursor: not-allowed; }
+
+.success-panel { display: none; flex-direction: column; align-items: center; text-align: center; gap: 1.25rem; padding: 2rem 0; }
+.success-panel.visible { display: flex; }
+.success-icon { width: 72px; height: 72px; background: linear-gradient(135deg, #1e3a6e, #1d4ed8); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 2rem; }
+.success-panel h2 { font-size: 1.5rem; font-weight: 800; color: var(--ink); }
+.success-panel p { color: var(--muted); font-size: 0.9375rem; line-height: 1.6; max-width: 28rem; }
+
+.footer { grid-column: 1 / -1; padding: 1.5rem clamp(1rem, 4vw, 2rem); border-top: 1px solid var(--line); background: var(--white); }
+.footer-top { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.75rem; margin-bottom: 0.5rem; }
+.footer-left { font-size: 0.8125rem; color: var(--faint); }
+.footer-legal { font-size: 0.75rem; color: var(--faint); }
+.footer-links { display: flex; gap: 1.25rem; }
+.footer-links a { font-size: 0.8125rem; color: var(--faint); text-decoration: none; }
+.footer-links a:hover { color: var(--accent); }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <header class="header">
+    <div class="logo-mark">🩺</div>
+    <div class="logo-text">My Adult Primary Care <span>· Fayetteville, TN</span></div>
+  </header>
+
+  <section class="hero" aria-label="About this offer">
+    <div><div class="hero-badge">✦ Limited Availability</div></div>
+    <div>
+      <h1>Relieve Pain. Restore Function. <em>Live Better.</em></h1>
+      <p class="hero-sub">Book your free StemWave & primary care consultation and discover the advanced regenerative therapy designed to eliminate chronic pain and restore your quality of life.</p>
+    </div>
+    <ul class="benefits">
+      <li><span class="benefit-icon">✓</span>Non-invasive StemWave therapy for chronic pain relief</li>
+      <li><span class="benefit-icon">✓</span>Personalized primary care assessment tailored to you</li>
+      <li><span class="benefit-icon">✓</span>No surgery, no injections — natural regenerative healing</li>
+      <li><span class="benefit-icon">✓</span>Walk away with a clear, actionable treatment plan</li>
+    </ul>
+    <div class="testimonial">
+      <p>"After years of chronic knee pain, StemWave at My Adult Primary Care gave me my life back. I'm walking without pain for the first time in years."</p>
+      <cite>— Robert H., Fayetteville, TN</cite>
+    </div>
+  </section>
+
+  <section class="form-panel" aria-label="Claim your free consultation">
+    <div id="form-wrapper">
+      <div class="form-header">
+        <div class="offer-pill">🎁 Free Consultation — No Credit Card Required</div>
+        <h2>Claim Your Free StemWave Consultation</h2>
+        <p>Fill out the form below and our team will reach out within 24 hours to schedule your session.</p>
+      </div>
+
+      <form id="optin-form" novalidate>
+        <div class="field-row">
+          <div class="field">
+            <label for="firstName">First Name <span class="req">*</span></label>
+            <input type="text" id="firstName" name="firstName" placeholder="Robert" autocomplete="given-name" required>
+            <span class="error-msg" id="err-firstName">Please enter your first name.</span>
+          </div>
+          <div class="field">
+            <label for="lastName">Last Name</label>
+            <input type="text" id="lastName" name="lastName" placeholder="Harris" autocomplete="family-name">
+          </div>
+        </div>
+        <div class="field">
+          <label for="phone">Mobile Phone <span class="req">*</span></label>
+          <input type="tel" id="phone" name="phone" placeholder="(931) 555-0100" autocomplete="tel" required>
+          <span class="error-msg" id="err-phone">Please enter a valid phone number.</span>
+        </div>
+        <div class="field">
+          <label for="email">Email Address</label>
+          <input type="email" id="email" name="email" placeholder="robert@example.com" autocomplete="email">
+        </div>
+
+        <div class="consent-block">
+          <div class="consent-check">
+            <input type="checkbox" id="consent" name="consent" required>
+            <label for="consent">
+              <strong>Yes, I consent to receive communications from My Adult Primary Care.</strong><br>
+              By checking this box I agree to receive SMS text messages and/or emails from
+              <strong>My Adult Primary Care</strong> at the phone number and email provided above.
+              I may receive messages related to my consultation, appointment reminders,
+              special offers, and wellness tips. Message frequency varies.
+              My consent is not a condition of purchase and I may
+              <strong>reply STOP to opt out at any time</strong>.
+            </label>
+          </div>
+          <span class="error-msg" id="err-consent">You must agree to receive communications to continue.</span>
+          <p class="fine-print">
+            Message &amp; data rates may apply. Reply STOP to unsubscribe, HELP for help.
+            Supported carriers are not liable for delayed or undelivered messages.
+            By submitting this form you also agree to our
+            <a href="/myadultprimarycare/privacy/">Privacy Policy</a> and
+            <a href="/myadultprimarycare/terms/">Terms of Service</a>.
+          </p>
+        </div>
+
+        <button type="submit" class="submit-btn" id="submit-btn">
+          <span id="btn-text">Claim My Free Consultation →</span>
+        </button>
+      </form>
+    </div>
+
+    <div class="success-panel" id="success-panel" aria-live="polite">
+      <div class="success-icon">🩺</div>
+      <h2>You're all set!</h2>
+      <p>Thank you for reaching out. A member of the My Adult Primary Care team will contact you within 24 hours to schedule your free consultation. Check your messages!</p>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div class="footer-top">
+      <div class="footer-left">© 2025 My Adult Primary Care · All rights reserved</div>
+      <nav class="footer-links">
+        <a href="/myadultprimarycare/privacy/">Privacy Policy</a>
+        <a href="/myadultprimarycare/terms/">Terms of Service</a>
+        <a href="mailto:provider@myadultprimarycare.com">Contact</a>
+      </nav>
+    </div>
+    <div class="footer-legal">My Adult Primary Care · Fayetteville, TN · <a href="mailto:provider@myadultprimarycare.com" style="color:inherit;">provider@myadultprimarycare.com</a></div>
+  </footer>
+</div>
+
+<script>
+const form    = document.getElementById('optin-form');
+const btn     = document.getElementById('submit-btn');
+const btnText = document.getElementById('btn-text');
+const wrapper = document.getElementById('form-wrapper');
+const success = document.getElementById('success-panel');
+
+function showError(id, show) {
+  const el = document.getElementById('err-' + id);
+  if (el) el.classList.toggle('visible', show);
+}
+function validatePhone(v) { return v.replace(/\D/g, '').length >= 10; }
+
+form.addEventListener('submit', e => {
+  e.preventDefault();
+  const firstName = form.firstName.value.trim();
+  const phone     = form.phone.value.trim();
+  const consent   = form.consent.checked;
+  let valid = true;
+  showError('firstName', !firstName); if (!firstName) valid = false;
+  showError('phone', !validatePhone(phone)); if (!validatePhone(phone)) valid = false;
+  showError('consent', !consent); if (!consent) valid = false;
+  if (!valid) return;
+  btn.disabled = true;
+  btnText.textContent = 'Submitting…';
+  setTimeout(() => { wrapper.style.display = 'none'; success.classList.add('visible'); }, 800);
+});
+
+document.getElementById('phone').addEventListener('input', function () {
+  const digits = this.value.replace(/\D/g, '').slice(0, 10);
+  if (digits.length <= 3) this.value = digits;
+  else if (digits.length <= 6) this.value = `(${digits.slice(0,3)}) ${digits.slice(3)}`;
+  else this.value = `(${digits.slice(0,3)}) ${digits.slice(3,6)}-${digits.slice(6)}`;
+});
+</script>
+
+<!-- LeadConnector Chat Widget — add widget script here when available -->
+</body>
+</html>
