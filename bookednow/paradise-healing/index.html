@@ -87,6 +87,13 @@ input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px 
 .success-panel h2 { font-size: 1.5rem; font-weight: 800; color: var(--ink); }
 .success-panel p { color: var(--muted); font-size: 0.9375rem; line-height: 1.6; max-width: 28rem; }
 
+.info-footer { grid-column: 1 / -1; background: var(--surface); border-top: 1px solid var(--line); padding: 2rem clamp(1rem, 4vw, 2.5rem); display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1.5rem; }
+@media (max-width: 640px) { .info-footer { grid-template-columns: 1fr; } }
+.info-footer h3 { font-size: 0.9375rem; font-weight: 700; color: var(--ink); margin-bottom: 0.75rem; }
+.info-footer p, .info-footer li { font-size: 0.875rem; color: var(--muted); line-height: 1.65; }
+.info-footer ul { list-style: none; padding: 0; }
+.info-footer a { color: var(--accent); text-decoration: none; }
+.info-footer a:hover { text-decoration: underline; }
 .footer { grid-column: 1 / -1; padding: 1.5rem clamp(1rem, 4vw, 2rem); border-top: 1px solid var(--line); background: var(--white); }
 .footer-top { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.75rem; margin-bottom: 0.5rem; }
 .footer-left { font-size: 0.8125rem; color: var(--faint); }
@@ -144,7 +151,7 @@ input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px 
         </div>
         <div class="field">
           <label for="phone">Mobile Phone <span class="req">*</span></label>
-          <input type="tel" id="phone" name="phone" placeholder="(617) 555-0100" autocomplete="tel" required>
+          <input type="tel" id="phone" name="phone" placeholder="(781) 888-6625" autocomplete="tel" required>
           <span class="error-msg" id="err-phone">Please enter a valid phone number.</span>
         </div>
         <div class="field">
@@ -154,24 +161,21 @@ input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px 
 
         <div class="consent-block">
           <div class="consent-check">
-            <input type="checkbox" id="consent" name="consent" required>
+            <input type="checkbox" id="consent" name="consent">
             <label for="consent">
-              <strong>Yes, I consent to receive communications from Paradise Healing LLC.</strong><br>
-              By checking this box I agree to receive SMS text messages and/or emails from
-              <strong>Paradise Healing LLC</strong> at the phone number and email provided above.
-              I understand I may receive messages related to my healing consultation, appointment reminders,
-              special offers, and wellness tips. Message frequency varies.
-              I understand my consent is not a condition of purchase and I may
-              <strong>reply STOP to opt out at any time</strong>.
+              <strong>I agree to receive SMS messages from Paradise Healing LLC.</strong><br>
+              By checking this box I agree to receive recurring SMS text messages from
+              <strong>Paradise Healing LLC</strong> regarding my inquiry, appointments, appointment reminders,
+              wellness tips, and promotional offers. Message frequency varies.
+              Message &amp; data rates may apply. Reply <strong>STOP</strong> to unsubscribe or
+              <strong>HELP</strong> for help. <strong>Consent is not a condition of purchase.</strong>
             </label>
           </div>
-          <span class="error-msg" id="err-consent">You must agree to receive communications to continue.</span>
           <p class="fine-print">
-            Message &amp; data rates may apply. Reply STOP to unsubscribe, HELP for help.
-            Supported carriers are not liable for delayed or undelivered messages.
-            By submitting this form you also agree to our
+            By submitting this form you agree to our
             <a href="/paradise-healing/privacy/">Privacy Policy</a> and
             <a href="/paradise-healing/terms/">Terms of Service</a>.
+            Supported carriers are not liable for delayed or undelivered messages.
           </p>
         </div>
 
@@ -188,6 +192,26 @@ input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px 
     </div>
   </section>
 
+  <div class="info-footer">
+    <div>
+      <h3>About Paradise Healing LLC</h3>
+      <p>Paradise Healing LLC provides holistic healing and wellness services to individuals seeking balance for their mind, body, and spirit. Our certified practitioners offer personalized care in a compassionate, supportive environment.</p>
+    </div>
+    <div>
+      <h3>Our Services</h3>
+      <ul>
+        <li>Reiki &amp; Energy Healing</li>
+        <li>Holistic Wellness Consultations</li>
+        <li>Guided Meditation &amp; Breathwork</li>
+        <li>Chakra Balancing</li>
+        <li>Personalized Healing Plans</li>
+      </ul>
+    </div>
+    <div>
+      <h3>Contact Us</h3>
+      <p><strong>Paradise Healing LLC</strong><br>500 North Main Street Suite D<br>Randolph, MA 02368<br><a href="tel:+17818886625">(781) 888-6625</a><br><a href="mailto:info@paradisehealingllc.com">info@paradisehealingllc.com</a></p>
+    </div>
+  </div>
   <footer class="footer">
     <div class="footer-top">
       <div class="footer-left">© 2025 Paradise Healing LLC · All rights reserved</div>
@@ -197,7 +221,7 @@ input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px 
         <a href="mailto:info@paradisehealingllc.com">Contact</a>
       </nav>
     </div>
-    <div class="footer-legal">Paradise Healing LLC · <a href="mailto:info@paradisehealingllc.com" style="color:inherit;">info@paradisehealingllc.com</a></div>
+    <div class="footer-legal">Paradise Healing LLC · 500 North Main Street Suite D, Randolph, MA 02368 · <a href="tel:+17818886625" style="color:inherit;">(781) 888-6625</a> · <a href="mailto:info@paradisehealingllc.com" style="color:inherit;">info@paradisehealingllc.com</a></div>
   </footer>
 </div>
 
@@ -218,11 +242,9 @@ form.addEventListener('submit', e => {
   e.preventDefault();
   const firstName = form.firstName.value.trim();
   const phone     = form.phone.value.trim();
-  const consent   = form.consent.checked;
   let valid = true;
   showError('firstName', !firstName); if (!firstName) valid = false;
   showError('phone', !validatePhone(phone)); if (!validatePhone(phone)) valid = false;
-  showError('consent', !consent); if (!consent) valid = false;
   if (!valid) return;
   btn.disabled = true;
   btnText.textContent = 'Submitting…';
