@@ -87,6 +87,13 @@ input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px 
 .success-panel h2 { font-size: 1.5rem; font-weight: 800; color: var(--ink); }
 .success-panel p { color: var(--muted); font-size: 0.9375rem; line-height: 1.6; max-width: 28rem; }
 
+.info-footer { grid-column: 1 / -1; background: var(--surface); border-top: 1px solid var(--line); padding: 2rem clamp(1rem, 4vw, 2.5rem); display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1.5rem; }
+@media (max-width: 640px) { .info-footer { grid-template-columns: 1fr; } }
+.info-footer h3 { font-size: 0.9375rem; font-weight: 700; color: var(--ink); margin-bottom: 0.75rem; }
+.info-footer p, .info-footer li { font-size: 0.875rem; color: var(--muted); line-height: 1.65; }
+.info-footer ul { list-style: none; padding: 0; }
+.info-footer a { color: var(--accent); text-decoration: none; }
+.info-footer a:hover { text-decoration: underline; }
 .footer { grid-column: 1 / -1; padding: 1.5rem clamp(1rem, 4vw, 2rem); border-top: 1px solid var(--line); background: var(--white); }
 .footer-top { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.75rem; margin-bottom: 0.5rem; }
 .footer-left { font-size: 0.8125rem; color: var(--faint); }
@@ -154,24 +161,21 @@ input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px 
 
         <div class="consent-block">
           <div class="consent-check">
-            <input type="checkbox" id="consent" name="consent" required>
+            <input type="checkbox" id="consent" name="consent">
             <label for="consent">
-              <strong>Yes, I consent to receive communications from My Adult Primary Care.</strong><br>
-              By checking this box I agree to receive SMS text messages and/or emails from
-              <strong>My Adult Primary Care</strong> at the phone number and email provided above.
-              I may receive messages related to my consultation, appointment reminders,
-              special offers, and wellness tips. Message frequency varies.
-              My consent is not a condition of purchase and I may
-              <strong>reply STOP to opt out at any time</strong>.
+              <strong>I agree to receive SMS messages from My Adult Primary Care.</strong><br>
+              By checking this box I agree to receive recurring SMS text messages from
+              <strong>My Adult Primary Care</strong> regarding my inquiry, appointments, appointment reminders,
+              wellness tips, and promotional offers. Message frequency varies.
+              Message &amp; data rates may apply. Reply <strong>STOP</strong> to unsubscribe or
+              <strong>HELP</strong> for help. <strong>Consent is not a condition of purchase.</strong>
             </label>
           </div>
-          <span class="error-msg" id="err-consent">You must agree to receive communications to continue.</span>
           <p class="fine-print">
-            Message &amp; data rates may apply. Reply STOP to unsubscribe, HELP for help.
-            Supported carriers are not liable for delayed or undelivered messages.
-            By submitting this form you also agree to our
+            By submitting this form you agree to our
             <a href="/myadultprimarycare/privacy/">Privacy Policy</a> and
             <a href="/myadultprimarycare/terms/">Terms of Service</a>.
+            Supported carriers are not liable for delayed or undelivered messages.
           </p>
         </div>
 
@@ -187,6 +191,27 @@ input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px 
       <p>Thank you for reaching out. A member of the My Adult Primary Care team will contact you within 24 hours to schedule your free consultation. Check your messages!</p>
     </div>
   </section>
+
+  <div class="info-footer">
+    <div>
+      <h3>About My Adult Primary Care</h3>
+      <p>My Adult Primary Care is a primary care practice in Fayetteville, TN providing advanced StemWave therapy and comprehensive wellness services. We focus on non-invasive regenerative healing to help patients eliminate chronic pain and restore their quality of life.</p>
+    </div>
+    <div>
+      <h3>Our Services</h3>
+      <ul>
+        <li>StemWave Regenerative Therapy</li>
+        <li>Primary Care &amp; Wellness Exams</li>
+        <li>Chronic Pain Management</li>
+        <li>Musculoskeletal Assessments</li>
+        <li>Personalized Treatment Plans</li>
+      </ul>
+    </div>
+    <div>
+      <h3>Contact Us</h3>
+      <p><strong>My Adult Primary Care</strong><br>1816 Huntsville Highway<br>Fayetteville, TN 37334<br><a href="tel:+19315759525">(931) 575-9525</a><br><a href="mailto:provider@myadultprimarycare.com">provider@myadultprimarycare.com</a></p>
+    </div>
+  </div>
 
   <footer class="footer">
     <div class="footer-top">
@@ -218,11 +243,9 @@ form.addEventListener('submit', e => {
   e.preventDefault();
   const firstName = form.firstName.value.trim();
   const phone     = form.phone.value.trim();
-  const consent   = form.consent.checked;
   let valid = true;
   showError('firstName', !firstName); if (!firstName) valid = false;
   showError('phone', !validatePhone(phone)); if (!validatePhone(phone)) valid = false;
-  showError('consent', !consent); if (!consent) valid = false;
   if (!valid) return;
   btn.disabled = true;
   btnText.textContent = 'Submitting…';
