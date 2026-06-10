@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Unwind Sound Lounge — Vibroacoustic Sound Therapy · West LA</title>
+<meta name="description" content="A modern nervous system reset in a private West LA sanctuary. 45-minute vibroacoustic sound therapy sessions. Come as you are — leave lighter.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ink: #0f0d0b;
+  --muted: #4a4540;
+  --faint: #857d75;
+  --line: #e6e0d8;
+  --surface: #f7f4f0;
+  --page-bg: #f2ede6;
+  --gold: #b08d5a;
+  --gold-soft: rgba(176,141,90,0.12);
+  --white: #ffffff;
+  --dark: #1a1410;
+  --dark-mid: #2e2318;
+  --radius: 14px;
+  --font: "DM Sans", system-ui, sans-serif;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+body { font-family: var(--font); background: var(--page-bg); color: var(--ink); -webkit-font-smoothing: antialiased; }
+a { color: inherit; text-decoration: none; }
+
+/* ── NAV ── */
+nav {
+  position: sticky; top: 0; z-index: 100;
+  background: var(--dark);
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 1.25rem; height: 58px;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+.nav-logo { display: flex; align-items: center; gap: 0.6rem; }
+.nav-logo-mark {
+  width: 32px; height: 32px;
+  background: rgba(176,141,90,0.15);
+  border: 1px solid rgba(176,141,90,0.3);
+  border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1rem;
+}
+.nav-name { font-size: 0.9rem; font-weight: 700; color: #f5f0e8; letter-spacing: -0.01em; }
+.nav-right { display: flex; align-items: center; gap: 1rem; }
+.nav-tel { font-size: 0.8rem; color: rgba(245,240,232,0.5); display: none; }
+@media(min-width:480px){ .nav-tel { display: block; } }
+.nav-tel a { color: rgba(245,240,232,0.6); }
+.nav-book {
+  height: 36px; padding: 0 1.1rem;
+  background: var(--gold);
+  color: #fff;
+  border-radius: 8px;
+  font: inherit; font-size: 0.85rem; font-weight: 700;
+  border: none; cursor: pointer;
+  letter-spacing: -0.01em;
+  transition: background 0.15s;
+}
+.nav-book:hover { background: #9a7a4a; }
+
+/* ── HERO ── */
+.hero {
+  background: linear-gradient(170deg, var(--dark) 0%, #26190f 55%, var(--dark-mid) 100%);
+  padding: clamp(3.5rem, 10vw, 6rem) 1.25rem clamp(3rem, 8vw, 5rem);
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+.hero::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: radial-gradient(ellipse 70% 60% at 50% 30%, rgba(176,141,90,0.08) 0%, transparent 70%);
+  pointer-events: none;
+}
+.hero-eyebrow {
+  display: inline-flex; align-items: center; gap: 0.5rem;
+  background: rgba(176,141,90,0.15);
+  border: 1px solid rgba(176,141,90,0.25);
+  color: #d4aa70;
+  font-size: 0.75rem; font-weight: 600;
+  padding: 0.3rem 0.85rem; border-radius: 9999px;
+  letter-spacing: 0.07em; text-transform: uppercase;
+  margin-bottom: 1.5rem;
+}
+.hero h1 {
+  font-size: clamp(2.1rem, 6vw, 3.5rem);
+  font-weight: 800;
+  color: #f5f0e8;
+  line-height: 1.15;
+  letter-spacing: -0.03em;
+  margin-bottom: 1rem;
+  max-width: 680px; margin-left: auto; margin-right: auto;
+}
+.hero h1 em { font-style: normal; color: #d4aa70; }
+.hero-sub {
+  color: rgba(245,240,232,0.6);
+  font-size: clamp(0.95rem, 2.5vw, 1.1rem);
+  line-height: 1.7;
+  max-width: 500px;
+  margin: 0 auto 2rem;
+}
+.hero-cta-row { display: flex; flex-direction: column; align-items: center; gap: 0.75rem; }
+@media(min-width:400px){ .hero-cta-row { flex-direction: row; justify-content: center; } }
+.btn-primary {
+  height: 52px; padding: 0 2rem;
+  background: #f5f0e8; color: var(--dark);
+  border-radius: 10px;
+  font: inherit; font-size: 0.975rem; font-weight: 700;
+  border: none; cursor: pointer;
+  letter-spacing: -0.01em;
+  transition: background 0.15s, transform 0.1s;
+  white-space: nowrap;
+}
+.btn-primary:hover { background: #fff; }
+.btn-primary:active { transform: scale(0.98); }
+.btn-ghost {
+  height: 52px; padding: 0 1.5rem;
+  background: transparent;
+  color: rgba(245,240,232,0.7);
+  border: 1.5px solid rgba(245,240,232,0.2);
+  border-radius: 10px;
+  font: inherit; font-size: 0.95rem; font-weight: 600;
+  cursor: pointer;
+  transition: border-color 0.15s, color 0.15s;
+  white-space: nowrap;
+}
+.btn-ghost:hover { border-color: rgba(245,240,232,0.5); color: #f5f0e8; }
+.hero-note {
+  margin-top: 1.25rem;
+  font-size: 0.8rem;
+  color: rgba(245,240,232,0.35);
+}
+
+/* ── HERO IMAGE ── */
+.hero-img-wrap {
+  margin: 2rem -1.25rem -3rem;
+  position: relative;
+}
+.hero-img-wrap img {
+  width: 100%; height: 280px;
+  object-fit: cover;
+  display: block;
+  opacity: 0.7;
+}
+.hero-img-wrap::before {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0;
+  height: 60px;
+  background: linear-gradient(to bottom, #26190f, transparent);
+  z-index: 1;
+  pointer-events: none;
+}
+@media(min-width:600px){ .hero-img-wrap img { height: 380px; } }
+
+/* ── TRUST BAR ── */
+.trust-bar {
+  background: rgba(0,0,0,0.25);
+  border-top: 1px solid rgba(255,255,255,0.05);
+  padding: 0.9rem 1.25rem;
+  display: flex; align-items: center; justify-content: center;
+  flex-wrap: wrap; gap: 1.25rem 2rem;
+}
+.trust-item {
+  font-size: 0.78rem; font-weight: 600;
+  color: rgba(245,240,232,0.45);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+/* ── SECTION WRAPPERS ── */
+.section { padding: clamp(3rem, 8vw, 5rem) 1.25rem; }
+.section-inner { max-width: 700px; margin: 0 auto; }
+.section-label {
+  font-size: 0.72rem; font-weight: 700;
+  color: var(--gold); letter-spacing: 0.1em;
+  text-transform: uppercase; margin-bottom: 0.75rem;
+}
+.section-title {
+  font-size: clamp(1.6rem, 4vw, 2.2rem);
+  font-weight: 800; line-height: 1.2;
+  letter-spacing: -0.025em;
+  margin-bottom: 1rem;
+}
+.section-sub {
+  font-size: 0.975rem; color: var(--muted);
+  line-height: 1.7; max-width: 520px;
+}
+
+/* ── PHOTO STRIP ── */
+.photo-strip {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.5rem;
+  margin-top: 2rem;
+  border-radius: var(--radius);
+  overflow: hidden;
+  align-items: start;
+}
+.photo-strip img {
+  width: 100%;
+  height: auto;
+  display: block;
+  border-radius: 8px;
+}
+
+/* ── SECTION IMAGE ── */
+.section-img {
+  width: 100%; border-radius: var(--radius);
+  overflow: hidden; margin-top: 2rem;
+}
+.section-img img {
+  width: 100%; height: 240px;
+  object-fit: cover; display: block;
+}
+
+/* ── HOW IT WORKS ── */
+.how { background: var(--white); }
+.steps-list { display: flex; flex-direction: column; gap: 1.5rem; margin-top: 2rem; }
+.step-item { display: flex; gap: 1rem; align-items: flex-start; }
+.step-num-badge {
+  width: 36px; height: 36px; flex-shrink: 0;
+  background: var(--dark);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.8rem; font-weight: 800; color: #d4aa70;
+}
+.step-content { padding-top: 4px; }
+.step-title { font-weight: 700; font-size: 1rem; margin-bottom: 0.3rem; }
+.step-desc { font-size: 0.9rem; color: var(--muted); line-height: 1.65; }
+
+/* ── SESSION CARD ── */
+.session-section { background: var(--page-bg); }
+.session-card {
+  background: var(--dark);
+  border-radius: 18px;
+  padding: clamp(1.5rem, 5vw, 2.5rem);
+  margin-top: 2rem;
+  position: relative; overflow: hidden;
+}
+.session-card::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: radial-gradient(ellipse 80% 60% at 20% 30%, rgba(176,141,90,0.08) 0%, transparent 70%);
+  pointer-events: none;
+}
+.session-badge {
+  display: inline-flex; align-items: center; gap: 0.5rem;
+  background: rgba(176,141,90,0.15);
+  border: 1px solid rgba(176,141,90,0.25);
+  color: #d4aa70;
+  font-size: 0.75rem; font-weight: 600;
+  padding: 0.25rem 0.75rem; border-radius: 9999px;
+  letter-spacing: 0.06em; text-transform: uppercase;
+  margin-bottom: 1rem;
+}
+.session-name {
+  font-size: clamp(1.4rem, 4vw, 1.8rem);
+  font-weight: 800; color: #f5f0e8;
+  letter-spacing: -0.02em; margin-bottom: 0.4rem;
+}
+.session-dur { font-size: 0.85rem; color: rgba(245,240,232,0.4); margin-bottom: 1.5rem; }
+.session-features { list-style: none; display: flex; flex-direction: column; gap: 0.7rem; margin-bottom: 2rem; }
+.session-features li {
+  display: flex; align-items: flex-start; gap: 0.75rem;
+  font-size: 0.9375rem; color: rgba(245,240,232,0.8); line-height: 1.5;
+}
+.feat-dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: var(--gold); flex-shrink: 0;
+  margin-top: 7px; opacity: 0.7;
+}
+.session-cta {
+  width: 100%; height: 50px;
+  background: #f5f0e8; color: var(--dark);
+  border-radius: 10px;
+  font: inherit; font-size: 1rem; font-weight: 700;
+  border: none; cursor: pointer;
+  letter-spacing: -0.01em;
+  transition: background 0.15s;
+}
+.session-cta:hover { background: #fff; }
+
+/* ── BENEFITS ── */
+.benefits-section { background: var(--white); }
+.benefits-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 2rem; }
+@media(max-width:400px){ .benefits-grid { grid-template-columns: 1fr; } }
+.benefit-card {
+  background: var(--surface);
+  border: 1.5px solid var(--line);
+  border-radius: var(--radius);
+  padding: 1.25rem;
+}
+.benefit-icon { font-size: 1.5rem; margin-bottom: 0.6rem; }
+.benefit-title { font-weight: 700; font-size: 0.9375rem; margin-bottom: 0.3rem; }
+.benefit-desc { font-size: 0.85rem; color: var(--muted); line-height: 1.6; }
+
+/* ── TESTIMONIAL ── */
+.testimonial-section { background: var(--dark); }
+.testimonial-section .section-label { color: rgba(176,141,90,0.7); }
+.testimonial-section .section-title { color: #f5f0e8; }
+blockquote {
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-left: 3px solid rgba(176,141,90,0.5);
+  border-radius: var(--radius);
+  padding: 1.5rem;
+  margin-top: 2rem;
+}
+blockquote p {
+  font-size: 1.05rem; font-style: italic;
+  color: rgba(245,240,232,0.85); line-height: 1.7;
+  margin-bottom: 0.85rem;
+}
+blockquote cite {
+  font-size: 0.85rem; font-style: normal;
+  font-weight: 600; color: #d4aa70;
+}
+
+/* ── LOCATION ── */
+.location-section { background: var(--surface); border-top: 1.5px solid var(--line); }
+.location-card {
+  display: flex; flex-direction: column; gap: 1rem;
+  margin-top: 2rem;
+}
+.location-detail { display: flex; gap: 0.75rem; align-items: flex-start; }
+.loc-icon {
+  width: 36px; height: 36px; flex-shrink: 0;
+  background: var(--gold-soft);
+  border-radius: 9px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1rem;
+}
+.loc-label { font-size: 0.75rem; font-weight: 600; color: var(--faint); text-transform: uppercase; letter-spacing: 0.05em; }
+.loc-value { font-size: 0.9375rem; color: var(--ink); margin-top: 1px; }
+.loc-value a { color: var(--gold); }
+
+/* ── FOOTER CTA ── */
+.footer-cta {
+  background: var(--dark);
+  text-align: center;
+  padding: clamp(3rem, 8vw, 5rem) 1.25rem;
+}
+.footer-cta h2 {
+  font-size: clamp(1.6rem, 4vw, 2.2rem);
+  font-weight: 800; color: #f5f0e8;
+  letter-spacing: -0.025em; margin-bottom: 0.75rem;
+}
+.footer-cta p { font-size: 0.95rem; color: rgba(245,240,232,0.5); margin-bottom: 2rem; }
+
+/* ── FOOTER ── */
+footer {
+  background: #0f0b08;
+  padding: 1.25rem;
+  display: flex; flex-wrap: wrap; gap: 0.5rem;
+  align-items: center; justify-content: space-between;
+}
+.footer-copy { font-size: 0.78rem; color: rgba(245,240,232,0.25); }
+.footer-links { display: flex; gap: 1.1rem; }
+.footer-links a { font-size: 0.78rem; color: rgba(245,240,232,0.3); }
+.footer-links a:hover { color: rgba(245,240,232,0.6); }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">
+    <div class="nav-logo-mark">🎵</div>
+    <div class="nav-name">Unwind Sound Lounge</div>
+  </div>
+  <div class="nav-right">
+    <div class="nav-tel"><a href="tel:3109205741">(310) 920-5741</a></div>
+    <a href="book/"><button class="nav-book">Book Now</button></a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-eyebrow">✦ West Los Angeles · Private Pods</div>
+  <h1>Effortless<br><em>nervous system reset</em></h1>
+  <p class="hero-sub">Multi-sensory vibroacoustic sound therapy in a private Brentwood sanctuary. Come as you are — leave lighter.</p>
+  <div class="hero-cta-row">
+    <a href="book/"><button class="btn-primary">Book Your Session →</button></a>
+    <a href="tel:3109205741"><button class="btn-ghost">Call Us</button></a>
+  </div>
+  <p class="hero-note">45-minute sessions · No experience needed · Private pod</p>
+  <div class="hero-img-wrap">
+    <img src="https://images.squarespace-cdn.com/content/v1/67e9783018b2066f3f144fa9/d10cb3e3-0df3-4ba1-99e6-3759c4b45e5a/Unwind+Sound+Lounge+2.png" alt="Unwind Sound Lounge private pod" loading="eager">
+  </div>
+  <div class="trust-bar" style="margin-top:0;margin-left:-1.25rem;margin-right:-1.25rem;margin-bottom:-3rem;">
+    <div class="trust-item">Medical-Grade Technology</div>
+    <div class="trust-item">Near-Infrared Light</div>
+    <div class="trust-item">Vibroacoustic Therapy</div>
+    <div class="trust-item">Semi-Private Pods</div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section class="section how">
+  <div class="section-inner">
+    <div class="section-label">The Experience</div>
+    <h2 class="section-title">A modern reset ritual</h2>
+    <p class="section-sub">Three phases designed to take your nervous system from stressed to restored — no effort required.</p>
+    <div class="steps-list">
+      <div class="step-item">
+        <div class="step-num-badge">1</div>
+        <div class="step-content">
+          <div class="step-title">Arrive</div>
+          <div class="step-desc">Your host settles you into a private zero-gravity pod. Weighted blanket, eye mask, noise-canceling headphones — everything you need to fully let go.</div>
+        </div>
+      </div>
+      <div class="step-item">
+        <div class="step-num-badge">2</div>
+        <div class="step-content">
+          <div class="step-title">Flow</div>
+          <div class="step-desc">Therapeutic frequencies and gentle vibrations move through the bed as near-infrared light and aromatherapy work together to guide your body into deep calm.</div>
+        </div>
+      </div>
+      <div class="step-item">
+        <div class="step-num-badge">3</div>
+        <div class="step-content">
+          <div class="step-title">Reset</div>
+          <div class="step-desc">45 minutes later you emerge rested, clear, and lighter. Most guests feel the difference within the first session.</div>
+        </div>
+      </div>
+    </div>
+    <div class="photo-strip">
+      <img src="https://images.squarespace-cdn.com/content/v1/67e9783018b2066f3f144fa9/89600828-1871-413f-ba34-251637de0105/breathwork3.jpg" alt="Sound therapy session" loading="lazy">
+      <img src="https://images.squarespace-cdn.com/content/v1/67e9783018b2066f3f144fa9/84fcc6c9-8745-45a9-9507-2b4a1eabd310/Vibroacoustic+Therapy.png" alt="Vibroacoustic therapy" loading="lazy">
+      <img src="https://images.squarespace-cdn.com/content/v1/67e9783018b2066f3f144fa9/85ca0173-6e6b-4c1c-86a6-ff0e5ae7a014/Sound+through+Body.png" alt="Sound through body" loading="lazy">
+    </div>
+  </div>
+</section>
+
+<!-- SESSION -->
+<section class="section session-section">
+  <div class="section-inner">
+    <div class="section-label">What's Included</div>
+    <h2 class="section-title">The Signature Unwind</h2>
+    <div class="section-img">
+      <img src="https://images.squarespace-cdn.com/content/v1/67e9783018b2066f3f144fa9/20ea02e6-ce1d-4e08-a207-2d06fb447081/Signature+Unwind.png" alt="The Signature Unwind session" loading="lazy">
+    </div>
+    <div class="session-card">
+      <div class="session-badge">✦ Our Signature Session</div>
+      <div class="session-name">45-Minute Sound Therapy</div>
+      <div class="session-dur">Private pod · 12041 Wilshire Blvd, West LA</div>
+      <ul class="session-features">
+        <li><span class="feat-dot"></span>Medical-grade vibroacoustic sound therapy table</li>
+        <li><span class="feat-dot"></span>Near-infrared light therapy</li>
+        <li><span class="feat-dot"></span>Bio-calming aromatherapy</li>
+        <li><span class="feat-dot"></span>Weighted blanket + noise-canceling headphones</li>
+        <li><span class="feat-dot"></span>Blackout eye mask</li>
+        <li><span class="feat-dot"></span>Attentive host guidance throughout</li>
+      </ul>
+      <a href="book/"><button class="session-cta">Reserve Your Session →</button></a>
+    </div>
+  </div>
+</section>
+
+<!-- BENEFITS -->
+<section class="section benefits-section">
+  <div class="section-inner">
+    <div class="section-label">Why It Works</div>
+    <h2 class="section-title">Your body knows how to heal — we just create the conditions</h2>
+    <div class="benefits-grid">
+      <div class="benefit-card">
+        <div class="benefit-icon">😴</div>
+        <div class="benefit-title">Better Sleep</div>
+        <div class="benefit-desc">Soundwave frequencies calm the nervous system and support deeper, more restorative sleep.</div>
+      </div>
+      <div class="benefit-card">
+        <div class="benefit-icon">🧘</div>
+        <div class="benefit-title">Stress Relief</div>
+        <div class="benefit-desc">Regular resets help lower cortisol and break the chronic stress cycle — without effort.</div>
+      </div>
+      <div class="benefit-card">
+        <div class="benefit-icon">💪</div>
+        <div class="benefit-title">Muscle Recovery</div>
+        <div class="benefit-desc">Vibration therapy increases circulation and helps release muscle tension held in the body.</div>
+      </div>
+      <div class="benefit-card">
+        <div class="benefit-icon">🧠</div>
+        <div class="benefit-title">Sharper Focus</div>
+        <div class="benefit-desc">A rested nervous system means clearer thinking, steadier mood, and better decision-making.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FULL BLEED IMAGE -->
+<div style="overflow:hidden;max-height:320px;">
+  <img src="https://images.squarespace-cdn.com/content/v1/67e9783018b2066f3f144fa9/3c04412d-53f5-4948-99f3-1a49a86a28a7/Effortless+Reset.png" alt="Effortless reset" loading="lazy" style="width:100%;height:320px;object-fit:cover;display:block;opacity:0.9;">
+</div>
+
+<!-- TESTIMONIAL -->
+<section class="section testimonial-section">
+  <div class="section-inner">
+    <div class="section-label">Guest Experience</div>
+    <h2 class="section-title">Real results, real people</h2>
+    <blockquote>
+      <p>"Unwind Sound Lounge has been a game-changer in helping me let go of stress I never thought I could. I leave every session feeling like a completely different person."</p>
+      <cite>— Catia C., Los Angeles</cite>
+    </blockquote>
+  </div>
+</section>
+
+<!-- LOCATION -->
+<section class="section location-section">
+  <div class="section-inner">
+    <div class="section-label">Find Us</div>
+    <h2 class="section-title">Located in Brentwood, West LA</h2>
+    <div class="location-card">
+      <div class="location-detail">
+        <div class="loc-icon">📍</div>
+        <div>
+          <div class="loc-label">Address</div>
+          <div class="loc-value">12041 Wilshire Blvd Suite 6<br>Los Angeles, CA 90025</div>
+        </div>
+      </div>
+      <div class="location-detail">
+        <div class="loc-icon">📞</div>
+        <div>
+          <div class="loc-label">Phone</div>
+          <div class="loc-value"><a href="tel:3109205741">(310) 920-5741</a></div>
+        </div>
+      </div>
+      <div class="location-detail">
+        <div class="loc-icon">✉️</div>
+        <div>
+          <div class="loc-label">Email</div>
+          <div class="loc-value"><a href="mailto:hello@unwindsoundlounge.com">hello@unwindsoundlounge.com</a></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER CTA -->
+<section class="footer-cta">
+  <h2>Ready to reset?</h2>
+  <p>Come as you are — leave lighter. Book your session online in under a minute.</p>
+  <a href="book/"><button class="btn-primary">Book Your Session →</button></a>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-copy">© 2025 Unwind Sound Lounge · Los Angeles, CA</div>
+  <nav class="footer-links">
+    <a href="privacy/">Privacy</a>
+    <a href="terms/">Terms</a>
+    <a href="mailto:hello@unwindsoundlounge.com">Contact</a>
+  </nav>
+</footer>
+
+</body>
+</html>

@@ -1,0 +1,778 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Book Your Session — Unwind Sound Lounge</title>
+<meta name="description" content="Reserve your vibroacoustic sound therapy session at Unwind Sound Lounge in Los Angeles. Come as you are — leave lighter.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ink: #0f0d0b;
+  --muted: #4a4540;
+  --faint: #857d75;
+  --line: #e6e0d8;
+  --surface: #f7f4f0;
+  --page-bg: #f2ede6;
+  --accent: #2c2420;
+  --accent-hover: #1a1410;
+  --gold: #b08d5a;
+  --gold-soft: rgba(176,141,90,0.12);
+  --gold-mid: rgba(176,141,90,0.25);
+  --white: #ffffff;
+  --hero-bg: #1a1410;
+  --radius: 14px;
+  --font: "DM Sans", system-ui, sans-serif;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+body {
+  font-family: var(--font);
+  background: var(--page-bg);
+  color: var(--ink);
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── Header ── */
+.header {
+  background: var(--hero-bg);
+  padding: 0.9rem 1.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.logo { display: flex; align-items: center; gap: 0.6rem; }
+.logo-mark {
+  width: 34px; height: 34px;
+  background: rgba(176,141,90,0.15);
+  border: 1px solid rgba(176,141,90,0.3);
+  border-radius: 9px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.05rem;
+}
+.logo-name { font-weight: 700; font-size: 0.9rem; color: #f5f0e8; letter-spacing: -0.01em; line-height: 1.2; }
+.logo-sub { font-size: 0.75rem; color: rgba(176,141,90,0.8); font-weight: 400; }
+.header-phone { font-size: 0.8rem; color: rgba(245,240,232,0.5); }
+.header-phone a { color: rgba(245,240,232,0.7); text-decoration: none; }
+
+/* ── Page shell ── */
+.shell {
+  max-width: 480px;
+  margin: 0 auto;
+  padding: 1.25rem 1rem 3rem;
+}
+
+/* ── Service pill ── */
+.service-pill {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  background: var(--white);
+  border: 1.5px solid var(--line);
+  border-radius: var(--radius);
+  padding: 0.9rem 1rem;
+  margin-bottom: 1.25rem;
+}
+.service-icon {
+  width: 42px; height: 42px;
+  background: var(--hero-bg);
+  border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.25rem;
+  flex-shrink: 0;
+}
+.service-info { flex: 1; min-width: 0; }
+.service-name { font-weight: 700; font-size: 0.9375rem; color: var(--ink); }
+.service-meta { font-size: 0.8rem; color: var(--faint); margin-top: 1px; }
+.service-duration {
+  font-size: 0.775rem;
+  font-weight: 600;
+  color: var(--gold);
+  background: var(--gold-soft);
+  border-radius: 9999px;
+  padding: 0.2rem 0.6rem;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+/* ── Step cards ── */
+.step-card {
+  background: var(--white);
+  border: 1.5px solid var(--line);
+  border-radius: var(--radius);
+  margin-bottom: 0.75rem;
+  overflow: hidden;
+  transition: border-color 0.2s;
+}
+.step-card.active { border-color: var(--ink); }
+.step-card.completed { border-color: var(--line); opacity: 0.6; }
+
+.step-head {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.9rem 1rem;
+}
+.step-num {
+  width: 26px; height: 26px;
+  border-radius: 50%;
+  background: var(--surface);
+  border: 1.5px solid var(--line);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--faint);
+  flex-shrink: 0;
+  transition: background 0.2s, border-color 0.2s, color 0.2s;
+}
+.step-card.active .step-num {
+  background: var(--ink);
+  border-color: var(--ink);
+  color: #fff;
+}
+.step-card.completed .step-num {
+  background: #e6f4ee;
+  border-color: #aad4bc;
+  color: #1a7a4a;
+  font-size: 0.8rem;
+}
+.step-label { font-weight: 600; font-size: 0.9375rem; color: var(--ink); flex: 1; }
+.step-value { font-size: 0.8375rem; color: var(--gold); font-weight: 600; }
+
+.step-body {
+  display: none;
+  padding: 0 1rem 1.25rem;
+}
+.step-card.active .step-body { display: block; }
+
+/* ── Calendar ── */
+.cal-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+.cal-month { font-weight: 700; font-size: 0.9375rem; color: var(--ink); }
+.cal-arrow {
+  width: 34px; height: 34px;
+  border: 1.5px solid var(--line);
+  border-radius: 8px;
+  background: none;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1rem;
+  color: var(--muted);
+  transition: border-color 0.15s, color 0.15s;
+}
+.cal-arrow:hover { border-color: var(--ink); color: var(--ink); }
+.cal-arrow:disabled { opacity: 0.3; cursor: default; }
+
+.cal-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+  text-align: center;
+}
+.cal-dow {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--faint);
+  padding: 0.2rem 0 0.5rem;
+  letter-spacing: 0.04em;
+}
+.cal-day {
+  aspect-ratio: 1;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  border: 1.5px solid transparent;
+  transition: background 0.12s, border-color 0.12s, color 0.12s;
+  color: var(--ink);
+  position: relative;
+}
+.cal-day.empty { pointer-events: none; }
+.cal-day.past { color: var(--line); pointer-events: none; }
+.cal-day.available::after {
+  content: '';
+  position: absolute;
+  bottom: 4px; left: 50%; transform: translateX(-50%);
+  width: 4px; height: 4px;
+  border-radius: 50%;
+  background: var(--gold);
+}
+.cal-day.available:hover {
+  background: var(--surface);
+  border-color: var(--line);
+}
+.cal-day.selected {
+  background: var(--ink);
+  color: #fff;
+  border-color: var(--ink);
+}
+.cal-day.selected::after { background: rgba(255,255,255,0.5); }
+.cal-day.today {
+  font-weight: 800;
+  color: var(--gold);
+}
+
+/* ── Time slots ── */
+.slots-label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--faint);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin: 1.1rem 0 0.6rem;
+}
+.slots-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.5rem;
+}
+.slot-btn {
+  padding: 0.6rem 0.25rem;
+  border: 1.5px solid var(--line);
+  border-radius: 9px;
+  background: none;
+  font: inherit;
+  font-size: 0.8375rem;
+  font-weight: 600;
+  color: var(--muted);
+  cursor: pointer;
+  transition: border-color 0.12s, background 0.12s, color 0.12s;
+  text-align: center;
+}
+.slot-btn:hover { border-color: var(--ink); color: var(--ink); }
+.slot-btn.selected {
+  background: var(--ink);
+  border-color: var(--ink);
+  color: #fff;
+}
+.slot-btn.full {
+  color: var(--line);
+  pointer-events: none;
+  text-decoration: line-through;
+}
+
+.step-next-btn {
+  margin-top: 1.1rem;
+  width: 100%;
+  height: 3rem;
+  background: var(--ink);
+  color: #f5f0e8;
+  border: none;
+  border-radius: 10px;
+  font: inherit;
+  font-size: 0.9375rem;
+  font-weight: 700;
+  cursor: pointer;
+  letter-spacing: -0.01em;
+  transition: background 0.15s, opacity 0.15s;
+  display: none;
+}
+.step-next-btn.visible { display: block; }
+.step-next-btn:hover { background: var(--accent-hover); }
+
+/* ── Contact form ── */
+.field { display: flex; flex-direction: column; gap: 0.4rem; margin-bottom: 0.85rem; }
+label { font-size: 0.875rem; font-weight: 600; color: var(--ink); }
+label .req { color: #dc2626; margin-left: 2px; }
+.field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 0.6rem; }
+
+input[type="text"],
+input[type="email"],
+input[type="tel"],
+select {
+  height: 2.9rem;
+  padding: 0 0.9rem;
+  border: 1.5px solid var(--line);
+  border-radius: 10px;
+  font: inherit;
+  font-size: 0.9375rem;
+  color: var(--ink);
+  background: var(--surface);
+  transition: border-color 0.15s, box-shadow 0.15s;
+  width: 100%;
+  -webkit-appearance: none;
+}
+input:focus, select:focus {
+  outline: none;
+  border-color: var(--ink);
+  box-shadow: 0 0 0 3px rgba(15,13,11,0.07);
+  background: #fff;
+}
+input.error { border-color: #dc2626; }
+
+.select-wrap { position: relative; }
+.select-wrap select { padding-right: 2.25rem; cursor: pointer; }
+.select-wrap::after {
+  content: '▾';
+  position: absolute;
+  right: 0.85rem; top: 50%; transform: translateY(-50%);
+  color: var(--faint);
+  pointer-events: none;
+  font-size: 0.8rem;
+}
+
+/* consent */
+.consent-block {
+  background: var(--surface);
+  border: 1.5px solid var(--line);
+  border-radius: 10px;
+  padding: 0.85rem;
+  margin-bottom: 0.85rem;
+}
+.consent-row { display: flex; gap: 0.65rem; align-items: flex-start; }
+.consent-row input[type="checkbox"] {
+  width: 20px; height: 20px;
+  margin-top: 1px;
+  flex-shrink: 0;
+  accent-color: var(--ink);
+  cursor: pointer;
+}
+.consent-row label {
+  font-size: 0.8rem;
+  font-weight: 400;
+  color: var(--muted);
+  line-height: 1.55;
+  cursor: pointer;
+}
+.consent-row label strong { font-weight: 600; color: var(--ink); }
+.fine-print {
+  font-size: 0.72rem;
+  color: var(--faint);
+  line-height: 1.55;
+  margin-top: 0.6rem;
+}
+.fine-print a { color: var(--accent); }
+
+.error-msg { color: #dc2626; font-size: 0.78rem; margin-top: 0.2rem; display: none; }
+.error-msg.visible { display: block; }
+
+.submit-btn {
+  width: 100%;
+  height: 3.1rem;
+  background: var(--ink);
+  color: #f5f0e8;
+  border: none;
+  border-radius: 10px;
+  font: inherit;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  letter-spacing: -0.01em;
+  transition: background 0.15s, transform 0.1s;
+  margin-top: 0.25rem;
+}
+.submit-btn:hover:not(:disabled) { background: #2a2018; }
+.submit-btn:active:not(:disabled) { transform: scale(0.98); }
+.submit-btn:disabled { opacity: 0.65; cursor: not-allowed; }
+
+/* ── Booking summary bar ── */
+.booking-bar {
+  display: none;
+  background: var(--gold-soft);
+  border: 1.5px solid var(--gold-mid);
+  border-radius: 10px;
+  padding: 0.75rem 1rem;
+  margin-bottom: 1rem;
+  font-size: 0.85rem;
+  color: var(--muted);
+  line-height: 1.5;
+}
+.booking-bar.visible { display: block; }
+.booking-bar strong { color: var(--ink); font-weight: 700; }
+
+/* ── Success ── */
+.success-panel {
+  display: none;
+  text-align: center;
+  padding: 3rem 1rem;
+}
+.success-panel.visible { display: block; }
+.success-icon {
+  width: 72px; height: 72px;
+  background: var(--hero-bg);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 2rem;
+  margin: 0 auto 1.25rem;
+}
+.success-panel h2 { font-size: 1.4rem; font-weight: 800; color: var(--ink); margin-bottom: 0.6rem; }
+.success-panel p { color: var(--muted); font-size: 0.9375rem; line-height: 1.65; max-width: 320px; margin: 0 auto; }
+
+/* ── Footer ── */
+.footer {
+  background: var(--hero-bg);
+  padding: 1.1rem 1.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+.footer-copy { font-size: 0.775rem; color: rgba(245,240,232,0.35); }
+.footer-links { display: flex; gap: 1rem; }
+.footer-links a { font-size: 0.775rem; color: rgba(245,240,232,0.4); text-decoration: none; }
+.footer-links a:hover { color: rgba(245,240,232,0.7); }
+</style>
+</head>
+<body>
+
+<header class="header">
+  <div class="logo">
+    <div class="logo-mark">🎵</div>
+    <div>
+      <div class="logo-name">Unwind Sound Lounge</div>
+      <div class="logo-sub">West LA · 12041 Wilshire Blvd</div>
+    </div>
+  </div>
+  <div class="header-phone"><a href="tel:3109205741">(310) 920-5741</a></div>
+</header>
+
+<div class="shell" id="main-shell">
+
+  <!-- Service pill -->
+  <div class="service-pill">
+    <div class="service-icon">🛏</div>
+    <div class="service-info">
+      <div class="service-name">The Signature Unwind</div>
+      <div class="service-meta">Vibroacoustic sound therapy · Private pod</div>
+    </div>
+    <div class="service-duration">45 min</div>
+  </div>
+
+  <!-- Step 1: Date -->
+  <div class="step-card active" id="step1">
+    <div class="step-head">
+      <div class="step-num" id="num1">1</div>
+      <div class="step-label">Choose a date</div>
+      <div class="step-value" id="val1"></div>
+    </div>
+    <div class="step-body">
+      <div class="cal-nav">
+        <button class="cal-arrow" id="prev-month" aria-label="Previous month">‹</button>
+        <div class="cal-month" id="cal-month-label"></div>
+        <button class="cal-arrow" id="next-month" aria-label="Next month">›</button>
+      </div>
+      <div class="cal-grid" id="cal-grid">
+        <div class="cal-dow">Su</div>
+        <div class="cal-dow">Mo</div>
+        <div class="cal-dow">Tu</div>
+        <div class="cal-dow">We</div>
+        <div class="cal-dow">Th</div>
+        <div class="cal-dow">Fr</div>
+        <div class="cal-dow">Sa</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Step 2: Time -->
+  <div class="step-card" id="step2">
+    <div class="step-head">
+      <div class="step-num" id="num2">2</div>
+      <div class="step-label">Choose a time</div>
+      <div class="step-value" id="val2"></div>
+    </div>
+    <div class="step-body">
+      <div class="slots-label">Morning</div>
+      <div class="slots-grid" id="slots-am"></div>
+      <div class="slots-label">Afternoon</div>
+      <div class="slots-grid" id="slots-pm"></div>
+      <button class="step-next-btn" id="time-next">Continue →</button>
+    </div>
+  </div>
+
+  <!-- Step 3: Details -->
+  <div class="step-card" id="step3">
+    <div class="step-head">
+      <div class="step-num" id="num3">3</div>
+      <div class="step-label">Your details</div>
+    </div>
+    <div class="step-body">
+
+      <div class="booking-bar visible" id="booking-bar">
+        Booking: <strong id="bar-datetime">—</strong> · The Signature Unwind · 45 min
+      </div>
+
+      <form id="optin-form" novalidate>
+        <div class="field-row">
+          <div class="field">
+            <label for="firstName">First Name <span class="req">*</span></label>
+            <input type="text" id="firstName" name="firstName" placeholder="Jordan" autocomplete="given-name" required>
+            <span class="error-msg" id="err-firstName">Required</span>
+          </div>
+          <div class="field">
+            <label for="lastName">Last Name</label>
+            <input type="text" id="lastName" name="lastName" placeholder="Rivera" autocomplete="family-name">
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="phone">Mobile Phone <span class="req">*</span></label>
+          <input type="tel" id="phone" name="phone" placeholder="(310) 555-0100" autocomplete="tel" required>
+          <span class="error-msg" id="err-phone">Enter a valid phone number</span>
+        </div>
+
+        <div class="field">
+          <label for="email">Email</label>
+          <input type="email" id="email" name="email" placeholder="jordan@example.com" autocomplete="email">
+        </div>
+
+        <div class="consent-block">
+          <div class="consent-row">
+            <input type="checkbox" id="consent" name="consent" required>
+            <label for="consent">
+              <strong>I agree to receive texts &amp; emails from Unwind Sound Lounge</strong> — session reminders, booking confirmations, and occasional offers. Reply STOP to opt out anytime.
+            </label>
+          </div>
+          <span class="error-msg" id="err-consent">Please check this box to continue.</span>
+          <p class="fine-print">
+            Msg &amp; data rates may apply. By submitting you agree to our
+            <a href="privacy/">Privacy Policy</a> and <a href="terms/">Terms of Service</a>.
+          </p>
+        </div>
+
+        <button type="submit" class="submit-btn" id="submit-btn">
+          <span id="btn-text">Confirm My Booking →</span>
+        </button>
+      </form>
+    </div>
+  </div>
+
+</div>
+
+<!-- Success -->
+<div class="success-panel" id="success-panel" style="max-width:480px;margin:0 auto;">
+  <div class="success-icon">🎵</div>
+  <h2>You're booked!</h2>
+  <p>
+    We'll send a confirmation to your phone shortly. See you soon at Unwind Sound Lounge — come as you are.
+  </p>
+</div>
+
+<footer class="footer">
+  <div class="footer-copy">© 2025 Unwind Sound Lounge</div>
+  <nav class="footer-links">
+    <a href="privacy/">Privacy</a>
+    <a href="terms/">Terms</a>
+    <a href="mailto:hello@unwindsoundlounge.com">Contact</a>
+  </nav>
+</footer>
+
+<script>
+// ── State ──
+let selectedDate = null;  // Date object
+let selectedTime = null;  // string e.g. "10:00 AM"
+let calYear, calMonth;
+
+// ── Available slots (demo) ──
+const AM_SLOTS = ['9:00 AM','9:45 AM','10:30 AM','11:15 AM'];
+const PM_SLOTS = ['12:00 PM','1:30 PM','3:00 PM','4:30 PM','6:00 PM','7:30 PM'];
+// Randomly mark some as full for realism
+const FULL_SLOTS = new Set(['9:45 AM','3:00 PM','6:00 PM']);
+
+// Available days: Mon–Sat, skip Sundays and past dates
+function isAvailable(date) {
+  const d = date.getDay();
+  return d !== 0; // no Sundays
+}
+
+// ── Init calendar to current month ──
+const now = new Date();
+calYear  = now.getFullYear();
+calMonth = now.getMonth();
+
+function renderCalendar() {
+  const label = document.getElementById('cal-month-label');
+  const grid  = document.getElementById('cal-grid');
+
+  const monthNames = ['January','February','March','April','May','June',
+                      'July','August','September','October','November','December'];
+  label.textContent = monthNames[calMonth] + ' ' + calYear;
+
+  // Remove day cells (keep DOW headers — first 7 children)
+  while (grid.children.length > 7) grid.removeChild(grid.lastChild);
+
+  const firstDay = new Date(calYear, calMonth, 1).getDay();
+  const daysInMonth = new Date(calYear, calMonth + 1, 0).getDate();
+
+  // Empty cells
+  for (let i = 0; i < firstDay; i++) {
+    const empty = document.createElement('div');
+    empty.className = 'cal-day empty';
+    grid.appendChild(empty);
+  }
+
+  const today = new Date(); today.setHours(0,0,0,0);
+
+  for (let d = 1; d <= daysInMonth; d++) {
+    const date = new Date(calYear, calMonth, d);
+    const cell = document.createElement('div');
+    cell.className = 'cal-day';
+    cell.textContent = d;
+
+    const isPast = date < today;
+    const isToday = date.getTime() === today.getTime();
+    const avail = isAvailable(date) && !isPast;
+
+    if (isPast) cell.classList.add('past');
+    if (isToday) cell.classList.add('today');
+    if (avail)   cell.classList.add('available');
+    if (selectedDate && date.toDateString() === selectedDate.toDateString()) {
+      cell.classList.add('selected');
+    }
+
+    if (avail) {
+      cell.addEventListener('click', () => selectDate(date));
+    }
+
+    grid.appendChild(cell);
+  }
+
+  // Disable prev if current month
+  document.getElementById('prev-month').disabled =
+    (calYear === now.getFullYear() && calMonth === now.getMonth());
+}
+
+function selectDate(date) {
+  selectedDate = date;
+  selectedTime = null;
+  renderCalendar();
+  openStep(2);
+  renderSlots();
+  updateBookingBar();
+  // update step 1 value
+  const days = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+  const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  document.getElementById('val1').textContent =
+    days[date.getDay()] + ', ' + months[date.getMonth()] + ' ' + date.getDate();
+  document.getElementById('num1').textContent = '✓';
+  document.getElementById('step1').classList.remove('active');
+  document.getElementById('step1').classList.add('completed');
+}
+
+document.getElementById('prev-month').addEventListener('click', () => {
+  calMonth--; if (calMonth < 0) { calMonth = 11; calYear--; }
+  renderCalendar();
+});
+document.getElementById('next-month').addEventListener('click', () => {
+  calMonth++; if (calMonth > 11) { calMonth = 0; calYear++; }
+  renderCalendar();
+});
+
+// ── Slots ──
+function renderSlots() {
+  renderSlotGroup('slots-am', AM_SLOTS);
+  renderSlotGroup('slots-pm', PM_SLOTS);
+  document.getElementById('time-next').classList.remove('visible');
+}
+
+function renderSlotGroup(id, slots) {
+  const el = document.getElementById(id);
+  el.innerHTML = '';
+  slots.forEach(t => {
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'slot-btn' + (FULL_SLOTS.has(t) ? ' full' : '');
+    btn.textContent = t;
+    if (selectedTime === t) btn.classList.add('selected');
+    if (!FULL_SLOTS.has(t)) {
+      btn.addEventListener('click', () => selectTime(t));
+    }
+    el.appendChild(btn);
+  });
+}
+
+function selectTime(t) {
+  selectedTime = t;
+  renderSlots();
+  // re-mark selected
+  document.querySelectorAll('.slot-btn').forEach(b => {
+    b.classList.toggle('selected', b.textContent === t);
+  });
+  document.getElementById('val2').textContent = t;
+  document.getElementById('time-next').classList.add('visible');
+  updateBookingBar();
+}
+
+document.getElementById('time-next').addEventListener('click', () => {
+  document.getElementById('num2').textContent = '✓';
+  document.getElementById('step2').classList.remove('active');
+  document.getElementById('step2').classList.add('completed');
+  openStep(3);
+  updateBookingBar();
+});
+
+// ── Step navigation ──
+function openStep(n) {
+  const card = document.getElementById('step' + n);
+  card.classList.remove('completed');
+  card.classList.add('active');
+  // smooth scroll
+  setTimeout(() => card.scrollIntoView({ behavior: 'smooth', block: 'start' }), 60);
+}
+
+// ── Booking bar ──
+function updateBookingBar() {
+  if (!selectedDate || !selectedTime) return;
+  const days = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+  const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  const label = days[selectedDate.getDay()] + ', ' +
+    months[selectedDate.getMonth()] + ' ' + selectedDate.getDate() +
+    ' at ' + selectedTime;
+  document.getElementById('bar-datetime').textContent = label;
+}
+
+// ── Form ──
+const form    = document.getElementById('optin-form');
+const btn     = document.getElementById('submit-btn');
+const btnText = document.getElementById('btn-text');
+
+function showErr(id, show) {
+  const el = document.getElementById('err-' + id);
+  if (el) el.classList.toggle('visible', show);
+  const inp = document.getElementById(id);
+  if (inp) inp.classList.toggle('error', show);
+}
+
+function validPhone(v) { return v.replace(/\D/g,'').length >= 10; }
+
+form.addEventListener('submit', e => {
+  e.preventDefault();
+  const fn      = form.firstName.value.trim();
+  const ph      = form.phone.value.trim();
+  const consent = form.consent.checked;
+  let ok = true;
+  showErr('firstName', !fn);  if (!fn) ok = false;
+  showErr('phone', !validPhone(ph)); if (!validPhone(ph)) ok = false;
+  showErr('consent', !consent); if (!consent) ok = false;
+  if (!ok) return;
+  btn.disabled = true;
+  btnText.textContent = 'Confirming…';
+  setTimeout(() => {
+    document.getElementById('main-shell').style.display = 'none';
+    document.getElementById('success-panel').classList.add('visible');
+  }, 900);
+});
+
+document.getElementById('phone').addEventListener('input', function() {
+  const d = this.value.replace(/\D/g,'').slice(0,10);
+  if (d.length <= 3) this.value = d;
+  else if (d.length <= 6) this.value = `(${d.slice(0,3)}) ${d.slice(3)}`;
+  else this.value = `(${d.slice(0,3)}) ${d.slice(3,6)}-${d.slice(6)}`;
+});
+
+// ── Boot ──
+renderCalendar();
+</script>
+</body>
+</html>
