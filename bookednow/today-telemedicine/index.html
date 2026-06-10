@@ -87,8 +87,10 @@ input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px 
 .success-panel h2 { font-size: 1.5rem; font-weight: 800; color: var(--ink); }
 .success-panel p { color: var(--muted); font-size: 0.9375rem; line-height: 1.6; max-width: 28rem; }
 
-.footer { grid-column: 1 / -1; padding: 1.25rem clamp(1rem, 4vw, 2rem); border-top: 1px solid var(--line); display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.5rem; background: var(--white); }
+.footer { grid-column: 1 / -1; padding: 1.5rem clamp(1rem, 4vw, 2rem); border-top: 1px solid var(--line); background: var(--white); }
+.footer-top { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.75rem; margin-bottom: 0.5rem; }
 .footer-left { font-size: 0.8125rem; color: var(--faint); }
+.footer-legal { font-size: 0.75rem; color: var(--faint); }
 .footer-links { display: flex; gap: 1.25rem; }
 .footer-links a { font-size: 0.8125rem; color: var(--faint); text-decoration: none; }
 .footer-links a:hover { color: var(--accent); }
@@ -187,12 +189,15 @@ input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px 
   </section>
 
   <footer class="footer">
-    <div class="footer-left">© 2025 Today Telemedicine · Orlando, FL · All rights reserved</div>
-    <nav class="footer-links">
-      <a href="/privacy/">Privacy Policy</a>
-      <a href="/terms/">Terms of Service</a>
-      <a href="mailto:admin@todaytelemedicine.com">Contact</a>
-    </nav>
+    <div class="footer-top">
+      <div class="footer-left">© 2025 Today Telemedicine · All rights reserved</div>
+      <nav class="footer-links">
+        <a href="/privacy/">Privacy Policy</a>
+        <a href="/terms/">Terms of Service</a>
+        <a href="mailto:admin@todaytelemedicine.com">Contact</a>
+      </nav>
+    </div>
+    <div class="footer-legal">Today Telemedicine PLLC · Orlando, FL 32801 · <a href="tel:+18009518257" style="color:inherit;">(800) 951-8257</a> · <a href="mailto:admin@todaytelemedicine.com" style="color:inherit;">admin@todaytelemedicine.com</a></div>
   </footer>
 </div>
 
@@ -231,5 +236,6 @@ document.getElementById('phone').addEventListener('input', function () {
   else this.value = `(${digits.slice(0,3)}) ${digits.slice(3,6)}-${digits.slice(6)}`;
 });
 </script>
+<script src="https://widgets.leadconnectorhq.com/loader.js" data-resources-url="https://widgets.leadconnectorhq.com/chat-widget/loader.js" data-widget-id="6a29e78917728c1e130be91d" data-source="WEB_USER"></script>
 </body>
 </html>
