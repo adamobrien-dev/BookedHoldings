@@ -49,6 +49,27 @@ async function fetchStatus(accountId, token) {
   }
 }
 
+// Meta Ad Library API — public ad search, used for competitor research.
+async function fetchAdLibrary(searchTerms, token, countries) {
+  const params = new URLSearchParams({
+    search_terms: searchTerms,
+    ad_type: 'ALL',
+    ad_reached_countries: JSON.stringify(countries),
+    ad_active_status: 'ALL',
+    fields: 'id,page_name,ad_creative_bodies,ad_creative_link_titles,ad_creative_link_captions,ad_delivery_start_time,ad_delivery_stop_time,publisher_platforms',
+    limit: '25',
+    access_token: token,
+  });
+  const url = `${GRAPH_API}/ads_archive?${params.toString()}`;
+  try {
+    const r = await fetch(url);
+    const d = await r.json();
+    return d;
+  } catch {
+    return { error: { message: 'fetch_failed' } };
+  }
+}
+
 function extractLeads(actions = []) {
   const LEAD_TYPES = ['lead', 'onsite_conversion.lead_grouped', 'contact_total'];
   for (const t of LEAD_TYPES) {
@@ -96,6 +117,14 @@ module.exports = async function handler(req, res) {
 
   const token = process.env.META_SYSTEM_TOKEN;
   if (!token) return res.status(200).json({ error: 'META_SYSTEM_TOKEN not configured', accounts: [] });
+
+  // Ad Library competitor search: /api/meta-ads?adlib=<search terms>&countries=US
+  const adlib = req.query?.adlib;
+  if (adlib) {
+    const countries = (req.query?.countries || 'US').split(',').map(c => c.trim());
+    const result = await fetchAdLibrary(adlib, token, countries);
+    return res.status(200).json({ generatedAt: new Date().toISOString(), searchTerms: adlib, countries, result });
+  }
 
   const datePreset = req.query?.preset || 'last_7d';
 
