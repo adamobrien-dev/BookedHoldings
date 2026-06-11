@@ -1177,7 +1177,7 @@ function renderOverviewAlerts(billingRows, clients) {
 
   // Draft workflows
   const WF_KEYS = ['fast5','confirmation','noshow','review','nurture','stale'];
-  const CLIENT_KEYS = ['terri','allaphia','thania','aguilera'];
+  const CLIENT_KEYS = ['terri','allaphia','thania','aguilera','glendale','sandy','stephanie','sarah'];
   let draftClients = [];
   (clients || []).forEach(c => {
     if (!CLIENT_KEYS.includes(c.key)) return;
@@ -1349,7 +1349,7 @@ function renderActions(s, clients, metaAccounts) {
   const now = new Date();
   const actions = [];
   const WF_KEYS = ['fast5','confirmation','noshow','review','nurture','stale'];
-  const ACTIVE_CLIENTS = ['terri','allaphia','thania','aguilera'];
+  const ACTIVE_CLIENTS = ['terri','allaphia','thania','aguilera','glendale','sandy','stephanie','sarah'];
 
   // ── DO NOW (red) ──────────────────────────────────────────────────────────
   (s.billingRows || []).filter(r => r.paymentStatus === 'failed').forEach(r => {
@@ -1499,22 +1499,17 @@ async function loadData() {
 
     _lastLoadTime = Date.now();
 
-    // ── Build compatibility layer from new API structure ──────────────────────
-    const stripe = data.stripe || {};
-    const billingRows = data.billingRows || [];
+    // ── Pull fields out of the nested summary object ───────────────────────────
+    const summary = data.summary || {};
+    const billingRows = summary.billingRows || [];
     window._CLIENTS = billingRows;
 
-    const staleContracts = (data.contracts?.unsigned || []).map(c => ({
-      name: c.signerName || 'Unknown',
-      biz: c.title,
-      sentDate: new Date(Date.now() - c.daysSinceSent * 86400000).toISOString().split('T')[0],
-      daysSinceSent: c.daysSinceSent,
-    }));
+    const staleContracts = summary.staleContracts || [];
 
     const s = {
-      scRecovery:     data.scRecovery,
-      agencyPipeline: data.agencyPipeline,
-      totalCollected: (stripe.collectedCents || 0) / 100,
+      scRecovery:     summary.scRecovery,
+      agencyPipeline: summary.agencyPipeline,
+      totalCollected: summary.totalCollected || 0,
       billingRows,
       staleContracts,
     };
@@ -1538,9 +1533,10 @@ async function loadData() {
     document.getElementById('stat-collected').textContent =
       '$' + (s.totalCollected || 0).toLocaleString('en-US', { maximumFractionDigits: 0 });
     document.getElementById('stat-total-leads').textContent =
-      (data.contracts?.unsigned?.length ?? 0) + ' unsigned';
+      staleContracts.length + ' unsigned';
     document.getElementById('stat-leads-sub').textContent = 'Dropbox Sign contracts out';
-    document.getElementById('stat-stuck').textContent = stripe.unpaid?.length ?? '—';
+    document.getElementById('stat-stuck').textContent =
+      billingRows.filter(r => r.paymentStatus === 'failed').length || '—';
     document.getElementById('stat-stuck-sub').textContent = 'Stripe invoices unpaid';
 
     // Client funnel cards — skipped (per-client GHL data not fetched)
@@ -1574,7 +1570,7 @@ async function loadData() {
 
     // Clear and re-render dynamic alerts (remove previously injected ones on refresh)
     document.querySelectorAll('#overview-alerts .alert:not(#alert-sc-recovery)').forEach(el => el.remove());
-    renderOverviewAlerts(s.billingRows, []);
+    renderOverviewAlerts(s.billingRows, data.clients);
 
     // Dynamic billing rows
     _lastSummary = s;
@@ -2457,7 +2453,7 @@ async function runProvision() {
   function renderTable() {
     const tbody = document.getElementById('ob-body');
     if (!tbody) return;
-    const clients = (window._CLIENTS || []).filter(c => !['fletcher', 'shawn', 'glendale'].includes(c.key));
+    const clients = (window._CLIENTS || []).filter(c => !['fletcher', 'glendale'].includes(c.key));
     tbody.innerHTML = '';
     clients.forEach(c => {
       const tr = document.createElement('tr');
@@ -2520,6 +2516,8 @@ async function runProvision() {
     { key:'thania',   name:'Thania',    biz:'Tiali Beauty Lounge',            firstName:'Thania' },
     { key:'aguilera', name:'Frank',     biz:'Aguilera Health & Wellness',     firstName:'Frank' },
     { key:'sandy',    name:'Sandy',     biz:'My Adult Primary Care',          firstName:'Sandy' },
+    { key:'stephanie', name:'Stephanie', biz:'RTB Spa',                       firstName:'Stephanie' },
+    { key:'sarah',    name:'Sarah',     biz:'Today Telemedicine',             firstName:'Sarah' },
   ];
 
   function weekKey() {

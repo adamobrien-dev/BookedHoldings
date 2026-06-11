@@ -1,88 +1,34 @@
+const CLIENTS_CONFIG = require('../config/clients.json');
+
 const GHL_API = 'https://services.leadconnectorhq.com';
 const GHL_VERSION = '2021-07-28';
 
-const CLIENTS = [
-  {
-    key: 'terri',
-    name: 'Terri Mignot',
-    biz: 'Get Body Sculpted',
-    niche: 'Body Sculpting · Tucker, GA',
-    locationId: 'y1yUn5PVAMq0PEAtHdoa',
-    pitEnv: 'GHL_PIT_TERRI',
-    stripeId: 'cus_UR9Pr9Dxonz3SN',
-    status: 'live',
-  },
-  {
-    key: 'allaphia',
-    name: 'Allaphia Richards',
-    biz: 'Paradise Healing',
-    niche: 'Healing & Wellness · Boston, MA',
-    locationId: '0U66FTyg5WJhqyyzIbqM',
-    pitEnv: 'GHL_PIT_ALLAPHIA',
-    stripeId: 'cus_UOulmSIDAPiGuI',
-    status: 'live',
-  },
-  {
-    key: 'thania',
-    name: 'Thania Ramirez',
-    biz: 'Tiali Beauty Lounge',
-    niche: 'Med-Spa · Warwick, RI',
-    locationId: 'ZbBlLQsUabCGBXdSXcVq',
-    pitEnv: 'GHL_PIT_THANIA',
-    stripeId: 'cus_UMJQDHYQPyci1p',
-    status: 'live',
-  },
-  {
-    key: 'aguilera',
-    name: 'Frank Aguilera',
-    biz: 'Aguilera Health & Wellness',
-    niche: 'Chiropractic · Bakersfield, CA',
-    locationId: 'fl8EgJBlFzCy65y6wNyS',
-    pitEnv: 'GHL_PIT_AGUILERA',
-    stripeId: 'cus_UTCCPxtx3eoza7',
-    status: 'setup',
-  },
-  {
-    key: 'glendale',
-    name: "Glendale's Urgent Care",
-    biz: "Glendale's Urgent Care",
-    niche: 'Urgent Care · Glendale, CA',
-    locationId: 'DTaKXJaCm5a7xHfXMU2v',
-    pitEnv: 'GHL_PIT_GLENDALE',
-    stripeId: null,
-    status: 'pending',
-  },
-  {
-    key: 'sandy',
-    name: 'Sandy Sullivan',
-    biz: 'My Adult Primary Care and Pain Management',
-    niche: 'StemWave / Primary Care · Fayetteville, TN',
-    locationId: 'M8E6rSDwYijkpGWK1AWR',
-    pitEnv: 'GHL_PIT_SANDY',
-    stripeId: null,
-    status: 'setup',
-  },
-];
+const CLIENTS = CLIENTS_CONFIG.map(c => ({
+  key: c.key,
+  name: c.name,
+  biz: (c.biz || '').split('·')[0].trim(),
+  niche: c.niche,
+  locationId: c.locationId,
+  pitEnv: c.pitEnv,
+  stripeId: c.stripeId,
+  status: c.status,
+}));
 
-const FLETCHER_STRIPE_ID = 'cus_UVQcb88jp1OQqD';
+const FLETCHER_STRIPE_ID = CLIENTS_CONFIG.find(c => c.key === 'fletcher')?.stripeId;
 
-const BILLING_CONFIG = [
-  { key: 'fletcher', name: 'Fletcher Munksgard', biz: 'Dane Functional Health · GLP-1, Functional Medicine', stripeId: FLETCHER_STRIPE_ID, deal: 'Flat $500/mo', dealSub: 'No onboarding fee', cycleDays: 30, retainerAmount: 500 },
-  { key: 'aguilera', name: 'Frank Aguilera', biz: 'Aguilera Health & Wellness · Chiropractic · Bakersfield, CA', stripeId: 'cus_UTCCPxtx3eoza7', deal: 'Flat $500/mo', dealSub: 'Onboarding waived', cycleDays: 30, retainerAmount: 500 },
-  { key: 'terri', name: 'Terri Mignot', biz: 'Get Body Sculpted · Body Contouring · Tucker, GA', stripeId: 'cus_UR9Pr9Dxonz3SN', deal: '$1k setup + $500/mo', dealSub: '3 × $333 installments', cycleDays: 30, retainerAmount: 500, installments: { total: 3, amount: 333 } },
-  { key: 'allaphia', name: 'Allaphia Richards', biz: 'Paradise Healing LLC · Boston, MA', stripeId: 'cus_UOulmSIDAPiGuI', deal: '$1k setup + $500/mo', dealSub: 'Setup fully paid', cycleDays: 30, retainerAmount: 500 },
-  { key: 'thania', name: 'Thania Ramirez', biz: 'Tiali Beauty Lounge · Med-Spa · Warwick, RI', stripeId: 'cus_UMJQDHYQPyci1p', deal: '$500 setup + 10% rev', dealSub: 'Performance only', cycleDays: 30, retainerAmount: null, installments: { total: 3, amount: 167 } },
-];
-
-const STALE_CONTRACTS = [
-  { name: 'Doyinsola Abikoye', biz: 'No business name on file', sentDate: '2026-04-17' },
-  { name: 'Emily Anderson', biz: 'Renew Chiropractic', sentDate: '2026-04-18' },
-  { name: 'Brittany Baumer', biz: 'The Skin & Body Spa', sentDate: '2026-04-21' },
-  { name: 'Andre F', biz: 'Clear Cost Telehealth', sentDate: '2026-04-22' },
-  { name: 'Nayson Rouhipour', biz: "Glendale's Urgent Care", sentDate: '2026-05-05' },
-  { name: 'Nnenna Obioha', biz: 'Marked Lost in GHL but contract was sent after', sentDate: '2026-05-07' },
-  { name: 'Yahaira Manon', biz: '2 ad images in Drive folder', sentDate: '2026-05-13' },
-];
+const BILLING_CONFIG = CLIENTS_CONFIG
+  .filter(c => c.deal && c.deal !== 'Pending')
+  .map(c => ({
+    key: c.key,
+    name: c.name,
+    biz: c.biz,
+    stripeId: c.stripeId,
+    deal: c.deal,
+    dealSub: c.dealSub,
+    cycleDays: c.cycleDays,
+    retainerAmount: c.retainerAmount,
+    installments: c.installments,
+  }));
 
 const AGENCY_LOC = 'NKpzhLv8iNQ0c9Ge3QAR';
 const AGENCY_PIT = 'pit-6aacb9ad-ed6a-4266-beb3-e261c49afe6b';
@@ -230,7 +176,7 @@ async function getStripeData() {
   const fletcherFailed = failed.some(p => p.customerId === FLETCHER_STRIPE_ID);
 
   // Build per-client last payment + failed flag from the same payment list
-  const stripeIdToKey = { [FLETCHER_STRIPE_ID]: 'fletcher' };
+  const stripeIdToKey = {};
   CLIENTS.forEach(c => { if (c.stripeId) stripeIdToKey[c.stripeId] = c.key; });
 
   const perClient = {};
@@ -256,6 +202,30 @@ async function getStripeData() {
     fletcherFailed,
     perClient,
   };
+}
+
+async function getUnsignedContracts() {
+  const apiKey = process.env.DROPBOX_SIGN_API_KEY;
+  if (!apiKey) return [];
+
+  const auth = 'Basic ' + Buffer.from(apiKey + ':').toString('base64');
+  try {
+    const r = await fetch('https://api.hellosign.com/v3/signature_request/list?page_size=100', {
+      headers: { Authorization: auth },
+    });
+    if (!r.ok) return [];
+    const data = await r.json();
+    return (data?.signature_requests || [])
+      .filter(sr => !sr.is_complete && !sr.is_declined)
+      .map(sr => ({
+        name: sr.signatures?.[0]?.signer_name || 'Unknown',
+        biz: sr.title || '',
+        sentDate: new Date(sr.created_at * 1000).toISOString().split('T')[0],
+        daysSinceSent: Math.floor((Date.now() - sr.created_at * 1000) / 86400000),
+      }));
+  } catch {
+    return [];
+  }
 }
 
 async function getPaypalData() {
@@ -307,11 +277,12 @@ module.exports = async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
 
   try {
-    const [clientsData, stripeData, paypalData, agencyData] = await Promise.all([
+    const [clientsData, stripeData, paypalData, agencyData, staleContracts] = await Promise.all([
       Promise.all(CLIENTS.map(getClientData)),
       getStripeData(),
       getPaypalData(),
       getAgencyData(),
+      getUnsignedContracts(),
     ]);
     const scRecovery = agencyData?.scRecovery ?? null;
 
@@ -359,13 +330,7 @@ module.exports = async function handler(req, res) {
             return { key: bc.key, name: bc.name, biz: bc.biz, deal: bc.deal, dealSub: bc.dealSub, retainerAmount: bc.retainerAmount, lastPaidAmountCents, lastPaidDate, nextDueDate, paymentStatus, statusLabel, statusClass, installmentPaid, installmentTotal };
           });
         })(),
-        staleContracts: (() => {
-          const todayMs = new Date().setHours(0, 0, 0, 0);
-          return STALE_CONTRACTS.map(sc => ({
-            ...sc,
-            daysSinceSent: Math.floor((todayMs - new Date(sc.sentDate).setHours(0, 0, 0, 0)) / 86400000),
-          }));
-        })(),
+        staleContracts,
         agencyPipeline: agencyData?.pipeline ?? null,
       },
       clients: clientsData,

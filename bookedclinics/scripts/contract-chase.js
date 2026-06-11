@@ -127,7 +127,7 @@ module.exports = async function handler(req, res) {
   if (req.method !== 'GET') return res.status(405).end();
 
   const pit = process.env.GHL_PIT_AGENCY || 'pit-4c3b0e38-6f82-4429-a33a-b54628e9a03d';
-  const dsKey = process.env.DROPBOX_SIGN_API_KEY || '0c7c0852c085eeeb45c29567517edd91fe42cde48870c1d3bf0971dda88e6f11';
+  const dsKey = process.env.DROPBOX_SIGN_API_KEY;
   const dry = req.query.send !== 'true';
 
   if (!dsKey) return res.status(500).json({ error: 'DROPBOX_SIGN_API_KEY not set' });
