@@ -33,6 +33,10 @@ body { font-family: var(--font); background: var(--page-bg); color: var(--ink); 
 @media (max-width: 780px) { .page { grid-template-columns: 1fr; } .hero { display: none; } }
 
 .header { grid-column: 1 / -1; padding: 1.25rem clamp(1rem, 4vw, 2rem); display: flex; align-items: center; gap: 0.75rem; background: var(--white); border-bottom: 1px solid var(--line); }
+.business-bar { grid-column: 1 / -1; background: var(--surface); border-bottom: 1px solid var(--line); padding: 0.5rem clamp(1rem, 4vw, 2rem); display: flex; flex-wrap: wrap; gap: 0.4rem 1.5rem; align-items: center; font-size: 0.75rem; color: var(--faint); }
+.business-bar strong { color: var(--muted); font-weight: 600; }
+.business-bar a { color: inherit; text-decoration: none; }
+.business-bar a:hover { color: var(--accent); }
 .logo-mark { width: 38px; height: 38px; background: var(--accent-soft); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1.25rem; }
 .logo-text { font-weight: 800; font-size: 1rem; color: var(--ink); }
 .logo-text span { color: var(--faint); font-weight: 500; }
@@ -103,6 +107,12 @@ input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px 
     <div class="logo-mark">🌊</div>
     <div class="logo-text">Escape Zero Gravity Massage <span>· McKinney, TX</span></div>
   </header>
+
+  <div class="business-bar">
+    <span><strong>Escape Zero Gravity Massage LLC</strong></span>
+    <span>2507 Pheasant Run Drive, McKinney, TX 75072</span>
+    <a href="tel:+14699011543">(469) 901-1543</a>
+  </div>
 
   <section class="hero" aria-label="About this offer">
     <div><div class="hero-badge">✦ Limited Availability</div></div>
