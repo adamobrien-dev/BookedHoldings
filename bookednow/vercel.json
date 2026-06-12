@@ -37,6 +37,16 @@
     },
     {
       "source": "/(.*)",
+      "has": [{ "type": "host", "value": "myadultprimarycare.org" }],
+      "destination": "/myadultprimarycare/$1"
+    },
+    {
+      "source": "/(.*)",
+      "has": [{ "type": "host", "value": "www.myadultprimarycare.org" }],
+      "destination": "/myadultprimarycare/$1"
+    },
+    {
+      "source": "/(.*)",
       "has": [{ "type": "host", "value": "today-telemedicine.bookednow.app" }],
       "destination": "/today-telemedicine/$1"
     },
