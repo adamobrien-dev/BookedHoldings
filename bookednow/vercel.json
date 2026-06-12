@@ -7,6 +7,16 @@
     },
     {
       "source": "/(.*)",
+      "has": [{ "type": "host", "value": "rtb-spa.com" }],
+      "destination": "/rtb-spa/$1"
+    },
+    {
+      "source": "/(.*)",
+      "has": [{ "type": "host", "value": "www.rtb-spa.com" }],
+      "destination": "/rtb-spa/$1"
+    },
+    {
+      "source": "/(.*)",
       "has": [{ "type": "host", "value": "paradise-healing.bookednow.app" }],
       "destination": "/paradise-healing/$1"
     },

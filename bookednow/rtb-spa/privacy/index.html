@@ -7,38 +7,32 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<style>
-:root { --ink: #1c1a15; --muted: #4a4538; --faint: #8a8070; --line: #e8e2d8; --accent: #6b7c3e; --font: "Manrope", system-ui, sans-serif; }
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-body { font-family: var(--font); color: var(--ink); background: #f2ede5; -webkit-font-smoothing: antialiased; }
-.wrap { max-width: 48rem; margin: 0 auto; padding: 3rem clamp(1rem, 4vw, 2rem); }
-header { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 2.5rem; padding-bottom: 1.5rem; border-bottom: 1px solid var(--line); }
-.logo-mark { width: 36px; height: 36px; background: rgba(107,124,62,0.1); border-radius: 9px; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; }
-.logo-text { font-weight: 800; font-size: 0.9375rem; color: var(--ink); }
-.logo-text span { color: var(--faint); font-weight: 500; }
-h1 { font-size: 1.85rem; font-weight: 800; margin-bottom: 0.5rem; }
-.updated { font-size: 0.875rem; color: var(--faint); margin-bottom: 2rem; }
-h2 { font-size: 1.125rem; font-weight: 700; margin: 2rem 0 0.75rem; }
-p, li { font-size: 0.9375rem; line-height: 1.75; color: var(--muted); }
-ul { padding-left: 1.5rem; margin: 0.5rem 0; }
-li { margin-bottom: 0.4rem; }
-a { color: var(--accent); text-decoration: none; }
-a:hover { text-decoration: underline; }
-.back { display: inline-flex; align-items: center; gap: 0.4rem; font-size: 0.875rem; font-weight: 600; color: var(--accent); text-decoration: none; margin-bottom: 2rem; }
-strong { font-weight: 600; color: var(--ink); }
-</style>
+<link rel="stylesheet" href="/assets/site.css">
 </head>
 <body>
-<div class="wrap">
-  <header>
-    <div class="logo-mark">🌿</div>
-    <div class="logo-text">RTB Spa <span>· Houston, TX</span></div>
+
+  <header class="header">
+    <div class="header-brand">
+      <div class="logo-mark">🌿</div>
+      <div class="logo-text">RTB Spa <span>· Houston, TX</span></div>
+    </div>
+    <nav class="site-nav">
+      <a href="/">Home</a>
+      <a href="/about/">About</a>
+      <a href="/services/">Services</a>
+      <a href="/contact/">Contact</a>
+    </nav>
   </header>
 
-  <a class="back" href="/">← Back to Opt-In Form</a>
+  <div class="business-bar">
+    <span><strong>RTB Spa</strong> — operated by SMS Clear Concepts LLC</span>
+    <span>14511 Old Katy Rd, Suite 232, Houston, TX 77079</span>
+    <a href="tel:+17133226640">(713) 322-6640</a>
+  </div>
 
-  <h1>Privacy Policy</h1>
-  <p class="updated">Last updated: June 1, 2025</p>
+  <div class="content">
+  <h1 style="font-size:1.85rem; font-weight:800; margin-bottom:0.5rem;">Privacy Policy</h1>
+  <p style="font-size:0.875rem; color:var(--faint); margin-bottom:2rem;">Last updated: June 1, 2025</p>
 
   <p>RTB Spa ("we," "us," or "our") operates the website and opt-in form located at this domain. This Privacy Policy describes how we collect, use, and share your personal information when you interact with us, including when you opt in to receive SMS text messages or emails.</p>
 
@@ -67,7 +61,7 @@ strong { font-weight: 600; color: var(--ink); }
   <p>You may opt out at any time by replying <strong>STOP</strong> to any text message. Reply <strong>HELP</strong> for help. Supported carriers are not liable for delayed or undelivered messages.</p>
 
   <h2>4. Sharing of Information</h2>
-  <p>We do not sell, rent, or trade your personal information to third parties for their own marketing purposes. We may share your information with:</p>
+  <p>We do not sell, rent, or trade your personal information to third parties for their own marketing purposes. Text messaging originator opt-in data and consent will not be shared with any third parties, excluding aggregators and providers of the text message services. We may share your information with:</p>
   <ul>
     <li>Service providers who assist in delivering communications (e.g., CRM and SMS platforms) under appropriate data processing agreements</li>
     <li>Law enforcement or regulatory bodies when required by law</li>
@@ -92,6 +86,44 @@ strong { font-weight: 600; color: var(--ink); }
     <li>Phone: <a href="tel:+17133226640">(713) 322-6640</a></li>
     <li>Email: <a href="mailto:hello@rtbspa.com">hello@rtbspa.com</a></li>
   </ul>
-</div>
+  </div>
+
+  <div class="info-footer">
+    <div>
+      <h3>About RTB Spa</h3>
+      <p>RTB Spa (operated by SMS Clear Concepts LLC) is a licensed therapeutic massage and wellness studio in Houston, TX. Our certified therapists specialize in personalized treatments designed to relieve tension, restore balance, and improve overall well-being.</p>
+    </div>
+    <div>
+      <h3>Our Services</h3>
+      <ul>
+        <li>Swedish &amp; Relaxation Massage</li>
+        <li>Deep Tissue &amp; Sports Massage</li>
+        <li>Prenatal Massage</li>
+        <li>Cupping Therapy</li>
+        <li>Personalized Wellness Consultations</li>
+      </ul>
+    </div>
+    <div>
+      <h3>Contact Us</h3>
+      <p><strong>RTB Spa · SMS Clear Concepts LLC</strong><br>14511 Old Katy Rd, Suite 232<br>Houston, TX 77079<br><a href="tel:+17133226640">(713) 322-6640</a><br><a href="mailto:hello@rtbspa.com">hello@rtbspa.com</a></p>
+    </div>
+  </div>
+
+  <footer class="footer">
+    <div class="footer-top">
+      <div class="footer-left">© 2025 RTB Spa · SMS Clear Concepts LLC · All rights reserved</div>
+      <nav class="footer-links">
+        <a href="/about/">About</a>
+        <a href="/services/">Services</a>
+        <a href="/contact/">Contact</a>
+        <a href="/privacy/">Privacy Policy</a>
+        <a href="/terms/">Terms of Service</a>
+      </nav>
+    </div>
+    <div class="footer-legal">SMS Clear Concepts LLC · 14511 Old Katy Rd, Suite 232, Houston, TX 77079 · <a href="tel:+17133226640" style="color:inherit;">(713) 322-6640</a></div>
+  </footer>
+
+<!-- LeadConnector Chat Widget -->
+<script src="https://widgets.leadconnectorhq.com/loader.js" data-resources-url="https://widgets.leadconnectorhq.com/chat-widget/loader.js" data-widget-id="6a20c56f1b5a98ef9d1a5dd2" data-source="WEB_USER"></script>
 </body>
 </html>

@@ -8,38 +8,25 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/site.css">
 <style>
-:root {
-  --ink: #1c1a15;
-  --muted: #4a4538;
-  --faint: #8a8070;
-  --line: #e8e2d8;
-  --surface: #f9f7f3;
-  --page-bg: #f2ede5;
-  --accent: #6b7c3e;
-  --accent-hover: #556330;
-  --accent-soft: rgba(107, 124, 62, 0.1);
-  --gold: #b45309;
-  --gold-soft: rgba(180, 83, 9, 0.08);
-  --white: #ffffff;
-  --radius: 14px;
-  --font: "Manrope", system-ui, sans-serif;
-}
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
-body { font-family: var(--font); background: var(--page-bg); color: var(--ink); min-height: 100vh; -webkit-font-smoothing: antialiased; }
-
-.page { min-height: 100vh; display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: auto 1fr auto; }
+.page { min-height: 100vh; display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: auto auto 1fr auto auto; }
 @media (max-width: 780px) { .page { grid-template-columns: 1fr; } .hero { display: none; } }
+.header, .business-bar, .info-footer, .footer, .home-sections { grid-column: 1 / -1; }
 
-.header { grid-column: 1 / -1; padding: 1.25rem clamp(1rem, 4vw, 2rem); display: flex; align-items: center; gap: 0.75rem; background: var(--white); border-bottom: 1px solid var(--line); }
-.business-bar { grid-column: 1 / -1; background: var(--surface); border-bottom: 1px solid var(--line); padding: 0.5rem clamp(1rem, 4vw, 2rem); display: flex; flex-wrap: wrap; gap: 0.4rem 1.5rem; align-items: center; font-size: 0.75rem; color: var(--faint); }
-.business-bar strong { color: var(--muted); font-weight: 600; }
-.business-bar a { color: inherit; text-decoration: none; }
-.business-bar a:hover { color: var(--accent); }
-.logo-mark { width: 38px; height: 38px; background: var(--accent-soft); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1.25rem; }
-.logo-text { font-weight: 800; font-size: 1rem; color: var(--ink); }
-.logo-text span { color: var(--faint); font-weight: 500; }
+.home-sections { background: var(--white); padding: clamp(2.5rem, 6vw, 4rem) clamp(1.5rem, 4vw, 2.5rem); border-top: 1px solid var(--line); }
+.home-sections-inner { max-width: 64rem; margin: 0 auto; }
+.section-heading { text-align: center; max-width: 36rem; margin: 0 auto 2rem; }
+.section-heading .eyebrow { display: inline-flex; align-items: center; gap: 0.5rem; background: var(--accent-soft); color: var(--accent-hover); font-size: 0.8125rem; font-weight: 700; padding: 0.3rem 0.8rem; border-radius: 9999px; margin-bottom: 0.75rem; }
+.section-heading h2 { font-size: 1.75rem; font-weight: 800; color: var(--ink); margin-bottom: 0.5rem; }
+.section-heading p { font-size: 1rem; color: var(--muted); line-height: 1.6; }
+.home-services { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.25rem; }
+@media (max-width: 720px) { .home-services { grid-template-columns: 1fr; } }
+.about-split { display: grid; grid-template-columns: 1fr 1fr; gap: 2.5rem; align-items: center; margin-top: 3.5rem; }
+@media (max-width: 720px) { .about-split { grid-template-columns: 1fr; } }
+.about-split .about-art { background: linear-gradient(155deg, #2d3a1a 0%, #4a5e28 50%, #7a9640 100%); border-radius: var(--radius); height: 220px; display: flex; align-items: center; justify-content: center; font-size: 3.5rem; }
+.about-split h3 { font-size: 1.375rem; font-weight: 800; color: var(--ink); margin-bottom: 0.75rem; }
+.about-split p { font-size: 0.9375rem; color: var(--muted); line-height: 1.7; margin-bottom: 1rem; }
 
 .hero { background: linear-gradient(155deg, #2d3a1a 0%, #4a5e28 50%, #7a9640 100%); padding: clamp(2rem, 6vw, 4rem) clamp(1.5rem, 4vw, 3rem); display: flex; flex-direction: column; justify-content: center; gap: 2rem; position: relative; overflow: hidden; }
 .hero::before { content: ''; position: absolute; inset: 0; background: url("data:image/svg+xml,%3Csvg width='80' height='80' viewBox='0 0 80 80' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Ccircle cx='40' cy='40' r='3'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E"); }
@@ -91,28 +78,22 @@ input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px 
 .success-panel h2 { font-size: 1.5rem; font-weight: 800; color: var(--ink); }
 .success-panel p { color: var(--muted); font-size: 0.9375rem; line-height: 1.6; max-width: 28rem; }
 
-.info-footer { grid-column: 1 / -1; background: var(--surface); border-top: 1px solid var(--line); padding: 2rem clamp(1rem, 4vw, 2.5rem); display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1.5rem; }
-@media (max-width: 640px) { .info-footer { grid-template-columns: 1fr; } }
-.info-footer h3 { font-size: 0.9375rem; font-weight: 700; color: var(--ink); margin-bottom: 0.75rem; }
-.info-footer p, .info-footer li { font-size: 0.875rem; color: var(--muted); line-height: 1.65; }
-.info-footer ul { list-style: none; padding: 0; }
-.info-footer a { color: var(--accent); text-decoration: none; }
-.info-footer a:hover { text-decoration: underline; }
-.footer { grid-column: 1 / -1; padding: 1.5rem clamp(1rem, 4vw, 2rem); border-top: 1px solid var(--line); background: var(--white); }
-.footer-top { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.75rem; margin-bottom: 0.5rem; }
-.footer-left { font-size: 0.8125rem; color: var(--faint); }
-.footer-legal { font-size: 0.75rem; color: var(--faint); }
-.footer-links { display: flex; gap: 1.25rem; }
-.footer-links a { font-size: 0.8125rem; color: var(--faint); text-decoration: none; }
-.footer-links a:hover { color: var(--accent); }
 </style>
 </head>
 <body>
 <div class="page">
 
   <header class="header">
-    <div class="logo-mark">🌿</div>
-    <div class="logo-text">RTB Spa <span>· Houston, TX</span></div>
+    <div class="header-brand">
+      <div class="logo-mark">🌿</div>
+      <div class="logo-text">RTB Spa <span>· Houston, TX</span></div>
+    </div>
+    <nav class="site-nav">
+      <a href="/" class="active">Home</a>
+      <a href="/about/">About</a>
+      <a href="/services/">Services</a>
+      <a href="/contact/">Contact</a>
+    </nav>
   </header>
 
   <div class="business-bar">
@@ -204,6 +185,46 @@ input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px 
     </div>
   </section>
 
+  <div class="home-sections">
+    <div class="home-sections-inner">
+      <div class="section-heading">
+        <div class="eyebrow">✦ Our Services</div>
+        <h2>Therapeutic Massage &amp; Wellness, Done Right</h2>
+        <p>Every session at RTB Spa is tailored to you — choose from our most-requested treatments below, or let our team build a custom plan during your free consultation.</p>
+      </div>
+      <div class="home-services">
+        <div class="service-card">
+          <div class="icon">💆</div>
+          <h3>Swedish &amp; Relaxation Massage</h3>
+          <p>Gentle, flowing strokes designed to ease everyday stress, improve circulation, and leave you feeling renewed.</p>
+        </div>
+        <div class="service-card">
+          <div class="icon">🏋️</div>
+          <h3>Deep Tissue &amp; Sports Massage</h3>
+          <p>Targeted pressure to release chronic tension, relieve muscle soreness, and support recovery and mobility.</p>
+        </div>
+        <div class="service-card">
+          <div class="icon">🤰</div>
+          <h3>Prenatal Massage</h3>
+          <p>Specialized techniques to ease pregnancy-related discomfort, reduce swelling, and promote relaxation for expecting mothers.</p>
+        </div>
+      </div>
+      <div style="text-align:center; margin-top:1.75rem;">
+        <a href="/services/" class="cta-button">View All Services →</a>
+      </div>
+
+      <div class="about-split">
+        <div class="about-art">🌿</div>
+        <div>
+          <h3>A Wellness Studio Rooted in Houston</h3>
+          <p>RTB Spa (operated by SMS Clear Concepts LLC) is a licensed therapeutic massage and wellness studio located at 14511 Old Katy Rd in Houston, TX. Our certified massage therapists take the time to understand your body, your goals, and your stress points — then build a treatment plan around them.</p>
+          <p>Whether you're managing chronic pain, recovering from athletic training, or simply need to unwind, our team is here to help you feel like yourself again.</p>
+          <a href="/about/" class="cta-button">Learn More About Us →</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <div class="info-footer">
     <div>
       <h3>About RTB Spa</h3>
@@ -229,9 +250,11 @@ input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px 
     <div class="footer-top">
       <div class="footer-left">© 2025 RTB Spa · SMS Clear Concepts LLC · All rights reserved</div>
       <nav class="footer-links">
+        <a href="/about/">About</a>
+        <a href="/services/">Services</a>
+        <a href="/contact/">Contact</a>
         <a href="/privacy/">Privacy Policy</a>
         <a href="/terms/">Terms of Service</a>
-        <a href="mailto:hello@rtbspa.com">Contact</a>
       </nav>
     </div>
     <div class="footer-legal">SMS Clear Concepts LLC · 14511 Old Katy Rd, Suite 232, Houston, TX 77079 · <a href="tel:+17133226640" style="color:inherit;">(713) 322-6640</a></div>
