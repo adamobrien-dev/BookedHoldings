@@ -8,46 +8,15 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/site.css">
 <style>
-:root {
-  --ink: #0f1f3d;
-  --muted: #2c4a6e;
-  --faint: #6b8cae;
-  --line: #d0dff0;
-  --surface: #f2f7fd;
-  --page-bg: #e8f1fb;
-  --accent: #1d4ed8;
-  --accent-hover: #1e40af;
-  --accent-soft: rgba(29, 78, 216, 0.08);
-  --gold: #b45309;
-  --gold-soft: rgba(180, 83, 9, 0.08);
-  --white: #ffffff;
-  --radius: 14px;
-  --font: "Manrope", system-ui, sans-serif;
-}
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
-body { font-family: var(--font); background: var(--page-bg); color: var(--ink); min-height: 100vh; -webkit-font-smoothing: antialiased; }
-
-.page { min-height: 100vh; display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: auto 1fr auto; }
+.page { min-height: 100vh; display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: auto auto 1fr auto auto; }
 @media (max-width: 780px) { .page { grid-template-columns: 1fr; } .hero { display: none; } }
-
-.header { grid-column: 1 / -1; padding: 1.25rem clamp(1rem, 4vw, 2rem); display: flex; align-items: center; gap: 0.75rem; background: var(--white); border-bottom: 1px solid var(--line); }
-.site-nav { display: flex; gap: 1.5rem; margin-left: auto; flex-wrap: wrap; }
-.site-nav a { font-size: 0.9375rem; font-weight: 600; color: var(--muted); text-decoration: none; }
-.site-nav a:hover { color: var(--accent); }
-@media (max-width: 480px) { .site-nav { gap: 1rem; } }
-.business-bar { grid-column: 1 / -1; background: var(--surface); border-bottom: 1px solid var(--line); padding: 0.5rem clamp(1rem, 4vw, 2rem); display: flex; flex-wrap: wrap; gap: 0.4rem 1.5rem; align-items: center; font-size: 0.75rem; color: var(--faint); }
-.business-bar strong { color: var(--muted); font-weight: 600; }
-.business-bar a { color: inherit; text-decoration: none; }
-.business-bar a:hover { color: var(--accent); }
-.logo-mark { width: 38px; height: 38px; background: var(--accent-soft); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1.25rem; }
-.logo-text { font-weight: 800; font-size: 1rem; color: var(--ink); }
-.logo-text span { color: var(--faint); font-weight: 500; }
+.header, .business-bar, .info-footer, .footer, .home-sections { grid-column: 1 / -1; }
 
 .hero { background: linear-gradient(155deg, #0f1f3d 0%, #1e3a6e 50%, #1d4ed8 100%); padding: clamp(2rem, 6vw, 4rem) clamp(1.5rem, 4vw, 3rem); display: flex; flex-direction: column; justify-content: center; gap: 2rem; position: relative; overflow: hidden; }
 .hero::before { content: ''; position: absolute; inset: 0; background: url("data:image/svg+xml,%3Csvg width='80' height='80' viewBox='0 0 80 80' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Ccircle cx='40' cy='40' r='3'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E"); }
-.hero-badge { display: inline-flex; align-items: center; gap: 0.5rem; background: rgba(255,255,255,0.15); color: #bfdbfe; font-size: 0.8125rem; font-weight: 600; padding: 0.35rem 0.85rem; border-radius: 9999px; border: 1px solid rgba(255,255,255,0.2); width: fit-content; }
+.hero-badge { display: inline-flex; align-items: center; gap: 0.5rem; background: rgba(255,255,255,0.15); color: #93c5fd; font-size: 0.8125rem; font-weight: 600; padding: 0.35rem 0.85rem; border-radius: 9999px; border: 1px solid rgba(255,255,255,0.2); width: fit-content; }
 .hero h1 { font-size: clamp(1.75rem, 4vw, 2.5rem); font-weight: 800; color: #fff; line-height: 1.2; }
 .hero h1 em { font-style: normal; color: #93c5fd; }
 .hero-sub { color: rgba(255,255,255,0.8); font-size: 1rem; line-height: 1.65; }
@@ -94,30 +63,21 @@ input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px 
 .success-icon { width: 72px; height: 72px; background: linear-gradient(135deg, #1e3a6e, #1d4ed8); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 2rem; }
 .success-panel h2 { font-size: 1.5rem; font-weight: 800; color: var(--ink); }
 .success-panel p { color: var(--muted); font-size: 0.9375rem; line-height: 1.6; max-width: 28rem; }
-
-.info-footer { grid-column: 1 / -1; background: var(--surface); border-top: 1px solid var(--line); padding: 2rem clamp(1rem, 4vw, 2.5rem); display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1.5rem; }
-@media (max-width: 640px) { .info-footer { grid-template-columns: 1fr; } }
-.info-footer h3 { font-size: 0.9375rem; font-weight: 700; color: var(--ink); margin-bottom: 0.75rem; }
-.info-footer p, .info-footer li { font-size: 0.875rem; color: var(--muted); line-height: 1.65; }
-.info-footer ul { list-style: none; padding: 0; }
-.info-footer a { color: var(--accent); text-decoration: none; }
-.info-footer a:hover { text-decoration: underline; }
-.footer { grid-column: 1 / -1; padding: 1.5rem clamp(1rem, 4vw, 2rem); border-top: 1px solid var(--line); background: var(--white); }
-.footer-top { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.75rem; margin-bottom: 0.5rem; }
-.footer-left { font-size: 0.8125rem; color: var(--faint); }
-.footer-legal { font-size: 0.75rem; color: var(--faint); }
-.footer-links { display: flex; gap: 1.25rem; }
-.footer-links a { font-size: 0.8125rem; color: var(--faint); text-decoration: none; }
-.footer-links a:hover { color: var(--accent); }
 </style>
 </head>
 <body>
 <div class="page">
 
   <header class="header">
-    <div class="logo-mark">🩺</div>
-    <div class="logo-text">My Adult Primary Care <span>· Fayetteville, TN</span></div>
+    <div class="header-brand">
+      <div class="logo-mark">🩺</div>
+      <div class="logo-text">My Adult Primary Care <span>· Fayetteville, TN</span></div>
+    </div>
     <nav class="site-nav">
+      <a href="/" class="active">Home</a>
+      <a href="/about/">About</a>
+      <a href="/services/">Services</a>
+      <a href="/contact/">Contact</a>
       <a href="/privacy/">Privacy Policy</a>
       <a href="/terms/">Terms of Service</a>
     </nav>
@@ -211,6 +171,46 @@ input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px 
     </div>
   </section>
 
+  <div class="home-sections">
+    <div class="home-sections-inner">
+      <div class="section-heading">
+        <div class="eyebrow">✦ Our Services</div>
+        <h2>Regenerative Therapy &amp; Primary Care, Personalized for You</h2>
+        <p>Every visit at My Adult Primary Care starts with understanding your health goals — explore a few of our most-requested services below, or let our team build a plan during your free consultation.</p>
+      </div>
+      <div class="home-services">
+        <div class="service-card">
+          <div class="icon">🌊</div>
+          <h3>StemWave Regenerative Therapy</h3>
+          <p>Non-invasive shockwave therapy that stimulates the body's natural healing response to relieve chronic pain and restore mobility.</p>
+        </div>
+        <div class="service-card">
+          <div class="icon">🩺</div>
+          <h3>Primary Care &amp; Wellness Exams</h3>
+          <p>Comprehensive physical exams and wellness checkups to monitor your health and catch concerns early.</p>
+        </div>
+        <div class="service-card">
+          <div class="icon">💊</div>
+          <h3>Chronic Pain Management</h3>
+          <p>Personalized treatment plans that combine regenerative therapy and primary care to help you manage pain long-term.</p>
+        </div>
+      </div>
+      <div style="text-align:center; margin-top:1.75rem;">
+        <a href="/services/" class="cta-button">View All Services →</a>
+      </div>
+
+      <div class="about-split">
+        <div class="about-art">🩺</div>
+        <div>
+          <h3>Primary &amp; Regenerative Care in Fayetteville, TN</h3>
+          <p>My Adult Primary Care is a primary care practice located at 1816 Huntsville Highway in Fayetteville, TN, offering advanced StemWave regenerative therapy alongside comprehensive primary care and wellness services.</p>
+          <p>We take the time to understand your health history, goals, and pain points — then build a personalized plan to help you live with less pain and better overall health.</p>
+          <a href="/about/" class="cta-button">Learn More About Us →</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <div class="info-footer">
     <div>
       <h3>About My Adult Primary Care</h3>
@@ -236,12 +236,14 @@ input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px 
     <div class="footer-top">
       <div class="footer-left">© 2025 My Adult Primary Care · All rights reserved</div>
       <nav class="footer-links">
+        <a href="/about/">About</a>
+        <a href="/services/">Services</a>
+        <a href="/contact/">Contact</a>
         <a href="/privacy/">Privacy Policy</a>
         <a href="/terms/">Terms of Service</a>
-        <a href="mailto:provider@myadultprimarycare.org">Contact</a>
       </nav>
     </div>
-    <div class="footer-legal">My Adult Primary Care · 1816 Huntsville Highway, Fayetteville, TN 37334 · (931) 575-9525 · <a href="mailto:provider@myadultprimarycare.org" style="color:inherit;">provider@myadultprimarycare.org</a></div>
+    <div class="footer-legal">My Adult Primary Care · 1816 Huntsville Highway, Fayetteville, TN 37334 · <a href="tel:+19315759525" style="color:inherit;">(931) 575-9525</a></div>
   </footer>
 </div>
 
@@ -279,6 +281,7 @@ document.getElementById('phone').addEventListener('input', function () {
 });
 </script>
 
+<!-- LeadConnector Chat Widget -->
 <script src="https://widgets.leadconnectorhq.com/loader.js" data-resources-url="https://widgets.leadconnectorhq.com/chat-widget/loader.js" data-widget-id="6a23838e9372a70f7dc9764a" data-source="WEB_USER"></script>
 </body>
 </html>
