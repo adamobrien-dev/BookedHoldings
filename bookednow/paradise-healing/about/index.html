@@ -8,69 +8,127 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<style>
-:root {
-  --ink: #1a1228; --muted: #4a3f5c; --faint: #7c6f90; --line: #e8e2f0;
-  --accent: #7c3aed; --white: #fff; --font: "Manrope", system-ui, sans-serif;
-}
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-body { font-family: var(--font); color: var(--ink); background: #f7f4fc; -webkit-font-smoothing: antialiased; }
-.wrap { max-width: 48rem; margin: 0 auto; padding: 3rem clamp(1rem, 4vw, 2rem); }
-header { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 2.5rem; padding-bottom: 1.5rem; border-bottom: 1px solid var(--line); }
-.logo-mark { width: 36px; height: 36px; background: rgba(124,58,237,0.1); border-radius: 9px; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; }
-.logo-text { font-weight: 800; font-size: 0.9375rem; color: var(--ink); }
-.logo-text span { color: var(--faint); font-weight: 500; }
-h1 { font-size: 1.85rem; font-weight: 800; margin-bottom: 0.5rem; }
-.updated { font-size: 0.875rem; color: var(--faint); margin-bottom: 2rem; }
-h2 { font-size: 1.125rem; font-weight: 700; margin: 2rem 0 0.75rem; }
-p, li { font-size: 0.9375rem; line-height: 1.75; color: var(--muted); }
-ul { padding-left: 1.5rem; margin: 0.5rem 0; }
-li { margin-bottom: 0.4rem; }
-a { color: var(--accent); text-decoration: none; }
-a:hover { text-decoration: underline; }
-.back { display: inline-flex; align-items: center; gap: 0.4rem; font-size: 0.875rem; font-weight: 600; color: var(--accent); text-decoration: none; margin-bottom: 2rem; }
-.back:hover { text-decoration: underline; }
-strong { font-weight: 600; color: var(--ink); }
-</style>
+<link rel="stylesheet" href="/assets/site.css">
 </head>
 <body>
-<div class="wrap">
-  <header>
-    <div class="logo-mark">✨</div>
-    <div class="logo-text">Paradise Healing LLC <span>· Randolph, MA</span></div>
+
+  <header class="header">
+    <div class="header-brand">
+      <div class="logo-mark">✨</div>
+      <div class="logo-text">Paradise Healing LLC <span>· Randolph, MA</span></div>
+    </div>
+    <nav class="site-nav">
+      <a href="/">Home</a>
+      <a href="/about/" class="active">About</a>
+      <a href="/services/">Services</a>
+      <a href="/contact/">Contact</a>
+      <a href="/privacy/">Privacy Policy</a>
+      <a href="/terms/">Terms of Service</a>
+    </nav>
   </header>
 
-  <a class="back" href="/">← Back to Opt-In Form</a>
+  <div class="business-bar">
+    <span><strong>Paradise Healing LLC</strong></span>
+    <span>500 North Main Street Suite D, Randolph, MA 02368</span>
+    <a href="tel:+17818886625">(781) 888-6625</a>
+  </div>
 
-  <h1>About Paradise Healing LLC</h1>
-  <p class="updated">500 North Main Street Suite D, Randolph, MA 02368</p>
+  <section class="page-hero">
+    <div class="page-hero-inner">
+      <div class="eyebrow">✦ About Paradise Healing</div>
+      <h1>Balance for Your Mind, Body &amp; Spirit</h1>
+      <p>Paradise Healing LLC is a holistic healing and wellness practice in Randolph, MA, offering personalized, compassionate care delivered by certified practitioners.</p>
+    </div>
+  </section>
 
-  <p>Paradise Healing LLC is a holistic healing and wellness practice based in Randolph, Massachusetts. We help clients find balance for their mind, body, and spirit through personalized, compassionate care delivered by certified practitioners.</p>
+  <div class="content">
 
-  <h2>Our Mission</h2>
-  <p>Our mission is to provide a safe, supportive environment where clients can address stress, tension, and imbalance through proven holistic modalities — without judgment and without pressure. We believe wellness is a journey, and every client's path looks different.</p>
+    <div class="about-grid">
+      <div>
+        <section>
+          <h2>Our Story</h2>
+          <p>Paradise Healing LLC was founded to give clients in Randolph and the surrounding area access to proven holistic modalities — Reiki, energy healing, chakra balancing, and guided meditation — in a warm, supportive setting.</p>
+          <p>We take time to understand what each client is experiencing before recommending a plan, whether that's a single session or an ongoing healing journey.</p>
+        </section>
 
-  <h2>Our Services</h2>
-  <ul>
-    <li>Reiki &amp; Energy Healing</li>
-    <li>Holistic Wellness Consultations</li>
-    <li>Guided Meditation &amp; Breathwork</li>
-    <li>Chakra Balancing</li>
-    <li>Personalized Healing Plans</li>
-  </ul>
+        <section>
+          <h2>Our Mission</h2>
+          <p>Our mission is to provide a safe, supportive environment where clients can address stress, tension, and imbalance through proven holistic modalities — without judgment and without pressure. We believe wellness is a journey, and every client's path looks different.</p>
+        </section>
 
-  <h2>Our Approach</h2>
-  <p>Every session begins with a conversation. Our practitioners take the time to understand what you're experiencing before recommending a plan tailored to your needs. Whether you're new to holistic healing or a longtime practitioner, our team meets you where you are.</p>
+        <section>
+          <h2>What We Value</h2>
+          <ul class="value-list">
+            <li><span class="value-icon">✓</span>Compassionate, judgment-free care</li>
+            <li><span class="value-icon">✓</span>Evidence-informed holistic modalities</li>
+            <li><span class="value-icon">✓</span>A safe space to slow down and reconnect</li>
+            <li><span class="value-icon">✓</span>Personalized healing plans for every client</li>
+            <li><span class="value-icon">✓</span>Honest conversations about your wellness goals</li>
+          </ul>
+        </section>
+      </div>
 
-  <h2>Visit Us</h2>
-  <p><strong>Paradise Healing LLC</strong><br>
-  500 North Main Street Suite D<br>
-  Randolph, MA 02368<br>
-  Phone: <a href="tel:+17818886625">(781) 888-6625</a><br>
-  Email: <a href="mailto:info@paradisehealingllc.com">info@paradisehealingllc.com</a></p>
+      <div>
+        <div class="hours-card">
+          <h3>Office Hours</h3>
+          <div class="hours-row"><span>Monday – Friday</span><span>9:00 AM – 6:00 PM</span></div>
+          <div class="hours-row"><span>Saturday</span><span>10:00 AM – 2:00 PM</span></div>
+          <div class="hours-row"><span>Sunday</span><span>Closed</span></div>
+        </div>
+        <div class="hours-card" style="margin-top:1.25rem;">
+          <h3>Visit Us</h3>
+          <p style="margin-bottom:0.5rem;">Paradise Healing LLC<br>500 North Main Street Suite D<br>Randolph, MA 02368</p>
+          <p style="margin:0;"><a href="tel:+17818886625">(781) 888-6625</a><br><a href="mailto:info@paradisehealingllc.com">info@paradisehealingllc.com</a></p>
+        </div>
+      </div>
+    </div>
 
-  <h2>Get Started</h2>
-  <p>Ready to take the first step? <a href="/">Claim your free 20-minute consultation</a> and our team will reach out to schedule your session.</p>
-</div>
+    <div class="cta-banner">
+      <div>
+        <h3>Ready to start your healing journey?</h3>
+        <p>Claim your free 20-minute holistic healing consultation — no credit card required.</p>
+      </div>
+      <a href="/" class="cta-button">Get Your Free Consultation →</a>
+    </div>
+
+  </div>
+
+  <div class="info-footer">
+    <div>
+      <h3>About Paradise Healing LLC</h3>
+      <p>Paradise Healing LLC provides holistic healing and wellness services to individuals seeking balance for their mind, body, and spirit. Our certified practitioners offer personalized care in a compassionate, supportive environment.</p>
+    </div>
+    <div>
+      <h3>Our Services</h3>
+      <ul>
+        <li>Reiki &amp; Energy Healing</li>
+        <li>Holistic Wellness Consultations</li>
+        <li>Guided Meditation &amp; Breathwork</li>
+        <li>Chakra Balancing</li>
+        <li>Personalized Healing Plans</li>
+      </ul>
+    </div>
+    <div>
+      <h3>Contact Us</h3>
+      <p><strong>Paradise Healing LLC</strong><br>500 North Main Street Suite D<br>Randolph, MA 02368<br><a href="tel:+17818886625">(781) 888-6625</a><br><a href="mailto:info@paradisehealingllc.com">info@paradisehealingllc.com</a></p>
+    </div>
+  </div>
+
+  <footer class="footer">
+    <div class="footer-top">
+      <div class="footer-left">© 2025 Paradise Healing LLC · All rights reserved</div>
+      <nav class="footer-links">
+        <a href="/about/">About</a>
+        <a href="/services/">Services</a>
+        <a href="/contact/">Contact</a>
+        <a href="/privacy/">Privacy Policy</a>
+        <a href="/terms/">Terms of Service</a>
+      </nav>
+    </div>
+    <div class="footer-legal">Paradise Healing LLC · 500 North Main Street Suite D, Randolph, MA 02368 · <a href="tel:+17818886625" style="color:inherit;">(781) 888-6625</a></div>
+  </footer>
+
+<!-- LeadConnector Chat Widget -->
+<script src="https://widgets.leadconnectorhq.com/loader.js" data-resources-url="https://widgets.leadconnectorhq.com/chat-widget/loader.js" data-widget-id="6a1f36906b7db7202404a064" data-source="WEB_USER"></script>
 </body>
 </html>

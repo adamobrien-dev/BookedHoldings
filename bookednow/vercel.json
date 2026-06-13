@@ -22,6 +22,16 @@
     },
     {
       "source": "/(.*)",
+      "has": [{ "type": "host", "value": "paradisehealingllc.org" }],
+      "destination": "/paradise-healing/$1"
+    },
+    {
+      "source": "/(.*)",
+      "has": [{ "type": "host", "value": "www.paradisehealingllc.org" }],
+      "destination": "/paradise-healing/$1"
+    },
+    {
+      "source": "/(.*)",
       "has": [{ "type": "host", "value": "aguilera.bookednow.app" }],
       "destination": "/aguilera/$1"
     },
