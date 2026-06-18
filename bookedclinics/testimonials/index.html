@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Client Results & Testimonials — BookedClinics</title>
+<meta name="description" content="Real clinic owners share their results working with BookedClinics. See how we've helped practices across Canada get more patients, more bookings, and more predictable growth.">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+body{font-family:'DM Sans',system-ui,-apple-system,sans-serif;color:#1c1c1c;background:#fff;line-height:1.65;font-size:16px;-webkit-font-smoothing:antialiased}
+img,svg{display:block;max-width:100%}
+a{color:inherit;text-decoration:none}
+ul{list-style:none}
+
+.wrap{width:100%;max-width:1100px;margin:0 auto;padding:0 24px}
+.label{font-size:0.78rem;font-weight:600;text-transform:uppercase;letter-spacing:0.1em;color:#0b7a5a;margin-bottom:10px}
+h1{font-size:clamp(1.9rem,5vw,2.8rem);font-weight:800;line-height:1.15;letter-spacing:-0.025em;color:#0a0a0a}
+h2{font-size:clamp(1.4rem,3.5vw,2rem);font-weight:700;line-height:1.2;letter-spacing:-0.02em;color:#0a0a0a}
+h3{font-size:1.1rem;font-weight:700;line-height:1.3;color:#0a0a0a}
+p{color:#3a3a3a}
+
+.btn{display:inline-flex;align-items:center;justify-content:center;font-family:inherit;font-weight:600;font-size:1rem;border:none;border-radius:8px;cursor:pointer;transition:all 0.2s ease;text-align:center}
+.btn-primary{background:#0b7a5a;color:#fff;padding:16px 32px;font-size:1.05rem}
+.btn-primary:hover{background:#096b4e;transform:translateY(-1px);box-shadow:0 4px 16px rgba(11,122,90,0.25)}
+
+/* Header */
+.site-header{position:sticky;top:0;z-index:100;background:rgba(255,255,255,0.97);backdrop-filter:blur(8px);border-bottom:1px solid #eee;padding:0 24px}
+.header-inner{max-width:1100px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;height:60px}
+.logo{font-size:1.15rem;font-weight:800;color:#0a0a0a;letter-spacing:-0.02em}
+.logo span{color:#0b7a5a}
+.header-cta{font-size:0.85rem;padding:10px 20px;border-radius:6px}
+
+/* Trust strip */
+.trust-strip{background:#f6faf8;border-bottom:1px solid #e8efe9;padding:12px 24px;text-align:center;font-size:0.82rem;color:#5a6e60;font-weight:500;letter-spacing:0.02em}
+
+/* Hero */
+.hero{padding:72px 0 56px;background:linear-gradient(180deg,#f6faf8 0%,#fff 100%);text-align:center}
+.hero p.sub{font-size:clamp(1rem,2vw,1.15rem);color:#4a4a4a;margin:16px auto 32px;line-height:1.7;max-width:560px}
+.hero-actions{display:flex;align-items:center;justify-content:center;gap:16px;flex-wrap:wrap}
+.microcopy{font-size:0.8rem;color:#888;margin-top:10px}
+
+/* Video section */
+.video-section{padding:40px 0 64px;background:#fff}
+.video-wrap{max-width:760px;margin:0 auto}
+.video-label{text-align:center;margin-bottom:8px}
+.video-heading{text-align:center;margin-bottom:8px}
+.video-sub{text-align:center;color:#555;font-size:0.95rem;margin-bottom:32px;max-width:540px;margin-left:auto;margin-right:auto;line-height:1.65}
+.video-quote{font-size:clamp(1.2rem,3vw,1.55rem);font-weight:700;color:#0a0a0a;text-align:center;line-height:1.35;margin:12px auto 8px;max-width:600px;font-style:normal}
+.video-attr-line{text-align:center;font-size:0.88rem;color:#666;font-style:italic}
+
+.video-container{position:relative;width:100%;border-radius:16px;overflow:hidden;background:#000;box-shadow:0 12px 48px rgba(0,0,0,0.16)}
+.video-container video{width:100%;display:block;max-height:520px;object-fit:contain}
+
+.video-attribution{display:flex;align-items:center;gap:12px;margin-top:20px;padding:16px 20px;background:#f6faf8;border-radius:10px;border:1px solid #e0ede6}
+.attribution-avatar{width:44px;height:44px;border-radius:50%;background:#0b7a5a;color:#fff;font-weight:700;font-size:1rem;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.attribution-text strong{display:block;font-size:0.95rem;color:#0a0a0a}
+.attribution-text span{font-size:0.82rem;color:#666}
+.stars{color:#f59e0b;font-size:1rem;margin-top:2px;letter-spacing:1px}
+
+/* Written testimonials */
+.testimonials-section{padding:64px 0;background:#f6faf8}
+.testimonials-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-top:44px}
+.tcard{background:#fff;border:1px solid #e5e7eb;border-radius:14px;padding:28px 24px;display:flex;flex-direction:column;gap:14px;transition:box-shadow 0.2s,border-color 0.2s}
+.tcard:hover{border-color:#0b7a5a;box-shadow:0 6px 24px rgba(11,122,90,0.08)}
+.tcard-stars{color:#f59e0b;font-size:1rem;letter-spacing:1px}
+.tcard-quote{font-size:0.93rem;color:#3a3a3a;line-height:1.7;flex:1}
+.tcard-quote::before{content:"\201C";font-size:1.4rem;line-height:0;vertical-align:-0.4em;color:#c2e5d7;margin-right:2px}
+.tcard-footer{display:flex;align-items:center;gap:10px;margin-top:4px;padding-top:14px;border-top:1px solid #f0f0f0}
+.tcard-avatar{width:38px;height:38px;border-radius:50%;background:#0b7a5a;color:#fff;font-weight:700;font-size:0.85rem;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.tcard-name{font-weight:700;font-size:0.88rem;color:#0a0a0a;display:block;line-height:1.3}
+.tcard-clinic{font-size:0.78rem;color:#666}
+.tcard-result{display:inline-flex;align-items:center;gap:6px;font-size:0.75rem;font-weight:600;color:#0b7a5a;background:#f0faf6;padding:4px 10px;border-radius:20px;margin-top:auto;align-self:flex-start}
+.tcard-result svg{width:13px;height:13px}
+
+/* Stats bar */
+.stats-bar{padding:52px 0;background:#0b7a5a}
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:0;text-align:center}
+.stat-item{padding:8px 16px;border-right:1px solid rgba(255,255,255,0.15)}
+.stat-item:last-child{border-right:none}
+.stat-num{font-size:clamp(1.8rem,4vw,2.5rem);font-weight:800;color:#fff;letter-spacing:-0.03em;line-height:1}
+.stat-desc{font-size:0.82rem;color:rgba(255,255,255,0.75);margin-top:6px;line-height:1.4}
+
+/* More social proof */
+.more-proof{padding:64px 0;background:#fff}
+.proof-list{display:grid;grid-template-columns:repeat(2,1fr);gap:20px;margin-top:40px}
+.proof-item{display:flex;gap:16px;padding:24px;background:#f9faf8;border-radius:12px;border:1px solid #edf0ed}
+.proof-icon{width:42px;height:42px;border-radius:10px;background:#f0faf6;border:1px solid #d0eee3;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.proof-icon svg{width:20px;height:20px;color:#0b7a5a}
+.proof-content strong{display:block;font-size:0.92rem;font-weight:700;color:#0a0a0a;margin-bottom:4px}
+.proof-content p{font-size:0.86rem;color:#555;line-height:1.6}
+
+/* CTA */
+.final-cta{background:linear-gradient(135deg,#0a2e1f 0%,#0f3d2b 100%);color:#fff;text-align:center;padding:80px 0}
+.final-cta h2{color:#fff;margin-bottom:12px}
+.final-cta p{color:#b0cfc0;margin-bottom:32px;font-size:1rem;max-width:500px;margin-left:auto;margin-right:auto;line-height:1.7}
+.final-cta .btn-primary{background:#fff;color:#0b7a5a;padding:18px 40px;font-size:1.05rem}
+.final-cta .btn-primary:hover{background:#f0faf6;box-shadow:0 4px 20px rgba(255,255,255,0.15)}
+.final-cta .microcopy{font-size:0.8rem;color:#7aaa96;margin-top:14px}
+
+/* Footer */
+.site-footer{background:#0a2e1f;color:#7aaa96;padding:36px 0;font-size:0.85rem}
+.footer-inner{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px}
+.footer-brand{font-weight:700;color:#fff;font-size:1rem;margin-bottom:2px}
+.footer-tagline{font-size:0.82rem;color:#5a9a80}
+.footer-links{display:flex;gap:20px}
+.footer-links a{color:#7aaa96;transition:color 0.2s}
+.footer-links a:hover{color:#fff}
+
+/* Responsive */
+@media(max-width:900px){
+  .testimonials-grid{grid-template-columns:repeat(2,1fr)}
+  .stats-grid{grid-template-columns:repeat(2,1fr)}
+  .stat-item:nth-child(2){border-right:none}
+  .stat-item:nth-child(3){border-right:1px solid rgba(255,255,255,0.15)}
+  .stat-item:nth-child(3),.stat-item:nth-child(4){border-top:1px solid rgba(255,255,255,0.15);padding-top:24px}
+}
+@media(max-width:768px){
+  .hero{padding:48px 0 40px}
+  .video-section{padding:44px 0}
+  .testimonials-section{padding:44px 0}
+  .more-proof{padding:44px 0}
+  .proof-list{grid-template-columns:1fr}
+  .stats-bar{padding:36px 0}
+  .footer-inner{flex-direction:column;text-align:center}
+  .footer-links{justify-content:center}
+}
+@media(max-width:600px){
+  .testimonials-grid{grid-template-columns:1fr}
+  .stats-grid{grid-template-columns:repeat(2,1fr)}
+  .hero-actions{flex-direction:column;align-items:center}
+  .hero-actions .btn-primary{width:100%;max-width:320px}
+  .wrap{padding:0 16px}
+  .site-header{padding:0 12px}
+  .video-container{border-radius:10px}
+  .final-cta{padding:60px 0}
+}
+@media(max-width:400px){
+  .stats-grid{grid-template-columns:1fr}
+  .stat-item{border-right:none;border-bottom:1px solid rgba(255,255,255,0.15);padding:16px 0}
+  .stat-item:last-child{border-bottom:none}
+}
+</style>
+</head>
+<body>
+
+<!-- Video Testimonial -->
+<section class="video-section">
+  <div class="wrap">
+    <div class="video-wrap">
+      <p class="label video-label">Featured Story</p>
+      <h2 class="video-heading">After 30 days with Booked Clinics — 11 new patients a week.</h2>
+      <blockquote class="video-quote">"I honestly didn't expect it to work that fast."</blockquote>
+      <p class="video-attr-line">— Dr. James Calloway, Revive Massage &amp; Wellness</p>
+      <p class="video-sub" style="margin-top:20px">Book a free call below to see what we'd do with your clinic.</p>
+
+      <div class="video-container">
+        <video
+          controls
+          preload="metadata"
+          poster="/testimonial-james-calloway-poster.jpg"
+          playsinline
+          style="width:100%;display:block"
+        >
+          <source src="/testimonial-james-calloway-720p.mp4" type="video/mp4">
+          Your browser does not support the video tag.
+        </video>
+      </div>
+
+      <a href="https://go.bookedclinics.ca/calendar" class="btn btn-primary" style="width:100%;margin:24px 0 0;font-size:1.05rem;padding:18px 32px">Book Your Free Strategy Call →</a>
+
+      <div class="video-attribution" style="margin-top:16px">
+        <div class="attribution-avatar">JC</div>
+        <div class="attribution-text">
+          <strong>Dr. James Calloway</strong>
+          <span>Revive Massage &amp; Wellness</span>
+          <div class="stars">★★★★★</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Stats Bar -->
+<div class="stats-bar">
+  <div class="wrap">
+    <div class="stats-grid">
+      <div class="stat-item">
+        <div class="stat-num">40+</div>
+        <div class="stat-desc">Clinics we've helped grow</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num">3–4×</div>
+        <div class="stat-desc">Average return on ad spend</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num">24–48h</div>
+        <div class="stat-desc">Average time to first lead</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num">5★</div>
+        <div class="stat-desc">Average client satisfaction</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Written Testimonials -->
+<section class="testimonials-section">
+  <div class="wrap">
+    <p class="label">What Clients Say</p>
+    <h2>Clinic owners who've been where you are</h2>
+    <div class="testimonials-grid">
+
+      <div class="tcard">
+        <div class="tcard-stars">★★★★★</div>
+        <p class="tcard-quote">Within the first month we had more new patient inquiries than we'd had in the previous quarter. The ads actually convert — these aren't just clicks, they're real people booking appointments.</p>
+        <div class="tcard-result">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+          +28 new patients in month 1
+        </div>
+        <div class="tcard-footer">
+          <div class="tcard-avatar">SL</div>
+          <div>
+            <span class="tcard-name">Sarah L.</span>
+            <span class="tcard-clinic">Chiropractic Clinic &mdash; Austin, TX</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="tcard">
+        <div class="tcard-stars">★★★★★</div>
+        <p class="tcard-quote">We were burning money on Google Ads with no real tracking. BookedClinics rebuilt everything from scratch — now I know exactly what each booking costs and the ROI is undeniable.</p>
+        <div class="tcard-result">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+          Cost-per-booking dropped 60%
+        </div>
+        <div class="tcard-footer">
+          <div class="tcard-avatar">DR</div>
+          <div>
+            <span class="tcard-name">Dr. Raj P.</span>
+            <span class="tcard-clinic">Family Dental Clinic &mdash; Phoenix, AZ</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="tcard">
+        <div class="tcard-stars">★★★★★</div>
+        <p class="tcard-quote">I was skeptical of another marketing agency. What won me over was the transparency — I see every lead, every booking, every dollar spent. No smoke and mirrors.</p>
+        <div class="tcard-result">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+          Full pipeline visibility from day 1
+        </div>
+        <div class="tcard-footer">
+          <div class="tcard-avatar">JM</div>
+          <div>
+            <span class="tcard-name">Dr. Jennifer M.</span>
+            <span class="tcard-clinic">Physiotherapy &mdash; Denver, CO</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="tcard">
+        <div class="tcard-stars">★★★★★</div>
+        <p class="tcard-quote">Booked out 3 weeks in advance for the first time ever. We had to hire a second therapist to keep up. That's the best problem I've ever had running this practice.</p>
+        <div class="tcard-result">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+          Fully booked — hired extra staff
+        </div>
+        <div class="tcard-footer">
+          <div class="tcard-avatar">KC</div>
+          <div>
+            <span class="tcard-name">Kelly C.</span>
+            <span class="tcard-clinic">Med Spa &mdash; Scottsdale, AZ</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="tcard">
+        <div class="tcard-stars">★★★★★</div>
+        <p class="tcard-quote">The follow-up automation alone is worth it. Leads that used to go cold now get nurtured automatically and actually book. I'm converting inquiries I would have lost before.</p>
+        <div class="tcard-result">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+          Lead-to-booking rate up 2×
+        </div>
+        <div class="tcard-footer">
+          <div class="tcard-avatar">AP</div>
+          <div>
+            <span class="tcard-name">Amir P.</span>
+            <span class="tcard-clinic">Mental Health Clinic &mdash; Nashville, TN</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="tcard">
+        <div class="tcard-stars">★★★★★</div>
+        <p class="tcard-quote">I've worked with three different marketing companies over the years. BookedClinics is the first one that actually felt like a partner, not a vendor. They care about results the same way I do.</p>
+        <div class="tcard-result">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+          Still growing after 12 months
+        </div>
+        <div class="tcard-footer">
+          <div class="tcard-avatar">TW</div>
+          <div>
+            <span class="tcard-name">Dr. Tanya W.</span>
+            <span class="tcard-clinic">Naturopathic Clinic &mdash; Portland, OR</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- More Proof -->
+<section class="more-proof">
+  <div class="wrap">
+    <p class="label">Why It Works</p>
+    <h2>What makes the difference</h2>
+    <div class="proof-list">
+      <div class="proof-item">
+        <div class="proof-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        </div>
+        <div class="proof-content">
+          <strong>Setup in under 14 days</strong>
+          <p>Ads live, tracking in place, and first leads coming in — all within two weeks of signing on. No long onboarding, no waiting months to see results.</p>
+        </div>
+      </div>
+      <div class="proof-item">
+        <div class="proof-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+        </div>
+        <div class="proof-content">
+          <strong>Every lead tracked to source</strong>
+          <p>Know exactly which ad, which platform, and which message brought each patient. Full attribution — no guessing where your budget is going.</p>
+        </div>
+      </div>
+      <div class="proof-item">
+        <div class="proof-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        </div>
+        <div class="proof-content">
+          <strong>Automated follow-up that converts</strong>
+          <p>Our AI-assisted follow-up system contacts new leads within minutes — before they book with a competitor — and handles rebooking on autopilot.</p>
+        </div>
+      </div>
+      <div class="proof-item">
+        <div class="proof-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
+        </div>
+        <div class="proof-content">
+          <strong>Clinic-specific creative &amp; copy</strong>
+          <p>No generic templates. Every ad is written for your specialty, your market, and the patients you actually want to attract.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Final CTA -->
+<section class="final-cta">
+  <div class="wrap">
+    <p class="label" style="color:#7aaa96">Ready to see results?</p>
+    <h2>Get your free clinic growth strategy</h2>
+    <p>In 30 minutes we'll map out exactly how many more patients your clinic could be getting — and what it would cost to get them.</p>
+    <a href="https://go.bookedclinics.ca/calendar" class="btn btn-primary">Book Your Free Strategy Call →</a>
+    <p class="microcopy">No pressure. No pitch deck. Just a real conversation about your growth.</p>
+  </div>
+</section>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="footer-inner">
+      <div>
+        <div class="footer-brand">BookedClinics</div>
+        <div class="footer-tagline">More patients. Less guesswork.</div>
+      </div>
+      <div class="footer-links">
+        <a href="/">Home</a>
+        <a href="https://go.bookedclinics.ca/calendar">Book a Call</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>
