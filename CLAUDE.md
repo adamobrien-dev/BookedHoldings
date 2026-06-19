@@ -52,10 +52,23 @@ All of these are pre-approved and should work without permission prompts:
 | **Cloudflare** | DNS and edge infrastructure. |
 | **GitHub** | Repo: `adamobrien-dev/BookedHoldings`. Dev branch convention: `claude/[feature]-[id]`. Always push to the feature branch first, then merge to main for production deploy. |
 
-**Not yet available as MCP (access directly or via web):**
-- Stripe — billing/subscriptions. Keys are in Vercel env vars (not in repo).
-- GoHighLevel (GHL) — CRM. Access via GHL web UI or API. Not MCP-connected.
-- Dropbox Sign — contracts. Access via web UI.
+**Stripe, GHL, and Dropbox Sign — use the Vercel API endpoints:**
+
+These are NOT MCP connectors but are accessible through Vercel serverless functions (which CAN reach external APIs). Use `mcp__Vercel__web_fetch_vercel_url` to call them.
+
+| Endpoint | What it returns |
+|----------|----------------|
+| `https://www.bookedclinics.ca/api/client-lookup?name=japa` | GHL contacts + pipeline + conversations, Stripe payment history + disputes, Dropbox Sign contracts — all for one person |
+| `https://www.bookedclinics.ca/api/dashboard-data` | Full dashboard: all clients' GHL leads/workflows + Stripe billing summary + Dropbox Sign unsigned contracts |
+| `https://www.bookedclinics.ca/api/recovery` | Agency GHL pipeline (SC upcoming, DC no-shows) + stale unsigned contracts |
+| `https://www.bookedclinics.ca/api/meta-ads` | All clients' Meta ad performance |
+| `https://www.bookedclinics.ca/api/meta-ads?adlib=telepsychiatry&countries=US` | Ad Library competitor search |
+
+**To look up a specific person across all platforms:**
+```
+mcp__Vercel__web_fetch_vercel_url("https://www.bookedclinics.ca/api/client-lookup?name=PERSON_NAME")
+```
+This searches GHL (agency + all client locations), Stripe, and Dropbox Sign simultaneously.
 
 ---
 
