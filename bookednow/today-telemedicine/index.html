@@ -8,80 +8,43 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/site.css">
 <style>
-:root {
-  --ink: #251a36;
-  --muted: #5a4a70;
-  --faint: #9485a8;
-  --line: #e6dcf0;
-  --surface: #faf7fc;
-  --page-bg: #f3edf8;
-  --accent: #7c3aed;
-  --accent-hover: #6d28d9;
-  --accent-soft: rgba(124, 58, 237, 0.1);
-  --gold: #b45309;
-  --gold-soft: rgba(180, 83, 9, 0.08);
-  --white: #ffffff;
-  --radius: 14px;
-  --font: "Manrope", system-ui, sans-serif;
-}
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
-body { font-family: var(--font); background: var(--page-bg); color: var(--ink); min-height: 100vh; -webkit-font-smoothing: antialiased; }
-
 .page { min-height: 100vh; display: grid; grid-template-columns: 1fr; }
 
-.header { grid-column: 1 / -1; padding: 1.25rem clamp(1rem, 4vw, 2rem); display: flex; align-items: center; gap: 0.75rem; background: var(--white); border-bottom: 1px solid var(--line); }
-.business-bar { grid-column: 1 / -1; background: var(--surface); border-bottom: 1px solid var(--line); padding: 0.5rem clamp(1rem, 4vw, 2rem); display: flex; flex-wrap: wrap; gap: 0.4rem 1.5rem; align-items: center; font-size: 0.75rem; color: var(--faint); }
-.business-bar strong { color: var(--muted); font-weight: 600; }
-.business-bar a { color: inherit; text-decoration: none; }
-.business-bar a:hover { color: var(--accent); }
-.logo-mark { width: 38px; height: 38px; background: var(--accent-soft); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1.25rem; }
-.logo-text { font-weight: 800; font-size: 1rem; color: var(--ink); }
-.logo-text span { color: var(--faint); font-weight: 500; }
-
 .hero { background: linear-gradient(155deg, #2e1a47 0%, #5b2a8c 50%, #9061d6 100%); padding: clamp(2.5rem, 6vw, 4rem) clamp(1.5rem, 5vw, 6rem); display: flex; flex-direction: column; justify-content: center; gap: 2rem; position: relative; overflow: hidden; max-width: 100%; }
-.hero h1 { max-width: 720px; }
-.hero-sub { max-width: 640px; }
-.benefits { max-width: 640px; }
-.testimonial { max-width: 640px; }
-.hero-cta { margin-top: 0.5rem; }
-.hero-cta a { display: inline-flex; align-items: center; gap: 0.5rem; background: #fff; color: #5b2a8c; font-size: 1rem; font-weight: 700; padding: 0.85rem 1.75rem; border-radius: 10px; text-decoration: none; transition: box-shadow 0.15s, transform 0.1s; }
-.hero-cta a:hover { box-shadow: 0 6px 20px rgba(0,0,0,0.2); transform: translateY(-1px); }
 .hero::before { content: ''; position: absolute; inset: 0; background: url("data:image/svg+xml,%3Csvg width='80' height='80' viewBox='0 0 80 80' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Ccircle cx='40' cy='40' r='3'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E"); }
-.hero-badge { display: inline-flex; align-items: center; gap: 0.5rem; background: rgba(255,255,255,0.15); color: #e9d5ff; font-size: 0.8125rem; font-weight: 600; padding: 0.35rem 0.85rem; border-radius: 9999px; border: 1px solid rgba(255,255,255,0.2); width: fit-content; }
-.hero h1 { font-size: clamp(1.75rem, 4vw, 2.5rem); font-weight: 800; color: #fff; line-height: 1.2; }
+.hero-badge { display: inline-flex; align-items: center; gap: 0.5rem; background: rgba(255,255,255,0.15); color: #e9d5ff; font-size: 0.8125rem; font-weight: 600; padding: 0.35rem 0.85rem; border-radius: 9999px; border: 1px solid rgba(255,255,255,0.2); width: fit-content; position: relative; }
+.hero h1 { font-size: clamp(1.75rem, 4vw, 2.5rem); font-weight: 800; color: #fff; line-height: 1.2; max-width: 720px; position: relative; }
 .hero h1 em { font-style: normal; color: #d8b4fe; }
-.hero-sub { color: rgba(255,255,255,0.8); font-size: 1rem; line-height: 1.65; }
-.benefits { list-style: none; display: flex; flex-direction: column; gap: 0.85rem; }
+.hero-sub { color: rgba(255,255,255,0.8); font-size: 1rem; line-height: 1.65; max-width: 640px; position: relative; }
+.benefits { list-style: none; display: flex; flex-direction: column; gap: 0.85rem; max-width: 640px; position: relative; }
 .benefits li { display: flex; align-items: flex-start; gap: 0.75rem; color: rgba(255,255,255,0.9); font-size: 0.9375rem; }
 .benefit-icon { width: 22px; height: 22px; background: rgba(255,255,255,0.2); border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px; font-size: 0.7rem; }
-.testimonial { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.15); border-radius: var(--radius); padding: 1.25rem; }
+.testimonial { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.15); border-radius: var(--radius); padding: 1.25rem; max-width: 640px; position: relative; }
 .testimonial p { color: rgba(255,255,255,0.9); font-size: 0.9rem; line-height: 1.6; font-style: italic; }
 .testimonial cite { display: block; margin-top: 0.75rem; color: #d8b4fe; font-size: 0.8125rem; font-weight: 600; font-style: normal; }
-
-.info-footer { background: var(--surface); border-top: 1px solid var(--line); padding: 2rem clamp(1rem, 4vw, 2.5rem); display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1.5rem; }
-@media (max-width: 640px) { .info-footer { grid-template-columns: 1fr; } }
-.info-footer h3 { font-size: 0.9375rem; font-weight: 700; color: var(--ink); margin-bottom: 0.75rem; }
-.info-footer p, .info-footer li { font-size: 0.875rem; color: var(--muted); line-height: 1.65; }
-.info-footer ul { list-style: none; padding: 0; }
-.info-footer a { color: var(--accent); text-decoration: none; }
-.info-footer a:hover { text-decoration: underline; }
-.footer { padding: 1.5rem clamp(1rem, 4vw, 2rem); border-top: 1px solid var(--line); background: var(--white); }
-.footer-top { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.75rem; margin-bottom: 0.5rem; }
-.footer-left { font-size: 0.8125rem; color: var(--faint); }
-.footer-legal { font-size: 0.75rem; color: var(--faint); }
-.footer-links { display: flex; gap: 1.25rem; }
-.footer-links a { font-size: 0.8125rem; color: var(--faint); text-decoration: none; }
-.footer-links a:hover { color: var(--accent); }
+.hero-cta { margin-top: 0.5rem; position: relative; }
+.hero-cta a { display: inline-flex; align-items: center; gap: 0.5rem; background: #fff; color: #5b2a8c; font-size: 1rem; font-weight: 700; padding: 0.85rem 1.75rem; border-radius: 10px; text-decoration: none; transition: box-shadow 0.15s, transform 0.1s; }
+.hero-cta a:hover { box-shadow: 0 6px 20px rgba(0,0,0,0.2); transform: translateY(-1px); }
 </style>
 </head>
 <body>
 <div class="page">
 
   <header class="header">
-    <div class="logo-mark">🧠</div>
-    <div class="logo-text">Today Telemedicine <span>· Florida</span></div>
+    <div class="header-brand">
+      <div class="logo-mark">🧠</div>
+      <div class="logo-text">Today Telemedicine <span>· Florida</span></div>
+    </div>
+    <nav class="site-nav">
+      <a href="/" class="active">Home</a>
+      <a href="/about/">About</a>
+      <a href="/services/">Services</a>
+      <a href="/contact/">Contact</a>
+      <a href="/privacy/">Privacy Policy</a>
+      <a href="/terms/">Terms of Service</a>
+    </nav>
   </header>
 
   <div class="business-bar">
@@ -99,7 +62,7 @@ body { font-family: var(--font); background: var(--page-bg); color: var(--ink); 
     <ul class="benefits">
       <li><span class="benefit-icon">✓</span>Licensed Florida psychiatric providers, 100% virtual</li>
       <li><span class="benefit-icon">✓</span>No waiting rooms — appointments from home</li>
-      <li><span class="benefit-icon">✓</span>Personalized treatment plans for anxiety, depression & more</li>
+      <li><span class="benefit-icon">✓</span>Personalized treatment plans for anxiety, depression &amp; more</li>
       <li><span class="benefit-icon">✓</span>Confidential, judgment-free care</li>
     </ul>
     <div class="testimonial">
@@ -110,6 +73,46 @@ body { font-family: var(--font); background: var(--page-bg); color: var(--ink); 
       <a href="tel:+18009518257">📞 Call to Book Your Free Consultation</a>
     </div>
   </section>
+
+  <div class="home-sections">
+    <div class="home-sections-inner">
+      <div class="section-heading">
+        <div class="eyebrow">✦ Our Services</div>
+        <h2>Virtual Psychiatric Care, Personalized for You</h2>
+        <p>Every visit at Today Telemedicine starts with listening — explore a few of our most-requested services below, or let our team build a plan during your free consultation.</p>
+      </div>
+      <div class="home-services">
+        <div class="service-card">
+          <div class="icon">🧠</div>
+          <h3>Virtual Psychiatric Consultations</h3>
+          <p>Meet with a Florida-licensed psychiatric provider from home. We evaluate your mental health and develop a care plan tailored to you.</p>
+        </div>
+        <div class="service-card">
+          <div class="icon">💙</div>
+          <h3>Anxiety &amp; Depression Treatment</h3>
+          <p>Personalized, evidence-based care for anxiety, depression, panic disorder, and more — with a focus on root causes and sustainable plans.</p>
+        </div>
+        <div class="service-card">
+          <div class="icon">💊</div>
+          <h3>Medication Management</h3>
+          <p>Ongoing oversight, dosage adjustments, and monitoring to ensure your psychiatric treatment is working safely and effectively.</p>
+        </div>
+      </div>
+      <div style="text-align:center; margin-top:1.75rem;">
+        <a href="/services/" class="cta-button">View All Services →</a>
+      </div>
+
+      <div class="about-split">
+        <div class="about-art">🧠</div>
+        <div>
+          <h3>Florida's Virtual Psychiatric Practice for Women</h3>
+          <p>Today Telemedicine PLLC is a Florida-licensed virtual practice dedicated to helping women access quality psychiatric care — without the commute, the waiting room, or the scheduling headaches.</p>
+          <p>Our providers take the time to understand your full picture before recommending any treatment. Confidential, compassionate, and 100% virtual.</p>
+          <a href="/about/" class="cta-button">Learn More About Us →</a>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <div class="info-footer">
     <div>
@@ -122,7 +125,8 @@ body { font-family: var(--font); background: var(--page-bg); color: var(--ink); 
         <li>Virtual psychiatric consultations</li>
         <li>Anxiety &amp; depression treatment</li>
         <li>Medication management</li>
-        <li>Ongoing care &amp; appointment reminders</li>
+        <li>Ongoing care &amp; follow-ups</li>
+        <li>Personalized treatment plans</li>
       </ul>
     </div>
     <div>
@@ -133,11 +137,13 @@ body { font-family: var(--font); background: var(--page-bg); color: var(--ink); 
 
   <footer class="footer">
     <div class="footer-top">
-      <div class="footer-left">© 2025 Today Telemedicine · All rights reserved</div>
+      <div class="footer-left">© 2025 Today Telemedicine PLLC · All rights reserved</div>
       <nav class="footer-links">
+        <a href="/about/">About</a>
+        <a href="/services/">Services</a>
+        <a href="/contact/">Contact</a>
         <a href="/privacy/">Privacy Policy</a>
         <a href="/terms/">Terms of Service</a>
-        <a href="mailto:admin@todaytelemedicine.com">Contact</a>
       </nav>
     </div>
     <div class="footer-legal">Today Telemedicine PLLC · Orlando, FL 32801 · <a href="tel:+18009518257" style="color:inherit;">(800) 951-8257</a> · <a href="mailto:admin@todaytelemedicine.com" style="color:inherit;">admin@todaytelemedicine.com</a></div>
