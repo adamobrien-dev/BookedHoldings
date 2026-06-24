@@ -62,6 +62,16 @@
     },
     {
       "source": "/(.*)",
+      "has": [{ "type": "host", "value": "todaytelemedicinellc.com" }],
+      "destination": "/today-telemedicine/$1"
+    },
+    {
+      "source": "/(.*)",
+      "has": [{ "type": "host", "value": "www.todaytelemedicinellc.com" }],
+      "destination": "/today-telemedicine/$1"
+    },
+    {
+      "source": "/(.*)",
       "has": [{ "type": "host", "value": "escape-zgm.bookednow.app" }],
       "destination": "/escape-zgm/$1"
     },
