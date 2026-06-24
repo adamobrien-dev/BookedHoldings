@@ -29,8 +29,7 @@
 html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
 body { font-family: var(--font); background: var(--page-bg); color: var(--ink); min-height: 100vh; -webkit-font-smoothing: antialiased; }
 
-.page { min-height: 100vh; display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: auto 1fr auto; }
-@media (max-width: 780px) { .page { grid-template-columns: 1fr; } .hero { display: none; } }
+.page { min-height: 100vh; display: grid; grid-template-columns: 1fr; }
 
 .header { grid-column: 1 / -1; padding: 1.25rem clamp(1rem, 4vw, 2rem); display: flex; align-items: center; gap: 0.75rem; background: var(--white); border-bottom: 1px solid var(--line); }
 .business-bar { grid-column: 1 / -1; background: var(--surface); border-bottom: 1px solid var(--line); padding: 0.5rem clamp(1rem, 4vw, 2rem); display: flex; flex-wrap: wrap; gap: 0.4rem 1.5rem; align-items: center; font-size: 0.75rem; color: var(--faint); }
@@ -41,7 +40,14 @@ body { font-family: var(--font); background: var(--page-bg); color: var(--ink); 
 .logo-text { font-weight: 800; font-size: 1rem; color: var(--ink); }
 .logo-text span { color: var(--faint); font-weight: 500; }
 
-.hero { background: linear-gradient(155deg, #2e1a47 0%, #5b2a8c 50%, #9061d6 100%); padding: clamp(2rem, 6vw, 4rem) clamp(1.5rem, 4vw, 3rem); display: flex; flex-direction: column; justify-content: center; gap: 2rem; position: relative; overflow: hidden; }
+.hero { background: linear-gradient(155deg, #2e1a47 0%, #5b2a8c 50%, #9061d6 100%); padding: clamp(2.5rem, 6vw, 4rem) clamp(1.5rem, 5vw, 6rem); display: flex; flex-direction: column; justify-content: center; gap: 2rem; position: relative; overflow: hidden; max-width: 100%; }
+.hero h1 { max-width: 720px; }
+.hero-sub { max-width: 640px; }
+.benefits { max-width: 640px; }
+.testimonial { max-width: 640px; }
+.hero-cta { margin-top: 0.5rem; }
+.hero-cta a { display: inline-flex; align-items: center; gap: 0.5rem; background: #fff; color: #5b2a8c; font-size: 1rem; font-weight: 700; padding: 0.85rem 1.75rem; border-radius: 10px; text-decoration: none; transition: box-shadow 0.15s, transform 0.1s; }
+.hero-cta a:hover { box-shadow: 0 6px 20px rgba(0,0,0,0.2); transform: translateY(-1px); }
 .hero::before { content: ''; position: absolute; inset: 0; background: url("data:image/svg+xml,%3Csvg width='80' height='80' viewBox='0 0 80 80' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Ccircle cx='40' cy='40' r='3'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E"); }
 .hero-badge { display: inline-flex; align-items: center; gap: 0.5rem; background: rgba(255,255,255,0.15); color: #e9d5ff; font-size: 0.8125rem; font-weight: 600; padding: 0.35rem 0.85rem; border-radius: 9999px; border: 1px solid rgba(255,255,255,0.2); width: fit-content; }
 .hero h1 { font-size: clamp(1.75rem, 4vw, 2.5rem); font-weight: 800; color: #fff; line-height: 1.2; }
@@ -54,51 +60,14 @@ body { font-family: var(--font); background: var(--page-bg); color: var(--ink); 
 .testimonial p { color: rgba(255,255,255,0.9); font-size: 0.9rem; line-height: 1.6; font-style: italic; }
 .testimonial cite { display: block; margin-top: 0.75rem; color: #d8b4fe; font-size: 0.8125rem; font-weight: 600; font-style: normal; }
 
-.form-panel { background: var(--white); padding: clamp(2rem, 5vw, 3.5rem) clamp(1.5rem, 4vw, 3rem); display: flex; flex-direction: column; justify-content: center; }
-.form-header { margin-bottom: 1.75rem; }
-.form-header h2 { font-size: 1.5rem; font-weight: 800; color: var(--ink); line-height: 1.3; }
-.form-header p { margin-top: 0.5rem; color: var(--muted); font-size: 0.9375rem; line-height: 1.6; }
-.offer-pill { display: inline-flex; align-items: center; gap: 0.5rem; background: var(--gold-soft); color: var(--gold); font-size: 0.8125rem; font-weight: 700; padding: 0.35rem 0.85rem; border-radius: 9999px; margin-bottom: 1rem; }
-
-form { display: flex; flex-direction: column; gap: 1rem; }
-.field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; }
-@media (max-width: 480px) { .field-row { grid-template-columns: 1fr; } }
-.field { display: flex; flex-direction: column; gap: 0.4rem; }
-label { font-size: 0.875rem; font-weight: 600; color: var(--ink); }
-label .req { color: #dc2626; margin-left: 2px; }
-input[type="text"], input[type="email"], input[type="tel"] { height: 3rem; padding: 0 1rem; border: 1.5px solid var(--line); border-radius: 10px; font: inherit; font-size: 1rem; color: var(--ink); background: var(--surface); transition: border-color 0.15s, box-shadow 0.15s; width: 100%; }
-input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); background: #fff; }
-
-.consent-block { background: var(--surface); border: 1.5px solid var(--line); border-radius: 10px; padding: 1rem; }
-.consent-check { display: flex; gap: 0.75rem; align-items: flex-start; }
-.consent-check input[type="checkbox"] { width: 20px; height: 20px; margin-top: 2px; flex-shrink: 0; accent-color: var(--accent); cursor: pointer; }
-.consent-check label { font-size: 0.8125rem; font-weight: 400; color: var(--muted); line-height: 1.55; cursor: pointer; }
-.consent-check label strong { font-weight: 600; color: var(--ink); }
-.fine-print { font-size: 0.75rem; color: var(--faint); line-height: 1.55; margin-top: 0.75rem; }
-.fine-print a { color: var(--accent); text-decoration: none; }
-.fine-print a:hover { text-decoration: underline; }
-.error-msg { color: #dc2626; font-size: 0.8125rem; margin-top: 0.25rem; display: none; }
-.error-msg.visible { display: block; }
-
-.submit-btn { height: 3.25rem; background: var(--accent); color: #fff; border: none; border-radius: 10px; font-size: 1rem; font-weight: 700; cursor: pointer; transition: background 0.15s, transform 0.1s, box-shadow 0.15s; display: flex; align-items: center; justify-content: center; gap: 0.5rem; }
-.submit-btn:hover:not(:disabled) { background: var(--accent-hover); box-shadow: 0 4px 16px rgba(124, 58, 237, 0.35); }
-.submit-btn:active:not(:disabled) { transform: scale(0.98); }
-.submit-btn:disabled { opacity: 0.7; cursor: not-allowed; }
-
-.success-panel { display: none; flex-direction: column; align-items: center; text-align: center; gap: 1.25rem; padding: 2rem 0; }
-.success-panel.visible { display: flex; }
-.success-icon { width: 72px; height: 72px; background: linear-gradient(135deg, #5b2a8c, #9061d6); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 2rem; }
-.success-panel h2 { font-size: 1.5rem; font-weight: 800; color: var(--ink); }
-.success-panel p { color: var(--muted); font-size: 0.9375rem; line-height: 1.6; max-width: 28rem; }
-
-.info-footer { grid-column: 1 / -1; background: var(--surface); border-top: 1px solid var(--line); padding: 2rem clamp(1rem, 4vw, 2.5rem); display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1.5rem; }
+.info-footer { background: var(--surface); border-top: 1px solid var(--line); padding: 2rem clamp(1rem, 4vw, 2.5rem); display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1.5rem; }
 @media (max-width: 640px) { .info-footer { grid-template-columns: 1fr; } }
 .info-footer h3 { font-size: 0.9375rem; font-weight: 700; color: var(--ink); margin-bottom: 0.75rem; }
 .info-footer p, .info-footer li { font-size: 0.875rem; color: var(--muted); line-height: 1.65; }
 .info-footer ul { list-style: none; padding: 0; }
 .info-footer a { color: var(--accent); text-decoration: none; }
 .info-footer a:hover { text-decoration: underline; }
-.footer { grid-column: 1 / -1; padding: 1.5rem clamp(1rem, 4vw, 2rem); border-top: 1px solid var(--line); background: var(--white); }
+.footer { padding: 1.5rem clamp(1rem, 4vw, 2rem); border-top: 1px solid var(--line); background: var(--white); }
 .footer-top { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.75rem; margin-bottom: 0.5rem; }
 .footer-left { font-size: 0.8125rem; color: var(--faint); }
 .footer-legal { font-size: 0.75rem; color: var(--faint); }
@@ -137,70 +106,8 @@ input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px 
       <p>"Today Telemedicine made it so easy to get the help I needed without taking time off work or sitting in a waiting room. My provider truly listens."</p>
       <cite>— Monica T., Orlando</cite>
     </div>
-  </section>
-
-  <section class="form-panel" aria-label="Claim your free consultation">
-    <div id="form-wrapper">
-      <div class="form-header">
-        <div class="offer-pill">🎁 Free Consultation — No Credit Card Required</div>
-        <h2>Claim Your Free Telepsychiatry Consultation</h2>
-        <p>Fill out the form below and our team will reach out within 24 hours to schedule your virtual visit.</p>
-      </div>
-
-      <form id="optin-form" novalidate>
-        <div class="field-row">
-          <div class="field">
-            <label for="firstName">First Name <span class="req">*</span></label>
-            <input type="text" id="firstName" name="firstName" placeholder="Monica" autocomplete="given-name" required>
-            <span class="error-msg" id="err-firstName">Please enter your first name.</span>
-          </div>
-          <div class="field">
-            <label for="lastName">Last Name</label>
-            <input type="text" id="lastName" name="lastName" placeholder="Torres" autocomplete="family-name">
-          </div>
-        </div>
-        <div class="field">
-          <label for="phone">Mobile Phone <span class="req">*</span></label>
-          <input type="tel" id="phone" name="phone" placeholder="(800) 555-0100" autocomplete="tel" required>
-          <span class="error-msg" id="err-phone">Please enter a valid phone number.</span>
-        </div>
-        <div class="field">
-          <label for="email">Email Address</label>
-          <input type="email" id="email" name="email" placeholder="monica@example.com" autocomplete="email">
-        </div>
-
-        <div class="consent-block">
-          <div class="consent-check">
-            <input type="checkbox" id="consent" name="consent">
-            <label for="consent">
-              <strong>I agree to receive SMS text messages from Today Telemedicine.</strong><br>
-              By checking this box I agree to receive recurring automated SMS messages and/or emails from
-              <strong>Today Telemedicine</strong> at the phone number and email provided above regarding
-              my consultation, appointment reminders, special offers, and care updates.
-              Message frequency varies. Message &amp; data rates may apply.
-              Reply <strong>STOP</strong> to unsubscribe or <strong>HELP</strong> for help.
-              <strong>Consent is not a condition of purchase.</strong>
-            </label>
-          </div>
-          <p class="fine-print">
-            Supported carriers are not liable for delayed or undelivered messages.
-            By submitting this form you also agree to our
-            <strong><a href="/privacy/">Privacy Policy</a></strong> and
-            <strong><a href="/terms/">Terms of Service</a></strong>.
-            Your mobile opt-in information and consent will not be shared with any third parties for marketing purposes.
-          </p>
-        </div>
-
-        <button type="submit" class="submit-btn" id="submit-btn">
-          <span id="btn-text">Claim My Free Consultation →</span>
-        </button>
-      </form>
-    </div>
-
-    <div class="success-panel" id="success-panel" aria-live="polite">
-      <div class="success-icon">🧠</div>
-      <h2>You're all set!</h2>
-      <p>Thank you for reaching out. A member of the Today Telemedicine team will contact you within 24 hours to schedule your free virtual consultation. Check your messages!</p>
+    <div class="hero-cta">
+      <a href="tel:+18009518257">📞 Call to Book Your Free Consultation</a>
     </div>
   </section>
 
@@ -237,39 +144,6 @@ input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px 
   </footer>
 </div>
 
-<script>
-const form    = document.getElementById('optin-form');
-const btn     = document.getElementById('submit-btn');
-const btnText = document.getElementById('btn-text');
-const wrapper = document.getElementById('form-wrapper');
-const success = document.getElementById('success-panel');
-
-function showError(id, show) {
-  const el = document.getElementById('err-' + id);
-  if (el) el.classList.toggle('visible', show);
-}
-function validatePhone(v) { return v.replace(/\D/g, '').length >= 10; }
-
-form.addEventListener('submit', e => {
-  e.preventDefault();
-  const firstName = form.firstName.value.trim();
-  const phone     = form.phone.value.trim();
-  let valid = true;
-  showError('firstName', !firstName); if (!firstName) valid = false;
-  showError('phone', !validatePhone(phone)); if (!validatePhone(phone)) valid = false;
-  if (!valid) return;
-  btn.disabled = true;
-  btnText.textContent = 'Submitting…';
-  setTimeout(() => { wrapper.style.display = 'none'; success.classList.add('visible'); }, 800);
-});
-
-document.getElementById('phone').addEventListener('input', function () {
-  const digits = this.value.replace(/\D/g, '').slice(0, 10);
-  if (digits.length <= 3) this.value = digits;
-  else if (digits.length <= 6) this.value = `(${digits.slice(0,3)}) ${digits.slice(3)}`;
-  else this.value = `(${digits.slice(0,3)}) ${digits.slice(3,6)}-${digits.slice(6)}`;
-});
-</script>
 <script src="https://widgets.leadconnectorhq.com/loader.js" data-resources-url="https://widgets.leadconnectorhq.com/chat-widget/loader.js" data-widget-id="6a29e78917728c1e130be91d" data-source="WEB_USER"></script>
 </body>
 </html>
