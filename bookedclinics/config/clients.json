@@ -154,6 +154,28 @@
     }
   },
   {
+    "key": "uhunoma",
+    "name": "Uhunoma Osadolor",
+    "biz": "Ample Grace Psychiatry · Telepsychiatry · MN/OR/NE",
+    "niche": "Telepsychiatry · Minnesota",
+    "locationId": "Gp9XqlUm3EXKlIjrrQpi",
+    "pitEnv": "GHL_PIT_UHUNOMA",
+    "stripeId": null,
+    "status": "setup",
+    "deal": "Flat $500/mo",
+    "dealSub": "Onboarding waived",
+    "cycleDays": 30,
+    "retainerAmount": 500,
+    "_provision": {
+      "phone": "+18002234914",
+      "city": "Minneapolis",
+      "state": "MN",
+      "zip": "55401",
+      "timezone": "America/Chicago",
+      "website": "https://amplegracepsych.com"
+    }
+  },
+  {
     "key": "sarah",
     "name": "Sarah Purdy",
     "biz": "Today Telemedicine · Women's Telepsychiatry · Florida",
