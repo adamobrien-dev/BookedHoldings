@@ -120,4 +120,3 @@ BookedHoldings/
 - `META_SYSTEM_TOKEN` env var is in Vercel **Production only** — not in Preview deployments. Test Meta API features via the live production URL.
 - GHL sub-accounts use environment variables per client (`GHL_PIT_[KEY]`).
 - A2P text verification (TCR) is pending for: RTB Spa, Paradise Healing, My Adult Primary Care — needs resubmission with correct business pages.
-- The `claude/notifications-feature-GCehi` branch is the designated dev branch for this session. Always use it for development, then merge to main for production.
