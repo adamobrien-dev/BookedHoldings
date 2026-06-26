@@ -72,6 +72,11 @@
     },
     {
       "source": "/(.*)",
+      "has": [{ "type": "host", "value": "amplegrace.bookednow.app" }],
+      "destination": "/amplegrace/$1"
+    },
+    {
+      "source": "/(.*)",
       "has": [{ "type": "host", "value": "escape-zgm.bookednow.app" }],
       "destination": "/escape-zgm/$1"
     },
