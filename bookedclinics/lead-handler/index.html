@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Lead Handler System — BookedClinics</title>
+<meta name="description" content="Stop losing leads. Follow these proven lead management rules to double your clinic's patient bookings without spending more on ads.">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+body{font-family:'DM Sans',system-ui,-apple-system,sans-serif;color:#1c1c1c;background:#fff;line-height:1.65;font-size:16px;-webkit-font-smoothing:antialiased}
+img,svg{display:block;max-width:100%}
+a{color:inherit;text-decoration:none}
+ul{list-style:none}
+button{font-family:inherit}
+
+.wrap{width:100%;max-width:900px;margin:0 auto;padding:0 24px}
+.wrap-wide{width:100%;max-width:1100px;margin:0 auto;padding:0 24px}
+section{padding:72px 0}
+
+h1{font-size:clamp(2rem,5vw,3rem);font-weight:800;line-height:1.15;letter-spacing:-0.025em;color:#0a0a0a}
+h2{font-size:clamp(1.4rem,3vw,2rem);font-weight:700;line-height:1.2;letter-spacing:-0.02em;color:#0a0a0a}
+h3{font-size:1.1rem;font-weight:700;line-height:1.3;color:#0a0a0a}
+p{color:#3a3a3a}
+.label{font-size:0.78rem;font-weight:600;text-transform:uppercase;letter-spacing:0.1em;color:#0b7a5a;margin-bottom:10px}
+
+.btn{display:inline-flex;align-items:center;justify-content:center;font-family:inherit;font-weight:600;font-size:1rem;border:none;border-radius:8px;cursor:pointer;transition:all 0.2s ease;text-align:center}
+.btn-primary{background:#0b7a5a;color:#fff;padding:16px 32px;font-size:1.05rem}
+.btn-primary:hover{background:#096b4e;transform:translateY(-1px);box-shadow:0 4px 16px rgba(11,122,90,0.25)}
+.btn-lg{padding:18px 40px;font-size:1.1rem;border-radius:10px}
+
+.site-header{position:sticky;top:0;z-index:100;background:rgba(255,255,255,0.97);backdrop-filter:blur(8px);border-bottom:1px solid #eee;padding:0 24px}
+.header-inner{max-width:1100px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;height:60px}
+.logo{font-size:1.15rem;font-weight:800;color:#0a0a0a;letter-spacing:-0.02em}
+.logo span{color:#0b7a5a}
+
+/* Hero */
+.hero{padding:80px 0 60px;background:linear-gradient(180deg,#f6faf8 0%,#fff 100%);text-align:center}
+.hero .eyebrow{display:inline-block;background:#e6f5ef;color:#0b7a5a;font-size:0.78rem;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;padding:6px 14px;border-radius:999px;margin-bottom:20px}
+.hero h1{max-width:760px;margin:0 auto 20px}
+.hero .sub{font-size:clamp(1rem,2vw,1.15rem);color:#4a4a4a;max-width:600px;margin:0 auto 36px;line-height:1.7}
+.hero-stat{display:inline-flex;align-items:center;gap:8px;background:#fff;border:1px solid #e0ede8;border-radius:8px;padding:10px 18px;font-size:0.88rem;font-weight:600;color:#0a0a0a;margin-bottom:36px}
+.hero-stat span{color:#0b7a5a;font-size:1.1rem;font-weight:800}
+
+/* Letter */
+.letter{background:#fffdf8;border:1px solid #e8e2d0;border-radius:14px;padding:40px 44px;margin:0 auto 56px;max-width:760px;position:relative}
+.letter::before{content:"";position:absolute;top:0;left:0;right:0;height:4px;background:linear-gradient(90deg,#0b7a5a,#14a87c);border-radius:14px 14px 0 0}
+.letter-from{font-size:0.82rem;color:#888;margin-bottom:20px;font-style:italic}
+.letter p{color:#444;line-height:1.8;margin-bottom:16px;font-size:0.97rem}
+.letter p:last-child{margin-bottom:0}
+.letter-sig{margin-top:20px;font-weight:600;color:#0a0a0a}
+
+/* Rule cards */
+.rules-section{background:#fff}
+.rules-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-top:40px}
+.rule-card{border-radius:14px;padding:36px 32px;position:relative;overflow:hidden}
+.rule-card.rule-1{background:linear-gradient(135deg,#0b7a5a 0%,#0f9a70 100%);color:#fff}
+.rule-card.rule-2{background:linear-gradient(135deg,#0a2e1f 0%,#0f3d2b 100%);color:#fff}
+.rule-num{font-size:3.5rem;font-weight:800;opacity:0.15;position:absolute;top:16px;right:24px;line-height:1}
+.rule-card h3{color:#fff;font-size:1.25rem;margin-bottom:16px}
+.rule-card .rule-lead{font-size:0.95rem;color:rgba(255,255,255,0.85);line-height:1.7;margin-bottom:20px}
+.rule-card ul{display:flex;flex-direction:column;gap:12px}
+.rule-card li{display:flex;align-items:flex-start;gap:10px;font-size:0.9rem;color:rgba(255,255,255,0.9);line-height:1.55}
+.rule-card li::before{content:"→";font-weight:700;flex-shrink:0;color:rgba(255,255,255,0.6)}
+
+/* Routes */
+.routes-section{background:#f6faf8}
+.routes-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-top:40px}
+.route-card{background:#fff;border:1px solid #e5e7eb;border-radius:12px;padding:28px 24px;text-align:center}
+.route-num{width:48px;height:48px;border-radius:50%;background:#0b7a5a;color:#fff;font-weight:800;font-size:1.2rem;display:flex;align-items:center;justify-content:center;margin:0 auto 16px}
+.route-card h3{margin-bottom:10px}
+.route-card p{font-size:0.88rem;color:#555;line-height:1.6}
+.route-tag{display:inline-block;margin-top:14px;font-size:0.75rem;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:#0b7a5a;background:#e6f5ef;padding:4px 10px;border-radius:999px}
+
+/* Phone Script */
+.script-section{background:#fff}
+.script-steps{display:flex;flex-direction:column;gap:0;margin-top:40px;border:1px solid #e5e7eb;border-radius:14px;overflow:hidden}
+.script-step{border-bottom:1px solid #e5e7eb;padding:0}
+.script-step:last-child{border-bottom:none}
+.script-step-header{display:flex;align-items:center;gap:0;cursor:pointer}
+.step-label{background:#0b7a5a;color:#fff;font-size:0.78rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;padding:18px 20px;min-width:110px;text-align:center;flex-shrink:0}
+.step-title{padding:18px 20px;font-weight:700;font-size:1rem;color:#0a0a0a;flex:1}
+.step-chevron{padding:18px 20px;color:#999;transition:transform 0.25s;flex-shrink:0}
+.script-step.open .step-chevron{transform:rotate(180deg);color:#0b7a5a}
+.step-body{max-height:0;overflow:hidden;transition:max-height 0.35s ease}
+.script-step.open .step-body{max-height:600px}
+.step-body-inner{padding:20px 24px 24px;border-top:1px solid #f0f0f0;background:#fafafa}
+.step-body-inner .line{font-size:0.92rem;color:#3a3a3a;padding:6px 0 6px 18px;position:relative;line-height:1.6}
+.step-body-inner .line::before{content:"›";position:absolute;left:0;color:#0b7a5a;font-weight:700;font-size:1.1rem;line-height:1.4}
+.step-note{font-size:0.82rem;color:#777;margin-top:12px;font-style:italic}
+
+/* Objections */
+.objections-section{background:#f6faf8}
+.objection-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-top:40px}
+.obj-card{background:#fff;border:1px solid #e5e7eb;border-radius:12px;padding:28px 24px}
+.obj-card h3{font-size:1rem;margin-bottom:16px;color:#0a0a0a;display:flex;align-items:center;gap:8px}
+.obj-card h3::before{content:"❓";font-size:1rem}
+.larc-steps{display:flex;flex-direction:column;gap:10px}
+.larc-step{display:flex;align-items:flex-start;gap:10px;font-size:0.88rem;color:#3a3a3a;line-height:1.55}
+.larc-badge{background:#0b7a5a;color:#fff;font-size:0.7rem;font-weight:700;padding:2px 8px;border-radius:4px;flex-shrink:0;margin-top:1px}
+
+/* Cheat code */
+.cheatcode{background:linear-gradient(135deg,#fff8e6 0%,#fffbf0 100%);border:1px solid #f0d890;border-radius:12px;padding:28px 32px;margin-top:40px;display:flex;align-items:flex-start;gap:20px}
+.cheatcode-icon{font-size:2rem;flex-shrink:0;line-height:1}
+.cheatcode h3{margin-bottom:8px;color:#7a5a00}
+.cheatcode p{font-size:0.92rem;color:#6a5000;line-height:1.7}
+
+/* LARC framework banner */
+.larc-banner{background:#0b7a5a;border-radius:12px;padding:24px 28px;margin-bottom:32px;display:grid;grid-template-columns:repeat(4,1fr);gap:16px;text-align:center}
+.larc-item{color:#fff}
+.larc-item .larc-num{font-size:1.4rem;font-weight:800;display:block;margin-bottom:4px}
+.larc-item .larc-word{font-size:0.78rem;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;opacity:0.8}
+
+/* CTA */
+.cta-section{background:linear-gradient(135deg,#0a2e1f 0%,#0f3d2b 100%);color:#fff;text-align:center;padding:80px 0}
+.cta-section h2{color:#fff;margin-bottom:14px}
+.cta-section p{color:#b0cfc0;margin-bottom:36px;font-size:1.02rem;max-width:520px;margin-left:auto;margin-right:auto;line-height:1.7}
+.cta-section .btn-primary{background:#fff;color:#0b7a5a;padding:18px 44px;font-size:1.1rem;border-radius:10px}
+.cta-section .btn-primary:hover{background:#f0faf6;box-shadow:0 6px 24px rgba(255,255,255,0.15)}
+.cta-section .microcopy{font-size:0.82rem;color:#7aaa96;margin-top:16px}
+
+/* Footer */
+.site-footer{background:#0a2e1f;color:#7aaa96;padding:36px 0;font-size:0.85rem}
+.footer-inner{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px}
+.footer-brand{font-weight:700;color:#fff;font-size:1rem;margin-bottom:2px}
+.footer-tagline{font-size:0.82rem;color:#5a9a80}
+.footer-links{display:flex;gap:20px}
+.footer-links a{color:#7aaa96;transition:color 0.2s}
+.footer-links a:hover{color:#fff}
+
+@media(max-width:768px){
+  section{padding:52px 0}
+  .rules-grid{grid-template-columns:1fr}
+  .routes-grid{grid-template-columns:1fr}
+  .objection-grid{grid-template-columns:1fr}
+  .larc-banner{grid-template-columns:repeat(2,1fr)}
+  .letter{padding:28px 24px}
+  .footer-inner{flex-direction:column;text-align:center}
+  .footer-links{justify-content:center}
+}
+@media(max-width:480px){
+  .wrap{padding:0 16px}
+  .site-header{padding:0 12px}
+  h1{font-size:1.75rem}
+}
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="header-inner">
+    <a href="/" class="logo">Booked<span>Clinics</span></a>
+    <a href="/book/" class="btn btn-primary" style="font-size:0.85rem;padding:10px 20px;border-radius:6px">Book Your Free Strategy Call</a>
+  </div>
+</header>
+
+<!-- Hero -->
+<section class="hero">
+  <div class="wrap">
+    <span class="eyebrow">Lead Management System</span>
+    <h1>Double Your Results Without Spending More on Ads</h1>
+    <p class="sub">The #1 reason clinics lose patients isn't their ads — it's their lead management. Fix this one problem and your current ad spend starts working twice as hard.</p>
+    <div class="hero-stat">
+      <span>400%</span> increase in contact rate — Harvard Business study across 4,000+ clinics
+    </div>
+
+    <div class="letter">
+      <div class="letter-from">A message from the 7 Figure Docs team</div>
+      <p>"Follow the steps in this guide to increase your lead contact rate, your booking rate, your show rate — and ultimately increase your conversion rate."</p>
+      <p>"Don't spend more money on ads. Fix your lead management problem to <strong>double your current results.</strong> I promise you, it works."</p>
+      <div class="letter-sig">— Brian &amp; Brad, 7FigureDocs.com</div>
+    </div>
+
+    <a href="/book/" class="btn btn-primary btn-lg">Book a Free Discovery Call to Learn More</a>
+    <p style="font-size:0.82rem;color:#888;margin-top:14px">No commitment · 30 minutes · We'll audit your current lead process</p>
+  </div>
+</section>
+
+<!-- Golden Rules -->
+<section class="rules-section">
+  <div class="wrap">
+    <div class="label">The Golden Rules</div>
+    <h2>Two Rules That 4X Your Contact Rate</h2>
+    <p style="margin-top:12px;max-width:620px;color:#555;line-height:1.7">According to a Harvard Business study and data from over 4,000 medical clinics, following these two rules makes you 4× more likely to reach your leads.</p>
+
+    <div class="rules-grid">
+      <div class="rule-card rule-1">
+        <div class="rule-num">1</div>
+        <h3>Speed to Lead</h3>
+        <p class="rule-lead">The fastest business to contact the lead first, wins — every single time.</p>
+        <ul>
+          <li>Call the lead within <strong>5 minutes</strong> of them reaching out. Don't ask, just do it.</li>
+          <li><strong>Double-dial:</strong> Call once, hang up, then call again immediately. If they're real, they'll pick up.</li>
+        </ul>
+      </div>
+      <div class="rule-card rule-2">
+        <div class="rule-num">2</div>
+        <h3>Persistence</h3>
+        <p class="rule-lead">Most leads are lost because of zero follow-up. They reached out to you — you have an obligation to reach back.</p>
+        <ul>
+          <li>Call (double-dial) AND text — twice per day, morning and afternoon.</li>
+          <li>Repeat for 3 consecutive days before moving on.</li>
+          <li>If you're too soft, the next practice wins their business.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 3 Routes -->
+<section class="routes-section">
+  <div class="wrap">
+    <div class="label">How to Execute</div>
+    <h2>Three Routes to Handle Your Leads Correctly</h2>
+    <div class="routes-grid">
+      <div class="route-card">
+        <div class="route-num">1</div>
+        <h3>Do It Yourself</h3>
+        <p>Handle leads yourself or train existing staff. Simple, low cost, best when you have more time than money.</p>
+        <span class="route-tag">Best if: tight budget</span>
+      </div>
+      <div class="route-card">
+        <div class="route-num">2</div>
+        <h3>Outsource It</h3>
+        <p>Hire a call center or lead management company. Good middle ground when you can't hire internally yet.</p>
+        <span class="route-tag">Best if: need coverage now</span>
+      </div>
+      <div class="route-card">
+        <div class="route-num">3</div>
+        <h3>Hire In-House</h3>
+        <p>Dedicated intake person who knows your clinic inside and out. No one will do this job better long-term.</p>
+        <span class="route-tag">Best results long-term</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Phone Script -->
+<section class="script-section">
+  <div class="wrap">
+    <div class="label">The Proven Phone Script</div>
+    <h2>A 7-Step Script That Books Appointments</h2>
+    <p style="margin-top:12px;max-width:620px;color:#555;line-height:1.7">Every line of this script is tested across thousands of clinic calls. Follow it in order and adapt the name of your clinic and promotion.</p>
+
+    <div class="script-steps" style="margin-top:32px">
+
+      <div class="script-step">
+        <div class="script-step-header" onclick="toggleStep(this)">
+          <div class="step-label">Step 1</div>
+          <div class="step-title">Introduction</div>
+          <div class="step-chevron">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+          </div>
+        </div>
+        <div class="step-body">
+          <div class="step-body-inner">
+            <div class="line">Hi, is this Sarah?</div>
+            <div class="line">Hi Sarah, this is Jessica from ABC Clinic.</div>
+            <div class="line">I saw you requested information about our [AD PROMOTION] earlier today.</div>
+            <div class="line">We typically reach out right away just to ask a few questions to make sure we're the right fit AND confirm you're a real person off the internet (haha).</div>
+            <div class="line">What specifically about our [AD PROMOTION] peaked your interest?</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="script-step">
+        <div class="script-step-header" onclick="toggleStep(this)">
+          <div class="step-label">Step 2</div>
+          <div class="step-title">Discovery</div>
+          <div class="step-chevron">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+          </div>
+        </div>
+        <div class="step-body">
+          <div class="step-body-inner">
+            <div class="line">What is the biggest challenge or goal that has you looking for help?</div>
+            <div class="line">How long has this been bothering you?</div>
+            <div class="line">Have you tried anything else to solve this problem or achieve this goal?</div>
+            <div class="line">How is this affecting your day-to-day life?</div>
+            <div class="line">What happened recently that made you decide it's time to do something about it?</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="script-step">
+        <div class="script-step-header" onclick="toggleStep(this)">
+          <div class="step-label">Step 3</div>
+          <div class="step-title">Clarify</div>
+          <div class="step-chevron">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+          </div>
+        </div>
+        <div class="step-body">
+          <div class="step-body-inner">
+            <div class="line">So if I'm hearing you correctly…</div>
+            <div class="line">You've been dealing with this for ______.</div>
+            <div class="line">It's affecting your ______.</div>
+            <div class="line">And you're ready to finally do something about it and achieve ______.</div>
+            <div class="line">Does that sound accurate?</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="script-step">
+        <div class="script-step-header" onclick="toggleStep(this)">
+          <div class="step-label">Step 4</div>
+          <div class="step-title">Paint the Future</div>
+          <div class="step-chevron">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+          </div>
+        </div>
+        <div class="step-body">
+          <div class="step-body-inner">
+            <div class="line">Amazing. So if we were able to [solve their challenge / achieve their goal], how would that impact or change things for you?</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="script-step">
+        <div class="script-step-header" onclick="toggleStep(this)">
+          <div class="step-label">Step 5</div>
+          <div class="step-title">Book the Appointment</div>
+          <div class="step-chevron">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+          </div>
+        </div>
+        <div class="step-body">
+          <div class="step-body-inner">
+            <div class="line">Based on what you've told me Sarah, you sound exactly like the type of person we help here at ABC Clinic.</div>
+            <div class="line">[Optional] Patient Mary was experiencing the exact same challenge, and we were able to achieve [XYZ result] in [XYZ timeframe].</div>
+            <div class="line">I have Tuesday at 2:00 PM or Wednesday at 10:00 AM available. Which works better for you?</div>
+            <p class="step-note">Always give two specific options — never ask "when are you free?"</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="script-step">
+        <div class="script-step-header" onclick="toggleStep(this)">
+          <div class="step-label">Step 6</div>
+          <div class="step-title">Accountability Close</div>
+          <div class="step-chevron">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+          </div>
+        </div>
+        <div class="step-body">
+          <div class="step-body-inner">
+            <div class="line">Amazing — I have you booked with Doctor John for Wednesday at 10 AM.</div>
+            <div class="line">Doctor John is very busy and will be setting aside 30 minutes specifically for you. Is there any reason we shouldn't expect you to show up?</div>
+            <div class="line">Great — we are looking forward to seeing you then!</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="script-step">
+        <div class="script-step-header" onclick="toggleStep(this)">
+          <div class="step-label">Step 7</div>
+          <div class="step-title">Credit Card (Optional)</div>
+          <div class="step-chevron">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+          </div>
+        </div>
+        <div class="step-body">
+          <div class="step-body-inner">
+            <div class="line">To avoid no-shows and out of respect for each other's time, we do require a card on file to reserve the timeslot with the doctor.</div>
+            <div class="line">It's a $50 no-show fee in the event you totally ghost us (which I know you won't — LOL).</div>
+            <div class="line">Just give us 24 hours notice if anything changes so we can fill the spot with someone else.</div>
+            <div class="line">I'm ready for the card when you are!</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- Objections -->
+<section class="objections-section">
+  <div class="wrap">
+    <div class="label">Objection Handling</div>
+    <h2>The L.A.R.C. Framework</h2>
+    <p style="margin-top:12px;max-width:620px;color:#555;line-height:1.7;margin-bottom:28px">Every objection follows the same four-step framework. Master this and no lead catches you off guard.</p>
+
+    <div class="larc-banner">
+      <div class="larc-item"><span class="larc-num">1. Listen</span><span class="larc-word">Don't interrupt</span></div>
+      <div class="larc-item"><span class="larc-num">2. Ask</span><span class="larc-word">Dig deeper</span></div>
+      <div class="larc-item"><span class="larc-num">3. Respond</span><span class="larc-word">Address the real concern</span></div>
+      <div class="larc-item"><span class="larc-num">4. Close</span><span class="larc-word">Offer the time slot</span></div>
+    </div>
+
+    <div class="objection-grid">
+
+      <div class="obj-card">
+        <h3>How much does it cost?</h3>
+        <div class="larc-steps">
+          <div class="larc-step"><span class="larc-badge">Ask</span> Is cost the most important thing, or getting the result?</div>
+          <div class="larc-step"><span class="larc-badge">Respond</span> The investment varies — typically X to Y, but we have payment plans as low as Z/month. Most patients say they'd have paid double.</div>
+          <div class="larc-step"><span class="larc-badge">Close</span> Does tomorrow at 4 PM work for you?</div>
+        </div>
+      </div>
+
+      <div class="obj-card">
+        <h3>Is it covered by insurance?</h3>
+        <div class="larc-steps">
+          <div class="larc-step"><span class="larc-badge">Ask</span> Is insurance the most important thing, or getting the result?</div>
+          <div class="larc-step"><span class="larc-badge">Respond</span> Unfortunately not, but our payment plans are often equal to or less than insurance co-pays — and you get results much faster.</div>
+          <div class="larc-step"><span class="larc-badge">Close</span> Does tomorrow at 4 PM work?</div>
+        </div>
+      </div>
+
+      <div class="obj-card">
+        <h3>It's too expensive.</h3>
+        <div class="larc-steps">
+          <div class="larc-step"><span class="larc-badge">Ask</span> What exactly are you comparing this to?</div>
+          <div class="larc-step"><span class="larc-badge">Respond</span> If you don't address this now, it typically gets 2–3× more expensive down the road. Most patients don't even think about what they paid once they see results.</div>
+          <div class="larc-step"><span class="larc-badge">Close</span> Does tomorrow at 4 PM work?</div>
+        </div>
+      </div>
+
+      <div class="obj-card">
+        <h3>I need to check my schedule.</h3>
+        <div class="larc-steps">
+          <div class="larc-step"><span class="larc-badge">Ask</span> Do you have your phone or calendar on you right now?</div>
+          <div class="larc-step"><span class="larc-badge">Respond</span> I'll hang here and grab a quick water while you grab that.</div>
+          <div class="larc-step"><span class="larc-badge">Close</span> What time works best — Tuesday or Wednesday?</div>
+        </div>
+      </div>
+
+      <div class="obj-card">
+        <h3>I need to think about it.</h3>
+        <div class="larc-steps">
+          <div class="larc-step"><span class="larc-badge">Ask</span> Out of curiosity, what exactly do you need to think about?</div>
+          <div class="larc-step"><span class="larc-badge">Respond</span> I've found it's best to answer questions together now — because life gets busy and we delay what's most important. On a scale of 1–10, how do you feel about this?</div>
+          <div class="larc-step"><span class="larc-badge">Close</span> Great — does Tuesday or Wednesday work best?</div>
+        </div>
+      </div>
+
+      <div class="obj-card">
+        <h3>I need to talk to my spouse.</h3>
+        <div class="larc-steps">
+          <div class="larc-step"><span class="larc-badge">Ask</span> Does your spouse know about this problem? Would they be opposed to a solution?</div>
+          <div class="larc-step"><span class="larc-badge">Respond</span> Good news — this is just a consultation, no commitment. You can make the final decision together when you come in.</div>
+          <div class="larc-step"><span class="larc-badge">Close</span> Let's get a date booked — worst case you can call me back to adjust. Tuesday or Wednesday?</div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="cheatcode">
+      <div class="cheatcode-icon">🤓</div>
+      <div>
+        <h3>Cheat Code: Patient Testimonial Stories</h3>
+        <p>Use real patient stories to relate to the lead's specific objection. <em>"Sarah had the exact same concern, and we were able to [result] in [timeframe]."</em> It builds trust and lowers resistance faster than any other technique.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-section">
+  <div class="wrap">
+    <h2>Want Us to Set This Up For Your Clinic?</h2>
+    <p>We help clinics implement this entire lead management system — automated follow-up, proven scripts, and paid ads that feed it — for a flat $499/month.</p>
+    <a href="/book/" class="btn btn-primary">Book a Free Discovery Call</a>
+    <p class="microcopy">No commitment · 30 minutes · We'll audit your current lead process for free</p>
+  </div>
+</section>
+
+<footer class="site-footer">
+  <div class="wrap-wide">
+    <div class="footer-inner">
+      <div>
+        <div class="footer-brand">BookedClinics</div>
+        <div class="footer-tagline">More patients. Less wasted ad spend.</div>
+      </div>
+      <div class="footer-links">
+        <a href="/">Home</a>
+        <a href="/book/">Book a Call</a>
+        <a href="mailto:hello@bookedclinics.ca">Contact</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script>
+function toggleStep(header) {
+  var step = header.parentElement;
+  var isOpen = step.classList.contains('open');
+  step.classList.toggle('open', !isOpen);
+}
+</script>
+
+</body>
+</html>
