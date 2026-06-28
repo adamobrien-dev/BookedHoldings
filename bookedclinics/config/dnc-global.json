@@ -1,0 +1,8 @@
+{
+  "_comment": "Global Do Not Contact — never send any message to these people under any circumstance",
+  "contacts": [
+    { "name": "Japa Kullar", "phone": "+13109202574", "reason": "Chargeback risk — active dispute" },
+    { "name": "Allaphia Richards", "phone": "+17818886625", "reason": "Active client — exclude from all blasts" },
+    { "name": "Thania Ramirez", "phone": "+14012481915", "reason": "Active client — exclude from all blasts" }
+  ]
+}
