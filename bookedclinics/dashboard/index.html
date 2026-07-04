@@ -149,6 +149,10 @@
   .pill-yellow { background: var(--warning-soft); color: var(--warning); border: 1px solid var(--warning-border); }
   .pill-blue { background: var(--info-soft); color: var(--info); border: 1px solid var(--info-border); }
   .pill-gray { background: var(--bg-raised-2); color: var(--text-tertiary); border: 1px solid var(--border); }
+  .pill-purple { background: var(--purple-soft); color: var(--purple); border: 1px solid var(--purple-border); }
+  .source-tag { font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.4px; padding: 2px 7px; border-radius: 4px; }
+  .source-tag.agency { background: var(--purple-soft); color: var(--purple); }
+  .source-tag.client { background: var(--info-soft); color: var(--info); }
   .pill-gray::before { display: none; }
 
   /* ── UPCOMING PAYMENTS ── */
@@ -373,7 +377,7 @@
     <div class="alert alert-red" id="alert-sc-recovery" style="display:none;">
       <div class="alert-icon">🚨</div>
       <div class="alert-content">
-        <div class="alert-title" id="alert-sc-recovery-title">SC: Upcoming contacts with no call booked</div>
+        <div class="alert-title"><span class="source-tag agency">BookedClinics Pipeline</span> <span id="alert-sc-recovery-title">SC: Upcoming contacts with no call booked</span></div>
         <div class="alert-body" id="alert-sc-recovery-body"></div>
       </div>
     </div>
@@ -624,6 +628,12 @@
     <div class="section-title">Recovery Pipeline</div>
     <span class="section-badge pill pill-red" id="recovery-total-badge">Loading...</span>
   </div>
+  <div class="alert alert-purple" style="margin-bottom:24px;">
+    <div class="alert-icon">🎯</div>
+    <div class="alert-content">
+      <div class="alert-body">Everything below is <strong>BookedClinics' own sales pipeline</strong> — people who inquired about becoming a client, or contracts you sent them. This is not your existing clients' patient data (see the Clients tab for that).</div>
+    </div>
+  </div>
 
   <!-- SC: Qualified — No Call Booked -->
   <div class="recovery-section">
@@ -681,8 +691,14 @@
 
 <div class="tab-section" id="tab-weekly">
   <div class="section-header" style="margin-top:24px;">
-    <div class="section-title">Automate Clients — Weekly Revenue Report</div>
+    <div class="section-title">BookedClinics Sales Pipeline — Weekly Report</div>
     <button onclick="loadWeeklyReport()" id="weekly-refresh-btn" style="font-size:11px;color:var(--accent);background:none;border:1px solid var(--accent);border-radius:6px;padding:4px 10px;cursor:pointer;">Refresh</button>
+  </div>
+  <div class="alert alert-purple" style="margin-bottom:20px;">
+    <div class="alert-icon">🎯</div>
+    <div class="alert-content">
+      <div class="alert-body">This tracks calls with <strong>people who might become BookedClinics clients</strong> (your own sales pipeline) — not patient activity inside your clients' own booking systems.</div>
+    </div>
   </div>
 
   <div style="display:flex;align-items:center;gap:10px;margin-bottom:20px;flex-wrap:wrap;">
@@ -989,7 +1005,7 @@ function renderOverviewAlerts(billingRows, clients, keysHealth) {
 
   // Failed payments
   (billingRows || []).filter(r => r.paymentStatus === 'failed' && !isChurnedRow(r)).forEach(r => {
-    alerts.push({ type: 'alert-red', icon: '🚨',
+    alerts.push({ type: 'alert-red', icon: '🚨', source: 'client',
       title: r.name + ' — payment FAILED',
       body: 'Stripe shows a failed charge. No work should begin until $' + (r.nextAmount || r.retainerAmount || 500) + ' clears. Resend the payment link immediately.',
     });
@@ -1000,12 +1016,12 @@ function renderOverviewAlerts(billingRows, clients, keysHealth) {
     const due = new Date(r.nextDueDate);
     const days = Math.ceil((due - now) / 86400000);
     if (days < 0) {
-      alerts.push({ type: 'alert-red', icon: '🚨',
+      alerts.push({ type: 'alert-red', icon: '🚨', source: 'client',
         title: r.name + ' — payment ' + Math.abs(days) + 'd overdue',
         body: (r.nextAmount ? '$' + r.nextAmount : 'Payment') + ' was due ' + fmtDate(r.nextDueDate) + '. Follow up now.',
       });
     } else if (days <= 5) {
-      alerts.push({ type: 'alert-yellow', icon: '⚠️',
+      alerts.push({ type: 'alert-yellow', icon: '⚠️', source: 'client',
         title: r.name + ' — payment due in ' + days + ' day' + (days === 1 ? '' : 's'),
         body: (r.nextAmount ? '$' + r.nextAmount : 'Payment') + ' due ' + fmtDate(r.nextDueDate) + '. Invoice via Stripe.',
       });
@@ -1022,20 +1038,20 @@ function renderOverviewAlerts(billingRows, clients, keysHealth) {
     if (hasDraft && !hasLive) draftClients.push(c.name || c.key);
   });
   if (draftClients.length > 0) {
-    alerts.push({ type: 'alert-purple', icon: '⚡',
+    alerts.push({ type: 'alert-purple', icon: '⚡', source: 'client',
       title: draftClients.length + ' account' + (draftClients.length > 1 ? 's have' : ' has') + ' no live workflows',
       body: '<strong>' + draftClients.join(', ') + '</strong> — leads entering with zero follow-up. Publish Fast 5 immediately.',
     });
   }
 
-  // Stuck leads
+  // Stuck leads (client patients — not BookedClinics' own prospects)
   const totalLeads = (clients || []).reduce((s, c) => s + (c.leads?.total || 0), 0);
   const stuckLeads = (clients || []).reduce((s, c) => s + (c.leads?.new   || 0), 0);
   if (totalLeads > 0 && stuckLeads / totalLeads > 0.5) {
     const pct = Math.round((stuckLeads / totalLeads) * 100);
-    alerts.push({ type: 'alert-yellow', icon: '📊',
-      title: pct + '% of leads stuck with no action taken',
-      body: stuckLeads + ' of ' + totalLeads + ' leads are sitting in New Lead — no SMS, no email, no booking attempt.',
+    alerts.push({ type: 'alert-yellow', icon: '📊', source: 'client',
+      title: pct + '% of client leads stuck with no action taken',
+      body: stuckLeads + ' of ' + totalLeads + ' patient leads (across your clients\' accounts) are sitting in New Lead — no SMS, no email, no booking attempt.',
     });
   }
 
@@ -1043,7 +1059,7 @@ function renderOverviewAlerts(billingRows, clients, keysHealth) {
     `<div class="alert ${a.type}">
       <div class="alert-icon">${a.icon}</div>
       <div class="alert-content">
-        <div class="alert-title">${a.title}</div>
+        <div class="alert-title">${a.source ? '<span class="source-tag ' + a.source + '">' + (a.source === 'client' ? 'Client' : 'BookedClinics Pipeline') + '</span> ' : ''}${a.title}</div>
         <div class="alert-body">${a.body}</div>
       </div>
     </div>`
@@ -1272,7 +1288,7 @@ function renderActions(s, clients, metaAccounts) {
 
   // ── DO NOW (red) ──────────────────────────────────────────────────────────
   (s.billingRows || []).filter(r => r.paymentStatus === 'failed' && !isChurnedRow(r)).forEach(r => {
-    actions.push({ color: 'red', tagLabel: 'Do Now',
+    actions.push({ color: 'red', tagLabel: 'Do Now', source: 'client',
       title: 'Resend payment link to ' + r.name,
       desc: 'Stripe shows a failed charge for $' + (r.retainerAmount || 500) + '. Go to Stripe → Customers → ' + r.name + ' and resend the payment link or create a new invoice. No work starts until payment clears.',
     });
@@ -1281,16 +1297,16 @@ function renderActions(s, clients, metaAccounts) {
   const scR = s.scRecovery;
   if (scR && scR.needsRecovery && scR.needsRecovery.length > 0) {
     const names = scR.needsRecovery.map(c => c.name).join(', ');
-    actions.push({ color: 'red', tagLabel: 'Do Now',
+    actions.push({ color: 'red', tagLabel: 'Do Now', source: 'agency',
       title: scR.needsRecovery.length + ' SC: Upcoming contact' + (scR.needsRecovery.length > 1 ? 's' : '') + ' with no call booked',
-      desc: names + ' — marked SC: Upcoming but no future appointment exists. Call or text now to reschedule, or move them to SC: No Show.',
+      desc: names + ' — BookedClinics prospects marked SC: Upcoming but no future appointment exists. Call or text now to reschedule, or move them to SC: No Show.',
     });
   }
 
   (s.billingRows || []).filter(r => r.nextDueDate && r.paymentStatus !== 'failed' && !isChurnedRow(r)).forEach(r => {
     const days = Math.ceil((new Date(r.nextDueDate) - now) / 86400000);
     if (days < 0) {
-      actions.push({ color: 'red', tagLabel: 'Do Now',
+      actions.push({ color: 'red', tagLabel: 'Do Now', source: 'client',
         title: r.name + ' — invoice ' + Math.abs(days) + 'd overdue',
         desc: (r.retainerAmount ? '$' + r.retainerAmount : 'Payment') + ' was due ' + fmtDate(r.nextDueDate) + '. Send invoice via Stripe immediately.',
       });
@@ -1300,7 +1316,7 @@ function renderActions(s, clients, metaAccounts) {
   // Meta account billing failures (unsettled / disabled)
   (metaAccounts || []).forEach(a => {
     if (a.isUnsettled || a.isDisabled) {
-      actions.push({ color: 'red', tagLabel: 'Do Now',
+      actions.push({ color: 'red', tagLabel: 'Do Now', source: 'client',
         title: 'Fix Meta billing — ' + a.name,
         desc: a.isDisabled
           ? 'Ad account is DISABLED. Go to Meta Business Manager → Ad Accounts → ' + a.name + ' and resolve the issue to resume campaigns.'
@@ -1313,7 +1329,7 @@ function renderActions(s, clients, metaAccounts) {
   (s.billingRows || []).filter(r => r.nextDueDate && r.paymentStatus !== 'failed' && !isChurnedRow(r)).forEach(r => {
     const days = Math.ceil((new Date(r.nextDueDate) - now) / 86400000);
     if (days >= 0 && days <= 5) {
-      actions.push({ color: 'yellow', tagLabel: 'Do Today',
+      actions.push({ color: 'yellow', tagLabel: 'Do Today', source: 'client',
         title: r.name + ' — $' + (r.retainerAmount || '?') + ' due in ' + days + ' day' + (days === 1 ? '' : 's'),
         desc: 'Invoice due ' + fmtDate(r.nextDueDate) + '. Send via Stripe before it goes overdue.',
       });
@@ -1327,7 +1343,7 @@ function renderActions(s, clients, metaAccounts) {
   });
   if (noWfClients.length > 0) {
     const names = noWfClients.map(c => (c.name || c.key) + ' (' + (c.leads?.new || 0) + ' stuck)').join(', ');
-    actions.push({ color: 'yellow', tagLabel: 'Do Today',
+    actions.push({ color: 'yellow', tagLabel: 'Do Today', source: 'client',
       title: 'Publish workflows — ' + noWfClients.length + ' account' + (noWfClients.length > 1 ? 's' : '') + ' with zero automations live',
       desc: names + ' — leads entering with zero follow-up. Start with Fast 5 (fires within 5 min of form submit), then Confirmation + Reminders.',
     });
@@ -1336,7 +1352,7 @@ function renderActions(s, clients, metaAccounts) {
   // Meta spend with zero leads
   (metaAccounts || []).forEach(a => {
     if (a.spend != null && a.spend > 50 && (a.leads === 0 || a.leads == null) && a.isActive) {
-      actions.push({ color: 'yellow', tagLabel: 'Do Today',
+      actions.push({ color: 'yellow', tagLabel: 'Do Today', source: 'client',
         title: a.name + ' — $' + a.spend.toFixed(0) + ' spent, 0 leads (7d)',
         desc: 'Ads are spending but no lead form submissions recorded. Check the campaign creative, targeting, and landing page — something is broken in the funnel.',
       });
@@ -1347,9 +1363,9 @@ function renderActions(s, clients, metaAccounts) {
   const staleContracts = (s.staleContracts || []).filter(c => c.daysSinceSent >= 7);
   if (staleContracts.length > 0) {
     const names = staleContracts.map(c => c.name + ' (' + c.daysSinceSent + 'd)').join(', ');
-    actions.push({ color: 'blue', tagLabel: 'This Week',
+    actions.push({ color: 'blue', tagLabel: 'This Week', source: 'agency',
       title: 'Follow up on ' + staleContracts.length + ' unsigned contract' + (staleContracts.length > 1 ? 's' : ''),
-      desc: names + ' — send a personal follow-up. The longer a contract sits unsigned the colder it gets.',
+      desc: names + ' — BookedClinics service agreements, send a personal follow-up. The longer a contract sits unsigned the colder it gets.',
     });
   }
 
@@ -1359,7 +1375,7 @@ function renderActions(s, clients, metaAccounts) {
       .filter(c => (c.leads?.new || 0) > 0)
       .map(c => (c.name || c.key).split(' — ')[0] + ': ' + c.leads.new)
       .join(', ');
-    actions.push({ color: 'blue', tagLabel: 'This Week',
+    actions.push({ color: 'blue', tagLabel: 'This Week', source: 'client',
       title: 'Manually re-engage ' + totalStuck + ' stale leads',
       desc: breakdown + ' — send a personal text from each client\'s GHL number: "Hey [name], still interested in [offer]?" Move replies to Hot Lead.',
     });
@@ -1368,7 +1384,7 @@ function renderActions(s, clients, metaAccounts) {
   (clients || []).filter(c => c.status === 'setup').forEach(c => {
     const billing = (s.billingRows || []).find(r => r.key === c.key);
     if (billing && billing.paymentStatus !== 'failed') {
-      actions.push({ color: 'blue', tagLabel: 'This Week',
+      actions.push({ color: 'blue', tagLabel: 'This Week', source: 'client',
         title: 'Complete setup for ' + (c.name || c.key),
         desc: c.biz + ' — payment cleared but setup in progress. Create GHL sub-account, configure pipeline, and publish workflows before launching ads.',
       });
@@ -1392,7 +1408,7 @@ function renderActions(s, clients, metaAccounts) {
     return `<div class="action-item">
       <div class="action-num ${numClass}">${i + 1}</div>
       <div class="action-text">
-        <div class="action-title">${a.title} <span class="${tagClass}">${a.tagLabel}</span></div>
+        <div class="action-title">${a.title} <span class="${tagClass}">${a.tagLabel}</span>${a.source ? ' <span class="source-tag ' + a.source + '">' + (a.source === 'client' ? 'Client' : 'BookedClinics Pipeline') + '</span>' : ''}</div>
         <div class="action-desc">${a.desc}</div>
       </div>
     </div>`;

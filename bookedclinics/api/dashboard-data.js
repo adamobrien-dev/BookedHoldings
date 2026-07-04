@@ -6,6 +6,15 @@ const GHL_VERSION = '2021-07-28';
 const CHURNED_STATUSES = ['churned', 'lost'];
 const isChurned = c => CHURNED_STATUSES.includes(c.status);
 
+// BookedClinics' own agency sales pipeline (prospects trying to become clients) is a
+// completely separate GHL location from client sub-accounts (patient leads). Some
+// prospects converted to clients but their agency-pipeline opportunity was never marked
+// Won, so they still show up as "needs a sales call" — filter anyone already a client
+// (any status, including churned) out of those prospect-recovery lists.
+const normalizeName = (n = '') => n.toLowerCase().trim();
+const CLIENT_NAMES = new Set(CLIENTS_CONFIG.map(c => normalizeName(c.name)));
+const isExistingClient = name => CLIENT_NAMES.has(normalizeName(name));
+
 const CLIENTS = CLIENTS_CONFIG.filter(c => !isChurned(c)).map(c => ({
   key: c.key,
   name: c.name,
@@ -72,9 +81,9 @@ async function getAgencyData() {
   const oppsData = await ghlFetch(`/opportunities/search?location_id=${AGENCY_LOC}&limit=100`, AGENCY_PIT);
   const opps = oppsData?.opportunities || [];
 
-  const scOpps       = opps.filter(o => o.pipelineStageId === AGENCY_STAGES.SC_UPCOMING);
+  const scOpps       = opps.filter(o => o.pipelineStageId === AGENCY_STAGES.SC_UPCOMING && !isExistingClient(o.contact?.name));
   const dcUpcoming   = opps.filter(o => o.pipelineStageId === AGENCY_STAGES.DC_UPCOMING);
-  const dcNoShow     = opps.filter(o => o.pipelineStageId === AGENCY_STAGES.DC_NOSHOW);
+  const dcNoShow     = opps.filter(o => o.pipelineStageId === AGENCY_STAGES.DC_NOSHOW && !isExistingClient(o.contact?.name));
   const wonOpps      = opps.filter(o => o.status === 'won');
   const lostOpps     = opps.filter(o => o.status === 'lost');
   const names = arr => arr.map(o => o.contact?.name || 'Unknown');

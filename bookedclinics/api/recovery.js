@@ -1,6 +1,14 @@
 const GHL_API = 'https://services.leadconnectorhq.com';
 const GHL_VERSION = '2021-07-28';
 const AGENCY_LOC = 'NKpzhLv8iNQ0c9Ge3QAR';
+const CLIENTS_CONFIG = require('../config/clients.json');
+
+// See dashboard-data.js for why: agency prospects who already converted to clients but
+// whose sales-pipeline opportunity was never marked Won still show up as "needs a call" —
+// filter them out here so client patients never get mixed in with agency prospects.
+const normalizeName = (n = '') => n.toLowerCase().trim();
+const CLIENT_NAMES = new Set(CLIENTS_CONFIG.map(c => normalizeName(c.name)));
+const isExistingClient = name => CLIENT_NAMES.has(normalizeName(name));
 
 async function ghlFetch(path, pit) {
   try {
@@ -68,7 +76,7 @@ module.exports = async function handler(req, res) {
   const now = new Date();
 
   // ── SC: Upcoming ──────────────────────────────────────────────────────────
-  const scOpps = opps.filter(o => o.pipelineStageId === STAGE.SC_UPCOMING);
+  const scOpps = opps.filter(o => o.pipelineStageId === STAGE.SC_UPCOMING && !isExistingClient(o.contact?.name));
 
   const scResults = await Promise.all(scOpps.map(async o => {
     const apData = await ghlFetch(`/contacts/${o.contact.id}/appointments`, pit);
@@ -90,7 +98,7 @@ module.exports = async function handler(req, res) {
 
   // ── DC: No-Show ───────────────────────────────────────────────────────────
   const dcNoShows = opps
-    .filter(o => o.pipelineStageId === STAGE.DC_NOSHOW)
+    .filter(o => o.pipelineStageId === STAGE.DC_NOSHOW && !isExistingClient(o.contact?.name))
     .map(o => ({
       name:             o.contact.name || 'Unknown',
       phone:            o.contact.phone || null,
