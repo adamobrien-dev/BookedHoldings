@@ -1,6 +1,9 @@
 const GRAPH_API = 'https://graph.facebook.com/v21.0';
 const CLIENTS   = require('../config/clients.json');
 
+const CHURNED_STATUSES = ['churned', 'lost'];
+const isChurned = c => CHURNED_STATUSES.includes(c.status);
+
 // account_status: 1=active, 2=disabled, 3=unsettled, 9=in_grace_period
 const STATUS_LABEL = { 1: 'active', 2: 'disabled', 3: 'unsettled', 9: 'grace_period', 7: 'pending_review' };
 
@@ -128,9 +131,7 @@ module.exports = async function handler(req, res) {
 
   const datePreset = req.query?.preset || 'last_7d';
 
-  const activeClients = CLIENTS.filter(c => c.metaAccountId);
-
-  const accounts = await Promise.all(activeClients.map(async (client) => {
+  async function fetchAccountData(client) {
     const accountId   = client.metaAccountId;
     const allowedIds  = client.metaCampaignIds || [];
 
@@ -174,7 +175,15 @@ module.exports = async function handler(req, res) {
       isDisabled:     acctStatus === 2,
       error:          null,
     };
-  }));
+  }
 
-  return res.status(200).json({ generatedAt: new Date().toISOString(), datePreset, accounts });
+  const activeClients  = CLIENTS.filter(c => c.metaAccountId && !isChurned(c));
+  const churnedClients = CLIENTS.filter(c => c.metaAccountId && isChurned(c));
+
+  const [accounts, churnedAccounts] = await Promise.all([
+    Promise.all(activeClients.map(fetchAccountData)),
+    Promise.all(churnedClients.map(fetchAccountData)),
+  ]);
+
+  return res.status(200).json({ generatedAt: new Date().toISOString(), datePreset, accounts, churnedAccounts });
 };
