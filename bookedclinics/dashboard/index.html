@@ -1144,6 +1144,10 @@ function fmtAmt(cents) {
   return '$' + (cents / 100).toLocaleString('en-US', { maximumFractionDigits: 0 });
 }
 
+function isChurnedRow(r) {
+  return r.statusLabel === 'Churned' || r.statusLabel === 'Lost';
+}
+
 function renderOverviewAlerts(billingRows, clients) {
   const container = document.getElementById('overview-alerts');
   if (!container) return;
@@ -1151,7 +1155,7 @@ function renderOverviewAlerts(billingRows, clients) {
   const now = new Date();
 
   // Failed payments
-  (billingRows || []).filter(r => r.paymentStatus === 'failed').forEach(r => {
+  (billingRows || []).filter(r => r.paymentStatus === 'failed' && !isChurnedRow(r)).forEach(r => {
     alerts.push({ type: 'alert-red', icon: '🚨',
       title: r.name + ' — payment FAILED',
       body: 'Stripe shows a failed charge. No work should begin until $' + (r.nextAmount || r.retainerAmount || 500) + ' clears. Resend the payment link immediately.',
@@ -1159,7 +1163,7 @@ function renderOverviewAlerts(billingRows, clients) {
   });
 
   // Overdue payments
-  (billingRows || []).filter(r => r.nextDueDate && r.paymentStatus !== 'failed').forEach(r => {
+  (billingRows || []).filter(r => r.nextDueDate && r.paymentStatus !== 'failed' && !isChurnedRow(r)).forEach(r => {
     const due = new Date(r.nextDueDate);
     const days = Math.ceil((due - now) / 86400000);
     if (days < 0) {
@@ -1287,7 +1291,7 @@ function renderUpcoming(rows) {
   if (!container) return;
   const now = new Date();
   const items = rows
-    .filter(r => r.nextDueDate || r.paymentStatus === 'failed')
+    .filter(r => (r.nextDueDate || r.paymentStatus === 'failed') && !isChurnedRow(r))
     .map(r => {
       const dueDate = r.paymentStatus === 'failed' ? now : new Date(r.nextDueDate);
       const daysUntil = Math.ceil((dueDate - now) / 86400000);
@@ -1352,7 +1356,7 @@ function renderActions(s, clients, metaAccounts) {
   const ACTIVE_CLIENTS = ['terri','allaphia','thania','aguilera','glendale','sandy','stephanie','sarah'];
 
   // ── DO NOW (red) ──────────────────────────────────────────────────────────
-  (s.billingRows || []).filter(r => r.paymentStatus === 'failed').forEach(r => {
+  (s.billingRows || []).filter(r => r.paymentStatus === 'failed' && !isChurnedRow(r)).forEach(r => {
     actions.push({ color: 'red', tagLabel: 'Do Now',
       title: 'Resend payment link to ' + r.name,
       desc: 'Stripe shows a failed charge for $' + (r.retainerAmount || 500) + '. Go to Stripe → Customers → ' + r.name + ' and resend the payment link or create a new invoice. No work starts until payment clears.',
@@ -1368,7 +1372,7 @@ function renderActions(s, clients, metaAccounts) {
     });
   }
 
-  (s.billingRows || []).filter(r => r.nextDueDate && r.paymentStatus !== 'failed').forEach(r => {
+  (s.billingRows || []).filter(r => r.nextDueDate && r.paymentStatus !== 'failed' && !isChurnedRow(r)).forEach(r => {
     const days = Math.ceil((new Date(r.nextDueDate) - now) / 86400000);
     if (days < 0) {
       actions.push({ color: 'red', tagLabel: 'Do Now',
@@ -1391,7 +1395,7 @@ function renderActions(s, clients, metaAccounts) {
   });
 
   // ── DO TODAY (yellow) ─────────────────────────────────────────────────────
-  (s.billingRows || []).filter(r => r.nextDueDate && r.paymentStatus !== 'failed').forEach(r => {
+  (s.billingRows || []).filter(r => r.nextDueDate && r.paymentStatus !== 'failed' && !isChurnedRow(r)).forEach(r => {
     const days = Math.ceil((new Date(r.nextDueDate) - now) / 86400000);
     if (days >= 0 && days <= 5) {
       actions.push({ color: 'yellow', tagLabel: 'Do Today',
@@ -1536,7 +1540,7 @@ async function loadData() {
       staleContracts.length + ' unsigned';
     document.getElementById('stat-leads-sub').textContent = 'Dropbox Sign contracts out';
     document.getElementById('stat-stuck').textContent =
-      billingRows.filter(r => r.paymentStatus === 'failed').length || '—';
+      billingRows.filter(r => r.paymentStatus === 'failed' && !isChurnedRow(r)).length || '—';
     document.getElementById('stat-stuck-sub').textContent = 'Stripe invoices unpaid';
 
     // Client funnel cards — skipped (per-client GHL data not fetched)
@@ -1580,9 +1584,9 @@ async function loadData() {
     renderContracts(s.staleContracts || []);
     renderActions(s, [], _metaAccounts);
 
-    // MRR — sum retainers where payment is not failed
+    // MRR — sum retainers where payment is not failed and client isn't churned/lost
     const mrrTotal = (s.billingRows || [])
-      .filter(r => r.paymentStatus !== 'failed' && r.retainerAmount)
+      .filter(r => r.paymentStatus !== 'failed' && r.retainerAmount && !isChurnedRow(r))
       .reduce((sum, r) => sum + r.retainerAmount, 0);
     const mrrEl = document.getElementById('stat-mrr');
     if (mrrEl) mrrEl.textContent = '$' + mrrTotal.toLocaleString();
@@ -2511,13 +2515,8 @@ async function runProvision() {
 // ════════════════════════ CLIENT REPORTS ════════════════════════
 (function() {
   const CLIENTS = [
-    { key:'terri',    name:'Terri',     biz:'Get Body Sculpted',              firstName:'Terri' },
     { key:'allaphia', name:'Allaphia',  biz:'Paradise Healing',               firstName:'Allaphia' },
-    { key:'thania',   name:'Thania',    biz:'Tiali Beauty Lounge',            firstName:'Thania' },
-    { key:'aguilera', name:'Frank',     biz:'Aguilera Health & Wellness',     firstName:'Frank' },
     { key:'sandy',    name:'Sandy',     biz:'My Adult Primary Care',          firstName:'Sandy' },
-    { key:'stephanie', name:'Stephanie', biz:'RTB Spa',                       firstName:'Stephanie' },
-    { key:'sarah',    name:'Sarah',     biz:'Today Telemedicine',             firstName:'Sarah' },
   ];
 
   function weekKey() {
