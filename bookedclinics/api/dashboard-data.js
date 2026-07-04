@@ -25,6 +25,24 @@ const CHURNED_CLIENTS = CLIENTS_CONFIG.filter(isChurned).map(c => ({
   status: c.status,
 }));
 
+// Keys "get lost every day" — this checks the live runtime (actual Vercel state)
+// rather than any local file, since that's the thing that actually drifts.
+function getKeysHealth() {
+  const required = [
+    { env: 'STRIPE_SECRET_KEY', label: 'Stripe' },
+    { env: 'PAYPAL_CLIENT_ID', label: 'PayPal client ID' },
+    { env: 'PAYPAL_CLIENT_SECRET', label: 'PayPal secret' },
+    { env: 'DROPBOX_SIGN_API_KEY', label: 'Dropbox Sign' },
+    { env: 'META_SYSTEM_TOKEN', label: 'Meta Ads' },
+    { env: 'KV_REST_API_URL', label: 'Vercel KV (URL)' },
+    { env: 'KV_REST_API_TOKEN', label: 'Vercel KV (token)' },
+    { env: 'GHL_PIT_AGENCY', label: 'GHL — Agency' },
+    ...CLIENTS.map(c => ({ env: c.pitEnv, label: 'GHL — ' + c.name })),
+  ];
+  const missing = required.filter(k => k.env && !process.env[k.env]);
+  return { total: required.length, missing };
+}
+
 const FLETCHER_STRIPE_ID = CLIENTS_CONFIG.find(c => c.key === 'fletcher')?.stripeId;
 
 const BILLING_CONFIG = CLIENTS_CONFIG
@@ -347,6 +365,7 @@ module.exports = async function handler(req, res) {
         })(),
         staleContracts,
         agencyPipeline: agencyData?.pipeline ?? null,
+        keysHealth: getKeysHealth(),
       },
       clients: clientsData,
       churnedClients: CHURNED_CLIENTS,

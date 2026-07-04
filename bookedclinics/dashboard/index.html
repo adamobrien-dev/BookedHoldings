@@ -972,11 +972,20 @@ function isChurnedRow(r) {
   return r.statusLabel === 'Churned' || r.statusLabel === 'Lost';
 }
 
-function renderOverviewAlerts(billingRows, clients) {
+function renderOverviewAlerts(billingRows, clients, keysHealth) {
   const container = document.getElementById('overview-alerts');
   if (!container) return;
   const alerts = [];
   const now = new Date();
+
+  // Missing/expired integration keys — checked live against the running server's
+  // environment, so this always reflects real Vercel state, never a stale local file.
+  if (keysHealth && keysHealth.missing.length > 0) {
+    alerts.push({ type: 'alert-red', icon: '🔑',
+      title: keysHealth.missing.length + ' integration key' + (keysHealth.missing.length > 1 ? 's' : '') + ' not connected',
+      body: '<strong>' + keysHealth.missing.map(k => k.label).join(', ') + '</strong> — add these in Vercel → Settings → Environment Variables, then redeploy.',
+    });
+  }
 
   // Failed payments
   (billingRows || []).filter(r => r.paymentStatus === 'failed' && !isChurnedRow(r)).forEach(r => {
@@ -1005,10 +1014,8 @@ function renderOverviewAlerts(billingRows, clients) {
 
   // Draft workflows
   const WF_KEYS = ['fast5','confirmation','noshow','review','nurture','stale'];
-  const CLIENT_KEYS = ['terri','allaphia','thania','aguilera','glendale','sandy','stephanie','sarah'];
   let draftClients = [];
   (clients || []).forEach(c => {
-    if (!CLIENT_KEYS.includes(c.key)) return;
     const wfs = c.workflows || {};
     const hasDraft = WF_KEYS.some(w => wfs[w] === 'DRAFT');
     const hasLive  = WF_KEYS.some(w => wfs[w] === 'LIVE');
@@ -1420,6 +1427,7 @@ async function loadData() {
       totalCollected: summary.totalCollected || 0,
       billingRows,
       staleContracts,
+      keysHealth: summary.keysHealth,
     };
     // ─────────────────────────────────────────────────────────────────────────
 
@@ -1445,7 +1453,7 @@ async function loadData() {
       billingRows.filter(r => r.paymentStatus === 'failed' && !isChurnedRow(r)).length || '0';
     // Clear and re-render dynamic alerts (remove previously injected ones on refresh)
     document.querySelectorAll('#overview-alerts .alert:not(#alert-sc-recovery)').forEach(el => el.remove());
-    renderOverviewAlerts(s.billingRows, data.clients);
+    renderOverviewAlerts(s.billingRows, data.clients, s.keysHealth);
 
     // Dynamic billing rows
     _lastSummary = s;
