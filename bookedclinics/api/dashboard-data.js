@@ -3,7 +3,10 @@ const CLIENTS_CONFIG = require('../config/clients.json');
 const GHL_API = 'https://services.leadconnectorhq.com';
 const GHL_VERSION = '2021-07-28';
 
-const CLIENTS = CLIENTS_CONFIG.map(c => ({
+const CHURNED_STATUSES = ['churned', 'lost'];
+const isChurned = c => CHURNED_STATUSES.includes(c.status);
+
+const CLIENTS = CLIENTS_CONFIG.filter(c => !isChurned(c)).map(c => ({
   key: c.key,
   name: c.name,
   biz: (c.biz || '').split('·')[0].trim(),
@@ -11,6 +14,14 @@ const CLIENTS = CLIENTS_CONFIG.map(c => ({
   locationId: c.locationId,
   pitEnv: c.pitEnv,
   stripeId: c.stripeId,
+  status: c.status,
+}));
+
+const CHURNED_CLIENTS = CLIENTS_CONFIG.filter(isChurned).map(c => ({
+  key: c.key,
+  name: c.name,
+  biz: (c.biz || '').split('·')[0].trim(),
+  niche: c.niche,
   status: c.status,
 }));
 
@@ -28,6 +39,7 @@ const BILLING_CONFIG = CLIENTS_CONFIG
     cycleDays: c.cycleDays,
     retainerAmount: c.retainerAmount,
     installments: c.installments,
+    status: c.status,
   }));
 
 const AGENCY_LOC = 'NKpzhLv8iNQ0c9Ge3QAR';
@@ -175,9 +187,10 @@ async function getStripeData() {
 
   const fletcherFailed = failed.some(p => p.customerId === FLETCHER_STRIPE_ID);
 
-  // Build per-client last payment + failed flag from the same payment list
+  // Build per-client last payment + failed flag from the same payment list.
+  // Uses the full config (not just active CLIENTS) so churned clients still show billing history.
   const stripeIdToKey = {};
-  CLIENTS.forEach(c => { if (c.stripeId) stripeIdToKey[c.stripeId] = c.key; });
+  CLIENTS_CONFIG.forEach(c => { if (c.stripeId) stripeIdToKey[c.stripeId] = c.key; });
 
   const perClient = {};
   for (const p of payments) {
@@ -318,7 +331,9 @@ module.exports = async function handler(req, res) {
               paymentStatus = 'failed';
             }
             let statusLabel = 'Active', statusClass = 'pill-green';
-            if (paymentStatus === 'failed') { statusLabel = 'Needs Action'; statusClass = 'pill-red'; }
+            if (bc.status === 'churned') { statusLabel = 'Churned'; statusClass = 'pill-gray'; }
+            else if (bc.status === 'lost') { statusLabel = 'Lost'; statusClass = 'pill-gray'; }
+            else if (paymentStatus === 'failed') { statusLabel = 'Needs Action'; statusClass = 'pill-red'; }
             else if (cd?.workflows?.fast5 === 'LIVE') { statusLabel = 'Ads Live'; statusClass = 'pill-blue'; }
             else if (cd?.status === 'setup' || cd?.status === 'pending') { statusLabel = 'Setting Up'; statusClass = 'pill-yellow'; }
             // Installment progress: count succeeded payments against total installments
@@ -334,6 +349,7 @@ module.exports = async function handler(req, res) {
         agencyPipeline: agencyData?.pipeline ?? null,
       },
       clients: clientsData,
+      churnedClients: CHURNED_CLIENTS,
     });
   } catch (err) {
     res.status(500).json({ error: err.message });
