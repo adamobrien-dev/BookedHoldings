@@ -346,13 +346,13 @@
   <h1><span>Booked</span>Clinics — Agency Dashboard</h1>
   <div style="display:flex;align-items:center;gap:12px;">
     <span class="last-updated" id="last-updated">Loading...</span>
-    <button onclick="loadData()" id="refresh-btn" style="font-size:11px;color:#6366f1;background:none;border:1px solid #6366f1;border-radius:6px;padding:4px 10px;cursor:pointer;">Refresh</button>
+    <button onclick="loadData()" id="refresh-btn" style="font-size:11px;color:var(--accent);background:none;border:1px solid var(--accent);border-radius:6px;padding:4px 10px;cursor:pointer;">Refresh</button>
   </div>
 </header>
 
 <div class="nav-tabs">
   <div class="nav-tab active" data-tab="overview">Overview</div>
-  <div class="nav-tab" data-tab="pulse">Pulse <span id="pulse-nav-badge" style="display:none;background:#1e3a5f;color:#60a5fa;font-size:9px;font-weight:700;padding:1px 5px;border-radius:10px;margin-left:4px;"></span></div>
+  <div class="nav-tab" data-tab="pulse">Pulse <span id="pulse-nav-badge" style="display:none;background:#1e3a5f;color:var(--info);font-size:9px;font-weight:700;padding:1px 5px;border-radius:10px;margin-left:4px;"></span></div>
   <div class="nav-tab" data-tab="billing">Billing</div>
   <div class="nav-tab" data-tab="clients">Clients</div>
   <div class="nav-tab" data-tab="pipeline">Pipeline</div>
@@ -360,7 +360,7 @@
   <div class="nav-tab" data-tab="actions">Actions</div>
   <div class="nav-tab" data-tab="clientreports">Client Reports <span id="clientreports-nav-badge" style="display:none;background:#7f1d1d;color:#fca5a5;font-size:9px;font-weight:700;padding:1px 5px;border-radius:10px;margin-left:4px;"></span></div>
   <div class="nav-tab" data-tab="weekly">Weekly Report</div>
-  <div class="nav-tab" data-tab="tasks">Tasks <span id="tasks-nav-badge" style="display:none;background:#1e3a5f;color:#60a5fa;font-size:9px;font-weight:700;padding:1px 5px;border-radius:10px;margin-left:4px;"></span></div>
+  <div class="nav-tab" data-tab="tasks">Tasks <span id="tasks-nav-badge" style="display:none;background:#1e3a5f;color:var(--info);font-size:9px;font-weight:700;padding:1px 5px;border-radius:10px;margin-left:4px;"></span></div>
   <div class="nav-tab" data-tab="onboarding">Onboarding</div>
 </div>
 
@@ -408,19 +408,19 @@
 <div class="tab-section" id="tab-pulse">
 
   <div class="section-header">
-    <div class="section-title">Today's Calls <span id="calls-today-count" style="color:#475569;font-weight:400;"></span></div>
-    <button onclick="loadPulse()" style="font-size:11px;color:#6366f1;background:none;border:1px solid #6366f1;border-radius:6px;padding:4px 10px;cursor:pointer;">Refresh</button>
+    <div class="section-title">Today's Calls <span id="calls-today-count" style="color:var(--text-quiet);font-weight:400;"></span></div>
+    <button onclick="loadPulse()" style="font-size:11px;color:var(--accent);background:none;border:1px solid var(--accent);border-radius:6px;padding:4px 10px;cursor:pointer;">Refresh</button>
   </div>
   <div class="pulse-list" id="calls-today-list"><div class="pulse-empty">Loading…</div></div>
 
   <div class="section-header">
-    <div class="section-title">Unread Messages <span id="unread-msg-count" style="color:#475569;font-weight:400;"></span></div>
+    <div class="section-title">Unread Messages <span id="unread-msg-count" style="color:var(--text-quiet);font-weight:400;"></span></div>
   </div>
   <div class="pulse-list" id="unread-msg-list"><div class="pulse-empty">Loading…</div></div>
 
   <div class="section-header">
-    <div class="section-title">Stuck in Stage <span id="stuck-count" style="color:#475569;font-weight:400;"></span></div>
-    <span style="font-size:11px;color:#475569;">5+ days no movement</span>
+    <div class="section-title">Stuck in Stage <span id="stuck-count" style="color:var(--text-quiet);font-weight:400;"></span></div>
+    <span style="font-size:11px;color:var(--text-quiet);">5+ days no movement</span>
   </div>
   <div class="pulse-list" id="stuck-list"><div class="pulse-empty">Loading…</div></div>
 
@@ -428,9 +428,9 @@
     <div class="section-title">Reply Tag Sync</div>
   </div>
   <div style="padding:12px 0;display:flex;gap:12px;align-items:center;flex-wrap:wrap;">
-    <button onclick="runSyncTags(false)" style="font-size:12px;color:#6366f1;background:none;border:1px solid #6366f1;border-radius:6px;padding:6px 14px;cursor:pointer;">Dry Run</button>
-    <button onclick="runSyncTags(true)"  style="font-size:12px;color:#fff;background:#6366f1;border:none;border-radius:6px;padding:6px 14px;cursor:pointer;">Apply Tags</button>
-    <span id="sync-tags-result" style="font-size:12px;color:#94a3b8;"></span>
+    <button onclick="runSyncTags(false)" style="font-size:12px;color:var(--accent);background:none;border:1px solid var(--accent);border-radius:6px;padding:6px 14px;cursor:pointer;">Dry Run</button>
+    <button onclick="runSyncTags(true)"  style="font-size:12px;color:#fff;background:var(--accent);border:none;border-radius:6px;padding:6px 14px;cursor:pointer;">Apply Tags</button>
+    <span id="sync-tags-result" style="font-size:12px;color:var(--text-secondary);"></span>
   </div>
 
 </div><!-- /tab-pulse -->
@@ -474,7 +474,7 @@
       + New Client
     </button>
   </div>
-  <div id="provision-pending" style="color:#475569;font-size:13px;padding:8px 0 4px;">
+  <div id="provision-pending" style="color:var(--text-quiet);font-size:13px;padding:8px 0 4px;">
     Clients without a GHL sub-account (locationId = null) will appear here once data loads.
   </div>
 </div><!-- /tab-billing -->
@@ -483,59 +483,59 @@
 <div id="provision-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:999;align-items:center;justify-content:center;">
   <div style="background:#0f1623;border:1px solid #1e293b;border-radius:14px;padding:28px 32px;width:480px;max-height:90vh;overflow-y:auto;">
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
-      <div style="font-size:16px;font-weight:700;color:#e2e8f0;">Provision GHL Sub-Account</div>
+      <div style="font-size:16px;font-weight:700;color:var(--text-primary);">Provision GHL Sub-Account</div>
       <button onclick="document.getElementById('provision-modal').style.display='none'"
-        style="background:none;border:none;color:#64748b;font-size:20px;cursor:pointer;">✕</button>
+        style="background:none;border:none;color:var(--text-tertiary);font-size:20px;cursor:pointer;">✕</button>
     </div>
     <div style="display:grid;gap:12px;">
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
-        <div><label style="font-size:11px;color:#64748b;display:block;margin-bottom:4px;">Full Name *</label>
-          <input id="pv-name" style="width:100%;background:#1a2035;border:1px solid #2d3748;border-radius:6px;padding:8px 10px;color:#e2e8f0;font-size:13px;box-sizing:border-box;" placeholder="Sarah Purdy"></div>
-        <div><label style="font-size:11px;color:#64748b;display:block;margin-bottom:4px;">Business Name *</label>
-          <input id="pv-biz" style="width:100%;background:#1a2035;border:1px solid #2d3748;border-radius:6px;padding:8px 10px;color:#e2e8f0;font-size:13px;box-sizing:border-box;" placeholder="Today Telemedicine"></div>
+        <div><label style="font-size:11px;color:var(--text-tertiary);display:block;margin-bottom:4px;">Full Name *</label>
+          <input id="pv-name" style="width:100%;background:var(--border);border:1px solid #2d3748;border-radius:6px;padding:8px 10px;color:var(--text-primary);font-size:13px;box-sizing:border-box;" placeholder="Sarah Purdy"></div>
+        <div><label style="font-size:11px;color:var(--text-tertiary);display:block;margin-bottom:4px;">Business Name *</label>
+          <input id="pv-biz" style="width:100%;background:var(--border);border:1px solid #2d3748;border-radius:6px;padding:8px 10px;color:var(--text-primary);font-size:13px;box-sizing:border-box;" placeholder="Today Telemedicine"></div>
       </div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
-        <div><label style="font-size:11px;color:#64748b;display:block;margin-bottom:4px;">Email *</label>
-          <input id="pv-email" style="width:100%;background:#1a2035;border:1px solid #2d3748;border-radius:6px;padding:8px 10px;color:#e2e8f0;font-size:13px;box-sizing:border-box;" placeholder="sarah@example.com"></div>
-        <div><label style="font-size:11px;color:#64748b;display:block;margin-bottom:4px;">Phone * (E.164)</label>
-          <input id="pv-phone" style="width:100%;background:#1a2035;border:1px solid #2d3748;border-radius:6px;padding:8px 10px;color:#e2e8f0;font-size:13px;box-sizing:border-box;" placeholder="+18009518257"></div>
+        <div><label style="font-size:11px;color:var(--text-tertiary);display:block;margin-bottom:4px;">Email *</label>
+          <input id="pv-email" style="width:100%;background:var(--border);border:1px solid #2d3748;border-radius:6px;padding:8px 10px;color:var(--text-primary);font-size:13px;box-sizing:border-box;" placeholder="sarah@example.com"></div>
+        <div><label style="font-size:11px;color:var(--text-tertiary);display:block;margin-bottom:4px;">Phone * (E.164)</label>
+          <input id="pv-phone" style="width:100%;background:var(--border);border:1px solid #2d3748;border-radius:6px;padding:8px 10px;color:var(--text-primary);font-size:13px;box-sizing:border-box;" placeholder="+18009518257"></div>
       </div>
-      <div><label style="font-size:11px;color:#64748b;display:block;margin-bottom:4px;">Niche / Industry *</label>
-        <input id="pv-niche" style="width:100%;background:#1a2035;border:1px solid #2d3748;border-radius:6px;padding:8px 10px;color:#e2e8f0;font-size:13px;box-sizing:border-box;" placeholder="Telemedicine"></div>
+      <div><label style="font-size:11px;color:var(--text-tertiary);display:block;margin-bottom:4px;">Niche / Industry *</label>
+        <input id="pv-niche" style="width:100%;background:var(--border);border:1px solid #2d3748;border-radius:6px;padding:8px 10px;color:var(--text-primary);font-size:13px;box-sizing:border-box;" placeholder="Telemedicine"></div>
       <div style="display:grid;grid-template-columns:2fr 1fr 1fr;gap:12px;">
-        <div><label style="font-size:11px;color:#64748b;display:block;margin-bottom:4px;">City *</label>
-          <input id="pv-city" style="width:100%;background:#1a2035;border:1px solid #2d3748;border-radius:6px;padding:8px 10px;color:#e2e8f0;font-size:13px;box-sizing:border-box;" placeholder="Orlando"></div>
-        <div><label style="font-size:11px;color:#64748b;display:block;margin-bottom:4px;">State *</label>
-          <input id="pv-state" style="width:100%;background:#1a2035;border:1px solid #2d3748;border-radius:6px;padding:8px 10px;color:#e2e8f0;font-size:13px;box-sizing:border-box;" placeholder="FL"></div>
-        <div><label style="font-size:11px;color:#64748b;display:block;margin-bottom:4px;">Zip *</label>
-          <input id="pv-zip" style="width:100%;background:#1a2035;border:1px solid #2d3748;border-radius:6px;padding:8px 10px;color:#e2e8f0;font-size:13px;box-sizing:border-box;" placeholder="32801"></div>
+        <div><label style="font-size:11px;color:var(--text-tertiary);display:block;margin-bottom:4px;">City *</label>
+          <input id="pv-city" style="width:100%;background:var(--border);border:1px solid #2d3748;border-radius:6px;padding:8px 10px;color:var(--text-primary);font-size:13px;box-sizing:border-box;" placeholder="Orlando"></div>
+        <div><label style="font-size:11px;color:var(--text-tertiary);display:block;margin-bottom:4px;">State *</label>
+          <input id="pv-state" style="width:100%;background:var(--border);border:1px solid #2d3748;border-radius:6px;padding:8px 10px;color:var(--text-primary);font-size:13px;box-sizing:border-box;" placeholder="FL"></div>
+        <div><label style="font-size:11px;color:var(--text-tertiary);display:block;margin-bottom:4px;">Zip *</label>
+          <input id="pv-zip" style="width:100%;background:var(--border);border:1px solid #2d3748;border-radius:6px;padding:8px 10px;color:var(--text-primary);font-size:13px;box-sizing:border-box;" placeholder="32801"></div>
       </div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
-        <div><label style="font-size:11px;color:#64748b;display:block;margin-bottom:4px;">Timezone *</label>
-          <select id="pv-tz" style="width:100%;background:#1a2035;border:1px solid #2d3748;border-radius:6px;padding:8px 10px;color:#e2e8f0;font-size:13px;box-sizing:border-box;">
+        <div><label style="font-size:11px;color:var(--text-tertiary);display:block;margin-bottom:4px;">Timezone *</label>
+          <select id="pv-tz" style="width:100%;background:var(--border);border:1px solid #2d3748;border-radius:6px;padding:8px 10px;color:var(--text-primary);font-size:13px;box-sizing:border-box;">
             <option value="America/New_York">Eastern (ET)</option>
             <option value="America/Chicago">Central (CT)</option>
             <option value="America/Denver">Mountain (MT)</option>
             <option value="America/Los_Angeles">Pacific (PT)</option>
           </select></div>
-        <div><label style="font-size:11px;color:#64748b;display:block;margin-bottom:4px;">Website</label>
-          <input id="pv-website" style="width:100%;background:#1a2035;border:1px solid #2d3748;border-radius:6px;padding:8px 10px;color:#e2e8f0;font-size:13px;box-sizing:border-box;" placeholder="https://..."></div>
+        <div><label style="font-size:11px;color:var(--text-tertiary);display:block;margin-bottom:4px;">Website</label>
+          <input id="pv-website" style="width:100%;background:var(--border);border:1px solid #2d3748;border-radius:6px;padding:8px 10px;color:var(--text-primary);font-size:13px;box-sizing:border-box;" placeholder="https://..."></div>
       </div>
       <div style="display:flex;gap:8px;margin-top:4px;">
         <button onclick="prefillProvision('sarah')"
-          style="flex:1;background:#1a2035;border:1px solid #2d3748;border-radius:7px;padding:8px;color:#94a3b8;font-size:12px;cursor:pointer;">
+          style="flex:1;background:var(--border);border:1px solid #2d3748;border-radius:7px;padding:8px;color:var(--text-secondary);font-size:12px;cursor:pointer;">
           ⚡ Pre-fill: Sarah Purdy
         </button>
         <button onclick="prefillProvision('stephanie')"
-          style="flex:1;background:#1a2035;border:1px solid #2d3748;border-radius:7px;padding:8px;color:#94a3b8;font-size:12px;cursor:pointer;">
+          style="flex:1;background:var(--border);border:1px solid #2d3748;border-radius:7px;padding:8px;color:var(--text-secondary);font-size:12px;cursor:pointer;">
           ⚡ Pre-fill: Stephanie
         </button>
       </div>
     </div>
-    <div id="provision-result" style="margin-top:14px;font-size:12px;color:#64748b;"></div>
+    <div id="provision-result" style="margin-top:14px;font-size:12px;color:var(--text-tertiary);"></div>
     <div style="display:flex;gap:10px;margin-top:18px;">
       <button onclick="document.getElementById('provision-modal').style.display='none'"
-        style="flex:1;background:#1a2035;border:1px solid #2d3748;border-radius:7px;padding:10px;color:#64748b;font-size:13px;cursor:pointer;">Cancel</button>
+        style="flex:1;background:var(--border);border:1px solid #2d3748;border-radius:7px;padding:10px;color:var(--text-tertiary);font-size:13px;cursor:pointer;">Cancel</button>
       <button onclick="runProvision()"
         style="flex:2;background:#2563eb;color:#fff;border:none;border-radius:7px;padding:10px;font-size:13px;font-weight:600;cursor:pointer;">
         Create Sub-Account
@@ -568,30 +568,30 @@
     <div class="section-title">Your Agency Sales Pipeline</div>
   </div>
 
-  <div style="background:#111623; border:1px solid #1a2035; border-radius:10px; padding:20px; margin-bottom:28px;">
+  <div style="background:var(--bg-raised); border:1px solid var(--border); border-radius:10px; padding:20px; margin-bottom:28px;">
     <div class="pipeline-stats">
       <div class="pipeline-stat">
         <div class="pipeline-num" id="pipe-sc-upcoming" style="color:#10b981;">—</div>
         <div class="pipeline-label">SC Upcoming<br>🔥 Hot</div>
       </div>
       <div class="pipeline-stat">
-        <div class="pipeline-num" id="pipe-dc-upcoming" style="color:#6366f1;">—</div>
+        <div class="pipeline-num" id="pipe-dc-upcoming" style="color:var(--accent);">—</div>
         <div class="pipeline-label">DC Upcoming</div>
       </div>
       <div class="pipeline-stat">
-        <div class="pipeline-num" id="pipe-dc-noshow" style="color:#f59e0b;">—</div>
+        <div class="pipeline-num" id="pipe-dc-noshow" style="color:var(--warning);">—</div>
         <div class="pipeline-label">DC No-Show<br>Recover</div>
       </div>
       <div class="pipeline-stat">
-        <div class="pipeline-num" id="pipe-won" style="color:#34d399;">—</div>
+        <div class="pipeline-num" id="pipe-won" style="color:var(--success);">—</div>
         <div class="pipeline-label">Won<br>(Clients)</div>
       </div>
       <div class="pipeline-stat">
-        <div class="pipeline-num" id="pipe-lost" style="color:#f87171;">—</div>
+        <div class="pipeline-num" id="pipe-lost" style="color:var(--danger);">—</div>
         <div class="pipeline-label">Lost</div>
       </div>
       <div class="pipeline-stat">
-        <div class="pipeline-num" id="pipe-total" style="color:#475569;">—</div>
+        <div class="pipeline-num" id="pipe-total" style="color:var(--text-quiet);">—</div>
         <div class="pipeline-label">Total in<br>Pipeline</div>
       </div>
     </div>
@@ -605,11 +605,11 @@
       </div>
       <div>
         <div class="prospect-section">
-          <div class="prospect-label" id="pipe-dcnoshow-label" style="color:#f59e0b;">DC No-Shows — Need Recovery</div>
+          <div class="prospect-label" id="pipe-dcnoshow-label" style="color:var(--warning);">DC No-Shows — Need Recovery</div>
           <div class="prospect-list" id="pipe-dcnoshow-names">Loading...</div>
         </div>
         <div class="prospect-section" style="margin-top:14px;">
-          <div class="prospect-label" style="color:#34d399;">Active Clients (Won)</div>
+          <div class="prospect-label" style="color:var(--success);">Active Clients (Won)</div>
           <div class="prospect-list" id="pipe-won-names">Loading...</div>
         </div>
       </div>
@@ -628,37 +628,37 @@
   <!-- SC: Qualified — No Call Booked -->
   <div class="recovery-section">
     <div class="section-header" style="margin-top:0;">
-      <div class="section-title" style="color:#f87171;">🔥 SC Qualified — No Call Booked <span id="sc-nocall-count"></span></div>
+      <div class="section-title" style="color:var(--danger);">🔥 SC Qualified — No Call Booked <span id="sc-nocall-count"></span></div>
     </div>
     <div class="recovery-script">
       <div class="recovery-script-text"><strong>Script:</strong> "Hey [name], it's Adam from BookedClinics — we spoke a while back and I have a couple of strategy call spots open this week. Want to grab one? Takes 30 mins."</div>
       <button class="copy-script-btn" onclick="copyScript(this, 'Hey [name], it\'s Adam from BookedClinics — we spoke a while back and I have a couple of strategy call spots open this week. Want to grab one? Takes 30 mins.')">Copy</button>
     </div>
-    <div class="recovery-list" id="sc-nocall-list"><div style="color:#475569;padding:16px;font-size:12px;">Loading...</div></div>
+    <div class="recovery-list" id="sc-nocall-list"><div style="color:var(--text-quiet);padding:16px;font-size:12px;">Loading...</div></div>
   </div>
 
   <!-- DC: No-Shows -->
   <div class="recovery-section">
     <div class="section-header">
-      <div class="section-title" style="color:#fbbf24;">👻 DC No-Shows — Re-book <span id="dc-noshow-count"></span></div>
+      <div class="section-title" style="color:var(--warning);">👻 DC No-Shows — Re-book <span id="dc-noshow-count"></span></div>
     </div>
     <div class="recovery-script">
       <div class="recovery-script-text"><strong>Script:</strong> "Hey [name], we had a call scheduled and missed each other — totally understand life gets busy. Would you still like to connect? I have a few spots open this week."</div>
       <button class="copy-script-btn" onclick="copyScript(this, 'Hey [name], we had a call scheduled and missed each other — totally understand life gets busy. Would you still like to connect? I have a few spots open this week.')">Copy</button>
     </div>
-    <div class="recovery-list" id="dc-noshow-list"><div style="color:#475569;padding:16px;font-size:12px;">Loading...</div></div>
+    <div class="recovery-list" id="dc-noshow-list"><div style="color:var(--text-quiet);padding:16px;font-size:12px;">Loading...</div></div>
   </div>
 
   <!-- Stale Contracts -->
   <div class="recovery-section">
     <div class="section-header">
-      <div class="section-title" style="color:#60a5fa;">📄 Unsigned Contracts <span id="contracts-stale-count"></span></div>
+      <div class="section-title" style="color:var(--info);">📄 Unsigned Contracts <span id="contracts-stale-count"></span></div>
     </div>
     <div class="recovery-script">
       <div class="recovery-script-text"><strong>Script:</strong> "Hey [name], just checking in on the contract I sent over. Still interested in moving forward? Happy to jump on a quick call if you have any questions."</div>
       <button class="copy-script-btn" onclick="copyScript(this, 'Hey [name], just checking in on the contract I sent over. Still interested in moving forward? Happy to jump on a quick call if you have any questions.')">Copy</button>
     </div>
-    <div class="recovery-list" id="contracts-stale-list"><div style="color:#475569;padding:16px;font-size:12px;">Loading...</div></div>
+    <div class="recovery-list" id="contracts-stale-list"><div style="color:var(--text-quiet);padding:16px;font-size:12px;">Loading...</div></div>
   </div>
 </div><!-- /tab-recovery -->
 
@@ -672,7 +672,7 @@
   <div id="actions-dynamic" class="action-list">
     <div class="action-item">
       <div class="action-text">
-        <div class="action-desc" style="color:#475569;padding:4px 0;">Loading actions from live data...</div>
+        <div class="action-desc" style="color:var(--text-quiet);padding:4px 0;">Loading actions from live data...</div>
       </div>
     </div>
   </div>
@@ -682,7 +682,7 @@
 <div class="tab-section" id="tab-weekly">
   <div class="section-header" style="margin-top:24px;">
     <div class="section-title">Automate Clients — Weekly Revenue Report</div>
-    <button onclick="loadWeeklyReport()" id="weekly-refresh-btn" style="font-size:11px;color:#6366f1;background:none;border:1px solid #6366f1;border-radius:6px;padding:4px 10px;cursor:pointer;">Refresh</button>
+    <button onclick="loadWeeklyReport()" id="weekly-refresh-btn" style="font-size:11px;color:var(--accent);background:none;border:1px solid var(--accent);border-radius:6px;padding:4px 10px;cursor:pointer;">Refresh</button>
   </div>
 
   <div style="display:flex;align-items:center;gap:10px;margin-bottom:20px;flex-wrap:wrap;">
@@ -692,11 +692,11 @@
       <button class="range-btn" data-days="30" onclick="setRange(30)">Last 30 days</button>
     </div>
     <div style="display:flex;align-items:center;gap:6px;">
-      <input type="text" id="range-picker" placeholder="Pick date range…" readonly style="background:#111623;border:1px solid #1a2035;color:#e2e8f0;padding:4px 10px;border-radius:6px;font-size:11px;width:200px;cursor:pointer;">
+      <input type="text" id="range-picker" placeholder="Pick date range…" readonly style="background:var(--bg-raised);border:1px solid var(--border);color:var(--text-primary);padding:4px 10px;border-radius:6px;font-size:11px;width:200px;cursor:pointer;">
     </div>
   </div>
 
-  <p style="font-size:12px;color:#64748b;margin-bottom:20px;" id="weekly-period">Loading...</p>
+  <p style="font-size:12px;color:var(--text-tertiary);margin-bottom:20px;" id="weekly-period">Loading...</p>
 
   <div class="stats-grid" style="margin-bottom:20px;">
     <div class="stat-card">
@@ -749,10 +749,10 @@
 
   <div class="section-header">
     <div class="section-title">Copy-Ready Report</div>
-    <button onclick="copyReport()" style="font-size:11px;color:#34d399;background:none;border:1px solid #34d399;border-radius:6px;padding:4px 10px;cursor:pointer;">Copy to Clipboard</button>
+    <button onclick="copyReport()" style="font-size:11px;color:var(--success);background:none;border:1px solid var(--success);border-radius:6px;padding:4px 10px;cursor:pointer;">Copy to Clipboard</button>
   </div>
-  <div style="background:#111623;border:1px solid #1a2035;border-radius:10px;padding:20px;margin-bottom:28px;">
-    <pre id="wr-copy-text" style="font-family:inherit;font-size:12px;color:#94a3b8;white-space:pre-wrap;line-height:1.8;">Loading report...</pre>
+  <div style="background:var(--bg-raised);border:1px solid var(--border);border-radius:10px;padding:20px;margin-bottom:28px;">
+    <pre id="wr-copy-text" style="font-family:inherit;font-size:12px;color:var(--text-secondary);white-space:pre-wrap;line-height:1.8;">Loading report...</pre>
   </div>
 
 </div><!-- /tab-weekly -->
@@ -760,46 +760,46 @@
 <!-- ════════════════════════════════ CLIENT REPORTS TAB ═══════════════════════════════ -->
 <div class="tab-section" id="tab-clientreports">
 <style>
-  .cr-week { font-size:11px; color:#475569; margin-bottom:24px; margin-top:24px; }
-  .cr-card { background:#111623; border:1px solid #1a2035; border-radius:12px; padding:20px; margin-bottom:20px; }
-  .cr-card.cr-sent { border-color:#065f46; }
+  .cr-week { font-size:11px; color:var(--text-quiet); margin-bottom:24px; margin-top:24px; }
+  .cr-card { background:var(--bg-raised); border:1px solid var(--border); border-radius:var(--radius-md); padding:20px; margin-bottom:20px; box-shadow:var(--shadow-card); }
+  .cr-card.cr-sent { border-color:var(--success-border); }
   .cr-card-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:16px; }
-  .cr-client-name { font-size:14px; font-weight:700; color:#e2e8f0; }
-  .cr-client-biz { font-size:11px; color:#475569; margin-top:2px; }
-  .cr-sent-badge { font-size:10px; font-weight:700; padding:3px 10px; border-radius:20px; background:#065f46; color:#34d399; }
-  .cr-pending-badge { font-size:10px; font-weight:700; padding:3px 10px; border-radius:20px; background:#3b1f02; color:#f59e0b; }
+  .cr-client-name { font-size:14px; font-weight:650; color:var(--text-primary); }
+  .cr-client-biz { font-size:11px; color:var(--text-quiet); margin-top:2px; }
+  .cr-sent-badge { font-size:10px; font-weight:700; padding:3px 10px; border-radius:20px; background:var(--success-soft); color:var(--success); border:1px solid var(--success-border); }
+  .cr-pending-badge { font-size:10px; font-weight:700; padding:3px 10px; border-radius:20px; background:var(--warning-soft); color:var(--warning); border:1px solid var(--warning-border); }
   .cr-stats { display:grid; grid-template-columns:repeat(auto-fill,minmax(110px,1fr)); gap:10px; margin-bottom:18px; }
-  .cr-stat { background:#0d1117; border-radius:8px; padding:10px 12px; }
-  .cr-stat-label { font-size:9px; font-weight:700; text-transform:uppercase; letter-spacing:.8px; color:#475569; margin-bottom:4px; }
-  .cr-stat-value { font-size:18px; font-weight:700; color:#e2e8f0; }
-  .cr-stat-value.green { color:#34d399; }
-  .cr-stat-value.yellow { color:#f59e0b; }
-  .cr-stat-value.red { color:#ef4444; }
-  .cr-stat-sub { font-size:9px; color:#475569; margin-top:2px; }
+  .cr-stat { background:var(--bg-sunken); border-radius:var(--radius-sm); padding:10px 12px; }
+  .cr-stat-label { font-size:9px; font-weight:700; text-transform:uppercase; letter-spacing:.8px; color:var(--text-quiet); margin-bottom:4px; }
+  .cr-stat-value { font-size:18px; font-weight:700; color:var(--text-primary); }
+  .cr-stat-value.green { color:var(--success); }
+  .cr-stat-value.yellow { color:var(--warning); }
+  .cr-stat-value.red { color:var(--danger); }
+  .cr-stat-sub { font-size:9px; color:var(--text-quiet); margin-top:2px; }
   .cr-loom-row { display:flex; align-items:center; gap:10px; margin-bottom:14px; flex-wrap:wrap; }
-  .cr-loom-btn { font-size:11px; font-weight:600; background:#6366f1; color:#fff; border:none; border-radius:7px; padding:8px 14px; cursor:pointer; white-space:nowrap; }
-  .cr-loom-btn:hover { background:#4f46e5; }
-  .cr-loom-input { flex:1; min-width:180px; background:#0d1117; border:1px solid #1a2035; color:#e2e8f0; font-size:11px; border-radius:7px; padding:8px 10px; outline:none; }
-  .cr-loom-input:focus { border-color:#6366f1; }
+  .cr-loom-btn { font-size:11px; font-weight:600; background:var(--accent); color:#fff; border:none; border-radius:var(--radius-sm); padding:8px 14px; cursor:pointer; white-space:nowrap; }
+  .cr-loom-btn:hover { background:var(--accent-hover); }
+  .cr-loom-input { flex:1; min-width:180px; background:var(--bg-sunken); border:1px solid var(--border); color:var(--text-primary); font-size:11px; border-radius:var(--radius-sm); padding:8px 10px; outline:none; }
+  .cr-loom-input:focus { border-color:var(--accent); }
   .cr-msg-wrap { position:relative; }
-  .cr-msg { width:100%; background:#0d1117; border:1px solid #1a2035; color:#94a3b8; font-size:11px; font-family:inherit; border-radius:8px; padding:12px; line-height:1.7; resize:vertical; min-height:130px; box-sizing:border-box; }
+  .cr-msg { width:100%; background:var(--bg-sunken); border:1px solid var(--border); color:var(--text-secondary); font-size:11px; font-family:inherit; border-radius:var(--radius-sm); padding:12px; line-height:1.7; resize:vertical; min-height:130px; box-sizing:border-box; }
   .cr-msg-actions { display:flex; gap:8px; margin-top:10px; }
-  .cr-copy-btn { font-size:11px; color:#60a5fa; background:none; border:1px solid #60a5fa; border-radius:6px; padding:5px 12px; cursor:pointer; }
-  .cr-copy-btn:hover { background:#1e3a5f; }
-  .cr-mark-btn { font-size:11px; color:#34d399; background:none; border:1px solid #34d399; border-radius:6px; padding:5px 12px; cursor:pointer; }
-  .cr-mark-btn:hover { background:#065f46; }
-  .cr-unmark-btn { font-size:11px; color:#475569; background:none; border:1px solid #1a2035; border-radius:6px; padding:5px 12px; cursor:pointer; }
-  .cr-no-access { font-size:11px; color:#ef4444; background:#3b0a0a; border-radius:6px; padding:6px 10px; margin-bottom:14px; }
+  .cr-copy-btn { font-size:11px; color:var(--info); background:none; border:1px solid var(--info-border); border-radius:var(--radius-sm); padding:5px 12px; cursor:pointer; }
+  .cr-copy-btn:hover { background:var(--info-soft); }
+  .cr-mark-btn { font-size:11px; color:var(--success); background:none; border:1px solid var(--success-border); border-radius:var(--radius-sm); padding:5px 12px; cursor:pointer; }
+  .cr-mark-btn:hover { background:var(--success-soft); }
+  .cr-unmark-btn { font-size:11px; color:var(--text-tertiary); background:none; border:1px solid var(--border); border-radius:var(--radius-sm); padding:5px 12px; cursor:pointer; }
+  .cr-no-access { font-size:11px; color:var(--danger); background:var(--danger-soft); border-radius:var(--radius-sm); padding:6px 10px; margin-bottom:14px; }
 </style>
 
   <div class="section-header" style="margin-top:24px;">
     <div class="section-title">Client Marketing Reports</div>
-    <button onclick="loadClientReports()" id="cr-refresh-btn" style="font-size:11px;color:#6366f1;background:none;border:1px solid #6366f1;border-radius:6px;padding:4px 10px;cursor:pointer;">Refresh</button>
+    <button onclick="loadClientReports()" id="cr-refresh-btn" style="font-size:11px;color:var(--accent);background:none;border:1px solid var(--accent);border-radius:6px;padding:4px 10px;cursor:pointer;">Refresh</button>
   </div>
   <p class="cr-week" id="cr-week-label">Loading...</p>
 
   <div id="cr-cards-container">
-    <div style="color:#475569;font-size:12px;padding:20px 0;">Loading client data...</div>
+    <div style="color:var(--text-quiet);font-size:12px;padding:20px 0;">Loading client data...</div>
   </div>
 
 </div><!-- /tab-clientreports -->
@@ -810,34 +810,34 @@
 .tasks-wrap { max-width: 680px; margin: 0 auto; padding: 24px 0; }
 .tasks-add-row { display: flex; gap: 8px; margin-bottom: 20px; }
 .tasks-add-row input[type="text"] {
-  flex: 1; background: #0d1117; border: 1px solid #1a2035; border-radius: 8px;
-  color: #e2e8f0; font-size: 13px; padding: 0 12px; height: 38px; outline: none;
+  flex: 1; background: var(--bg-sunken); border: 1px solid var(--border); border-radius: 8px;
+  color: var(--text-primary); font-size: 13px; padding: 0 12px; height: 38px; outline: none;
   transition: border-color 0.15s;
 }
-.tasks-add-row input[type="text"]:focus { border-color: #6366f1; }
-.tasks-add-row input[type="text"]::placeholder { color: #475569; }
+.tasks-add-row input[type="text"]:focus { border-color: var(--accent); }
+.tasks-add-row input[type="text"]::placeholder { color: var(--text-quiet); }
 .tasks-sel {
-  background: #0d1117; border: 1px solid #1a2035; border-radius: 8px;
-  color: #94a3b8; font-size: 12px; padding: 0 8px; height: 38px; cursor: pointer; outline: none;
+  background: var(--bg-sunken); border: 1px solid var(--border); border-radius: 8px;
+  color: var(--text-secondary); font-size: 12px; padding: 0 8px; height: 38px; cursor: pointer; outline: none;
 }
-.tasks-sel:focus { border-color: #6366f1; }
+.tasks-sel:focus { border-color: var(--accent); }
 .btn-task-add {
-  height: 38px; padding: 0 16px; background: #6366f1; color: #fff;
+  height: 38px; padding: 0 16px; background: var(--accent); color: #fff;
   border: none; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer;
   white-space: nowrap; transition: background 0.15s;
 }
-.btn-task-add:hover { background: #4f46e5; }
+.btn-task-add:hover { background: var(--accent-hover); }
 .tasks-filters { display: flex; gap: 6px; margin-bottom: 16px; }
 .task-filter-btn {
   font-size: 11px; font-weight: 600; padding: 4px 12px; border-radius: 20px;
-  border: 1px solid #1a2035; background: transparent; color: #64748b; cursor: pointer;
+  border: 1px solid var(--border); background: transparent; color: var(--text-tertiary); cursor: pointer;
   transition: all 0.15s;
 }
 .task-filter-btn.active { background: #1e2a3f; color: #93c5fd; border-color: #2563eb; }
 .task-list { display: flex; flex-direction: column; gap: 6px; }
 .task-item {
   display: flex; align-items: flex-start; gap: 10px;
-  background: #0d1117; border: 1px solid #1a2035; border-radius: 8px;
+  background: var(--bg-sunken); border: 1px solid var(--border); border-radius: 8px;
   padding: 10px 12px; transition: border-color 0.15s;
 }
 .task-item:hover { border-color: #2a3550; }
@@ -847,11 +847,11 @@
   background: transparent; cursor: pointer; flex-shrink: 0; margin-top: 1px;
   display: flex; align-items: center; justify-content: center; transition: all 0.15s;
 }
-.task-check.checked { background: #6366f1; border-color: #6366f1; }
+.task-check.checked { background: var(--accent); border-color: var(--accent); }
 .task-check.checked::after { content: '✓'; color: #fff; font-size: 11px; font-weight: 700; }
 .task-body { flex: 1; min-width: 0; }
-.task-text { font-size: 13px; color: #e2e8f0; line-height: 1.4; word-break: break-word; }
-.task-item.done .task-text { text-decoration: line-through; color: #475569; }
+.task-text { font-size: 13px; color: var(--text-primary); line-height: 1.4; word-break: break-word; }
+.task-item.done .task-text { text-decoration: line-through; color: var(--text-quiet); }
 .task-meta { display: flex; gap: 6px; margin-top: 5px; flex-wrap: wrap; }
 .task-badge {
   font-size: 10px; font-weight: 600; padding: 2px 7px; border-radius: 4px;
@@ -865,7 +865,7 @@
   background: none; border: none; color: #334155; cursor: pointer; font-size: 15px;
   padding: 0 2px; line-height: 1; transition: color 0.15s; flex-shrink: 0;
 }
-.task-del:hover { color: #ef4444; }
+.task-del:hover { color: var(--danger); }
 .tasks-empty { text-align: center; color: #334155; font-size: 13px; padding: 40px 0; }
 .tasks-status { font-size: 11px; color: #334155; text-align: right; margin-top: 12px; }
 </style>
@@ -903,7 +903,7 @@
 .ob-table { width: 100%; border-collapse: collapse; min-width: 700px; }
 .ob-table th {
   font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.6px;
-  color: #475569; padding: 8px 10px; text-align: center; border-bottom: 1px solid #1a2035;
+  color: var(--text-quiet); padding: 8px 10px; text-align: center; border-bottom: 1px solid var(--border);
   white-space: nowrap;
 }
 .ob-table th.col-client { text-align: left; min-width: 140px; }
@@ -911,20 +911,20 @@
   padding: 10px; border-bottom: 1px solid #0f1623; text-align: center; vertical-align: middle;
 }
 .ob-table td.col-client {
-  text-align: left; font-size: 12px; font-weight: 600; color: #e2e8f0; white-space: nowrap;
+  text-align: left; font-size: 12px; font-weight: 600; color: var(--text-primary); white-space: nowrap;
 }
-.ob-table td.col-client .ob-biz { font-size: 10px; color: #475569; font-weight: 400; margin-top: 2px; }
+.ob-table td.col-client .ob-biz { font-size: 10px; color: var(--text-quiet); font-weight: 400; margin-top: 2px; }
 .ob-table tr:hover td { background: #0a0f1a; }
 .ob-check {
   width: 22px; height: 22px; border-radius: 5px; border: 1.5px solid #1e3a5f;
-  background: #0d1117; cursor: pointer; margin: 0 auto; display: flex;
+  background: var(--bg-sunken); cursor: pointer; margin: 0 auto; display: flex;
   align-items: center; justify-content: center; transition: all 0.12s; flex-shrink: 0;
 }
 .ob-check.done { background: #166534; border-color: #16a34a; }
 .ob-check.done::after { content: '✓'; color: #4ade80; font-size: 13px; font-weight: 700; }
 .ob-check:hover:not(.done) { border-color: #3b82f6; background: #0f1f3d; }
 .ob-progress {
-  font-size: 10px; font-weight: 700; color: #64748b; white-space: nowrap;
+  font-size: 10px; font-weight: 700; color: var(--text-tertiary); white-space: nowrap;
 }
 .ob-progress.complete { color: #4ade80; }
 .ob-save-status { font-size: 11px; color: #334155; text-align: right; margin-top: 10px; }
@@ -1152,7 +1152,7 @@ function renderUpcoming(rows) {
       <div class="upcoming-desc">${i.desc}</div>
       <div class="upcoming-amount${i.amtColor ? ' ' + i.amtColor : ''}">${i.amt}</div>
     </div>`
-  ).join('') || '<div style="color:#475569;padding:16px;">No upcoming payments tracked.</div>';
+  ).join('') || '<div style="color:var(--text-quiet);padding:16px;">No upcoming payments tracked.</div>';
 }
 
 function renderContracts(contracts) {
@@ -1264,7 +1264,6 @@ function renderActions(s, clients, metaAccounts) {
   const now = new Date();
   const actions = [];
   const WF_KEYS = ['fast5','confirmation','noshow','review','nurture','stale'];
-  const ACTIVE_CLIENTS = ['terri','allaphia','thania','aguilera','glendale','sandy','stephanie','sarah'];
 
   // ── DO NOW (red) ──────────────────────────────────────────────────────────
   (s.billingRows || []).filter(r => r.paymentStatus === 'failed' && !isChurnedRow(r)).forEach(r => {
@@ -1318,7 +1317,6 @@ function renderActions(s, clients, metaAccounts) {
 
   const noWfClients = [];
   (clients || []).forEach(c => {
-    if (!ACTIVE_CLIENTS.includes(c.key)) return;
     const liveCount = WF_KEYS.filter(w => (c.workflows || {})[w] === 'LIVE').length;
     if (liveCount === 0 && (c.leads?.new || 0) > 0) noWfClients.push(c);
   });
@@ -1353,7 +1351,7 @@ function renderActions(s, clients, metaAccounts) {
   const totalStuck = (clients || []).reduce((sum, c) => sum + (c.leads?.new || 0), 0);
   if (totalStuck > 5) {
     const breakdown = (clients || [])
-      .filter(c => ACTIVE_CLIENTS.includes(c.key) && (c.leads?.new || 0) > 0)
+      .filter(c => (c.leads?.new || 0) > 0)
       .map(c => (c.name || c.key).split(' — ')[0] + ': ' + c.leads.new)
       .join(', ');
     actions.push({ color: 'blue', tagLabel: 'This Week',
@@ -1379,7 +1377,7 @@ function renderActions(s, clients, metaAccounts) {
   }
 
   if (actions.length === 0) {
-    container.innerHTML = '<div class="action-item"><div class="action-text"><div class="action-title" style="color:#34d399;">✓ All clear — nothing urgent right now</div><div class="action-desc">No failed payments, no overdue invoices, no SC recovery needed.</div></div></div>';
+    container.innerHTML = '<div class="action-item"><div class="action-text"><div class="action-title" style="color:var(--success);">✓ All clear — nothing urgent right now</div><div class="action-desc">No failed payments, no overdue invoices, no SC recovery needed.</div></div></div>';
     return;
   }
 
@@ -1459,10 +1457,11 @@ async function loadData() {
     _lastSummary = s;
     _lastClients = data.clients;
     renderClientCards(data.clients, data.churnedClients);
+    if (window._renderOnboardingTable) window._renderOnboardingTable();
     renderBillingRows(s.billingRows || []);
     renderUpcoming(s.billingRows || []);
     renderContracts(s.staleContracts || []);
-    renderActions(s, [], _metaAccounts);
+    renderActions(s, data.clients, _metaAccounts);
 
     // MRR — sum retainers for clients actively billing: not failed, not churned/lost, not still in setup
     const mrrTotal = (s.billingRows || [])
@@ -1758,7 +1757,7 @@ async function loadPulse() {
         return `<div class="pulse-call ${cls}">
           <div class="pulse-call-time">${fmtTime(c.time)}</div>
           <div style="flex:1;min-width:0;">
-            <div class="pulse-call-name">${c.name}${c.phone ? ' · <a href="tel:' + c.phone + '" style="color:#6366f1;text-decoration:none;">' + c.phone + '</a>' : ''}</div>
+            <div class="pulse-call-name">${c.name}${c.phone ? ' · <a href="tel:' + c.phone + '" style="color:var(--accent);text-decoration:none;">' + c.phone + '</a>' : ''}</div>
             ${c.lastMessage ? '<div class="pulse-call-msg">' + c.lastMessage.replace(/</g,'&lt;').slice(0,120) + '</div>' : ''}
           </div>
           ${pill}
@@ -1776,7 +1775,7 @@ async function loadPulse() {
         return `<div class="pulse-msg">
           <div class="pulse-msg-badge">${m.unreadCount} new</div>
           <div style="flex:1;min-width:0;">
-            <div class="pulse-msg-name">${m.name}${m.phone ? ' · <a href="tel:' + m.phone + '" style="color:#6366f1;text-decoration:none;">' + fmtPhone(m.phone) + '</a>' : ''}</div>
+            <div class="pulse-msg-name">${m.name}${m.phone ? ' · <a href="tel:' + m.phone + '" style="color:var(--accent);text-decoration:none;">' + fmtPhone(m.phone) + '</a>' : ''}</div>
             <div class="pulse-msg-text">${(m.lastMessage || '').replace(/</g,'&lt;').slice(0,160)}</div>
             <div class="pulse-msg-time">${fmtAgo(m.lastMessageAt)}</div>
           </div>
@@ -1796,7 +1795,7 @@ async function loadPulse() {
         return `<div class="pulse-stuck${hot ? ' hot' : ''}">
           <div class="pulse-stuck-days ${daysCls}">${s.daysInStage}d</div>
           <div style="flex:1;min-width:0;">
-            <div class="pulse-stuck-name">${s.name}${s.phone ? ' · <a href="tel:' + s.phone + '" style="color:#6366f1;text-decoration:none;">' + fmtPhone(s.phone) + '</a>' : ''}</div>
+            <div class="pulse-stuck-name">${s.name}${s.phone ? ' · <a href="tel:' + s.phone + '" style="color:var(--accent);text-decoration:none;">' + fmtPhone(s.phone) + '</a>' : ''}</div>
             <div class="pulse-stuck-stage">${s.stage || '—'}</div>
             ${s.lastMessage ? '<div class="pulse-stuck-msg">' + s.lastMessage.replace(/</g,'&lt;').slice(0,120) + '</div>' : ''}
           </div>
@@ -1841,7 +1840,7 @@ function copyScript(btn, text) {
   navigator.clipboard.writeText(text).then(() => {
     const orig = btn.textContent;
     btn.textContent = 'Copied!';
-    btn.style.color = '#34d399';
+    btn.style.color = 'var(--success)';
     setTimeout(() => { btn.textContent = orig; btn.style.color = ''; }, 1800);
   });
 }
@@ -1886,7 +1885,7 @@ function renderRecoveryItem(person, statusMap, segment) {
       <div class="recovery-name">${person.name}</div>
       ${biz ? `<div class="recovery-biz">${biz}</div>` : ''}
     </div>
-    ${phone ? `<a class="recovery-phone" href="tel:${phone}">${fmtPhone(phone)}</a>` : '<span class="recovery-phone" style="color:#475569">no phone</span>'}
+    ${phone ? `<a class="recovery-phone" href="tel:${phone}">${fmtPhone(phone)}</a>` : '<span class="recovery-phone" style="color:var(--text-quiet)">no phone</span>'}
     <div class="recovery-actions">
       <button class="rac-btn contacted${status === 'contacted' ? ' active' : ''}" onclick="updateStatus('${id}','contacted')">✓ Contacted</button>
       <button class="rac-btn responded${status === 'responded' ? ' active' : ''}" onclick="updateStatus('${id}','responded')">↩ Responded</button>
@@ -1913,7 +1912,7 @@ function renderRecovery(data) {
   if (data.scConfirmed?.length > 0) {
     const confirmed = data.scConfirmed.map(p => {
       const appt = p.nextAppt ? new Date(p.nextAppt).toLocaleDateString('en-US',{month:'short',day:'numeric',hour:'numeric',minute:'2-digit'}) : '';
-      return `<span style="color:#e2e8f0;font-weight:600">${p.name}</span>${appt ? ' — ' + appt : ''}`;
+      return `<span style="color:var(--text-primary);font-weight:600">${p.name}</span>${appt ? ' — ' + appt : ''}`;
     }).join('<br>');
     scList.insertAdjacentHTML('afterend', `<div class="recovery-confirmed" style="margin-top:10px">✓ ${data.scConfirmed.length} confirmed: ${confirmed}</div>`);
   }
@@ -1964,7 +1963,7 @@ async function loadRecovery() {
     renderRecovery(data);
   } catch (e) {
     console.warn('Recovery load failed:', e);
-    document.getElementById('sc-nocall-list').innerHTML = '<div style="color:#ef4444;padding:16px;font-size:12px;">Failed to load recovery data</div>';
+    document.getElementById('sc-nocall-list').innerHTML = '<div style="color:var(--danger);padding:16px;font-size:12px;">Failed to load recovery data</div>';
   }
 }
 
@@ -2008,13 +2007,13 @@ async function runProvision() {
     .filter(k => !payload[k]);
   if (missing.length) {
     document.getElementById('provision-result').innerHTML =
-      '<span style="color:#ef4444;">Missing: ' + missing.join(', ') + '</span>';
+      '<span style="color:var(--danger);">Missing: ' + missing.join(', ') + '</span>';
     return;
   }
   const btn = document.querySelector('#provision-modal button[onclick="runProvision()"]');
   btn.textContent = 'Creating...';
   btn.disabled = true;
-  document.getElementById('provision-result').innerHTML = '<span style="color:#64748b;">Calling GHL API...</span>';
+  document.getElementById('provision-result').innerHTML = '<span style="color:var(--text-tertiary);">Calling GHL API...</span>';
   try {
     const r = await fetch('/api/provision', {
       method: 'POST',
@@ -2025,14 +2024,14 @@ async function runProvision() {
     if (d.success) {
       document.getElementById('provision-result').innerHTML =
         '<span style="color:#22c55e;">✓ Sub-account created! locationId: <strong>' + d.locationId + '</strong></span>' +
-        '<br><span style="color:#64748b;font-size:11px;">Add this locationId to clients.json for ' + payload.name + '</span>';
+        '<br><span style="color:var(--text-tertiary);font-size:11px;">Add this locationId to clients.json for ' + payload.name + '</span>';
     } else {
       document.getElementById('provision-result').innerHTML =
-        '<span style="color:#ef4444;">Error: ' + (d.error || JSON.stringify(d)) + '</span>';
+        '<span style="color:var(--danger);">Error: ' + (d.error || JSON.stringify(d)) + '</span>';
     }
   } catch (e) {
     document.getElementById('provision-result').innerHTML =
-      '<span style="color:#ef4444;">Request failed: ' + e.message + '</span>';
+      '<span style="color:var(--danger);">Request failed: ' + e.message + '</span>';
   }
   btn.textContent = 'Create Sub-Account';
   btn.disabled = false;
@@ -2098,7 +2097,7 @@ async function runProvision() {
   }
 
   // ── render ────────────────────────────────────────────────────────────────
-  const CLIENTS_LIST = (window._CLIENTS || []).map(c => ({ key: c.key, name: c.name }));
+  function clientsList() { return (window._CLIENTS || []).map(c => ({ key: c.key, name: c.name })); }
 
   function render() {
     const list  = document.getElementById('task-list');
@@ -2136,7 +2135,7 @@ async function runProvision() {
         meta.appendChild(pb);
       }
       if (t.client) {
-        const cl = CLIENTS_LIST.find(c => c.key === t.client);
+        const cl = clientsList().find(c => c.key === t.client);
         if (cl) {
           const cb = document.createElement('span');
           cb.className = 'task-badge badge-client';
@@ -2337,7 +2336,7 @@ async function runProvision() {
   function renderTable() {
     const tbody = document.getElementById('ob-body');
     if (!tbody) return;
-    const clients = (window._CLIENTS || []).filter(c => !['fletcher', 'glendale'].includes(c.key));
+    const clients = (window._CLIENTS || []).filter(c => !['Churned', 'Lost'].includes(c.statusLabel));
     tbody.innerHTML = '';
     clients.forEach(c => {
       const tr = document.createElement('tr');
@@ -2385,6 +2384,10 @@ async function runProvision() {
     renderTable();
   }
 
+  // Re-render whenever fresh dashboard data lands (e.g. onboarding tab was opened
+  // before the initial load finished, or a client's status changed since).
+  window._renderOnboardingTable = renderTable;
+
   document.addEventListener('DOMContentLoaded', () => {
     const tabEl = document.querySelector('[data-tab="onboarding"]');
     if (tabEl) tabEl.addEventListener('click', initOnboarding);
@@ -2395,8 +2398,11 @@ async function runProvision() {
 // ════════════════════════ CLIENT REPORTS ════════════════════════
 (function() {
   const CLIENTS = [
-    { key:'allaphia', name:'Allaphia',  biz:'Paradise Healing',               firstName:'Allaphia' },
-    { key:'sandy',    name:'Sandy',     biz:'My Adult Primary Care',          firstName:'Sandy' },
+    { key:'allaphia',    name:'Allaphia', biz:'Paradise Healing',        firstName:'Allaphia' },
+    { key:'sandy',       name:'Sandy',    biz:'My Adult Primary Care',   firstName:'Sandy' },
+    { key:'carlos',      name:'Carlos',   biz:'Health & Wellness',       firstName:'Carlos' },
+    { key:'carlos-503a', name:'Carlos',   biz:'My 503a Connect',         firstName:'Carlos' },
+    { key:'uhunoma',     name:'Uhunoma',  biz:'Ample Grace Psychiatry',  firstName:'Uhunoma' },
   ];
 
   function weekKey() {
@@ -2649,7 +2655,7 @@ async function runProvision() {
 
       updateNavBadge();
     } catch (err) {
-      container.innerHTML = `<div style="color:#ef4444;font-size:12px;">Failed to load: ${err.message}</div>`;
+      container.innerHTML = `<div style="color:var(--danger);font-size:12px;">Failed to load: ${err.message}</div>`;
     } finally {
       if (btn) { btn.disabled = false; btn.textContent = 'Refresh'; }
     }

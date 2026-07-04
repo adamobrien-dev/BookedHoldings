@@ -12,12 +12,13 @@ async function ghlFetch(path, pit) {
   } catch { return null; }
 }
 
-function classifyStage(stageName = '') {
-  const s = stageName.toLowerCase();
-  if (s.includes('sc') && s.includes('upcoming')) return 'SC_UPCOMING';
-  if (s.includes('dc') && s.includes('no show')) return 'DC_NOSHOW';
-  return 'OTHER';
-}
+// GHL's /opportunities/search response never includes pipelineStageName, only
+// pipelineStageId (a UUID) — these are the agency pipeline's real stage IDs,
+// same ones used in dashboard-data.js's AGENCY_STAGES.
+const STAGE = {
+  SC_UPCOMING: '8216ee1d-73eb-4a3e-b53b-8b8cf0942256',
+  DC_NOSHOW:   'f7a093f3-799e-4c00-826b-886c41199063',
+};
 
 function daysSince(iso) {
   return Math.floor((Date.now() - new Date(iso).getTime()) / 86400000);
@@ -51,7 +52,12 @@ module.exports = async function handler(req, res) {
   res.setHeader('Cache-Control', 's-maxage=120, stale-while-revalidate=60');
   res.setHeader('Access-Control-Allow-Origin', '*');
 
-  const pit = process.env.GHL_PIT_AGENCY || 'pit-4c3b0e38-6f82-4429-a33a-b54628e9a03d';
+  const pit = process.env.GHL_PIT_AGENCY;
+  if (!pit) return res.status(200).json({
+    generatedAt: new Date().toISOString(),
+    scNoCall: [], scConfirmed: [], dcNoShows: [], staleContracts: [],
+    summary: { scNoCall: 0, scConfirmed: 0, dcNoShows: 0, staleContracts: 0, criticalContracts: 0, totalRecoverable: 0 },
+  });
 
   const [oppsData, unsignedContracts] = await Promise.all([
     ghlFetch(`/opportunities/search?location_id=${AGENCY_LOC}&limit=100`, pit),
@@ -62,7 +68,7 @@ module.exports = async function handler(req, res) {
   const now = new Date();
 
   // ── SC: Upcoming ──────────────────────────────────────────────────────────
-  const scOpps = opps.filter(o => classifyStage(o.pipelineStageName) === 'SC_UPCOMING');
+  const scOpps = opps.filter(o => o.pipelineStageId === STAGE.SC_UPCOMING);
 
   const scResults = await Promise.all(scOpps.map(async o => {
     const apData = await ghlFetch(`/contacts/${o.contact.id}/appointments`, pit);
@@ -84,7 +90,7 @@ module.exports = async function handler(req, res) {
 
   // ── DC: No-Show ───────────────────────────────────────────────────────────
   const dcNoShows = opps
-    .filter(o => classifyStage(o.pipelineStageName) === 'DC_NOSHOW')
+    .filter(o => o.pipelineStageId === STAGE.DC_NOSHOW)
     .map(o => ({
       name:             o.contact.name || 'Unknown',
       phone:            o.contact.phone || null,

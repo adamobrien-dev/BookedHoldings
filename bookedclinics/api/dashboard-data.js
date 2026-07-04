@@ -61,7 +61,7 @@ const BILLING_CONFIG = CLIENTS_CONFIG
   }));
 
 const AGENCY_LOC = 'NKpzhLv8iNQ0c9Ge3QAR';
-const AGENCY_PIT = 'pit-6aacb9ad-ed6a-4266-beb3-e261c49afe6b';
+const AGENCY_PIT = process.env.GHL_PIT_AGENCY;
 const AGENCY_STAGES = {
   DC_UPCOMING:  'd0065956-d245-4c34-8bcd-4414a3a2c408',
   DC_NOSHOW:    'f7a093f3-799e-4c00-826b-886c41199063',
@@ -139,10 +139,18 @@ async function getClientData(client) {
   const pit = process.env[client.pitEnv];
   if (!pit) return { ...client, leads: null, workflows: null, error: 'missing_pit' };
 
-  const [oppsData, wfData] = await Promise.all([
+  const [oppsData, wfData, pipelinesData] = await Promise.all([
     ghlFetch(`/opportunities/search?location_id=${client.locationId}&limit=100`, pit),
     ghlFetch(`/workflows/?locationId=${client.locationId}`, pit),
+    ghlFetch(`/opportunities/pipelines?locationId=${client.locationId}`, pit),
   ]);
+
+  // GHL's /opportunities/search response only gives pipelineStageId (a UUID),
+  // never a stage name — look the name up from the pipeline definition instead.
+  const stageNameById = {};
+  for (const p of pipelinesData?.pipelines || []) {
+    for (const s of p.stages || []) stageNameById[s.id] = s.name;
+  }
 
   const leads = { new: 0, hot: 0, booked: 0, attended: 0, sale: 0, total: 0 };
   if (oppsData?.opportunities) {
@@ -150,7 +158,7 @@ async function getClientData(client) {
       leads.total++;
       if (opp.status === 'won') { leads.sale++; continue; }
       if (opp.status === 'lost') { leads.total--; continue; }
-      const bucket = classifyStage(opp.pipelineStageName || '');
+      const bucket = classifyStage(stageNameById[opp.pipelineStageId] || '');
       leads[bucket]++;
     }
   }

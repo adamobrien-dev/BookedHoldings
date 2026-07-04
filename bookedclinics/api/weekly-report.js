@@ -48,7 +48,7 @@ module.exports = async function handler(req, res) {
   res.setHeader('Cache-Control', 's-maxage=300, stale-while-revalidate=60');
   res.setHeader('Access-Control-Allow-Origin', '*');
 
-  const pit = process.env.GHL_PIT_AGENCY || 'pit-4c3b0e38-6f82-4429-a33a-b54628e9a03d';
+  const pit = process.env.GHL_PIT_AGENCY;
   const { days, start, end } = req.query || {};
   let cutoff, periodEnd;
   if (start && end) {
