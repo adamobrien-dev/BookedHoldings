@@ -1231,12 +1231,17 @@ function renderClientCards(clients, churnedClients) {
           </div>`).join('')}
         </div>
       </div>
+      <div class="meta-row" id="${c.key}-meta-row" style="display:none;"></div>
       <div class="client-footer">
         <div class="client-meta"><strong>${total}</strong> total</div>
         <div class="client-meta">${wfEntries.length ? wfLive + '/' + wfEntries.length + ' workflows live' : '— wf'}</div>
       </div>
     </div>`;
   }).join('') || '<div class="pulse-empty">No active clients.</div>';
+
+  // Meta Ads data loads separately/async — re-populate the meta-row blocks we just
+  // rebuilt if that data already arrived before this render.
+  if (window._metaAccounts && typeof populateMetaRows === 'function') populateMetaRows(window._metaAccounts);
 
   if (stuckBadge) {
     const stuck = (clients || []).reduce((s, c) => s + (c.leads?.new || 0), 0);
@@ -1631,6 +1636,41 @@ let _metaAccounts = null;
 
 function fmtSpend(n) { return n == null ? '—' : '$' + n.toLocaleString('en-US', { maximumFractionDigits: 0 }); }
 
+function populateMetaRows(accounts) {
+  for (const a of accounts || []) {
+    const row = document.getElementById(a.key + '-meta-row');
+    if (!row) continue;
+
+    const statusColor = a.isDisabled ? 'red' : a.isUnsettled ? 'yellow' : 'green';
+    const statusText  = a.isDisabled ? '✕ Disabled' : a.isUnsettled ? '⚠ Unsettled' : '● Active';
+    const cplColor    = a.cpl == null ? '' : a.cpl > 75 ? 'red' : a.cpl > 40 ? 'yellow' : 'green';
+    const leadsColor  = a.leads == null ? '' : a.leads === 0 && a.spend > 50 ? 'red' : a.leads > 0 ? 'green' : '';
+
+    row.innerHTML = `
+      <div class="meta-block">
+        <div class="meta-block-label">Spend (7d)</div>
+        <div class="meta-block-value">${fmtSpend(a.spend)}</div>
+        <div class="meta-block-sub">Meta Ads</div>
+      </div>
+      <div class="meta-block">
+        <div class="meta-block-label">Leads (7d)</div>
+        <div class="meta-block-value${leadsColor ? ' ' + leadsColor : ''}">${a.leads ?? '—'}</div>
+        <div class="meta-block-sub">from ad forms</div>
+      </div>
+      <div class="meta-block">
+        <div class="meta-block-label">CPL</div>
+        <div class="meta-block-value${cplColor ? ' ' + cplColor : ''}">${a.cpl != null ? '$' + a.cpl.toFixed(0) : '—'}</div>
+        <div class="meta-block-sub">cost per lead</div>
+      </div>
+      <div class="meta-block">
+        <div class="meta-block-label">Account</div>
+        <div class="meta-block-value ${statusColor}">${statusText}</div>
+        <div class="meta-block-sub">${a.error ? 'API error' : 'live status'}</div>
+      </div>`;
+    row.style.display = 'flex';
+  }
+}
+
 async function loadMetaData() {
   try {
     const res = await fetch('/api/meta-ads');
@@ -1639,39 +1679,8 @@ async function loadMetaData() {
     if (!data.accounts) return;
 
     _metaAccounts = data.accounts;
-
-    for (const a of data.accounts) {
-      const row = document.getElementById(a.key + '-meta-row');
-      if (!row) continue;
-
-      const statusColor = a.isDisabled ? 'red' : a.isUnsettled ? 'yellow' : 'green';
-      const statusText  = a.isDisabled ? '✕ Disabled' : a.isUnsettled ? '⚠ Unsettled' : '● Active';
-      const cplColor    = a.cpl == null ? '' : a.cpl > 75 ? 'red' : a.cpl > 40 ? 'yellow' : 'green';
-      const leadsColor  = a.leads == null ? '' : a.leads === 0 && a.spend > 50 ? 'red' : a.leads > 0 ? 'green' : '';
-
-      row.innerHTML = `
-        <div class="meta-block">
-          <div class="meta-block-label">Spend (7d)</div>
-          <div class="meta-block-value">${fmtSpend(a.spend)}</div>
-          <div class="meta-block-sub">Meta Ads</div>
-        </div>
-        <div class="meta-block">
-          <div class="meta-block-label">Leads (7d)</div>
-          <div class="meta-block-value${leadsColor ? ' ' + leadsColor : ''}">${a.leads ?? '—'}</div>
-          <div class="meta-block-sub">from ad forms</div>
-        </div>
-        <div class="meta-block">
-          <div class="meta-block-label">CPL</div>
-          <div class="meta-block-value${cplColor ? ' ' + cplColor : ''}">${a.cpl != null ? '$' + a.cpl.toFixed(0) : '—'}</div>
-          <div class="meta-block-sub">cost per lead</div>
-        </div>
-        <div class="meta-block">
-          <div class="meta-block-label">Account</div>
-          <div class="meta-block-value ${statusColor}">${statusText}</div>
-          <div class="meta-block-sub">${a.error ? 'API error' : 'live status'}</div>
-        </div>`;
-      row.style.display = 'flex';
-    }
+    window._metaAccounts = data.accounts;
+    populateMetaRows(data.accounts);
 
     // Re-render actions now that meta data is available
     if (_lastSummary) renderActions(_lastSummary, _lastClients, _metaAccounts);
