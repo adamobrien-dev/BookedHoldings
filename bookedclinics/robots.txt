@@ -5,4 +5,4 @@ Disallow: /lp/
 Disallow: /demo/
 Disallow: /thank-you/
 
-Sitemap: https://bookedclinics.ca/sitemap.xml
+Sitemap: https://www.bookedclinics.ca/sitemap.xml
