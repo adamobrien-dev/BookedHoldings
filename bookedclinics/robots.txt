@@ -1,0 +1,8 @@
+User-agent: *
+Allow: /
+Disallow: /dashboard/
+Disallow: /lp/
+Disallow: /demo/
+Disallow: /thank-you/
+
+Sitemap: https://bookedclinics.ca/sitemap.xml
