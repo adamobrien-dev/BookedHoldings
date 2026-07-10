@@ -15,19 +15,24 @@ gtag("config", "G-24TJPG4YVH");
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Get More Patients. Just $125/Week. No Contracts. | BookedClinics</title>
 <meta name="description" content="We build and manage your Facebook & Instagram ads designed to generate new patient enquiries. Campaign setup, booking funnel, automated follow-up, ongoing management. Just $125/week — no onboarding fee, no lock-in.">
-<link rel="canonical" href="https://bookedclinics.ca/">
+<link rel="canonical" href="https://www.bookedclinics.ca/">
 <meta property="og:type" content="website">
 <meta property="og:title" content="Get More Patients. Just $125/Week. No Contracts. | BookedClinics">
 <meta property="og:description" content="We build and manage your Facebook & Instagram ads designed to generate new patient enquiries. Campaign setup, booking funnel, automated follow-up, ongoing management. Just $125/week — no onboarding fee, no lock-in.">
-<meta property="og:url" content="https://bookedclinics.ca/">
-<meta property="og:image" content="https://bookedclinics.ca/og-image.png">
+<meta property="og:url" content="https://www.bookedclinics.ca/">
+<meta property="og:image" content="https://www.bookedclinics.ca/og-image.png">
 <meta property="og:site_name" content="BookedClinics">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Get More Patients. Just $125/Week. No Contracts. | BookedClinics">
 <meta name="twitter:description" content="We build and manage your Facebook & Instagram ads designed to generate new patient enquiries. Campaign setup, booking funnel, automated follow-up, ongoing management. Just $125/week — no onboarding fee, no lock-in.">
-<meta name="twitter:image" content="https://bookedclinics.ca/og-image.png">
+<meta name="twitter:image" content="https://www.bookedclinics.ca/og-image.png">
 
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16.png">
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#0b7a5a">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -64,6 +69,8 @@ p{color:#3a3a3a}
 .logo{font-size:1.15rem;font-weight:800;color:#0a0a0a;letter-spacing:-0.02em}
 .logo span{color:#0b7a5a}
 .header-cta{font-size:0.85rem;padding:10px 20px;border-radius:6px}
+.header-cta-short{display:none}
+@media(max-width:420px){.header-cta-full{display:none}.header-cta-short{display:inline}}
 
 /* Trust strip */
 .trust-strip{background:#f6faf8;border-bottom:1px solid #e8efe9;padding:12px 24px;text-align:center;font-size:0.82rem;color:#5a6e60;font-weight:500;letter-spacing:0.02em}
@@ -216,18 +223,45 @@ p{color:#3a3a3a}
   "@context": "https://schema.org",
   "@type": "Organization",
   "name": "BookedClinics",
-  "url": "https://bookedclinics.ca",
-  "logo": "https://bookedclinics.ca/favicon.svg",
-  "description": "BookedClinics builds and manages Facebook and Instagram ad campaigns, booking funnels, and automated patient follow-up for clinics across the United States \u2014 med spas, chiropractors, dentists, telehealth, mental health, psychiatric, and veterinary practices.",
-  "areaServed": {
-    "@type": "Country",
-    "name": "United States"
-  },
+  "url": "https://www.bookedclinics.ca",
+  "logo": "https://www.bookedclinics.ca/favicon.svg",
+  "description": "BookedClinics builds and manages Facebook and Instagram ad campaigns, booking funnels, and automated patient follow-up for clinics across the United States — med spas, chiropractors, dentists, telehealth, mental health, psychiatric, and veterinary practices.",
+  "areaServed": { "@type": "Country", "name": "United States" },
   "contactPoint": {
     "@type": "ContactPoint",
     "email": "adam@bookedjobs.ca",
     "contactType": "sales"
+  },
+  "hasOfferCatalog": {
+    "@type": "OfferCatalog",
+    "name": "Marketing Services",
+    "itemListElement": [
+      { "@type": "Service", "name": "Med Spa Marketing", "description": "Med spa marketing across the USA: Google Ads, Meta Ads, Google Maps ranking, and conversion-focused websites to help med spas attract more high-value aesthetic clients." },
+      { "@type": "Service", "name": "Chiropractor Marketing", "description": "Chiropractor marketing services across the U.S.: Google Ads, Meta Ads, Google Maps optimization, and conversion-focused websites to help chiro clinics across the USA attract and book more patients." },
+      { "@type": "Service", "name": "Dental Marketing", "description": "Dental marketing services across the U.S.: Google Ads, Meta Ads, Google Maps ranking, and conversion-focused websites to help dental practices across the USA attract new patients consistently." },
+      { "@type": "Service", "name": "Veterinary Marketing", "description": "Veterinary marketing services across the U.S.: Google Ads, Meta Ads, Google Maps ranking, and conversion-focused websites to help vet clinics across the USA book more appointments consistently." },
+      { "@type": "Service", "name": "Telehealth Marketing", "description": "Telehealth marketing across the USA: Google Ads, Meta Ads, and conversion-focused websites to help telehealth practices grow qualified virtual visits." },
+      { "@type": "Service", "name": "Mental Health Clinic Marketing", "description": "Mental health clinic marketing across the USA: Google Ads, Meta Ads, and conversion-focused websites to help counselling practices attract right-fit clients." },
+      { "@type": "Service", "name": "Psychiatric Clinic Marketing", "description": "Psychiatric clinic marketing across the USA: Google Ads, Meta Ads, and conversion-focused websites to help psychiatric practices drive qualified assessments." },
+      { "@type": "Service", "name": "Google Ads for Clinics", "description": "Google Ads management for clinics across the USA: conversion-focused campaign structure, keyword strategy, conversion tracking, landing pages, and budget optimization to turn clicks into patient bookings." },
+      { "@type": "Service", "name": "Google Maps Ranking for Clinics", "description": "Google Maps ranking for clinics across the USA: Business Profile optimization, primary and secondary category strategy, review velocity, geo-relevance, on-page local SEO, and behavioral signals to dominate the 3-Pack." }
+    ]
   }
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    { "@type": "Question", "name": "What clinics do you work with?", "acceptedAnswer": { "@type": "Answer", "text": "Med spa, chiropractic, dental, telehealth, mental health, psychiatric, veterinary, optometry, counselling, and most local healthcare practices that book appointments. If patients find you through search or social media, we can likely help." } },
+    { "@type": "Question", "name": "How fast can we launch?", "acceptedAnswer": { "@type": "Answer", "text": "Most clinics are live within 10 to 14 days from the first call. That includes campaign setup, your booking funnel, tracking, and ad launch. If you have content and imagery ready, it can be faster." } },
+    { "@type": "Question", "name": "What do you need from us?", "acceptedAnswer": { "@type": "Answer", "text": "Access to your Google Business Profile, a list of services you want to promote, your service area, and any photos or bios you want on the site. We handle everything else." } },
+    { "@type": "Question", "name": "Do you replace our receptionist or booking system?", "acceptedAnswer": { "@type": "Answer", "text": "No. We work alongside your existing systems. Calls still go to your front desk. Forms land in your inbox or CRM. If you use Jane App, Cliniko, or any booking tool, we integrate with it." } },
+    { "@type": "Question", "name": "What counts as a lead?", "acceptedAnswer": { "@type": "Answer", "text": "A tracked phone call or form submission from a potential patient who found you through one of our ads or your website. We filter out spam, existing patients checking hours, and wrong numbers. You only count real inquiries." } },
+    { "@type": "Question", "name": "Is there a minimum contract?", "acceptedAnswer": { "@type": "Answer", "text": "No. It's $125/week, month-to-month. No onboarding fee, no lock-in contracts, and you can cancel anytime." } },
+    { "@type": "Question", "name": "What if we are already running ads?", "acceptedAnswer": { "@type": "Answer", "text": "Good. We will audit what you have, identify what is working and what is wasting budget, and either optimize the existing campaigns or rebuild them on Facebook and Instagram. Either way, we set up proper tracking so you know exactly what each dollar produces." } }
+  ]
 }
 </script>
 </head>
@@ -239,7 +273,7 @@ p{color:#3a3a3a}
     <div class="nav-links" style="display:flex;align-items:center;gap:20px">
       <a href="#services" class="nav-link" style="font-size:0.85rem;font-weight:600;color:#0b7a5a">Services</a>
       <a href="testimonials/index.html" class="nav-link" style="font-size:0.85rem;font-weight:600;color:#0b7a5a">Testimonials</a>
-            <a href="book/index.html" class="btn btn-primary header-cta">Book Your Free Strategy Call</a>
+            <a href="book/index.html" class="btn btn-primary header-cta"><span class="header-cta-full">Book Your Free Strategy Call</span><span class="header-cta-short">Book a Call</span></a>
     </div>
   </div>
 </header>
@@ -477,7 +511,7 @@ p{color:#3a3a3a}
 
       <div class="proof-stats-mini">
         <div class="stat-item">
-          <div class="stat-num">40+</div>
+          <div class="stat-num">100+</div>
           <div class="stat-desc">Clinics we've helped grow</div>
         </div>
         <div class="stat-item">
@@ -657,7 +691,7 @@ p{color:#3a3a3a}
       </div>
       <div class="footer-links">
         <a href="testimonials/index.html">Testimonials</a>
-        <a href="#privacy">Privacy</a>
+        <a href="/privacy/">Privacy</a>
         <a href="mailto:hello@bookedclinics.ca">Contact</a>
       </div>
     </div>
