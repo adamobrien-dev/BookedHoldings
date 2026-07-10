@@ -6,6 +6,15 @@ const GHL_VERSION = '2021-07-28';
 const CHURNED_STATUSES = ['churned', 'lost'];
 const isChurned = c => CHURNED_STATUSES.includes(c.status);
 
+// BookedClinics' own agency sales pipeline (prospects trying to become clients) is a
+// completely separate GHL location from client sub-accounts (patient leads). Some
+// prospects converted to clients but their agency-pipeline opportunity was never marked
+// Won, so they still show up as "needs a sales call" — filter anyone already a client
+// (any status, including churned) out of those prospect-recovery lists.
+const normalizeName = (n = '') => n.toLowerCase().trim();
+const CLIENT_NAMES = new Set(CLIENTS_CONFIG.map(c => normalizeName(c.name)));
+const isExistingClient = name => CLIENT_NAMES.has(normalizeName(name));
+
 const CLIENTS = CLIENTS_CONFIG.filter(c => !isChurned(c)).map(c => ({
   key: c.key,
   name: c.name,
@@ -25,6 +34,24 @@ const CHURNED_CLIENTS = CLIENTS_CONFIG.filter(isChurned).map(c => ({
   status: c.status,
 }));
 
+// Keys "get lost every day" — this checks the live runtime (actual Vercel state)
+// rather than any local file, since that's the thing that actually drifts.
+function getKeysHealth() {
+  const required = [
+    { env: 'STRIPE_SECRET_KEY', label: 'Stripe' },
+    { env: 'PAYPAL_CLIENT_ID', label: 'PayPal client ID' },
+    { env: 'PAYPAL_CLIENT_SECRET', label: 'PayPal secret' },
+    { env: 'DROPBOX_SIGN_API_KEY', label: 'Dropbox Sign' },
+    { env: 'META_SYSTEM_TOKEN', label: 'Meta Ads' },
+    { env: 'KV_REST_API_URL', label: 'Vercel KV (URL)' },
+    { env: 'KV_REST_API_TOKEN', label: 'Vercel KV (token)' },
+    { env: 'GHL_PIT_AGENCY', label: 'GHL — Agency' },
+    ...CLIENTS.map(c => ({ env: c.pitEnv, label: 'GHL — ' + c.name })),
+  ];
+  const missing = required.filter(k => k.env && !process.env[k.env]);
+  return { total: required.length, missing };
+}
+
 const FLETCHER_STRIPE_ID = CLIENTS_CONFIG.find(c => c.key === 'fletcher')?.stripeId;
 
 const BILLING_CONFIG = CLIENTS_CONFIG
@@ -43,7 +70,7 @@ const BILLING_CONFIG = CLIENTS_CONFIG
   }));
 
 const AGENCY_LOC = 'NKpzhLv8iNQ0c9Ge3QAR';
-const AGENCY_PIT = 'pit-6aacb9ad-ed6a-4266-beb3-e261c49afe6b';
+const AGENCY_PIT = process.env.GHL_PIT_AGENCY;
 const AGENCY_STAGES = {
   DC_UPCOMING:  'd0065956-d245-4c34-8bcd-4414a3a2c408',
   DC_NOSHOW:    'f7a093f3-799e-4c00-826b-886c41199063',
@@ -54,9 +81,9 @@ async function getAgencyData() {
   const oppsData = await ghlFetch(`/opportunities/search?location_id=${AGENCY_LOC}&limit=100`, AGENCY_PIT);
   const opps = oppsData?.opportunities || [];
 
-  const scOpps       = opps.filter(o => o.pipelineStageId === AGENCY_STAGES.SC_UPCOMING);
+  const scOpps       = opps.filter(o => o.pipelineStageId === AGENCY_STAGES.SC_UPCOMING && !isExistingClient(o.contact?.name));
   const dcUpcoming   = opps.filter(o => o.pipelineStageId === AGENCY_STAGES.DC_UPCOMING);
-  const dcNoShow     = opps.filter(o => o.pipelineStageId === AGENCY_STAGES.DC_NOSHOW);
+  const dcNoShow     = opps.filter(o => o.pipelineStageId === AGENCY_STAGES.DC_NOSHOW && !isExistingClient(o.contact?.name));
   const wonOpps      = opps.filter(o => o.status === 'won');
   const lostOpps     = opps.filter(o => o.status === 'lost');
   const names = arr => arr.map(o => o.contact?.name || 'Unknown');
@@ -121,10 +148,18 @@ async function getClientData(client) {
   const pit = process.env[client.pitEnv];
   if (!pit) return { ...client, leads: null, workflows: null, error: 'missing_pit' };
 
-  const [oppsData, wfData] = await Promise.all([
+  const [oppsData, wfData, pipelinesData] = await Promise.all([
     ghlFetch(`/opportunities/search?location_id=${client.locationId}&limit=100`, pit),
     ghlFetch(`/workflows/?locationId=${client.locationId}`, pit),
+    ghlFetch(`/opportunities/pipelines?locationId=${client.locationId}`, pit),
   ]);
+
+  // GHL's /opportunities/search response only gives pipelineStageId (a UUID),
+  // never a stage name — look the name up from the pipeline definition instead.
+  const stageNameById = {};
+  for (const p of pipelinesData?.pipelines || []) {
+    for (const s of p.stages || []) stageNameById[s.id] = s.name;
+  }
 
   const leads = { new: 0, hot: 0, booked: 0, attended: 0, sale: 0, total: 0 };
   if (oppsData?.opportunities) {
@@ -132,7 +167,7 @@ async function getClientData(client) {
       leads.total++;
       if (opp.status === 'won') { leads.sale++; continue; }
       if (opp.status === 'lost') { leads.total--; continue; }
-      const bucket = classifyStage(opp.pipelineStageName || '');
+      const bucket = classifyStage(stageNameById[opp.pipelineStageId] || '');
       leads[bucket]++;
     }
   }
@@ -347,6 +382,7 @@ module.exports = async function handler(req, res) {
         })(),
         staleContracts,
         agencyPipeline: agencyData?.pipeline ?? null,
+        keysHealth: getKeysHealth(),
       },
       clients: clientsData,
       churnedClients: CHURNED_CLIENTS,
