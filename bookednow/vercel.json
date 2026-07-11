@@ -82,7 +82,12 @@
     },
     {
       "source": "/(.*)",
-      "has": [{ "type": "host", "value": "my503aconnect.bookednow.app" }],
+      "has": [{ "type": "host", "value": "my503a.bookednow.app" }],
+      "destination": "/my503aconnect/$1"
+    },
+    {
+      "source": "/(.*)",
+      "has": [{ "type": "host", "value": "www.my503a.bookednow.app" }],
       "destination": "/my503aconnect/$1"
     },
     {
