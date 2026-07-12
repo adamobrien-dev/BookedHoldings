@@ -106,13 +106,30 @@ async function run() {
   console.log(`\n📋 Ziani Testimonial Campaign — Message ${msgNum}`);
   console.log(dry ? '🔍 DRY RUN (add --send to fire for real)\n' : '🚀 LIVE SEND\n');
 
-  const oppsResult = await ghl('GET', `/opportunities/search?location_id=${AGENCY_LOC}&limit=100`);
-  if (!oppsResult.ok) {
-    console.error('GHL API error:', oppsResult.status, oppsResult.data);
-    process.exit(1);
+  // Paginate — a single limit=100 call silently drops anything past the first page
+  // once the pipeline grows past 100 opportunities.
+  const allOpps = [];
+  let startAfter, startAfterId;
+  for (;;) {
+    let path = `/opportunities/search?location_id=${AGENCY_LOC}&limit=100`;
+    if (startAfter && startAfterId) path += `&startAfter=${startAfter}&startAfterId=${startAfterId}`;
+
+    const pageResult = await ghl('GET', path);
+    if (!pageResult.ok) {
+      console.error('GHL API error:', pageResult.status, pageResult.data);
+      process.exit(1);
+    }
+
+    const pageOpps = pageResult.data?.opportunities || [];
+    allOpps.push(...pageOpps);
+
+    const meta = pageResult.data?.meta || {};
+    if (!meta.nextPageUrl || pageOpps.length === 0 || allOpps.length >= meta.total) break;
+    startAfter = meta.startAfter;
+    startAfterId = meta.startAfterId;
   }
 
-  const opps = (oppsResult.data?.opportunities || []).filter(o => o.status !== 'lost');
+  const opps = allOpps.filter(o => o.status !== 'lost');
 
   const targets = [];
   const skipped = [];
