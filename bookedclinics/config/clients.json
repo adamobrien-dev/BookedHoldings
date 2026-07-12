@@ -156,8 +156,8 @@
   {
     "key": "carlos-503a",
     "name": "Carlos Meneses",
-    "biz": "My 503a Connect · Compounding Pharmacy · Miami, FL",
-    "niche": "Compounding Pharmacy · Miami, FL",
+    "biz": "My 503a Connect · Compounding Pharmacy · McKinney, TX",
+    "niche": "Compounding Pharmacy · McKinney, TX",
     "locationId": "uXch9hNQSGzhxYP9XfH1",
     "pitEnv": "GHL_PIT_CARLOS_503A",
     "stripeId": null,
@@ -168,10 +168,11 @@
     "retainerAmount": null,
     "_provision": {
       "phone": "+13055550100",
-      "city": "Miami",
-      "state": "FL",
-      "zip": "33101",
-      "timezone": "America/New_York",
+      "street": "2507 Pheasant Run Drive",
+      "city": "McKinney",
+      "state": "TX",
+      "zip": "75072-4151",
+      "timezone": "America/Chicago",
       "website": "https://my503aconnect.com"
     }
   },
