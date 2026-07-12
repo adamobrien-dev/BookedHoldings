@@ -40,11 +40,13 @@ async function report(pit, res) {
   }, pit);
   if (!ok) return res.status(502).json({ error: 'GHL search error', status });
 
-  const contacts = (data?.contacts || []).map(c => ({
-    name: c.contactName || c.name || `${c.firstName || ''} ${c.lastName || ''}`.trim(),
-    phone: c.phone,
-    dateUpdated: c.dateUpdated,
-  }));
+  const contacts = (data?.contacts || [])
+    .map(c => ({
+      name: c.contactName || c.name || `${c.firstName || ''} ${c.lastName || ''}`.trim(),
+      phone: c.phone,
+      dateUpdated: c.dateUpdated,
+    }))
+    .sort((a, b) => new Date(b.dateUpdated) - new Date(a.dateUpdated));
   res.status(200).json({ tag: CLICK_TAG, total: contacts.length, contacts });
 }
 
