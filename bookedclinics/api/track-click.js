@@ -5,11 +5,20 @@
 // GET /api/track-click?client=carlos&c=<id>&campaign=<name>          — Escape Zero campaign: tags + logs click, redirects to Carlos's site
 // GET /api/track-click?client=carlos&c=<id>&campaign=<name>&to=<url> — redirect to an allowlisted Escape domain instead
 // GET /api/track-click?client=carlos&report=true[&campaign=<name>]   — list Carlos contacts who have clicked (JSON)
-// GET /api/track-click?client=carlos&report=purchases                — list Carlos contacts tagged as purchased (JSON)
+// GET /api/track-click?client=carlos&report=purchases                — list Carlos contacts tagged as purchased (server-verified, JSON)
+// GET /api/track-click?client=carlos&report=purchases-unverified      — list contacts tagged from the client-side page ping (JSON)
+//
+// GET /api/track-click?client=carlos&event=purchase&c=<id>&campaign=<name>&amount=<n>&product=<name>
+//   — no-secret purchase ping for plain (non-Velo) Wix sites where a shared secret can't be kept
+//     out of browser-visible page code. Tags the contact `purchased - escape (self-reported)` —
+//     deliberately a different tag from the POST webhook's `purchased - escape`, since this one
+//     is trivially spoofable (anyone can load the thank-you URL without paying). Treat it as a
+//     signal to reconcile against Wix's own orders before invoicing, not proof of payment.
 //
 // POST /api/track-click  { client: 'carlos', contactId?, email?, phone?, campaign?, amount?, product? }
-//   — purchase webhook (e.g. Wix Automations on booking/purchase complete). Auth: header
+//   — server-side purchase webhook (Wix Automations, or a Velo backend function). Auth: header
 //     x-webhook-secret must match the client's webhook secret env var (CARLOS_WEBHOOK_SECRET).
+//     Only use this from somewhere the secret stays server-side — never from a page <script>.
 //
 // Kept as one file (not split per client) to stay under Vercel Hobby's 12-serverless-function
 // cap per deployment — api/ was already sitting at the limit before this campaign was added.
@@ -31,6 +40,7 @@ const CLIENTS = {
     // Only ever redirect to Carlos's own domains — never trust an arbitrary `to` param (open-redirect risk).
     allowedHosts: new Set(['escapezerogravitymassage.com', 'www.escapezerogravitymassage.com']),
     purchaseTag: 'purchased - escape',
+    selfReportedPurchaseTag: 'purchased - escape (self-reported)',
   },
 };
 
@@ -153,6 +163,34 @@ async function clientPurchaseReport(client, pit, res) {
   res.status(200).json({ tag: client.purchaseTag, total: contacts.length, contacts });
 }
 
+// ---- Per-client self-reported purchase ping (no-secret, for plain Wix page code) ----
+
+async function recordClientSelfReportedPurchase(client, contactId, { campaign, amount, product }, pit) {
+  const details = [
+    product ? `Product: ${product}` : null,
+    amount != null ? `Amount: $${amount}` : null,
+    `Campaign: ${campaign}`,
+    new Date().toISOString(),
+  ].filter(Boolean).join(' · ');
+  await Promise.all([
+    ghl('POST', `/contacts/${contactId}/tags`, { tags: [client.selfReportedPurchaseTag] }, pit),
+    ghl('POST', `/contacts/${contactId}/notes`, {
+      body: `Reported purchase (client-side page ping, unverified) → ${details}`,
+    }, pit),
+  ]);
+}
+
+async function clientSelfReportedPurchaseReport(client, pit, res) {
+  const { ok, status, data } = await ghl('POST', '/contacts/search', {
+    locationId: client.locationId,
+    filters: [{ field: 'tags', operator: 'contains', value: client.selfReportedPurchaseTag }],
+    pageLimit: 100,
+  }, pit);
+  if (!ok) return res.status(502).json({ error: 'GHL search error', status });
+  const contacts = listByTag(data);
+  res.status(200).json({ tag: client.selfReportedPurchaseTag, total: contacts.length, contacts });
+}
+
 module.exports = async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
 
@@ -188,6 +226,8 @@ module.exports = async function handler(req, res) {
 
   if (req.method !== 'GET') return res.status(405).end();
 
+  const contactId = typeof req.query.c === 'string' ? req.query.c : null;
+
   // ---- GET: reports ----
   if (req.query.report === 'true') {
     if (client) {
@@ -203,10 +243,31 @@ module.exports = async function handler(req, res) {
     try { return await clientPurchaseReport(client, process.env[client.pitEnv], res); }
     catch (err) { return res.status(500).json({ error: err.message }); }
   }
+  if (req.query.report === 'purchases-unverified') {
+    if (!client) return res.status(400).json({ error: 'client required for purchases report' });
+    try { return await clientSelfReportedPurchaseReport(client, process.env[client.pitEnv], res); }
+    catch (err) { return res.status(500).json({ error: err.message }); }
+  }
+
+  // ---- GET: no-secret self-reported purchase ping (plain Wix thank-you-page code) ----
+  if (client && req.query.event === 'purchase') {
+    const campaign = typeof req.query.campaign === 'string' ? req.query.campaign : client.defaultCampaign;
+    const amount = typeof req.query.amount === 'string' ? req.query.amount : null;
+    const product = typeof req.query.product === 'string' ? req.query.product : null;
+    const email = typeof req.query.email === 'string' ? req.query.email : null;
+    const phone = typeof req.query.phone === 'string' ? req.query.phone : null;
+    const pit = process.env[client.pitEnv];
+    try {
+      const resolvedId = contactId || await findClientContact(client, email, phone, pit);
+      if (!resolvedId) return res.status(200).json({ ok: false, reason: 'contact not found' });
+      await recordClientSelfReportedPurchase(client, resolvedId, { campaign, amount, product }, pit);
+      return res.status(200).json({ ok: true });
+    } catch (err) {
+      return res.status(200).json({ ok: false, error: err.message });
+    }
+  }
 
   // ---- GET: click tracking + redirect ----
-  const contactId = typeof req.query.c === 'string' ? req.query.c : null;
-
   if (client) {
     const campaign = typeof req.query.campaign === 'string' ? req.query.campaign : client.defaultCampaign;
     const dest = resolveClientDest(client, typeof req.query.to === 'string' ? req.query.to : null, campaign);
