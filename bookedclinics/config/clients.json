@@ -219,5 +219,27 @@
       "timezone": "America/New_York",
       "website": "https://www.todaytelemedicine.com"
     }
+  },
+  {
+    "key": "jackline",
+    "name": "Dr. Jackline Ngalame",
+    "biz": "Ngalame Empower Psychiatry · Telepsychiatry (ADHD launch) · Fort Bragg, NC",
+    "niche": "Telepsychiatry · Fort Bragg, NC",
+    "locationId": "R3ueRRLoQkbOIVpgWFbd",
+    "pitEnv": "GHL_PIT_JACKLINE",
+    "stripeId": null,
+    "status": "setup",
+    "deal": "$125/week",
+    "dealSub": "Billed monthly, no onboarding fee",
+    "cycleDays": 30,
+    "retainerAmount": null,
+    "_provision": {
+      "phone": "+17022818941",
+      "city": "Fort Bragg",
+      "state": "NC",
+      "zip": "28307",
+      "timezone": "America/New_York",
+      "website": "https://empowerpsychiatry.org/"
+    }
   }
 ]
