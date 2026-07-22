@@ -102,6 +102,11 @@
     },
     {
       "source": "/(.*)",
+      "has": [{ "type": "host", "value": "empowerpsychiatry.bookednow.app" }],
+      "destination": "/empowerpsychiatry/$1"
+    },
+    {
+      "source": "/(.*)",
       "destination": "/home/$1"
     }
   ]
