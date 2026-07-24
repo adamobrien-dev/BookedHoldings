@@ -221,6 +221,29 @@
     }
   },
   {
+    "key": "mark",
+    "name": "Mark Swigert",
+    "biz": "Live Well Chiropractic · Chiropractic · Alabama",
+    "niche": "Chiropractic · Alabama",
+    "locationId": "7ZTNHNUkBp3P9cczA60S",
+    "pitEnv": "GHL_PIT_MARK",
+    "stripeId": "cus_UwM29xDIQ1pYei",
+    "status": "setup",
+    "deal": "Flat $499/mo",
+    "dealSub": "First month paid 2026-07-23",
+    "cycleDays": 30,
+    "retainerAmount": 499,
+    "_provision": {
+      "phone": "+15555550100",
+      "city": "Birmingham",
+      "state": "AL",
+      "zip": "35203",
+      "timezone": "America/Chicago",
+      "website": ""
+    },
+    "_provisionPlaceholder": "phone/city/zip/website are placeholders — Adam to confirm real values and update in GHL + here"
+  },
+  {
     "key": "jackline",
     "name": "Dr. Jackline Ngalame",
     "biz": "Ngalame Empower Psychiatry · Telepsychiatry (ADHD launch) · Fort Bragg, NC",
