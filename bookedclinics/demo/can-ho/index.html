@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dallas Neuropathy Screening | Can Ho Clinic</title>
+<style>
+  :root {
+    --navy: #2f4a63;
+    --steel: #4a6fa5;
+    --steel-light: #e6eef7;
+    --coral: #ff7a59;
+    --coral-dark: #e45f3e;
+    --cream: #faf7f2;
+    --text: #1f2d3a;
+    --muted: #5c6b7a;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+    background: var(--cream);
+    color: var(--text);
+    display: flex;
+    justify-content: center;
+    padding: 32px 16px;
+    min-height: 100vh;
+  }
+  .card {
+    width: 100%;
+    max-width: 520px;
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 4px 24px rgba(47,74,99,0.12);
+    overflow: hidden;
+  }
+  .header {
+    background: var(--navy);
+    color: #fff;
+    padding: 18px 24px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .header .badge {
+    width: 36px; height: 36px; border-radius: 50%;
+    background: var(--coral); color: #fff; font-weight: 700;
+    display: flex; align-items: center; justify-content: center; font-size: 14px;
+    flex-shrink: 0;
+  }
+  .header .name { font-weight: 600; font-size: 15px; }
+  .header .loc { font-size: 12px; color: #c9d6e3; }
+  .progress-track {
+    height: 5px; background: var(--steel-light);
+  }
+  .progress-fill {
+    height: 100%; background: var(--coral); width: 0%;
+    transition: width 0.3s ease;
+  }
+  .step { padding: 32px 28px; display: none; }
+  .step.active { display: block; }
+  h1 { font-size: 24px; line-height: 1.3; margin: 0 0 10px; color: var(--navy); }
+  h2 { font-size: 19px; line-height: 1.35; margin: 0 0 18px; color: var(--navy); }
+  p.sub { color: var(--muted); font-size: 15px; line-height: 1.6; margin: 0 0 22px; }
+  .options { display: flex; flex-direction: column; gap: 10px; }
+  .option {
+    border: 1.5px solid #dfe6ec; border-radius: 10px; padding: 14px 16px;
+    cursor: pointer; font-size: 15px; transition: all 0.15s ease;
+    background: #fff;
+  }
+  .option:hover { border-color: var(--steel); background: var(--steel-light); }
+  .option.selected { border-color: var(--coral); background: #fff3ee; font-weight: 600; }
+  textarea {
+    width: 100%; min-height: 90px; border-radius: 10px; border: 1.5px solid #dfe6ec;
+    padding: 12px 14px; font-size: 15px; font-family: inherit; resize: vertical;
+  }
+  textarea:focus { outline: none; border-color: var(--steel); }
+  .btn-row { margin-top: 24px; display: flex; justify-content: space-between; align-items: center; }
+  button.primary {
+    background: var(--coral); color: #fff; border: none; border-radius: 999px;
+    padding: 14px 26px; font-size: 15px; font-weight: 700; cursor: pointer;
+    transition: background 0.15s ease;
+  }
+  button.primary:hover { background: var(--coral-dark); }
+  button.primary:disabled { background: #e8b8a8; cursor: not-allowed; }
+  button.link {
+    background: none; border: none; color: var(--muted); font-size: 14px; cursor: pointer;
+  }
+  .start-hero { text-align: center; }
+  .start-hero .icon { font-size: 40px; margin-bottom: 14px; }
+  .quote {
+    background: var(--steel-light); border-left: 3px solid var(--coral);
+    border-radius: 0 10px 10px 0; padding: 14px 16px; margin: 20px 0;
+    font-style: italic; font-size: 14px; color: var(--navy);
+  }
+  .result-badge {
+    display: inline-block; padding: 6px 14px; border-radius: 999px;
+    font-size: 13px; font-weight: 700; margin-bottom: 14px;
+  }
+  .result-badge.qualified { background: #e4f5ec; color: #1e7d4c; }
+  .result-badge.nurture { background: #fdf1e0; color: #a3690b; }
+  .urgency {
+    font-size: 13px; color: var(--coral-dark); font-weight: 600; margin-top: 12px;
+  }
+  .field-label { font-size: 13px; color: var(--muted); margin-bottom: 8px; display: block; }
+  input[type="text"], input[type="email"], input[type="tel"] {
+    width: 100%; border-radius: 10px; border: 1.5px solid #dfe6ec;
+    padding: 12px 14px; font-size: 15px; font-family: inherit; margin-bottom: 14px;
+  }
+  input[type="text"]:focus, input[type="email"]:focus, input[type="tel"]:focus {
+    outline: none; border-color: var(--steel);
+  }
+  .slots { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 18px 0; }
+  .slot {
+    border: 1.5px solid #dfe6ec; border-radius: 10px; padding: 12px; text-align: center;
+    cursor: pointer; font-size: 14px; font-weight: 600; color: var(--navy);
+  }
+  .slot:hover { border-color: var(--steel); background: var(--steel-light); }
+  .slot.selected { border-color: var(--coral); background: #fff3ee; }
+  .confirm-box {
+    background: #e4f5ec; border-radius: 10px; padding: 16px; text-align: center; margin-top: 16px;
+  }
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="header">
+    <div class="badge">CH</div>
+    <div>
+      <div class="name">Can Ho Clinic — Neuropathy & Chiropractic Care</div>
+      <div class="loc">Dallas, TX</div>
+    </div>
+  </div>
+  <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+
+  <!-- Step 0: Intro -->
+  <div class="step active" data-step="0">
+    <div class="start-hero">
+      <h1>Stop the numbness before it gets worse</h1>
+      <p class="sub">Numbness, tingling, and burning in your feet or hands don't fix themselves — they're a sign of nerve damage that gets worse the longer it's ignored. Take our free 60-second screening to see if our Dallas program is a fit for you.</p>
+      <div class="quote">&ldquo;I got feeling back in my feet for the first time in 3 years.&rdquo; &mdash; actual Dallas patient</div>
+      <button class="primary" onclick="goTo(1)">Start the free screening</button>
+    </div>
+  </div>
+
+  <!-- Step 1: Symptom type -->
+  <div class="step" data-step="1">
+    <h2>Which best describes what you're feeling?</h2>
+    <div class="options" data-group="symptom">
+      <div class="option" onclick="select(this,'symptom')">Numbness</div>
+      <div class="option" onclick="select(this,'symptom')">Tingling / pins and needles</div>
+      <div class="option" onclick="select(this,'symptom')">Burning pain</div>
+      <div class="option" onclick="select(this,'symptom')">Sharp or shooting pain</div>
+      <div class="option" onclick="select(this,'symptom')">A mix of the above</div>
+    </div>
+    <div class="btn-row">
+      <button class="link" onclick="goTo(0)">Back</button>
+      <button class="primary" id="next1" disabled onclick="goTo(2)">Next</button>
+    </div>
+  </div>
+
+  <!-- Step 2: Duration -->
+  <div class="step" data-step="2">
+    <h2>How long have you had these symptoms?</h2>
+    <div class="options" data-group="duration">
+      <div class="option" onclick="select(this,'duration')">Less than 3 months</div>
+      <div class="option" onclick="select(this,'duration')">3–12 months</div>
+      <div class="option" onclick="select(this,'duration')">1–3 years</div>
+      <div class="option" onclick="select(this,'duration')">More than 3 years</div>
+    </div>
+    <div class="btn-row">
+      <button class="link" onclick="goTo(1)">Back</button>
+      <button class="primary" id="next2" disabled onclick="goTo(3)">Next</button>
+    </div>
+  </div>
+
+  <!-- Step 3: Cause -->
+  <div class="step" data-step="3">
+    <h2>Do either of these apply to you?</h2>
+    <div class="options" data-group="cause">
+      <div class="option" onclick="select(this,'cause')">I have diabetes</div>
+      <div class="option" onclick="select(this,'cause')">I've had chemotherapy (past or present)</div>
+      <div class="option" onclick="select(this,'cause')">Both</div>
+      <div class="option" onclick="select(this,'cause')">Neither</div>
+    </div>
+    <div class="btn-row">
+      <button class="link" onclick="goTo(2)">Back</button>
+      <button class="primary" id="next3" disabled onclick="goTo(4)">Next</button>
+    </div>
+  </div>
+
+  <!-- Step 4: Open-ended -->
+  <div class="step" data-step="4">
+    <h2>How is this affecting your daily life?</h2>
+    <p class="sub">A sentence or two is plenty &mdash; this helps us understand what matters most to you before you come in.</p>
+    <label class="field-label">Your answer</label>
+    <textarea id="openEnded" placeholder="e.g. I'm afraid to drive at night because I can't feel the pedals..."></textarea>
+    <div class="btn-row">
+      <button class="link" onclick="goTo(3)">Back</button>
+      <button class="primary" id="next4" disabled onclick="goTo(5)">Next</button>
+    </div>
+  </div>
+
+  <!-- Step 5: Insurance -->
+  <div class="step" data-step="5">
+    <h2>What type of coverage do you have?</h2>
+    <div class="options" data-group="insurance">
+      <div class="option" onclick="select(this,'insurance')">Private / PPO insurance</div>
+      <div class="option" onclick="select(this,'insurance')">Medicare</div>
+      <div class="option" onclick="select(this,'insurance')">Medicaid only</div>
+      <div class="option" onclick="select(this,'insurance')">No insurance / self-pay</div>
+    </div>
+    <div class="btn-row">
+      <button class="link" onclick="goTo(4)">Back</button>
+      <button class="primary" id="next5" disabled onclick="goTo(6)">Next</button>
+    </div>
+  </div>
+
+  <!-- Step 6: Urgency -->
+  <div class="step" data-step="6">
+    <h2>How soon are you looking to get help?</h2>
+    <div class="options" data-group="urgency">
+      <div class="option" onclick="select(this,'urgency')">This week</div>
+      <div class="option" onclick="select(this,'urgency')">Next week</div>
+      <div class="option" onclick="select(this,'urgency')">Next month</div>
+      <div class="option" onclick="select(this,'urgency')">Just researching for now</div>
+    </div>
+    <div class="btn-row">
+      <button class="link" onclick="goTo(5)">Back</button>
+      <button class="primary" id="next6" disabled onclick="goTo(7)">See my results</button>
+    </div>
+  </div>
+
+  <!-- Step 7: Contact info -->
+  <div class="step" data-step="7">
+    <h2>Where should we send your results?</h2>
+    <p class="sub">Enter your info to see your personalized screening result. If you qualify, you'll pick a time on the next screen and we'll call to confirm.</p>
+    <label class="field-label">Full name</label>
+    <input type="text" id="contactName" placeholder="Jane Smith">
+    <label class="field-label">Email</label>
+    <input type="email" id="contactEmail" placeholder="jane@email.com">
+    <label class="field-label">Phone</label>
+    <input type="tel" id="contactPhone" placeholder="(214) 555-0100">
+    <div class="btn-row">
+      <button class="link" onclick="goTo(6)">Back</button>
+      <button class="primary" id="next7" disabled onclick="showResult()">See my results</button>
+    </div>
+  </div>
+
+  <!-- Step 8: Result -->
+  <div class="step" data-step="8">
+    <div id="resultContent"></div>
+  </div>
+</div>
+
+<script>
+  const answers = {};
+  const totalSteps = 8;
+
+  function goTo(stepIndex) {
+    document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+    document.querySelector('.step[data-step="' + stepIndex + '"]').classList.add('active');
+    document.getElementById('progressFill').style.width = ((stepIndex) / totalSteps * 100) + '%';
+    window.scrollTo(0,0);
+  }
+
+  function select(el, group) {
+    const siblings = el.parentElement.querySelectorAll('.option');
+    siblings.forEach(s => s.classList.remove('selected'));
+    el.classList.add('selected');
+    answers[group] = el.textContent.trim();
+    const stepMap = { symptom: 1, duration: 2, cause: 3, insurance: 5, urgency: 6 };
+    const btn = document.getElementById('next' + stepMap[group]);
+    if (btn) btn.disabled = false;
+  }
+
+  document.getElementById('openEnded').addEventListener('input', function(e) {
+    answers.openEnded = e.target.value;
+    document.getElementById('next4').disabled = e.target.value.trim().length < 3;
+  });
+
+  function checkContactValid() {
+    const name = document.getElementById('contactName').value.trim();
+    const email = document.getElementById('contactEmail').value.trim();
+    const phone = document.getElementById('contactPhone').value.trim();
+    answers.name = name;
+    answers.email = email;
+    answers.phone = phone;
+    const emailValid = /\S+@\S+\.\S+/.test(email);
+    document.getElementById('next7').disabled = !(name.length > 1 && emailValid && phone.length > 6);
+  }
+  ['contactName','contactEmail','contactPhone'].forEach(id => {
+    document.getElementById(id).addEventListener('input', checkContactValid);
+  });
+
+  function selectSlot(el) {
+    document.querySelectorAll('.slot').forEach(s => s.classList.remove('selected'));
+    el.classList.add('selected');
+    answers.slot = el.textContent.trim();
+    document.getElementById('confirmBooking').disabled = false;
+  }
+
+  function confirmBooking() {
+    document.getElementById('bookingArea').innerHTML = `
+      <div class="confirm-box">
+        <strong>You're booked, ${answers.name.split(' ')[0]}.</strong><br>
+        ${answers.slot} &mdash; Can Ho Clinic, Dallas<br>
+        <span style="font-size:13px;color:var(--muted);">One of our team will call ${answers.phone} within 5 minutes to confirm.</span>
+      </div>
+    `;
+  }
+
+  function showResult() {
+    const insuranceDisqualify = answers.insurance === 'Medicaid only' || answers.insurance === 'No insurance / self-pay';
+    const urgencyDisqualify = answers.urgency === 'Just researching for now';
+    const qualified = !insuranceDisqualify && !urgencyDisqualify;
+
+    let symptomLine = '';
+    if (answers.cause === 'I have diabetes' || answers.cause === 'Both') {
+      symptomLine = 'Based on your answers, your symptoms are consistent with <strong>diabetic neuropathy</strong> &mdash; nerve damage caused by prolonged high blood sugar, which is very treatable when addressed early.';
+    } else if (answers.cause === "I've had chemotherapy (past or present)") {
+      symptomLine = 'Based on your answers, your symptoms are consistent with <strong>chemotherapy-induced neuropathy</strong> &mdash; a specific, treatable condition most clinics don\'t focus on at all.';
+    } else {
+      symptomLine = 'Based on your answers, your symptoms point to nerve-related dysfunction rather than normal aging or a muscle issue.';
+    }
+
+    const content = document.getElementById('resultContent');
+
+    const firstName = (answers.name || 'there').split(' ')[0];
+
+    if (qualified) {
+      content.innerHTML = `
+        <div class="result-badge qualified">You may be a great fit, ${firstName}</div>
+        <h1>Good news &mdash; this looks treatable</h1>
+        <p class="sub">${symptomLine}</p>
+        <div class="quote">You told us: &ldquo;${(answers.openEnded || '').slice(0,160)}&rdquo;</div>
+        <p class="sub">The next step is a full in-person evaluation with Dr. Ho so we can confirm what's going on and map out a plan &mdash; not a generic $49 visit, a real look at the nerve damage itself.</p>
+        <p class="field-label" style="margin-top:18px;">Pick a time this week in Dallas</p>
+        <div class="slots">
+          <div class="slot" onclick="selectSlot(this)">Tue 2:00 PM</div>
+          <div class="slot" onclick="selectSlot(this)">Wed 10:30 AM</div>
+          <div class="slot" onclick="selectSlot(this)">Thu 4:15 PM</div>
+          <div class="slot" onclick="selectSlot(this)">Fri 9:00 AM</div>
+        </div>
+        <div id="bookingArea">
+          <button class="primary" id="confirmBooking" style="width:100%;" disabled onclick="confirmBooking()">Confirm my appointment</button>
+        </div>
+        <div class="urgency">We only have 4 new-patient evaluation slots open this week in Dallas.</div>
+      `;
+    } else {
+      content.innerHTML = `
+        <div class="result-badge nurture">Here's a free resource for now, ${firstName}</div>
+        <h1>Thanks for sharing that with us</h1>
+        <p class="sub">${symptomLine}</p>
+        <p class="sub">Based on your answers, an in-clinic evaluation may not be the right fit for you just yet. We're sending our free neuropathy guide to <strong>${answers.email}</strong> with self-care steps you can start today.</p>
+        <div class="confirm-box">Guide sent &mdash; check your inbox in the next few minutes.</div>
+      `;
+    }
+    goTo(8);
+  }
+</script>
+</body>
+</html>
