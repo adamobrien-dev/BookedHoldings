@@ -107,6 +107,11 @@
     },
     {
       "source": "/(.*)",
+      "has": [{ "type": "host", "value": "livewellchiro.bookednow.app" }],
+      "destination": "/livewellchiro/$1"
+    },
+    {
+      "source": "/(.*)",
       "destination": "/home/$1"
     }
   ]
