@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ADHD Symptom Screener | Ngalame Empower Psychiatry</title>
+<meta name="description" content="Take the free 60-second ADHD symptom screener from Ngalame Empower Psychiatry — telepsychiatry serving North Carolina.">
+<meta name="robots" content="noindex">
+<!-- Meta Pixel Code -->
+<script>
+!function(f,b,e,v,n,t,s)
+{if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+n.queue=[];t=b.createElement(e);t.async=!0;
+t.src=v;s=b.getElementsByTagName(e)[0];
+s.parentNode.insertBefore(t,s)}(window, document,'script',
+'https://connect.facebook.net/en_US/fbevents.js');
+fbq('init', '2234110224049086');
+fbq('track', 'PageView');
+</script>
+<noscript><img height="1" width="1" style="display:none"
+src="https://www.facebook.com/tr?id=2234110224049086&ev=PageView&noscript=1"
+/></noscript>
+<!-- End Meta Pixel Code -->
+<style>
+  :root{
+    --teal-dark:#0f4c46;
+    --teal:#0f766e;
+    --teal-light:#14b8a6;
+    --gold:#c9a24b;
+    --bg:#f6f4ee;
+    --card:#ffffff;
+    --text:#1c2b28;
+    --muted:#6b7a76;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    font-family:'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    background:linear-gradient(180deg, var(--teal-dark) 0%, var(--teal) 40%, var(--bg) 40%);
+    min-height:100vh;
+    display:flex;
+    align-items:flex-start;
+    justify-content:center;
+    padding:24px 12px 60px;
+  }
+  .phone{ width:100%; max-width:420px; }
+  .brand{ text-align:center; color:#fff; padding:18px 10px 26px; }
+  .brand .logo{ font-size:14px; letter-spacing:2px; text-transform:uppercase; opacity:.85; margin-bottom:4px; }
+  .brand h1{ font-size:22px; margin:0; font-weight:600; line-height:1.3; }
+  .card{
+    background:var(--card); border-radius:18px; box-shadow:0 20px 40px rgba(15,76,70,0.25);
+    padding:26px 22px 22px; min-height:340px; display:flex; flex-direction:column;
+  }
+  .progress-wrap{ display:flex; gap:6px; margin-bottom:18px; }
+  .progress-seg{ flex:1; height:5px; border-radius:3px; background:#e5e1d6; overflow:hidden; }
+  .progress-seg.filled{ background:var(--teal-light); }
+  .step-label{ font-size:12px; color:var(--muted); text-transform:uppercase; letter-spacing:1px; margin-bottom:6px; }
+  h2.question{ font-size:19px; color:var(--text); margin:0 0 18px; line-height:1.35; }
+  .options{ display:flex; flex-direction:column; gap:10px; flex:1; }
+  .opt{
+    text-align:left; border:1.5px solid #e2ded2; background:#fdfcf9; border-radius:12px;
+    padding:14px 16px; font-size:15px; color:var(--text); cursor:pointer; transition:all .15s ease;
+  }
+  .opt:hover{ border-color:var(--teal-light); background:#f0faf8; }
+  .opt.selected{ border-color:var(--teal); background:var(--teal); color:#fff; }
+  textarea.opt-text{
+    width:100%; min-height:100px; border:1.5px solid #e2ded2; border-radius:12px;
+    padding:14px 16px; font-size:15px; font-family:inherit; resize:vertical; color:var(--text);
+  }
+  textarea.opt-text:focus{ outline:none; border-color:var(--teal-light); }
+  input[type=text], input[type=email], input[type=tel]{
+    width:100%; border:1.5px solid #e2ded2; border-radius:12px; padding:14px 16px;
+    font-size:15px; font-family:inherit; margin-bottom:10px; color:var(--text);
+  }
+  input:focus{ outline:none; border-color:var(--teal-light); }
+  select{
+    width:100%; border:1.5px solid #e2ded2; border-radius:12px; padding:14px 16px;
+    font-size:15px; font-family:inherit; color:var(--text); background:#fdfcf9; margin-bottom:6px;
+  }
+  select:focus{ outline:none; border-color:var(--teal-light); }
+  .nav-row{ display:flex; justify-content:space-between; align-items:center; margin-top:18px; }
+  .btn{
+    background:var(--teal); color:#fff; border:none; border-radius:30px; padding:13px 26px;
+    font-size:15px; font-weight:600; cursor:pointer; width:100%; transition:background .15s ease;
+  }
+  .btn:hover{ background:var(--teal-dark); }
+  .btn:disabled{ background:#9fb8b4; cursor:default; }
+  .back-link{ background:none; border:none; color:var(--muted); font-size:13px; cursor:pointer; padding:8px 0; }
+  .result-badge{
+    display:inline-block; background:linear-gradient(135deg, var(--gold), #e8cd85); color:var(--teal-dark);
+    font-weight:700; font-size:12px; letter-spacing:1px; text-transform:uppercase; padding:6px 14px;
+    border-radius:20px; margin-bottom:14px;
+  }
+  .result-title{ font-size:21px; font-weight:700; color:var(--text); margin:0 0 10px; line-height:1.3; }
+  .result-body{ font-size:14.5px; color:var(--muted); line-height:1.6; margin-bottom:18px; }
+  .result-body b{ color:var(--text); }
+  .urgency{
+    background:#fdf6e8; border:1px solid #eddcae; border-radius:10px; padding:10px 14px;
+    font-size:13px; color:#8a6a1f; margin-bottom:18px;
+  }
+  .error-note{
+    background:#fdeceb; border:1px solid #f3c9c5; border-radius:10px; padding:10px 14px;
+    font-size:12.5px; color:#8a2f26; margin-top:14px;
+  }
+  .disclaimer{ font-size:11px; color:#9aa39f; text-align:center; margin-top:16px; line-height:1.5; }
+</style>
+</head>
+<body>
+<div class="phone">
+  <div class="brand">
+    <div class="logo">Ngalame Empower Psychiatry</div>
+    <h1>ADHD Symptom Screener</h1>
+  </div>
+
+  <div class="card" id="card"></div>
+
+  <div class="disclaimer">This screener does not diagnose ADHD; it's a starting point for a conversation with Dr. Ngalame.</div>
+</div>
+
+<script>
+const LEAD_ENDPOINT = '/api/submit-lead';
+const CLIENT_KEY = 'jackline';
+// Dr. Ngalame's real, live Headway booking page — patients book directly through Headway,
+// not a GHL calendar (there is no GHL calendar configured for this location).
+const BOOKING_LINK = 'https://care.headway.co/providers/jackline-ngalame';
+
+// States Dr. Ngalame currently holds a telepsychiatry license in — matches empowerpsychiatry.org.
+// Keep this in sync with her site if her licensure footprint changes.
+const ALLOWED_STATES = ['CO','FL','KS','MN','NV','NY','WA'];
+
+const US_STATES = [
+  {code:'AL',name:'Alabama'},{code:'AK',name:'Alaska'},{code:'AZ',name:'Arizona'},{code:'AR',name:'Arkansas'},
+  {code:'CA',name:'California'},{code:'CO',name:'Colorado'},{code:'CT',name:'Connecticut'},{code:'DE',name:'Delaware'},
+  {code:'DC',name:'District of Columbia'},{code:'FL',name:'Florida'},{code:'GA',name:'Georgia'},{code:'HI',name:'Hawaii'},
+  {code:'ID',name:'Idaho'},{code:'IL',name:'Illinois'},{code:'IN',name:'Indiana'},{code:'IA',name:'Iowa'},
+  {code:'KS',name:'Kansas'},{code:'KY',name:'Kentucky'},{code:'LA',name:'Louisiana'},{code:'ME',name:'Maine'},
+  {code:'MD',name:'Maryland'},{code:'MA',name:'Massachusetts'},{code:'MI',name:'Michigan'},{code:'MN',name:'Minnesota'},
+  {code:'MS',name:'Mississippi'},{code:'MO',name:'Missouri'},{code:'MT',name:'Montana'},{code:'NE',name:'Nebraska'},
+  {code:'NV',name:'Nevada'},{code:'NH',name:'New Hampshire'},{code:'NJ',name:'New Jersey'},{code:'NM',name:'New Mexico'},
+  {code:'NY',name:'New York'},{code:'NC',name:'North Carolina'},{code:'ND',name:'North Dakota'},{code:'OH',name:'Ohio'},
+  {code:'OK',name:'Oklahoma'},{code:'OR',name:'Oregon'},{code:'PA',name:'Pennsylvania'},{code:'RI',name:'Rhode Island'},
+  {code:'SC',name:'South Carolina'},{code:'SD',name:'South Dakota'},{code:'TN',name:'Tennessee'},{code:'TX',name:'Texas'},
+  {code:'UT',name:'Utah'},{code:'VT',name:'Vermont'},{code:'VA',name:'Virginia'},{code:'WA',name:'Washington'},
+  {code:'WV',name:'West Virginia'},{code:'WI',name:'Wisconsin'},{code:'WY',name:'Wyoming'}
+];
+const STATE_NAME_BY_CODE = {};
+US_STATES.forEach(s => { STATE_NAME_BY_CODE[s.code] = s.name; });
+
+const state = { step: 0, answers: {}, submitting: false, submitError: null, disqualified: null };
+
+const steps = [
+  {
+    type: 'state',
+    key: 'state',
+    label: 'Step 1 of 8',
+    question: "First — what state are you currently located in?"
+  },
+  {
+    type: 'choice',
+    key: 'insurance',
+    label: 'Step 2 of 8',
+    question: 'Do you have Medicare or Medicaid, another insurance plan, or will you be paying out of pocket?',
+    options: [ 'Medicare or Medicaid', 'Other insurance', 'Paying out of pocket / self-pay' ]
+  },
+  {
+    type: 'choice',
+    key: 'symptom',
+    label: 'Step 3 of 8',
+    question: 'Which of these sounds most like you lately?',
+    options: [
+      'I space out mid-conversation and lose track of what people are saying',
+      'I miss deadlines even when I care about the work',
+      'I lose my keys, phone, or wallet almost daily',
+      "All of the above, more than I'd like to admit"
+    ]
+  },
+  {
+    type: 'choice',
+    key: 'duration',
+    label: 'Step 4 of 8',
+    question: 'How long has this been a pattern for you?',
+    options: [ 'Just the last few months', 'On and off for years', 'As long as I can remember', "Not sure — it comes and goes" ]
+  },
+  {
+    type: 'choice',
+    key: 'cost',
+    label: 'Step 5 of 8',
+    question: "What's it costing you day to day?",
+    options: [
+      'Falling behind at work or missed opportunities',
+      'Constant stress just trying to keep up',
+      'Strained relationships because I forget things',
+      "Exhausted from working twice as hard to keep up"
+    ]
+  },
+  {
+    type: 'text',
+    key: 'why',
+    label: 'Step 6 of 8',
+    question: "In your own words — what's making it hard to focus lately?",
+    placeholder: 'e.g. I can\'t get through a workday without losing track of what I\'m doing, I start ten things and finish none...'
+  },
+  {
+    type: 'choice',
+    key: 'timeline',
+    label: 'Step 7 of 8',
+    question: 'Are you open to starting a physician-supervised evaluation in the next 30 days?',
+    options: [ 'Yes, as soon as possible', 'Yes, within the next month', 'Just researching for now' ]
+  },
+  {
+    type: 'contact',
+    key: 'contact',
+    label: 'Step 8 of 8',
+    question: 'Almost done — where should we send your results?'
+  }
+];
+
+function render(){
+  const card = document.getElementById('card');
+  if(state.disqualified){ renderDisqualified(card); return; }
+  if(state.step >= steps.length){ renderResult(card); return; }
+  const s = steps[state.step];
+  let html = `<div class="progress-wrap">`;
+  for(let i=0;i<steps.length;i++){ html += `<div class="progress-seg ${i<=state.step?'filled':''}"></div>`; }
+  html += `</div>`;
+  html += `<div class="step-label">${s.label}</div>`;
+  html += `<h2 class="question">${s.question}</h2>`;
+
+  if(s.type === 'choice'){
+    html += `<div class="options">`;
+    s.options.forEach(opt => {
+      const sel = state.answers[s.key] === opt ? 'selected' : '';
+      html += `<button class="opt ${sel}" onclick="selectChoice('${s.key}', this)">${opt}</button>`;
+    });
+    html += `</div>`;
+    html += navRow(false);
+  } else if(s.type === 'state'){
+    html += `<select id="state-select" onchange="stateNext()">`;
+    html += `<option value="" disabled ${state.answers.state ? '' : 'selected'}>Select your state</option>`;
+    // Only list the states Dr. Ngalame is actually licensed in, plus a catch-all "Other" —
+    // showing all 50 states just to disqualify 43 of them adds friction for no reason.
+    ALLOWED_STATES.forEach(code => {
+      const name = STATE_NAME_BY_CODE[code];
+      const sel = state.answers.state === code ? 'selected' : '';
+      html += `<option value="${code}" ${sel}>${name}</option>`;
+    });
+    const otherSel = state.answers.state === 'OTHER' ? 'selected' : '';
+    html += `<option value="OTHER" ${otherSel}>Other / not listed</option>`;
+    html += `</select>`;
+    html += navRow(false);
+  } else if(s.type === 'text'){
+    const val = state.answers[s.key] || '';
+    html += `<textarea class="opt-text" id="textinput" placeholder="${s.placeholder}">${val}</textarea>`;
+    html += navRow(true, 'textNext');
+  } else if(s.type === 'contact'){
+    html += `
+      <input type="text" id="c-name" placeholder="First name" value="${state.answers.name||''}">
+      <input type="email" id="c-email" placeholder="Email address" value="${state.answers.email||''}">
+      <input type="tel" id="c-phone" placeholder="Phone number" value="${state.answers.phone||''}">
+    `;
+    html += navRow(true, 'contactNext', state.submitting ? 'Submitting…' : 'See My Results', state.submitting);
+    if (state.submitError) {
+      html += `<div class="error-note">Something went wrong sending your info (${state.submitError}). You can try again, or call/text us directly.</div>`;
+    }
+  }
+  card.innerHTML = html;
+}
+
+function navRow(showButton, handler, label, disabled){
+  let back = state.step > 0 ? `<button class="back-link" onclick="goBack()">&larr; Back</button>` : `<span></span>`;
+  let btn = showButton ? `<button class="btn" style="width:auto;margin-left:auto" ${disabled ? 'disabled' : ''} onclick="${handler}()">${label||'Next'}</button>` : '';
+  return `<div class="nav-row">${back}${btn}</div>`;
+}
+
+function selectChoice(key, el){
+  const value = el.innerText;
+  state.answers[key] = value;
+  document.querySelectorAll('.opt').forEach(o=>o.classList.remove('selected'));
+  el.classList.add('selected');
+  setTimeout(()=>{
+    // Low-intent filter: "just researching" means they're not ready to book, so
+    // don't hand them to Dr. Ngalame's active follow-up queue as a real lead.
+    if(key === 'timeline' && value === 'Just researching for now'){
+      state.disqualified = 'researching';
+    // Dr. Ngalame's practice does not accept Medicare or Medicaid plans — stop the
+    // quiz here rather than collecting the rest of it and a lead that can't be seen.
+    } else if(key === 'insurance' && value === 'Medicare or Medicaid'){
+      state.disqualified = 'insurance';
+    } else {
+      state.step++;
+    }
+    render();
+  }, 200);
+}
+
+function stateNext(){
+  const val = document.getElementById('state-select').value;
+  if(!val) return;
+  state.answers.state = val;
+  // Dr. Ngalame can only legally see patients physically located in a state she's
+  // licensed in. Outside that list, don't collect the rest of the quiz or submit a lead —
+  // just be upfront that we can't help yet.
+  if(ALLOWED_STATES.indexOf(val) === -1){
+    state.disqualified = 'state';
+  } else {
+    state.step++;
+  }
+  render();
+}
+
+function textNext(){
+  state.answers.why = document.getElementById('textinput').value;
+  state.step++; render();
+}
+
+function getParam(name){
+  try { return new URLSearchParams(window.location.search).get(name) || ''; } catch { return ''; }
+}
+
+async function submitLead(){
+  const payload = {
+    action: 'lead',
+    client: CLIENT_KEY,
+    name: state.answers.name,
+    email: state.answers.email,
+    phone: state.answers.phone,
+    source: 'ADHD Quiz — Meta Ads',
+    tags: ['adhd-quiz-lead', 'web-lead'],
+    answers: {
+      'State': STATE_NAME_BY_CODE[state.answers.state] || state.answers.state,
+      'Insurance': state.answers.insurance,
+      'Main symptom': state.answers.symptom,
+      'Duration': state.answers.duration,
+      'Daily impact': state.answers.cost,
+      'In their own words': state.answers.why,
+      'Ready in 30 days?': state.answers.timeline,
+      'utm_source': getParam('utm_source'),
+      'utm_campaign': getParam('utm_campaign'),
+      'utm_content': getParam('utm_content'),
+    },
+  };
+
+  const res = await fetch(LEAD_ENDPOINT, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+  });
+
+  if (!res.ok) {
+    let detail = res.status;
+    try { const j = await res.json(); if (j?.error) detail = j.error; } catch {}
+    throw new Error(String(detail));
+  }
+
+  // Fire the Meta pixel Lead event only once the GHL upsert actually succeeded —
+  // this is what lets the ad account optimize toward real completions, not just page views.
+  if (typeof fbq === 'function') {
+    // No content_name/content_category — Meta's Business Tools Terms flag health-category
+    // signals (ADHD/mental-health especially) as potentially sensitive data and will silently
+    // strip the event's usable data if included. Bare Lead event only. (Found and fixed
+    // 2026-07-28 after the identical issue surfaced on Mark Swigert's launch — this page had
+    // been live since April with this pattern, so past Lead conversions may have been affected.)
+    fbq('track', 'Lead');
+  }
+
+  return res.json();
+}
+
+async function contactNext(){
+  state.answers.name = document.getElementById('c-name').value;
+  state.answers.email = document.getElementById('c-email').value;
+  state.answers.phone = document.getElementById('c-phone').value;
+
+  if (!state.answers.name || !state.answers.email || !state.answers.phone) return;
+
+  state.submitting = true;
+  state.submitError = null;
+  render();
+
+  try {
+    await submitLead();
+    state.step++;
+  } catch (err) {
+    state.submitError = err.message || 'network error';
+  } finally {
+    state.submitting = false;
+    render();
+  }
+}
+
+function goBack(){
+  // Stepping back out of a disqualification should return to the question that
+  // triggered it, not silently resume the funnel.
+  if(state.disqualified){ state.disqualified = null; render(); return; }
+  state.step--; render();
+}
+
+function renderDisqualified(card){
+  let html = '';
+  if(state.disqualified === 'state'){
+    html += `<div class="result-title">Thanks for your interest.</div>`;
+    html += `<div class="result-body">Right now Dr. Ngalame is licensed to see patients located in <b>Colorado, Florida, Kansas, Minnesota, Nevada, New York, and Washington State</b>. We're not yet able to schedule an evaluation for someone outside those states.</div>`;
+    html += `<div class="result-body">If she becomes licensed in your state, we'd love to have you back. In the meantime, <a href="https://www.psychologytoday.com/us/psychiatrists" target="_blank" rel="noopener">Psychology Today's provider directory</a> is a good place to find someone licensed locally.</div>`;
+    html += navRow(false);
+  } else if(state.disqualified === 'insurance'){
+    html += `<div class="result-title">Thanks for your interest.</div>`;
+    html += `<div class="result-body">Right now Dr. Ngalame's practice is unable to accept Medicare or Medicaid plans.</div>`;
+    html += `<div class="result-body">If your coverage or payment situation changes, we'd love to have you back — the screener only takes a minute. In the meantime, <a href="https://www.psychologytoday.com/us/psychiatrists" target="_blank" rel="noopener">Psychology Today's provider directory</a> lets you filter by insurance to find someone in-network.</div>`;
+    html += navRow(false);
+  } else if(state.disqualified === 'researching'){
+    html += `<div class="result-title">No pressure — glad you're looking into it.</div>`;
+    html += `<div class="result-body">This screener is meant for people ready to move on an evaluation soon, so we won't add you to Dr. Ngalame's active follow-up queue right now. When you're ready to take the next step, come back and take the screener again.</div>`;
+    html += `<div class="result-body">In the meantime, <a href="https://chadd.org/" target="_blank" rel="noopener">CHADD.org</a> is a solid, free resource on adult ADHD.</div>`;
+    html += navRow(false);
+  }
+  card.innerHTML = html;
+}
+
+function renderResult(card){
+  const name = state.answers.name ? state.answers.name : 'there';
+  const timeline = state.answers.timeline || '';
+  const strong = timeline.indexOf('Just researching') === -1;
+
+  let html = '';
+  if(strong){
+    html += `<div class="result-badge">May Be a Strong Candidate</div>`;
+    html += `<div class="result-title">Thanks, ${name} — based on your answers, you may be a candidate for an ADHD evaluation with Dr. Ngalame.</div>`;
+    html += `<div class="result-body">What you're describing is a pattern worth having a real conversation about. Our team will text and email you shortly, and Dr. Ngalame's office will follow up by phone to get you scheduled — or go ahead and pick a time yourself right now.</div>`;
+    html += `<div class="urgency">Dr. Ngalame is currently accepting a limited number of new patients this month.</div>`;
+    html += `<a class="btn" style="display:block;text-align:center;text-decoration:none;margin-top:6px" href="${BOOKING_LINK}" target="_blank" rel="noopener">Book Your Evaluation</a>`;
+  } else {
+    html += `<div class="result-badge">Good Fit — Timing TBD</div>`;
+    html += `<div class="result-title">Thanks, ${name} — here's what we'd recommend.</div>`;
+    html += `<div class="result-body">What you're describing may be worth an evaluation once you're ready. We've sent your info over and will follow up with more information for when the timing is right.</div>`;
+    html += `<div class="result-body">Whenever you're ready, you can book directly here: <a href="${BOOKING_LINK}" target="_blank" rel="noopener">Book with Dr. Ngalame</a>.</div>`;
+  }
+  card.innerHTML = html;
+}
+
+render();
+</script>
+</body>
+</html>
