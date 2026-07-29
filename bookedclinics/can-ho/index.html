@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Free Nerve Damage Risk Check | Advanced Joints Chiropractic</title>
+<meta name="description" content="Take the free 2-minute nerve damage risk check from Advanced Joints Chiropractic — non-invasive neuropathy care in Crowley, TX with Dr. Can Ho.">
+<meta name="robots" content="noindex">
+<!--
+  Meta Pixel not yet installed — Adam hasn't provided Can Ho's pixel snippet.
+  The Lead-event call below is already wired and guarded (typeof fbq === 'function'),
+  so once the base pixel code is pasted into <head>, tracking starts working with no
+  further code changes needed.
+-->
+<style>
+  :root{
+    --navy:#0c2a3a;
+    --teal-dark:#0f5c56;
+    --teal:#0f7a72;
+    --teal-light:#2dd4bf;
+    --amber:#c9852f;
+    --bg:#eaf3f4;
+    --card:#ffffff;
+    --text:#0e2430;
+    --muted:#5b7280;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    font-family:'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    background:linear-gradient(180deg, var(--navy) 0%, var(--teal) 40%, var(--bg) 40%);
+    min-height:100vh;
+    display:flex;
+    align-items:flex-start;
+    justify-content:center;
+    padding:24px 12px 60px;
+  }
+  .phone{ width:100%; max-width:420px; }
+  .brand{ text-align:center; color:#fff; padding:18px 10px 26px; }
+  .brand .logo{ font-size:14px; letter-spacing:2px; text-transform:uppercase; opacity:.85; margin-bottom:4px; }
+  .brand h1{ font-size:22px; margin:0; font-weight:600; line-height:1.3; }
+  .card{
+    background:var(--card); border-radius:18px; box-shadow:0 20px 40px rgba(12,42,58,0.25);
+    padding:26px 22px 22px; min-height:340px; display:flex; flex-direction:column;
+  }
+  .progress-wrap{ display:flex; gap:6px; margin-bottom:18px; }
+  .progress-seg{ flex:1; height:5px; border-radius:3px; background:#e2ebee; overflow:hidden; }
+  .progress-seg.filled{ background:var(--teal-light); }
+  .step-label{ font-size:12px; color:var(--muted); text-transform:uppercase; letter-spacing:1px; margin-bottom:6px; }
+  h2.question{ font-size:19px; color:var(--text); margin:0 0 18px; line-height:1.35; }
+  .options{ display:flex; flex-direction:column; gap:10px; flex:1; }
+  .opt{
+    text-align:left; border:1.5px solid #d8e3e6; background:#fdfefe; border-radius:12px;
+    padding:14px 16px; font-size:15px; color:var(--text); cursor:pointer; transition:all .15s ease;
+  }
+  .opt:hover{ border-color:var(--teal-light); background:#eafaf8; }
+  .opt.selected{ border-color:var(--teal); background:var(--teal); color:#fff; }
+  textarea.opt-text{
+    width:100%; min-height:100px; border:1.5px solid #d8e3e6; border-radius:12px;
+    padding:14px 16px; font-size:15px; font-family:inherit; resize:vertical; color:var(--text);
+  }
+  textarea.opt-text:focus{ outline:none; border-color:var(--teal-light); }
+  input[type=text], input[type=email], input[type=tel]{
+    width:100%; border:1.5px solid #d8e3e6; border-radius:12px; padding:14px 16px;
+    font-size:15px; font-family:inherit; margin-bottom:10px; color:var(--text);
+  }
+  input:focus{ outline:none; border-color:var(--teal-light); }
+  .nav-row{ display:flex; justify-content:space-between; align-items:center; margin-top:18px; }
+  .btn{
+    background:var(--teal); color:#fff; border:none; border-radius:30px; padding:13px 26px;
+    font-size:15px; font-weight:600; cursor:pointer; width:100%; transition:background .15s ease;
+  }
+  .btn:hover{ background:var(--teal-dark); }
+  .btn:disabled{ background:#9db8b5; cursor:default; }
+  .back-link{ background:none; border:none; color:var(--muted); font-size:13px; cursor:pointer; padding:8px 0; }
+  .result-badge{
+    display:inline-block; padding:6px 14px; border-radius:20px; font-size:12px; font-weight:700;
+    letter-spacing:1px; text-transform:uppercase; margin-bottom:14px;
+  }
+  .result-badge.high{ background:#fbe4d5; color:var(--amber); }
+  .result-badge.moderate{ background:#d3f3ef; color:var(--teal-dark); }
+  .result-title{ font-size:21px; font-weight:700; color:var(--text); margin:0 0 10px; line-height:1.3; }
+  .result-body{ font-size:14.5px; color:var(--muted); line-height:1.6; margin-bottom:18px; }
+  .result-body b{ color:var(--text); }
+  .urgency{
+    background:#d3f3ef; border:1px solid #a8e6dd; border-radius:10px; padding:10px 14px;
+    font-size:13px; color:var(--teal-dark); margin-bottom:18px;
+  }
+  .error-note{
+    background:#fdeceb; border:1px solid #f3c9c5; border-radius:10px; padding:10px 14px;
+    font-size:12.5px; color:#8a2f26; margin-top:14px;
+  }
+  .disclaimer{ font-size:11px; color:#9aa3a8; text-align:center; margin-top:16px; line-height:1.5; }
+</style>
+</head>
+<body>
+<div class="phone">
+  <div class="brand">
+    <div class="logo">Advanced Joints Chiropractic</div>
+    <h1>Free Nerve Damage Risk Check</h1>
+  </div>
+
+  <div class="card" id="card"></div>
+
+  <div class="disclaimer">This check does not diagnose neuropathy; it's a starting point for a conversation with Dr. Can Ho.</div>
+</div>
+
+<script>
+const LEAD_ENDPOINT = '/api/submit-lead';
+const CLIENT_KEY = 'can-ho';
+// No GHL calendar or self-serve booking exists for this location yet — the office is
+// reached by phone. Swap this for a real booking link once one exists.
+const BOOKING_PHONE = '+18178782877';
+const BOOKING_PHONE_DISPLAY = '(817) 878-2877';
+
+const state = { step: 0, answers: {}, submitting: false, submitError: null, disqualified: null };
+
+const steps = [
+  {
+    type: 'choice',
+    key: 'condition',
+    label: 'Question 1 of 6',
+    question: 'Do you have diabetes, or have you gone through chemotherapy?',
+    options: ['Yes, I have diabetes', "Yes, I've had chemotherapy", 'No, but I have nerve-related symptoms', 'Not sure']
+  },
+  {
+    type: 'choice',
+    key: 'symptoms',
+    label: 'Question 2 of 6',
+    question: 'Which of these are you feeling right now? (pick the one that\'s worst)',
+    options: ['Numbness or tingling in feet/hands', 'Burning or stabbing pain', 'Loss of balance or frequent stumbling', 'Wounds or sores that heal slowly', 'None of these yet, just concerned']
+  },
+  {
+    type: 'choice',
+    key: 'duration',
+    label: 'Question 3 of 6',
+    question: 'How long has this been going on?',
+    options: ['Less than 3 months', '3–12 months', 'Over a year', "It's been getting worse for years"]
+  },
+  {
+    type: 'text',
+    key: 'impact',
+    label: 'Question 4 of 6',
+    question: 'In your own words — how is this affecting your daily life?',
+    placeholder: "e.g. I have trouble standing for long periods, I've stopped walking my dog, I'm scared about my next A1C check..."
+  },
+  {
+    type: 'choice',
+    key: 'insurance',
+    label: 'Question 5 of 6',
+    question: 'What best describes your coverage?',
+    options: ['Private/employer insurance', 'Medicare', 'Medicaid only', 'Uninsured — self-pay']
+  },
+  {
+    type: 'choice',
+    key: 'urgency',
+    label: 'Question 6 of 6',
+    question: 'Are you looking to get this looked at...',
+    options: ['This week', 'This month', 'Just researching for now']
+  },
+  {
+    type: 'contact',
+    key: 'contact',
+    label: 'Almost done',
+    question: 'Where should we send your results?'
+  }
+];
+
+const DISQUALIFYING_COVERAGE = ['Medicare', 'Medicaid only'];
+
+function render(){
+  const card = document.getElementById('card');
+  if(state.disqualified){ renderDisqualified(card); return; }
+  if(state.step >= steps.length){ renderResult(card); return; }
+  const s = steps[state.step];
+  let html = `<div class="progress-wrap">`;
+  for(let i=0;i<steps.length;i++){ html += `<div class="progress-seg ${i<=state.step?'filled':''}"></div>`; }
+  html += `</div>`;
+  html += `<div class="step-label">${s.label}</div>`;
+  html += `<h2 class="question">${s.question}</h2>`;
+
+  if(s.type === 'choice'){
+    html += `<div class="options">`;
+    s.options.forEach(opt => {
+      const sel = state.answers[s.key] === opt ? 'selected' : '';
+      html += `<button class="opt ${sel}" onclick="selectChoice('${s.key}', this)">${opt}</button>`;
+    });
+    html += `</div>`;
+    html += navRow(false);
+  } else if(s.type === 'text'){
+    const val = state.answers[s.key] || '';
+    html += `<textarea class="opt-text" id="textinput" placeholder="${s.placeholder}">${val}</textarea>`;
+    html += navRow(true, 'textNext');
+  } else if(s.type === 'contact'){
+    html += `
+      <input type="text" id="c-name" placeholder="Full name" value="${state.answers.name||''}">
+      <input type="email" id="c-email" placeholder="Email address" value="${state.answers.email||''}">
+      <input type="tel" id="c-phone" placeholder="Phone number" value="${state.answers.phone||''}">
+    `;
+    html += navRow(true, 'contactNext', state.submitting ? 'Submitting…' : 'See My Results', state.submitting);
+    if (state.submitError) {
+      html += `<div class="error-note">Something went wrong sending your info (${state.submitError}). You can try again, or call us directly at ${BOOKING_PHONE_DISPLAY}.</div>`;
+    }
+  }
+  card.innerHTML = html;
+}
+
+function navRow(showButton, handler, label, disabled){
+  let back = state.step > 0 ? `<button class="back-link" onclick="goBack()">&larr; Back</button>` : `<span></span>`;
+  let btn = showButton ? `<button class="btn" style="width:auto;margin-left:auto" ${disabled ? 'disabled' : ''} onclick="${handler}()">${label||'Next'}</button>` : '';
+  return `<div class="nav-row">${back}${btn}</div>`;
+}
+
+function selectChoice(key, el){
+  const value = el.innerText;
+  state.answers[key] = value;
+  document.querySelectorAll('.opt').forEach(o=>o.classList.remove('selected'));
+  el.classList.add('selected');
+  setTimeout(()=>{
+    // Advanced Joints Chiropractic does not accept Medicare or Medicaid-only coverage for
+    // this program — stop the quiz here rather than collecting a lead that can't be seen.
+    if(key === 'insurance' && DISQUALIFYING_COVERAGE.indexOf(value) !== -1){
+      state.disqualified = 'insurance';
+    } else {
+      state.step++;
+    }
+    render();
+  }, 200);
+}
+
+function textNext(){
+  state.answers.impact = document.getElementById('textinput').value;
+  state.step++; render();
+}
+
+function getParam(name){
+  try { return new URLSearchParams(window.location.search).get(name) || ''; } catch { return ''; }
+}
+
+function computeRisk(){
+  const a = state.answers;
+  let points = 0;
+  if (a.condition && a.condition.indexOf('Yes') === 0) points += 2;
+  if (a.symptoms && (a.symptoms.indexOf('Burning') !== -1 || a.symptoms.indexOf('balance') !== -1 || a.symptoms.indexOf('Wounds') !== -1)) points += 2;
+  else if (a.symptoms && a.symptoms.indexOf('Numbness') !== -1) points += 1;
+  if (a.duration === 'Over a year' || a.duration === "It's been getting worse for years") points += 2;
+  else if (a.duration === '3–12 months') points += 1;
+
+  const level = points >= 4 ? 'High' : 'Moderate';
+  const headline = level === 'High'
+    ? "Your Answers Suggest Nerve Damage That's Likely Progressing"
+    : 'Your Answers Suggest Early-to-Moderate Nerve Involvement';
+  const body = level === 'High'
+    ? "Based on what you shared, your symptoms and history line up with a pattern that tends to get significantly worse without treatment. The good news: caught at this stage, it's very treatable — waiting is the main thing that makes outcomes worse."
+    : "Based on what you shared, you're likely in an earlier stage where treatment can prevent things from progressing to more serious symptoms (constant burning, balance loss, slow-healing wounds). This is actually the best time to get evaluated — before it gets harder to reverse.";
+  const urgencyNote = a.urgency === 'This week'
+    ? "You said you want this looked at this week — we'll prioritize getting you in fast."
+    : a.urgency === 'This month'
+    ? "You said this month — let's get an evaluation on the calendar now so it doesn't slip."
+    : "Even if you're just researching, it's worth knowing where you stand before symptoms progress further.";
+
+  return { level, headline, body, urgencyNote };
+}
+
+async function submitLead(){
+  const payload = {
+    action: 'lead',
+    client: CLIENT_KEY,
+    name: state.answers.name,
+    email: state.answers.email,
+    phone: state.answers.phone,
+    source: 'Nerve Damage Risk Check — Meta Ads',
+    tags: ['neuropathy-quiz-lead', 'web-lead'],
+    answers: {
+      'Diabetes/chemo history': state.answers.condition,
+      'Main symptom': state.answers.symptoms,
+      'Duration': state.answers.duration,
+      'Daily impact': state.answers.impact,
+      'Insurance': state.answers.insurance,
+      'Urgency': state.answers.urgency,
+      'utm_source': getParam('utm_source'),
+      'utm_campaign': getParam('utm_campaign'),
+      'utm_content': getParam('utm_content'),
+    },
+  };
+
+  const res = await fetch(LEAD_ENDPOINT, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+  });
+
+  if (!res.ok) {
+    let detail = res.status;
+    try { const j = await res.json(); if (j && j.error) detail = j.error; } catch (e) {}
+    throw new Error(String(detail));
+  }
+
+  // Fire the Meta pixel Lead event only once the GHL upsert actually succeeded — this is
+  // what lets the ad account optimize toward real completions, not just page views.
+  // No-op until the base pixel snippet is added to <head>.
+  if (typeof fbq === 'function') {
+    fbq('track', 'Lead', { content_name: 'Nerve Damage Risk Check', content_category: 'Neuropathy' });
+  }
+
+  return res.json();
+}
+
+async function contactNext(){
+  state.answers.name = document.getElementById('c-name').value;
+  state.answers.email = document.getElementById('c-email').value;
+  state.answers.phone = document.getElementById('c-phone').value;
+
+  if (!state.answers.name || !state.answers.email || !state.answers.phone) return;
+
+  state.submitting = true;
+  state.submitError = null;
+  render();
+
+  try {
+    await submitLead();
+    state.step++;
+  } catch (err) {
+    state.submitError = err.message || 'network error';
+  } finally {
+    state.submitting = false;
+    render();
+  }
+}
+
+function goBack(){
+  if(state.disqualified){ state.disqualified = null; render(); return; }
+  state.step--; render();
+}
+
+function renderDisqualified(card){
+  let html = '';
+  if(state.disqualified === 'insurance'){
+    html += `<div class="result-title">Thanks for checking.</div>`;
+    html += `<div class="result-body">Based on the coverage you selected, this specific program isn't a fit for our practice right now — we're not currently able to accept Medicare or Medicaid-only coverage for it.</div>`;
+    html += `<div class="result-body">If your coverage or situation changes, we'd love to have you back. In the meantime, feel free to call us at <a href="tel:${BOOKING_PHONE}">${BOOKING_PHONE_DISPLAY}</a> if you'd like to ask about your specific situation.</div>`;
+    html += navRow(false);
+  }
+  card.innerHTML = html;
+}
+
+function renderResult(card){
+  const score = computeRisk();
+  const badgeClass = score.level === 'High' ? 'high' : 'moderate';
+  const name = state.answers.name ? state.answers.name.split(' ')[0] : 'there';
+
+  let html = '';
+  html += `<div class="result-badge ${badgeClass}">${score.level} Risk</div>`;
+  html += `<div class="result-title">${score.headline}</div>`;
+  html += `<div class="result-body">${score.body}</div>`;
+  html += `<div class="urgency">${score.urgencyNote}</div>`;
+  html += `<div class="result-body">Thanks, ${name} — a member of our team will text and email you shortly, and Dr. Ho's office will follow up by phone to get you scheduled. Or call now to book directly.</div>`;
+  html += `<a class="btn" style="display:block;text-align:center;text-decoration:none;margin-top:6px" href="tel:${BOOKING_PHONE}">Call Now to Book Your Free Consultation</a>`;
+  card.innerHTML = html;
+}
+
+render();
+</script>
+</body>
+</html>

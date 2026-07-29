@@ -20,6 +20,15 @@
 //     x-webhook-secret must match the client's webhook secret env var (CARLOS_WEBHOOK_SECRET).
 //     Only use this from somewhere the secret stays server-side — never from a page <script>.
 //
+// POST /api/submit-lead  { action: 'lead', client: 'jackline', name?, email?, phone?, source?, tags?, answers? }
+//   — public lead-capture intake for client quiz/funnel pages (aliased via vercel.json rewrite so
+//     it doesn't need its own /api file). No secret required — this is meant to be called directly
+//     from a page <script>, same trust model as any public contact form (worst case is spam
+//     contacts, not data exposure). Upserts a GHL contact (dedupes on email/phone) tagged with
+//     whatever `tags` are passed, and — if `answers` is an object — writes it as a note on the
+//     contact so quiz responses aren't lost. Requires the client to exist in CLIENTS with a
+//     locationId + pitEnv.
+//
 // Kept as one file (not split per client) to stay under Vercel Hobby's 12-serverless-function
 // cap per deployment — api/ was already sitting at the limit before this campaign was added.
 
@@ -41,6 +50,20 @@ const CLIENTS = {
     allowedHosts: new Set(['escapezerogravitymassage.com', 'www.escapezerogravitymassage.com']),
     purchaseTag: 'purchased - escape',
     selfReportedPurchaseTag: 'purchased - escape (self-reported)',
+  },
+  // Lead-intake-only clients (no click tracking / purchase webhook needed yet) just need
+  // locationId + pitEnv — see the /api/submit-lead handler below.
+  jackline: {
+    locationId: 'R3ueRRLoQkbOIVpgWFbd',
+    pitEnv: 'GHL_PIT_JACKLINE',
+  },
+  'can-ho': {
+    locationId: 'hbek5obWIuZegLx64aOA',
+    pitEnv: 'GHL_PIT_CANHO',
+  },
+  mark: {
+    locationId: '7ZTNHNUkBp3P9cczA60S',
+    pitEnv: 'GHL_PIT_MARK',
   },
 };
 
@@ -199,6 +222,61 @@ module.exports = async function handler(req, res) {
     return res.status(400).json({ error: `unknown client "${clientKey}"` });
   }
   const client = clientKey ? CLIENTS[clientKey] : null;
+
+  // ---- POST: public lead intake (quiz/funnel pages — no secret required) ----
+  if (req.method === 'POST' && req.body && req.body.action === 'lead') {
+    const body = req.body;
+    const targetKey = clientKey || body.client;
+    const target = targetKey ? CLIENTS[targetKey] : null;
+    if (!target || !target.locationId || !target.pitEnv) {
+      return res.status(400).json({ error: `unknown or unconfigured client "${targetKey}" for lead intake` });
+    }
+    const pit = process.env[target.pitEnv];
+    if (!pit) return res.status(500).json({ error: `GHL token not configured for "${targetKey}"` });
+
+    const { name, email, phone, source, tags, answers } = body;
+    if (!email && !phone) return res.status(400).json({ error: 'email or phone required' });
+
+    try {
+      const [firstName, ...rest] = (name || '').trim().split(/\s+/).filter(Boolean);
+      // NOTE: tags are deliberately NOT included in this upsert call. GHL's "Contact Tag
+      // Added" workflow trigger — which is what fires Speed-to-Lead and the Booking
+      // Follow-Up Nurture — only fires on a distinct, subsequent tag-add event. Tags baked
+      // into the initial contact-creation payload don't produce that event, so a contact
+      // gets created but no automation ever fires. Create the contact untagged first, then
+      // add the tags as their own explicit call right below — matching the same pattern
+      // already used by recordClientClick/recordAgencyClick elsewhere in this file.
+      const { ok, status, data } = await ghl('POST', '/contacts/upsert', {
+        locationId: target.locationId,
+        ...(firstName ? { firstName } : {}),
+        ...(rest.length ? { lastName: rest.join(' ') } : {}),
+        ...(name ? { name } : {}),
+        ...(email ? { email } : {}),
+        ...(phone ? { phone } : {}),
+        source: source || 'Website Lead',
+      }, pit);
+
+      if (!ok) return res.status(502).json({ error: 'GHL upsert failed', status, detail: data });
+      const contactId = data?.contact?.id;
+      if (!contactId) return res.status(502).json({ error: 'GHL upsert returned no contact id', detail: data });
+
+      if (Array.isArray(tags) && tags.length) {
+        await ghl('POST', `/contacts/${contactId}/tags`, { tags }, pit);
+      }
+
+      if (answers && typeof answers === 'object') {
+        const noteBody = Object.entries(answers)
+          .filter(([, v]) => v !== undefined && v !== null && String(v).trim() !== '')
+          .map(([k, v]) => `${k}: ${v}`)
+          .join('\n');
+        if (noteBody) await ghl('POST', `/contacts/${contactId}/notes`, { body: noteBody }, pit);
+      }
+
+      return res.status(200).json({ ok: true, contactId });
+    } catch (err) {
+      return res.status(500).json({ error: err.message });
+    }
+  }
 
   // ---- POST: purchase webhook (client-scoped only) ----
   if (req.method === 'POST') {
