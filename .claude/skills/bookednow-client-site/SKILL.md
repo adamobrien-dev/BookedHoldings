@@ -112,9 +112,14 @@ specifics right rather than lightly rewording a template:
    ship the site without it and say so explicitly, rather than guessing or leaving in a leftover ID from
    whatever site you used as a reference.
 
-3. Once the site is live, update the client's `website` field in `bookedclinics/config/clients.json` and
-   the GHL location record to point at `https://[client-key].bookednow.app` — that URL is what Adam
-   submits as the verified business page for A2P/TCR.
+3. This site's only job is passing A2P/TCR — it's not meant to become the client's primary marketing
+   or booking destination. If the client has no real website of their own, update the `website` field in
+   `bookedclinics/config/clients.json` and the GHL location record to point at
+   `https://[client-key].bookednow.app`, since that's the only real business page available to submit
+   for A2P/TCR. But if the client already has a real, live website (with genuine content, reviews,
+   history), leave that as the canonical `website` field — don't overwrite it with the new bookednow.app
+   URL, which as a brand-new domain is a weaker A2P submission than an established site anyway. Track the
+   bookednow.app URL separately instead (e.g. a `bookedNowUrl` field in `clients.json`).
 
 ## Testing note
 

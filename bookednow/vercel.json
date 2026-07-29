@@ -112,6 +112,11 @@
     },
     {
       "source": "/(.*)",
+      "has": [{ "type": "host", "value": "can-ho.bookednow.app" }],
+      "destination": "/can-ho/$1"
+    },
+    {
+      "source": "/(.*)",
       "destination": "/home/$1"
     }
   ]
