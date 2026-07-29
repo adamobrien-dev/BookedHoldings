@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Free Pain &amp; Mobility Check | Live Well Chiropractic</title>
+<meta name="description" content="Take the free 2-minute pain assessment from Live Well Chiropractic — Spanish Fort, AL. Find out what's causing your pain and what to do about it.">
+<meta name="robots" content="noindex">
+<!-- Meta Pixel Code -->
+<script>
+!function(f,b,e,v,n,t,s)
+{if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+n.queue=[];t=b.createElement(e);t.async=!0;
+t.src=v;s=b.getElementsByTagName(e)[0];
+s.parentNode.insertBefore(t,s)}(window, document,'script',
+'https://connect.facebook.net/en_US/fbevents.js');
+fbq('init', '423999882929437'); // Live Well Chiropractic's Pixel — his existing pixel, own ad account (669110014449943)
+fbq('track', 'PageView');
+</script>
+<noscript><img height="1" width="1" style="display:none"
+src="https://www.facebook.com/tr?id=423999882929437&ev=PageView&noscript=1"
+/></noscript>
+<!-- End Meta Pixel Code -->
+<!--
+  Pixel 423999882929437 confirmed via Meta Ads API (2026-07-28): active, owned by Mark's
+  own Live Well Chiropractic business/ad account — reused rather than creating a new one
+  since ads will run from this same ad account. NOTE: last_fired_time and
+  server_last_fired_time both read epoch zero — this pixel has never recorded a single
+  event since its 2022 creation. Not necessarily broken, but unverified — confirm it
+  actually fires (Meta Pixel Helper / Events Manager test events) once this page is live.
+  Before calling launch done, also confirm this pixel is the one selected as the
+  Conversion Dataset on the actual ad set in Ads Manager, per the launch-client-landing-page
+  skill's verification step — a mismatch there is silent (page fires fine, GHL gets the
+  lead, but Meta shows zero conversions and can't optimize).
+
+  Quiz questions/disqualifier are informed by Mark's 2026-07-21 discovery call plus his
+  completed Ad Strategy Form (2026-07-28): target patient is general spine/joint pain, no
+  age/gender restriction, #1 complaint is back/neck pain, common conditions also include
+  sciatica and shoulder/knee/wrist/ankle joint pain. Services: chiropractic care, spinal
+  decompression therapy, soundwave (shockwave) therapy.
+
+  Compliance per his form: "No guarantees and no discounted fees for gov't contract
+  insurance, Medicare or Federal employee ins." No guarantee language is used below, and
+  this quiz doesn't offer any discount/promo code (it's a free assessment offered equally
+  to everyone, not a selective discount) — but flag this to Adam/legal before adding any
+  future promo copy that could read as a selective discount to Medicare/govt-insured
+  patients.
+
+  Booking CTA links to his real live Jane booking page (confirmed resolving 2026-07-28):
+  https://livewellchiropracticspanishfort.janeapp.com/ — phone kept as a secondary option.
+  Note: Jane's site lists a front-desk number (251-459-0098) that's different from the
+  contact phone on file in clients.json (+12513773655). Kept clients.json's number as the
+  primary tel: link since that's his designated contact for this program, but flag the
+  mismatch to Adam in case the front-desk line is actually the better one for booking calls.
+-->
+<style>
+  :root{
+    --navy:#0c2a3a;
+    --teal-dark:#0f5c56;
+    --teal:#0f7a72;
+    --teal-light:#2dd4bf;
+    --amber:#c9852f;
+    --bg:#eaf3f4;
+    --card:#ffffff;
+    --text:#0e2430;
+    --muted:#5b7280;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    font-family:'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    background:linear-gradient(180deg, var(--navy) 0%, var(--teal) 40%, var(--bg) 40%);
+    min-height:100vh;
+    display:flex;
+    align-items:flex-start;
+    justify-content:center;
+    padding:24px 12px 60px;
+  }
+  .phone{ width:100%; max-width:420px; }
+  .brand{ text-align:center; color:#fff; padding:18px 10px 26px; }
+  .brand .logo{ font-size:14px; letter-spacing:2px; text-transform:uppercase; opacity:.85; margin-bottom:4px; }
+  .brand h1{ font-size:22px; margin:0; font-weight:600; line-height:1.3; }
+  .card{
+    background:var(--card); border-radius:18px; box-shadow:0 20px 40px rgba(12,42,58,0.25);
+    padding:26px 22px 22px; min-height:340px; display:flex; flex-direction:column;
+  }
+  .progress-wrap{ display:flex; gap:6px; margin-bottom:18px; }
+  .progress-seg{ flex:1; height:5px; border-radius:3px; background:#e2ebee; overflow:hidden; }
+  .progress-seg.filled{ background:var(--teal-light); }
+  .step-label{ font-size:12px; color:var(--muted); text-transform:uppercase; letter-spacing:1px; margin-bottom:6px; }
+  h2.question{ font-size:19px; color:var(--text); margin:0 0 18px; line-height:1.35; }
+  .options{ display:flex; flex-direction:column; gap:10px; flex:1; }
+  .opt{
+    text-align:left; border:1.5px solid #d8e3e6; background:#fdfefe; border-radius:12px;
+    padding:14px 16px; font-size:15px; color:var(--text); cursor:pointer; transition:all .15s ease;
+  }
+  .opt:hover{ border-color:var(--teal-light); background:#eafaf8; }
+  .opt.selected{ border-color:var(--teal); background:var(--teal); color:#fff; }
+  textarea.opt-text{
+    width:100%; min-height:100px; border:1.5px solid #d8e3e6; border-radius:12px;
+    padding:14px 16px; font-size:15px; font-family:inherit; resize:vertical; color:var(--text);
+  }
+  textarea.opt-text:focus{ outline:none; border-color:var(--teal-light); }
+  input[type=text], input[type=email], input[type=tel]{
+    width:100%; border:1.5px solid #d8e3e6; border-radius:12px; padding:14px 16px;
+    font-size:15px; font-family:inherit; margin-bottom:10px; color:var(--text);
+  }
+  input:focus{ outline:none; border-color:var(--teal-light); }
+  .nav-row{ display:flex; justify-content:space-between; align-items:center; margin-top:18px; }
+  .btn{
+    background:var(--teal); color:#fff; border:none; border-radius:30px; padding:13px 26px;
+    font-size:15px; font-weight:600; cursor:pointer; width:100%; transition:background .15s ease;
+  }
+  .btn:hover{ background:var(--teal-dark); }
+  .btn:disabled{ background:#9db8b5; cursor:default; }
+  .back-link{ background:none; border:none; color:var(--muted); font-size:13px; cursor:pointer; padding:8px 0; }
+  .result-badge{
+    display:inline-block; padding:6px 14px; border-radius:20px; font-size:12px; font-weight:700;
+    letter-spacing:1px; text-transform:uppercase; margin-bottom:14px;
+  }
+  .result-badge.high{ background:#fbe4d5; color:var(--amber); }
+  .result-badge.moderate{ background:#d3f3ef; color:var(--teal-dark); }
+  .result-title{ font-size:21px; font-weight:700; color:var(--text); margin:0 0 10px; line-height:1.3; }
+  .result-body{ font-size:14.5px; color:var(--muted); line-height:1.6; margin-bottom:18px; }
+  .result-body b{ color:var(--text); }
+  .urgency{
+    background:#d3f3ef; border:1px solid #a8e6dd; border-radius:10px; padding:10px 14px;
+    font-size:13px; color:var(--teal-dark); margin-bottom:18px;
+  }
+  .error-note{
+    background:#fdeceb; border:1px solid #f3c9c5; border-radius:10px; padding:10px 14px;
+    font-size:12.5px; color:#8a2f26; margin-top:14px;
+  }
+  .disclaimer{ font-size:11px; color:#9aa3a8; text-align:center; margin-top:16px; line-height:1.5; }
+</style>
+</head>
+<body>
+<div class="phone">
+  <div class="brand">
+    <div class="logo">Live Well Chiropractic</div>
+    <h1>Free Pain &amp; Mobility Check</h1>
+  </div>
+
+  <div class="card" id="card"></div>
+
+  <div class="disclaimer">This check does not diagnose any condition; it's a starting point for a conversation with our care team.</div>
+</div>
+
+<script>
+const LEAD_ENDPOINT = '/api/submit-lead';
+const CLIENT_KEY = 'mark';
+// Real, live Jane booking page — confirmed resolving 2026-07-28.
+const BOOKING_URL = 'https://livewellchiropracticspanishfort.janeapp.com/';
+const BOOKING_PHONE = '+12513773655';
+const BOOKING_PHONE_DISPLAY = '(251) 377-3655';
+
+const state = { step: 0, answers: {}, submitting: false, submitError: null, disqualified: null };
+
+const steps = [
+  {
+    type: 'choice',
+    key: 'issue',
+    label: 'Question 1 of 5',
+    question: "What's bothering you most right now?",
+    options: ['Lower back pain', 'Neck pain', 'Sciatica / nerve pain down the leg', 'Joint pain (shoulder, knee, wrist, ankle)', 'Headaches or migraines']
+  },
+  {
+    type: 'choice',
+    key: 'duration',
+    label: 'Question 2 of 5',
+    question: 'How long has this been going on?',
+    options: ['Less than 2 weeks', '2 weeks – 3 months', '3–12 months', 'Over a year']
+  },
+  {
+    type: 'text',
+    key: 'impact',
+    label: 'Question 3 of 5',
+    question: 'In your own words — how is this affecting your daily life?',
+    placeholder: "e.g. I can't sit through a full workday, I've stopped exercising, it's affecting my sleep..."
+  },
+  {
+    type: 'choice',
+    key: 'triedBefore',
+    label: 'Question 4 of 5',
+    question: 'Have you tried chiropractic care before?',
+    options: ['Yes, and it helped', "Yes, but it didn't help much", 'No, this would be my first time']
+  },
+  {
+    type: 'choice',
+    key: 'intent',
+    label: 'Question 5 of 5',
+    question: 'What are you looking for right now?',
+    options: ['Ready to book an appointment', 'Ready to book, just deciding who', 'Comparing prices between a few clinics', "Not ready for a few months, just researching"]
+  },
+  {
+    type: 'contact',
+    key: 'contact',
+    label: 'Almost done',
+    question: 'Where should we send your results?'
+  }
+];
+
+// First-draft disqualifier per Mark's discovery call: he specifically wants to stop
+// "not ready for months out" leads from reaching his CRM, the same complaint he had
+// about prior agencies. Price-comparison shoppers are tagged but NOT blocked here —
+// confirm with Mark whether he wants those hard-disqualified too before launch.
+const DISQUALIFYING_INTENT = ['Not ready for a few months, just researching'];
+
+function render(){
+  const card = document.getElementById('card');
+  if(state.disqualified){ renderDisqualified(card); return; }
+  if(state.step >= steps.length){ renderResult(card); return; }
+  const s = steps[state.step];
+  let html = `<div class="progress-wrap">`;
+  for(let i=0;i<steps.length;i++){ html += `<div class="progress-seg ${i<=state.step?'filled':''}"></div>`; }
+  html += `</div>`;
+  html += `<div class="step-label">${s.label}</div>`;
+  html += `<h2 class="question">${s.question}</h2>`;
+
+  if(s.type === 'choice'){
+    html += `<div class="options">`;
+    s.options.forEach(opt => {
+      const sel = state.answers[s.key] === opt ? 'selected' : '';
+      html += `<button class="opt ${sel}" onclick="selectChoice('${s.key}', this)">${opt}</button>`;
+    });
+    html += `</div>`;
+    html += navRow(false);
+  } else if(s.type === 'text'){
+    const val = state.answers[s.key] || '';
+    html += `<textarea class="opt-text" id="textinput" placeholder="${s.placeholder}">${val}</textarea>`;
+    html += navRow(true, 'textNext');
+  } else if(s.type === 'contact'){
+    html += `
+      <input type="text" id="c-name" placeholder="Full name" value="${state.answers.name||''}">
+      <input type="email" id="c-email" placeholder="Email address" value="${state.answers.email||''}">
+      <input type="tel" id="c-phone" placeholder="Phone number" value="${state.answers.phone||''}">
+    `;
+    html += navRow(true, 'contactNext', state.submitting ? 'Submitting…' : 'See My Results', state.submitting);
+    if (state.submitError) {
+      html += `<div class="error-note">Something went wrong sending your info (${state.submitError}). You can try again, or call us directly at ${BOOKING_PHONE_DISPLAY}.</div>`;
+    }
+  }
+  card.innerHTML = html;
+}
+
+function navRow(showButton, handler, label, disabled){
+  let back = state.step > 0 ? `<button class="back-link" onclick="goBack()">&larr; Back</button>` : `<span></span>`;
+  let btn = showButton ? `<button class="btn" style="width:auto;margin-left:auto" ${disabled ? 'disabled' : ''} onclick="${handler}()">${label||'Next'}</button>` : '';
+  return `<div class="nav-row">${back}${btn}</div>`;
+}
+
+function selectChoice(key, el){
+  const value = el.innerText;
+  state.answers[key] = value;
+  document.querySelectorAll('.opt').forEach(o=>o.classList.remove('selected'));
+  el.classList.add('selected');
+  setTimeout(()=>{
+    // Live Well Chiropractic doesn't want leads who aren't ready to book for months —
+    // that was the exact complaint about prior agencies. Stop the quiz here rather than
+    // collecting a lead that just wastes staff time chasing.
+    if(key === 'intent' && DISQUALIFYING_INTENT.indexOf(value) !== -1){
+      state.disqualified = 'timeline';
+    } else {
+      state.step++;
+    }
+    render();
+  }, 200);
+}
+
+function textNext(){
+  state.answers.impact = document.getElementById('textinput').value;
+  state.step++; render();
+}
+
+function getParam(name){
+  try { return new URLSearchParams(window.location.search).get(name) || ''; } catch { return ''; }
+}
+
+function computeUrgency(){
+  const a = state.answers;
+  let points = 0;
+  if (a.duration === 'Over a year' || a.duration === '3–12 months') points += 2;
+  else if (a.duration === '2 weeks – 3 months') points += 1;
+  if (a.triedBefore === 'Yes, and it helped') points += 1;
+  if (a.intent === 'Ready to book an appointment') points += 2;
+  else if (a.intent === 'Ready to book, just deciding who') points += 1;
+
+  const level = points >= 3 ? 'High' : 'Moderate';
+  const headline = level === 'High'
+    ? "You're a Strong Fit for a Same-Week Evaluation"
+    : "You're a Good Fit for a Full Evaluation";
+  const body = level === 'High'
+    ? "Based on what you shared, waiting tends to make this kind of pain harder to resolve. We treat the cause, not just the symptom — many patients notice a difference within the first couple weeks of starting care."
+    : "Based on what you shared, an evaluation now will give us a clear picture of what's going on. In addition to chiropractic care, we also offer spinal decompression and soundwave therapy for cases that need more than adjustments alone.";
+  const urgencyNote = a.intent === 'Ready to book an appointment'
+    ? "You said you're ready to book — we'll prioritize getting you in fast."
+    : "Let's get an evaluation on the calendar so this doesn't keep dragging on.";
+
+  return { level, headline, body, urgencyNote };
+}
+
+async function submitLead(){
+  const payload = {
+    action: 'lead',
+    client: CLIENT_KEY,
+    name: state.answers.name,
+    email: state.answers.email,
+    phone: state.answers.phone,
+    source: 'Pain & Mobility Check — Meta Ads',
+    tags: ['chiro-quiz-lead', 'web-lead'],
+    answers: {
+      'Main issue': state.answers.issue,
+      'Duration': state.answers.duration,
+      'Daily impact': state.answers.impact,
+      'Tried chiropractic before': state.answers.triedBefore,
+      'Intent': state.answers.intent,
+      'utm_source': getParam('utm_source'),
+      'utm_campaign': getParam('utm_campaign'),
+      'utm_content': getParam('utm_content'),
+    },
+  };
+
+  const res = await fetch(LEAD_ENDPOINT, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+  });
+
+  if (!res.ok) {
+    let detail = res.status;
+    try { const j = await res.json(); if (j && j.error) detail = j.error; } catch (e) {}
+    throw new Error(String(detail));
+  }
+
+  // Fire the Meta pixel Lead event only once the GHL upsert actually succeeded — this is
+  // what lets the ad account optimize toward real completions, not just page views.
+  // No-op until the base pixel snippet is added to <head>.
+  if (typeof fbq === 'function') {
+    fbq('track', 'Lead', { content_name: 'Pain & Mobility Check', content_category: 'Chiropractic' });
+  }
+
+  return res.json();
+}
+
+async function contactNext(){
+  state.answers.name = document.getElementById('c-name').value;
+  state.answers.email = document.getElementById('c-email').value;
+  state.answers.phone = document.getElementById('c-phone').value;
+
+  if (!state.answers.name || !state.answers.email || !state.answers.phone) return;
+
+  state.submitting = true;
+  state.submitError = null;
+  render();
+
+  try {
+    await submitLead();
+    state.step++;
+  } catch (err) {
+    state.submitError = err.message || 'network error';
+  } finally {
+    state.submitting = false;
+    render();
+  }
+}
+
+function goBack(){
+  if(state.disqualified){ state.disqualified = null; render(); return; }
+  state.step--; render();
+}
+
+function renderDisqualified(card){
+  let html = '';
+  if(state.disqualified === 'timeline'){
+    html += `<div class="result-title">Thanks for checking.</div>`;
+    html += `<div class="result-body">It sounds like you're still exploring your options for now, which is totally fine — this quick check is really meant for people ready to get looked at soon.</div>`;
+    html += `<div class="result-body">Whenever you're ready, we'd love to see you. Feel free to call us at <a href="tel:${BOOKING_PHONE}">${BOOKING_PHONE_DISPLAY}</a> if you have questions in the meantime.</div>`;
+    html += navRow(false);
+  }
+  card.innerHTML = html;
+}
+
+function renderResult(card){
+  const score = computeUrgency();
+  const badgeClass = score.level === 'High' ? 'high' : 'moderate';
+  const name = state.answers.name ? state.answers.name.split(' ')[0] : 'there';
+
+  let html = '';
+  html += `<div class="result-badge ${badgeClass}">${score.level} Priority</div>`;
+  html += `<div class="result-title">${score.headline}</div>`;
+  html += `<div class="result-body">${score.body}</div>`;
+  html += `<div class="urgency">${score.urgencyNote}</div>`;
+  html += `<div class="result-body">Thanks, ${name} — a member of our team will text and email you shortly, and our office will follow up to get you scheduled. Or book yourself right now — no waiting on a call back.</div>`;
+  html += `<a class="btn" style="display:block;text-align:center;text-decoration:none;margin-top:6px" href="${BOOKING_URL}" target="_blank" rel="noopener">Book Your Free Consultation</a>`;
+  html += `<div class="result-body" style="text-align:center;margin-top:10px;margin-bottom:0">Prefer to call? <a href="tel:${BOOKING_PHONE}">${BOOKING_PHONE_DISPLAY}</a></div>`;
+  card.innerHTML = html;
+}
+
+render();
+</script>
+</body>
+</html>
