@@ -1,7 +1,13 @@
 {
+  "redirects": [
+    { "source": "/demo/jackline-adhd", "destination": "/jackline-adhd", "permanent": false },
+    { "source": "/demo/jackline-adhd/", "destination": "/jackline-adhd/", "permanent": false },
+    { "source": "/demo/jackline-adhd/:path*", "destination": "/jackline-adhd/:path*", "permanent": false }
+  ],
   "rewrites": [
     { "source": "/platform", "destination": "/dashboard" },
-    { "source": "/platform/", "destination": "/dashboard" }
+    { "source": "/platform/", "destination": "/dashboard" },
+    { "source": "/api/submit-lead", "destination": "/api/track-click" }
   ],
   "headers": [
     {
