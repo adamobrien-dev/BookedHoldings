@@ -264,5 +264,29 @@
       "timezone": "America/New_York",
       "website": "https://empowerpsychiatry.org/"
     }
+  },
+  {
+    "key": "can-ho",
+    "name": "Can Ho",
+    "biz": "Advanced Joints Chiropractic, LLC · Neuropathy & Chiropractic Care · Crowley, TX",
+    "niche": "Neuropathy & Chiropractic Care · Crowley, TX",
+    "locationId": "hbek5obWIuZegLx64aOA",
+    "pitEnv": "GHL_PIT_CANHO",
+    "stripeId": "cus_UyHW95nJLGoj48",
+    "status": "setup",
+    "deal": "$125/week",
+    "dealSub": "Billed monthly, no onboarding fee — contract sent 2026-07-29, pending signature",
+    "cycleDays": 30,
+    "retainerAmount": null,
+    "_provision": {
+      "phone": "+18178782877",
+      "street": "1500 FM 1187",
+      "city": "Crowley",
+      "state": "TX",
+      "zip": "76036",
+      "timezone": "America/Chicago",
+      "website": "https://advancedjointschiropractic.com",
+      "bookedNowUrl": "https://can-ho.bookednow.app"
+    }
   }
 ]
