@@ -338,7 +338,7 @@ async function submitLead(){
   // what lets the ad account optimize toward real completions, not just page views.
   // No-op until the base pixel snippet is added to <head>.
   if (typeof fbq === 'function') {
-    fbq('track', 'Lead', { content_name: 'Pain & Mobility Check', content_category: 'Chiropractic' });
+          fbq('track', 'Lead');
   }
 
   return res.json();
