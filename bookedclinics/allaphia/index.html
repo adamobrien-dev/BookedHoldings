@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Paradise Healing — Mental Health Check-In</title>
+<meta name="description" content="Take Paradise Healing's free 2-minute confidential mental health check-in — serving Randolph, MA and telehealth clients across MA, RI, and CT.">
+<meta name="robots" content="noindex">
+<!-- Meta Pixel Code -->
+<script>
+!function(f,b,e,v,n,t,s)
+{if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+n.queue=[];t=b.createElement(e);t.async=!0;
+t.src=v;s=b.getElementsByTagName(e)[0];
+s.parentNode.insertBefore(t,s)}(window, document,'script',
+'https://connect.facebook.net/en_US/fbevents.js');
+fbq('init', '1652666462642984');
+fbq('track', 'PageView');
+</script>
+<noscript><img height="1" width="1" style="display:none"
+src="https://www.facebook.com/tr?id=1652666462642984&ev=PageView&noscript=1"
+/></noscript>
+<!-- End Meta Pixel Code -->
+<style>
+  :root {
+    --sage: #5c7a63;
+    --sage-dark: #3f5744;
+    --cream: #faf6f0;
+    --card: #ffffff;
+    --ink: #2c332e;
+    --muted: #6b756f;
+    --accent: #c97b4a;
+    --accent-dark: #a75f34;
+    --danger: #b4463f;
+    --danger-bg: #fbeceb;
+    --border: #e4ddd2;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: linear-gradient(180deg, #eef3ec 0%, var(--cream) 220px);
+    color: var(--ink);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    padding: 32px 16px;
+  }
+  .app { width: 100%; max-width: 560px; }
+  .brand {
+    text-align: center;
+    margin-bottom: 20px;
+  }
+  .brand .mark {
+    width: 44px; height: 44px; border-radius: 50%;
+    background: var(--sage); color: white;
+    display: inline-flex; align-items: center; justify-content: center;
+    font-weight: 700; font-size: 18px; margin-bottom: 10px;
+  }
+  .brand h1 { font-size: 20px; margin: 0; color: var(--sage-dark); }
+  .brand p { font-size: 13px; color: var(--muted); margin: 4px 0 0; }
+
+  .progress-track {
+    height: 6px; background: var(--border); border-radius: 4px;
+    overflow: hidden; margin-bottom: 24px;
+  }
+  .progress-fill {
+    height: 100%; background: var(--sage);
+    border-radius: 4px; transition: width .3s ease;
+    width: 0%;
+  }
+
+  .card {
+    background: var(--card);
+    border-radius: 16px;
+    padding: 32px 28px;
+    box-shadow: 0 2px 18px rgba(60, 70, 60, 0.08);
+    border: 1px solid var(--border);
+  }
+
+  .step { display: none; }
+  .step.active { display: block; animation: fade .25s ease; }
+  @keyframes fade { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+
+  h2 { font-size: 19px; margin: 0 0 6px; color: var(--sage-dark); line-height: 1.35; }
+  .sub { font-size: 13.5px; color: var(--muted); margin: 0 0 20px; }
+
+  .options { display: flex; flex-direction: column; gap: 10px; }
+  .opt {
+    display: block; width: 100%; text-align: left;
+    padding: 13px 16px; border-radius: 10px;
+    border: 1.5px solid var(--border); background: #fdfcfa;
+    font-size: 14.5px; color: var(--ink); cursor: pointer;
+    transition: all .15s ease;
+  }
+  .opt:hover { border-color: var(--sage); background: #f3f7f2; }
+  .opt.selected { border-color: var(--sage); background: #eaf1e8; font-weight: 600; }
+
+  select, textarea, input[type=text], input[type=email], input[type=tel] {
+    width: 100%; padding: 12px 14px; border-radius: 10px;
+    border: 1.5px solid var(--border); font-size: 14.5px;
+    font-family: inherit; color: var(--ink); background: #fdfcfa;
+  }
+  textarea { resize: vertical; min-height: 90px; }
+  input[type=text], input[type=email], input[type=tel] { margin-bottom: 10px; }
+  select:focus, textarea:focus, input:focus { outline: none; border-color: var(--sage); }
+
+  .multi-hint { font-size: 12px; color: var(--muted); margin-bottom: 10px; }
+
+  .nav { display: flex; justify-content: space-between; align-items: center; margin-top: 24px; }
+  .btn {
+    border: none; border-radius: 10px; padding: 12px 22px;
+    font-size: 14.5px; font-weight: 600; cursor: pointer;
+    transition: transform .1s ease, opacity .15s ease;
+  }
+  .btn:active { transform: scale(0.98); }
+  .btn-primary { background: var(--sage); color: white; }
+  .btn-primary:disabled { opacity: .4; cursor: not-allowed; }
+  .btn-primary:not(:disabled):hover { background: var(--sage-dark); }
+  .btn-back { background: transparent; color: var(--muted); padding: 12px 8px; }
+  .btn-back:hover { color: var(--ink); }
+
+  .result-badge {
+    display: inline-block; font-size: 12px; font-weight: 700;
+    letter-spacing: .04em; text-transform: uppercase;
+    color: var(--sage-dark); background: #eaf1e8;
+    padding: 5px 12px; border-radius: 20px; margin-bottom: 14px;
+  }
+  .result-body { font-size: 14.5px; line-height: 1.6; color: var(--ink); margin-bottom: 18px; }
+  .result-body strong { color: var(--sage-dark); }
+
+  .cta-box {
+    background: #f3f7f2; border: 1px solid var(--border);
+    border-radius: 12px; padding: 18px; margin-top: 4px;
+  }
+  .cta-reason { font-size: 12.5px; color: var(--accent-dark); font-weight: 600; margin-bottom: 10px; }
+  .cta-sub { font-size: 13.5px; color: var(--ink); line-height: 1.6; margin: 0 0 14px; }
+  .cta-btn {
+    display: block; width: 100%; text-align: center;
+    background: var(--accent); color: white; font-weight: 700;
+    font-size: 15px; padding: 14px; border-radius: 10px; border: none; cursor: pointer;
+    text-decoration: none;
+  }
+  .cta-btn:hover { background: var(--accent-dark); }
+  .cta-note { font-size: 12px; color: var(--muted); margin-top: 10px; text-align: center; }
+
+  .decline .card { border-color: #ecd9d6; }
+  .decline-badge {
+    display: inline-block; font-size: 12px; font-weight: 700;
+    letter-spacing: .04em; text-transform: uppercase;
+    color: var(--danger); background: var(--danger-bg);
+    padding: 5px 12px; border-radius: 20px; margin-bottom: 14px;
+  }
+  .resource-box {
+    background: var(--danger-bg); border: 1px solid #ecd9d6;
+    border-radius: 10px; padding: 14px 16px; font-size: 13.5px;
+    line-height: 1.6; margin-top: 14px;
+  }
+  .crisis-box {
+    background: #fff7e8; border: 1px solid #f0dfb8;
+    border-radius: 10px; padding: 16px; font-size: 14px; line-height: 1.7;
+  }
+  .crisis-box strong { display:block; font-size: 15px; margin-bottom: 6px; }
+
+  .error-note {
+    background: var(--danger-bg); border: 1px solid #ecd9d6;
+    border-radius: 10px; padding: 10px 14px; font-size: 12.5px;
+    color: var(--danger); margin-top: 4px; display: none;
+  }
+
+  .footnote { text-align: center; font-size: 11.5px; color: #a0a89f; margin-top: 18px; }
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="brand">
+    <div class="mark">PH</div>
+    <h1>Paradise Healing</h1>
+    <p>Randolph, MA · Behavioral Health &amp; Therapy</p>
+  </div>
+
+  <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+
+  <div class="card">
+
+    <!-- STEP 0: Welcome -->
+    <div class="step active" data-step="0">
+      <h2>The 2-Minute Mental Health Check-In</h2>
+      <p class="sub">A few quick questions so we can understand what's going on and match you with the right clinician — confidential, and it only takes about two minutes.</p>
+      <div class="nav" style="justify-content:flex-end;">
+        <button class="btn btn-primary" onclick="goTo(1)">Start Check-In →</button>
+      </div>
+    </div>
+
+    <!-- STEP 1: State (licensing disqualifier) -->
+    <div class="step" data-step="1">
+      <h2>What state do you currently live in?</h2>
+      <p class="sub">Our clinicians are licensed to provide telehealth in specific states.</p>
+      <select id="stateSelect" onchange="onAnswerChange()">
+        <option value="">Select a state…</option>
+        <option value="MA">Massachusetts</option>
+        <option value="RI">Rhode Island</option>
+        <option value="CT">Connecticut</option>
+        <option value="OTHER">Another state</option>
+      </select>
+      <div class="nav">
+        <button class="btn btn-back" onclick="goTo(0)">← Back</button>
+        <button class="btn btn-primary" id="nextFromState" disabled onclick="handleStateNext()">Next →</button>
+      </div>
+    </div>
+
+    <!-- STEP 2: Insurance (payer disqualifier) -->
+    <div class="step" data-step="2">
+      <h2>What insurance do you have?</h2>
+      <p class="sub">We'll confirm your coverage before booking so there are no surprises.</p>
+      <select id="insuranceSelect" onchange="onAnswerChange()">
+        <option value="">Select your plan…</option>
+        <option value="ok">Blue Cross Blue Shield</option>
+        <option value="ok">Aetna</option>
+        <option value="ok">Cigna</option>
+        <option value="ok">Optum / United Behavioral Health</option>
+        <option value="ok">United Healthcare</option>
+        <option value="ok">Tufts Health Plan</option>
+        <option value="ok">Medicare</option>
+        <option value="ok">Medicaid / MassHealth</option>
+        <option value="ok">Other plan not listed</option>
+        <option value="selfpay">I don't have insurance / I'll self-pay</option>
+        <option value="none">None of these apply to me</option>
+      </select>
+      <div class="nav">
+        <button class="btn btn-back" onclick="goTo(1)">← Back</button>
+        <button class="btn btn-primary" id="nextFromInsurance" disabled onclick="handleInsuranceNext()">Next →</button>
+      </div>
+    </div>
+
+    <!-- STEP 3: What they need support with -->
+    <div class="step" data-step="3">
+      <h2>What are you looking for support with?</h2>
+      <p class="sub">Pick the one that feels closest right now.</p>
+      <div class="options" id="topicOptions">
+        <button class="opt" data-val="Anxiety">Anxiety or constant worry</button>
+        <button class="opt" data-val="Depression or low mood">Depression or low mood</button>
+        <button class="opt" data-val="Stress or burnout">Stress or burnout</button>
+        <button class="opt" data-val="Trauma or a difficult past experience">Trauma or a difficult past experience</button>
+        <button class="opt" data-val="Relationship or family issues">Relationship or family issues</button>
+        <button class="opt" data-val="Something else">Something else</button>
+      </div>
+      <div class="nav">
+        <button class="btn btn-back" onclick="goTo(2)">← Back</button>
+        <button class="btn btn-primary" id="nextFromTopic" disabled onclick="goTo(4)">Next →</button>
+      </div>
+    </div>
+
+    <!-- STEP 4: Duration -->
+    <div class="step" data-step="4">
+      <h2>How long has this been going on?</h2>
+      <div class="options" id="durationOptions">
+        <button class="opt" data-val="Just started, within the last few weeks">Just started — a few weeks</button>
+        <button class="opt" data-val="A few months">A few months</button>
+        <button class="opt" data-val="Over a year">Over a year</button>
+        <button class="opt" data-val="On and off for as long as I can remember">On and off, for as long as I can remember</button>
+      </div>
+      <div class="nav">
+        <button class="btn btn-back" onclick="goTo(3)">← Back</button>
+        <button class="btn btn-primary" id="nextFromDuration" disabled onclick="goTo(5)">Next →</button>
+      </div>
+    </div>
+
+    <!-- STEP 5: Open-ended -->
+    <div class="step" data-step="5">
+      <h2>In a sentence or two, what's been the hardest part lately?</h2>
+      <p class="sub">This helps your clinician understand your situation before you even meet.</p>
+      <textarea id="openText" placeholder="Take your time — write as much or as little as you'd like…"></textarea>
+      <div class="nav">
+        <button class="btn btn-back" onclick="goTo(4)">← Back</button>
+        <button class="btn btn-primary" id="nextFromOpen" onclick="openNext()">Next →</button>
+      </div>
+    </div>
+
+    <!-- STEP 6: Safety screening -->
+    <div class="step" data-step="6">
+      <h2>One last important question.</h2>
+      <p class="sub">Have you recently had thoughts of harming yourself or someone else, or do you feel unsafe right now?</p>
+      <div class="options" id="safetyOptions">
+        <button class="opt" data-val="no">No</button>
+        <button class="opt" data-val="managed">Sometimes, but I feel I have it under control</button>
+        <button class="opt" data-val="crisis">Yes — I need help now</button>
+      </div>
+      <div class="nav">
+        <button class="btn btn-back" onclick="goTo(5)">← Back</button>
+        <button class="btn btn-primary" id="nextFromSafety" disabled onclick="handleSafetyNext()">Continue →</button>
+      </div>
+    </div>
+
+    <!-- STEP 7: Contact info -->
+    <div class="step" data-step="7">
+      <h2>Almost done — where should we send your results?</h2>
+      <p class="sub">Someone from our intake team will text or call you directly to help you get scheduled — no need to book anything yourself.</p>
+      <input type="text" id="contactName" placeholder="First name">
+      <input type="email" id="contactEmail" placeholder="Email address">
+      <input type="tel" id="contactPhone" placeholder="Phone number">
+      <div class="nav">
+        <button class="btn btn-back" onclick="goTo(6)">← Back</button>
+        <button class="btn btn-primary" id="nextFromContact" onclick="contactNext()">See My Results →</button>
+      </div>
+      <div class="error-note" id="contactError"></div>
+    </div>
+
+    <!-- STEP 8: Result (qualified) -->
+    <div class="step" data-step="8">
+      <div class="result-badge">Your Check-In Result</div>
+      <h2 id="resultHeadline">Here's what we're seeing</h2>
+      <div class="result-body" id="resultBody"></div>
+      <div class="cta-box">
+        <div class="cta-reason">Thanks — we've got your info.</div>
+        <p class="cta-sub">Paradise Healing's intake team will text or call you shortly to help match you with the right clinician and get you scheduled.</p>
+        <a class="cta-btn" href="tel:+17818886625">Call or Text (781) 888-6625</a>
+        <div class="cta-note">Prefer to wait? No problem — we'll be in touch soon either way.</div>
+      </div>
+    </div>
+
+    <!-- STEP 9: Decline - insurance -->
+    <div class="step" data-step="9">
+      <div class="decline-badge">Insurance Not Confirmed</div>
+      <h2>We're not able to verify coverage for that plan</h2>
+      <p class="sub">That doesn't mean support isn't out there — we just aren't in-network with this plan today.</p>
+      <div class="resource-box">
+        Try <strong>Psychology Today's therapist finder</strong> or call <strong>211</strong> (Massachusetts) to find providers who accept your plan. If your situation changes, we'd love to hear from you again.
+      </div>
+    </div>
+
+    <!-- STEP 10: Decline - state -->
+    <div class="step" data-step="10">
+      <div class="decline-badge">Outside Our Licensed Area</div>
+      <h2>We're not yet able to see clients in your state</h2>
+      <p class="sub">Our clinicians are currently licensed in Massachusetts, Rhode Island, and Connecticut.</p>
+      <div class="resource-box">
+        <strong>SAMHSA's National Helpline</strong> (1-800-662-4357) can point you toward licensed providers in your area, free and confidential.
+      </div>
+    </div>
+
+    <!-- STEP 11: Crisis -->
+    <div class="step" data-step="11">
+      <div class="decline-badge">Please Reach Out Now</div>
+      <h2>You deserve support right now — not a form.</h2>
+      <div class="crisis-box">
+        <strong>988 Suicide &amp; Crisis Lifeline</strong>
+        Call or text <strong>988</strong> — available 24/7, free and confidential.
+        <br><br>
+        <strong>Crisis Text Line</strong>
+        Text <strong>HOME</strong> to <strong>741741</strong>.
+        <br><br>
+        If you are in immediate danger, please call <strong>911</strong> or go to your nearest emergency room.
+      </div>
+      <p class="sub" style="margin-top:16px;">Once you're safe, our intake team can follow up directly with you by phone rather than through this form — this keeps you supported by a real person right away.</p>
+    </div>
+
+  </div>
+  <div class="footnote">Paradise Healing LLC · Randolph, MA · This check-in is not a diagnosis and does not replace emergency care.</div>
+</div>
+
+<script>
+  const totalSteps = 8; // steps 0–7 count toward progress; 8+ are terminal
+  let answers = { state: '', insurance: '', topic: '', duration: '', open: '', safety: '', name: '', email: '', phone: '' };
+
+  function goTo(step) {
+    document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+    document.querySelector('.step[data-step="' + step + '"]').classList.add('active');
+    const pct = Math.min(step, totalSteps) / totalSteps * 100;
+    document.getElementById('progressFill').style.width = pct + '%';
+  }
+
+  // Single-select option buttons
+  document.querySelectorAll('.options').forEach(group => {
+    group.addEventListener('click', (e) => {
+      const btn = e.target.closest('.opt');
+      if (!btn) return;
+      [...group.children].forEach(c => c.classList.remove('selected'));
+      btn.classList.add('selected');
+      const step = btn.closest('.step').dataset.step;
+      const val = btn.dataset.val;
+      if (step === '3') { answers.topic = val; document.getElementById('nextFromTopic').disabled = false; }
+      if (step === '4') { answers.duration = val; document.getElementById('nextFromDuration').disabled = false; }
+      if (step === '6') { answers.safety = val; document.getElementById('nextFromSafety').disabled = false; }
+    });
+  });
+
+  function onAnswerChange() {
+    const stateSelect = document.getElementById('stateSelect');
+    answers.state = stateSelect.value;
+    answers.stateLabel = stateSelect.selectedOptions[0] ? stateSelect.selectedOptions[0].text : '';
+    document.getElementById('nextFromState').disabled = !answers.state;
+
+    const insuranceSelect = document.getElementById('insuranceSelect');
+    answers.insurance = insuranceSelect.value;
+    answers.insuranceLabel = insuranceSelect.selectedOptions[0] ? insuranceSelect.selectedOptions[0].text : '';
+    document.getElementById('nextFromInsurance').disabled = !answers.insurance;
+  }
+
+  function handleStateNext() {
+    if (answers.state === 'OTHER') { goTo(10); return; }
+    goTo(2);
+  }
+
+  function handleInsuranceNext() {
+    if (answers.insurance === 'none') { goTo(9); return; }
+    goTo(3);
+  }
+
+  function openNext() {
+    answers.open = document.getElementById('openText').value.trim();
+    goTo(6);
+  }
+
+  function handleSafetyNext() {
+    if (answers.safety === 'crisis') { goTo(11); return; }
+    goTo(7);
+  }
+
+  function getParam(name) {
+    try { return new URLSearchParams(window.location.search).get(name) || ''; } catch { return ''; }
+  }
+
+  function showContactError(msg) {
+    const el = document.getElementById('contactError');
+    el.textContent = msg;
+    el.style.display = 'block';
+  }
+  function hideContactError() {
+    document.getElementById('contactError').style.display = 'none';
+  }
+
+  async function submitLead() {
+    const payload = {
+      action: 'lead',
+      client: 'allaphia',
+      name: answers.name,
+      email: answers.email,
+      phone: answers.phone,
+      source: 'Mental Health Check-In Quiz — Meta Ads',
+      tags: ['paradise-checkin-quiz-lead', 'web-lead'],
+      answers: {
+        'State': answers.stateLabel || answers.state,
+        'Insurance': answers.insuranceLabel || answers.insurance,
+        'Looking for support with': answers.topic,
+        'Duration': answers.duration,
+        'Hardest part (in their words)': answers.open,
+        'Safety check': answers.safety,
+        'utm_source': getParam('utm_source'),
+        'utm_campaign': getParam('utm_campaign'),
+        'utm_content': getParam('utm_content'),
+      },
+    };
+
+    const res = await fetch('/api/submit-lead', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    });
+
+    if (!res.ok) {
+      let detail = res.status;
+      try { const j = await res.json(); if (j && j.error) detail = j.error; } catch {}
+      throw new Error(String(detail));
+    }
+
+    // Fire the Meta pixel Lead event only once the GHL upsert actually succeeded — this is
+    // what lets the ad account optimize toward real completions, not just page views.
+    // No content_name/content_category — Meta's Business Tools Terms flag health-category
+    // signals (mental health especially) as sensitive data and will silently strip the
+    // event's usable data if any parameters are included. Bare Lead event only.
+    if (typeof fbq === 'function') {
+      fbq('track', 'Lead');
+    }
+
+    return res.json();
+  }
+
+  async function contactNext() {
+    const name = document.getElementById('contactName').value.trim();
+    const email = document.getElementById('contactEmail').value.trim();
+    const phone = document.getElementById('contactPhone').value.trim();
+
+    if (!name || (!email && !phone)) {
+      showContactError('Please enter your name and at least an email or phone number.');
+      return;
+    }
+
+    answers.name = name;
+    answers.email = email;
+    answers.phone = phone;
+    hideContactError();
+
+    const btn = document.getElementById('nextFromContact');
+    btn.disabled = true;
+    btn.textContent = 'Submitting…';
+
+    try {
+      await submitLead();
+      renderResult();
+      goTo(8);
+    } catch (err) {
+      showContactError('Something went wrong sending your info (' + err.message + '). You can try again, or call/text us directly at (781) 888-6625.');
+    } finally {
+      btn.disabled = false;
+      btn.textContent = 'See My Results →';
+    }
+  }
+
+  function renderResult() {
+    const headline = document.getElementById('resultHeadline');
+    const body = document.getElementById('resultBody');
+
+    const topicText = (answers.topic || 'what you\'re experiencing').toLowerCase();
+    let severityLine = '';
+    if (answers.duration.includes('year') || answers.duration.includes('remember')) {
+      severityLine = 'Symptoms that stick around this long rarely resolve on their own — the good news is they respond well to consistent support.';
+    } else if (answers.duration.includes('months')) {
+      severityLine = 'A few months in is often the point where things start affecting daily life more — getting support now tends to shorten how long it takes to feel better.';
+    } else {
+      severityLine = 'Catching this early is a real advantage — support tends to work faster the sooner it starts.';
+    }
+
+    headline.textContent = 'Based on your answers, support is likely to help';
+    body.innerHTML = 'You shared that you\'re dealing with <strong>' + topicText + '</strong>, and that it\'s been going on for <strong>' + (answers.duration || 'a while') + '</strong>. ' + severityLine + ' Paradise Healing matches clients with a licensed clinician suited to their specific situation — not a random name off a list.';
+  }
+</script>
+</body>
+</html>
