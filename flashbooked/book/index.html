@@ -173,6 +173,13 @@
     .hero{padding:52px 0 36px;}
   }
 </style>
+<!-- Meta Pixel -->
+<script>
+!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,document,'script','https://connect.facebook.net/en_US/fbevents.js');
+fbq('init', '1684133989338134');
+fbq('track', 'PageView');
+</script>
+<noscript><img height="1" width="1" style="display:none" src="https://www.facebook.com/tr?id=1684133989338134&ev=PageView&noscript=1"/></noscript>
 </head>
 <body>
 
@@ -243,5 +250,26 @@
 </footer>
 
 <script src="https://link.msgsndr.com/js/form_embed.js" type="text/javascript"></script>
+
+<!-- GHL Calendar: Booking Detection + Resize -->
+<script>
+window.addEventListener('message', function(e) {
+  if (Array.isArray(e.data)) {
+    if (e.data[0] === 'msgsndr-booking-complete') {
+      if (typeof fbq !== 'undefined') { fbq('track', 'Schedule'); }
+      setTimeout(function() { window.location.href = '../thank-you/'; }, 800);
+    }
+  }
+  if (typeof e.data === 'string') {
+    try {
+      var d = JSON.parse(e.data);
+      if (d.frameHeight) {
+        var h = d.frameHeight;
+        document.querySelectorAll('iframe').forEach(function(f) { f.style.height = h + 'px'; });
+      }
+    } catch(x) {}
+  }
+});
+</script>
 </body>
 </html>

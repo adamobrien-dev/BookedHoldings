@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>You're Booked — FlashBooked</title>
+<meta name="description" content="Your discovery call with FlashBooked is confirmed. Here's what to expect." />
+<style>
+  :root{
+    --navy:#0f1a2e;
+    --navy-2:#16233d;
+    --orange:#e5772f;
+    --orange-2:#ff9248;
+    --cream:#fdf6ee;
+    --grey:#9aa5b8;
+    --line:#28344d;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html{scroll-behavior:smooth;}
+  body{
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    background:var(--navy);
+    color:var(--cream);
+    line-height:1.5;
+  }
+  a{color:inherit;}
+  ul{list-style:none;}
+  .wrap{max-width:800px;margin:0 auto;padding:0 24px;}
+
+  header{
+    padding:22px 0;
+    border-bottom:1px solid var(--line);
+    text-align:center;
+  }
+  .logo{font-size:20px;font-weight:800;letter-spacing:-0.02em;}
+  .logo span{color:var(--orange);}
+
+  .conf-hero{padding:72px 0 48px;text-align:center;}
+  .conf-check{
+    width:64px;height:64px;border-radius:50%;
+    background:var(--orange);
+    display:flex;align-items:center;justify-content:center;
+    margin:0 auto 24px;
+  }
+  .conf-check svg{width:32px;height:32px;color:#fff;}
+  .conf-hero h1{
+    font-size:clamp(28px,4.5vw,42px);
+    font-weight:800;
+    letter-spacing:-0.02em;
+    margin-bottom:10px;
+  }
+  .conf-hero .sub{font-size:18px;color:var(--grey);margin-bottom:8px;}
+  .conf-hero .detail{font-size:14px;color:var(--grey);max-width:440px;margin:0 auto;}
+
+  section{padding:44px 0;border-top:1px solid var(--line);}
+  section h2{font-size:20px;font-weight:800;margin-bottom:20px;}
+
+  .next-steps{display:flex;flex-direction:column;gap:18px;}
+  .ns-item{display:flex;align-items:flex-start;gap:14px;}
+  .ns-num{
+    flex:none;width:30px;height:30px;border-radius:50%;
+    background:rgba(229,119,47,0.15);color:var(--orange-2);
+    font-weight:800;font-size:14px;
+    display:flex;align-items:center;justify-content:center;
+  }
+  .ns-item p{font-size:14px;color:var(--grey);padding-top:5px;}
+
+  .checklist{display:flex;flex-direction:column;gap:12px;}
+  .checklist li{display:flex;align-items:flex-start;gap:10px;font-size:14px;color:var(--grey);}
+  .checklist svg{width:18px;height:18px;color:var(--orange-2);flex-shrink:0;margin-top:2px;}
+
+  .call-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;}
+  .call-item{
+    background:var(--navy-2);border:1px solid var(--line);border-radius:10px;
+    padding:16px;text-align:center;font-size:13px;font-weight:600;
+  }
+  .call-item svg{width:20px;height:20px;color:var(--orange-2);margin:0 auto 8px;display:block;}
+
+  footer{padding:32px 0;text-align:center;color:var(--grey);font-size:13px;}
+  footer a{color:var(--orange-2);text-decoration:none;}
+
+  @media (max-width:600px){
+    .call-grid{grid-template-columns:1fr 1fr;}
+    .conf-hero{padding:52px 0 36px;}
+  }
+</style>
+<!-- Meta Pixel -->
+<script>
+!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,document,'script','https://connect.facebook.net/en_US/fbevents.js');
+fbq('init', '1684133989338134');
+fbq('track', 'PageView');
+</script>
+<noscript><img height="1" width="1" style="display:none" src="https://www.facebook.com/tr?id=1684133989338134&ev=PageView&noscript=1"/></noscript>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <a href="https://flashbooked.com" class="logo">⚡ Flash<span>Booked</span></a>
+  </div>
+</header>
+
+<section class="conf-hero" style="border-top:none;">
+  <div class="wrap">
+    <div class="conf-check">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="3" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg>
+    </div>
+    <h1>You're Booked.</h1>
+    <p class="sub">Your discovery call with FlashBooked is confirmed.</p>
+    <p class="detail">We'll take a look at your current call handling before the call so we can get straight to the point.</p>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2>What happens next</h2>
+    <div class="next-steps">
+      <div class="ns-item">
+        <div class="ns-num">1</div>
+        <p>We look at how your business currently handles calls and enquiries</p>
+      </div>
+      <div class="ns-item">
+        <div class="ns-num">2</div>
+        <p>We work out roughly what missed and slow-followed-up calls are costing you each month</p>
+      </div>
+      <div class="ns-item">
+        <div class="ns-num">3</div>
+        <p>On the call, we walk through exactly how FlashBooked's AI receptionist would work for you</p>
+      </div>
+      <div class="ns-item">
+        <div class="ns-num">4</div>
+        <p>If it's a fit, we'll explain next steps. If not, we'll tell you straight — no pressure either way</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2>Before the call, please make sure:</h2>
+    <ul class="checklist">
+      <li>
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg>
+        You're the decision-maker (or they'll be on the call)
+      </li>
+      <li>
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg>
+        You have a rough idea of your weekly call volume
+      </li>
+      <li>
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg>
+        You're open to changing how calls get answered, if it makes sense
+      </li>
+    </ul>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2>About the call</h2>
+    <div class="call-grid">
+      <div class="call-item">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+        15 minutes
+      </div>
+      <div class="call-item">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z"/></svg>
+        No pressure
+      </div>
+      <div class="call-item">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z"/></svg>
+        Straight talk
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    ⚡ FlashBooked — Built for Irish Plumbing &amp; Heating Companies · <a href="https://flashbooked.com">flashbooked.com</a>
+  </div>
+</footer>
+
+</body>
+</html>
