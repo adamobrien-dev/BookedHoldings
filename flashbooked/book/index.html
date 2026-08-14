@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Book a Discovery Call — FlashBooked</title>
+<meta name="description" content="Book a 15-minute discovery call with FlashBooked and see exactly how an AI receptionist would work for your plumbing or heating business in Ireland." />
+<style>
+  :root{
+    --navy:#0f1a2e;
+    --navy-2:#16233d;
+    --orange:#e5772f;
+    --orange-2:#ff9248;
+    --cream:#fdf6ee;
+    --grey:#9aa5b8;
+    --line:#28344d;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html{scroll-behavior:smooth;}
+  body{
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    background:var(--navy);
+    color:var(--cream);
+    line-height:1.5;
+  }
+  a{color:inherit;}
+  .wrap{max-width:1040px;margin:0 auto;padding:0 24px;}
+
+  header{
+    padding:22px 0;
+    border-bottom:1px solid var(--line);
+  }
+  header .wrap{display:flex;align-items:center;justify-content:space-between;}
+  .logo{font-size:20px;font-weight:800;letter-spacing:-0.02em;}
+  .logo span{color:var(--orange);}
+  .backlink{font-size:14px;color:var(--grey);text-decoration:none;border:1px solid var(--line);padding:8px 14px;border-radius:8px;transition:border-color .15s;}
+  .backlink:hover{border-color:var(--orange);color:var(--cream);}
+
+  .badge{
+    display:inline-flex;align-items:center;gap:8px;
+    background:rgba(229,119,47,0.12);
+    border:1px solid rgba(229,119,47,0.35);
+    color:var(--orange-2);
+    font-size:13px;font-weight:600;
+    padding:6px 14px;border-radius:999px;
+    margin-bottom:22px;
+  }
+
+  .hero{
+    padding:72px 0 48px;
+    text-align:center;
+  }
+  .hero h1{
+    font-size:clamp(32px,5vw,52px);
+    font-weight:800;
+    letter-spacing:-0.02em;
+    line-height:1.08;
+    margin-bottom:20px;
+  }
+  .hero h1 em{
+    font-style:normal;
+    color:var(--orange-2);
+  }
+  .hero p.lead{
+    font-size:19px;
+    color:var(--grey);
+    max-width:620px;
+    margin:0 auto 8px;
+  }
+
+  .proof-row{
+    display:flex;
+    justify-content:center;
+    gap:36px;
+    flex-wrap:wrap;
+    margin:36px 0 4px;
+    padding:24px 0;
+    border-top:1px solid var(--line);
+    border-bottom:1px solid var(--line);
+  }
+  .proof-row .stat{text-align:center;}
+  .proof-row .num{font-size:26px;font-weight:800;color:var(--orange-2);}
+  .proof-row .label{font-size:13px;color:var(--grey);max-width:150px;}
+
+  .agenda{
+    padding:56px 0 20px;
+  }
+  .agenda h2{
+    text-align:center;
+    font-size:26px;
+    font-weight:800;
+    margin-bottom:8px;
+  }
+  .agenda p.sub{
+    text-align:center;
+    color:var(--grey);
+    max-width:520px;
+    margin:0 auto 36px;
+    font-size:15px;
+  }
+  .agenda-grid{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:20px;
+  }
+  .agenda-card{
+    background:var(--navy-2);
+    border:1px solid var(--line);
+    border-radius:14px;
+    padding:24px 20px;
+  }
+  .agenda-card .n{
+    display:inline-flex;align-items:center;justify-content:center;
+    width:30px;height:30px;border-radius:8px;
+    background:rgba(229,119,47,0.15);
+    color:var(--orange-2);font-weight:800;font-size:14px;
+    margin-bottom:14px;
+  }
+  .agenda-card h3{font-size:16px;margin-bottom:6px;}
+  .agenda-card p{font-size:14px;color:var(--grey);}
+
+  .book-section{
+    padding:60px 0 90px;
+  }
+  .book-section h2{
+    text-align:center;
+    font-size:28px;
+    font-weight:800;
+    margin-bottom:8px;
+  }
+  .book-section p.sub{
+    text-align:center;
+    color:var(--grey);
+    max-width:480px;
+    margin:0 auto 30px;
+    font-size:15px;
+  }
+  .calendar-frame{
+    background:var(--cream);
+    border-radius:16px;
+    overflow:hidden;
+    box-shadow:0 20px 60px rgba(0,0,0,0.35);
+    max-width:760px;
+    margin:0 auto;
+  }
+  .calendar-frame iframe{
+    width:100%;
+    border:none;
+    min-height:780px;
+    display:block;
+  }
+
+  .no-fit{
+    text-align:center;
+    font-size:13px;
+    color:var(--grey);
+    max-width:480px;
+    margin:22px auto 0;
+  }
+
+  footer{
+    border-top:1px solid var(--line);
+    padding:32px 0;
+    text-align:center;
+    color:var(--grey);
+    font-size:13px;
+  }
+  footer a{color:var(--orange-2);text-decoration:none;}
+
+  @media (max-width:720px){
+    .agenda-grid{grid-template-columns:1fr;}
+    .proof-row{gap:22px;}
+    .hero{padding:52px 0 36px;}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <div class="logo">⚡ Flash<span>Booked</span></div>
+    <a class="backlink" href="https://flashbooked.com">← Back to flashbooked.com</a>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="wrap">
+    <div class="badge">🇮🇪 For Irish Plumbing &amp; Heating Companies</div>
+    <h1>See how many jobs<br><em>you're losing to a ringing phone.</em></h1>
+    <p class="lead">Book a free 15-minute discovery call. We'll walk through your current call handling, show you exactly how FlashBooked's AI receptionist would work for your business, and you can decide from there — no pressure, no obligation.</p>
+
+    <div class="proof-row">
+      <div class="stat"><div class="num">27%</div><div class="label">of inbound trade calls go unanswered</div></div>
+      <div class="stat"><div class="num">24/7</div><div class="label">is when the next plumber answers instead</div></div>
+      <div class="stat"><div class="num">72hrs</div><div class="label">to get live and answering calls</div></div>
+    </div>
+  </div>
+</section>
+
+<section class="agenda">
+  <div class="wrap">
+    <h2>What happens on the call</h2>
+    <p class="sub">15 minutes, straight to the point — here's exactly what we'll cover.</p>
+    <div class="agenda-grid">
+      <div class="agenda-card">
+        <div class="n">1</div>
+        <h3>How you handle calls today</h3>
+        <p>A few quick questions on call volume, missed calls, and how leads currently get followed up.</p>
+      </div>
+      <div class="agenda-card">
+        <div class="n">2</div>
+        <h3>What it's costing you</h3>
+        <p>We'll do the maths on what missed and slow-followed-up calls are actually worth to your business each month.</p>
+      </div>
+      <div class="agenda-card">
+        <div class="n">3</div>
+        <h3>Whether FlashBooked fits</h3>
+        <p>An honest answer on whether an AI receptionist makes sense for you — and what it would look like if it does.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="book-section" id="book">
+  <div class="wrap">
+    <h2>Pick a time that suits</h2>
+    <p class="sub">Choose whatever slot works for you — the call is with a real person on our end, not Aoife.</p>
+    <div class="calendar-frame">
+      <iframe
+        src="https://api.leadconnectorhq.com/widget/booking/hgIjFYqlXqgWBunrrOaO"
+        scrolling="no"
+        id="hgIjFYqlXqgWBunrrOaO_book"
+      ></iframe>
+    </div>
+    <p class="no-fit">Not ready to book yet? Have a read through <a href="https://flashbooked.com" style="color:var(--orange-2);">how FlashBooked works</a> first, or email <a href="mailto:adam@bookedjobs.ca" style="color:var(--orange-2);">adam@bookedjobs.ca</a> with any questions.</p>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    ⚡ FlashBooked — Built for Irish Plumbing &amp; Heating Companies · <a href="https://flashbooked.com">flashbooked.com</a>
+  </div>
+</footer>
+
+<script src="https://link.msgsndr.com/js/form_embed.js" type="text/javascript"></script>
+</body>
+</html>
