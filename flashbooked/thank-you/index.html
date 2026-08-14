@@ -79,6 +79,26 @@
   footer{padding:32px 0;text-align:center;color:var(--grey);font-size:13px;}
   footer a{color:var(--orange-2);text-decoration:none;}
 
+  /* Confirm-step callout */
+  .confirm-box{
+    background:rgba(229,119,47,0.1);
+    border:1px solid rgba(229,119,47,0.35);
+    border-radius:14px;
+    padding:28px 24px;
+  }
+  .confirm-box h2{color:var(--orange-2);font-size:19px;margin-bottom:20px;text-align:center;}
+  .confirm-step{display:flex;align-items:flex-start;gap:14px;margin-bottom:16px;}
+  .confirm-step:last-child{margin-bottom:0;}
+  .confirm-step .icon{font-size:20px;flex:none;}
+  .confirm-step .txt b{display:block;font-size:15px;font-weight:700;color:var(--cream);margin-bottom:2px;}
+  .confirm-step .txt span{font-size:13px;color:var(--grey);}
+
+  .legal-footer{border-top:1px solid var(--line);padding:24px 0;text-align:center;color:#5c6478;font-size:11px;line-height:1.7;}
+  .legal-footer p{margin-bottom:8px;max-width:640px;margin-left:auto;margin-right:auto;}
+  .legal-footer .copyright{color:var(--grey);}
+  .legal-footer a{color:#5c6478;text-decoration:underline;}
+  .legal-footer .powered{margin-top:10px;color:#454d61;}
+
   @media (max-width:600px){
     .call-grid{grid-template-columns:1fr 1fr;}
     .conf-hero{padding:52px 0 36px;}
@@ -108,6 +128,28 @@ fbq('track', 'PageView');
     <h1>You're Booked.</h1>
     <p class="sub">Your discovery call with FlashBooked is confirmed.</p>
     <p class="detail">We'll take a look at your current call handling before the call so we can get straight to the point.</p>
+  </div>
+</section>
+
+<section style="padding-top:0;border-top:none;">
+  <div class="wrap">
+    <div class="confirm-box">
+      <h2>Your Call Is Not Yet Confirmed:</h2>
+      <div class="confirm-step">
+        <div class="icon">📋</div>
+        <div class="txt">
+          <b>Step 1: Reply "CONFIRM" To The Email / Text We Just Sent You</b>
+          <span>Otherwise Your Appointment Will Be Cancelled!</span>
+        </div>
+      </div>
+      <div class="confirm-step">
+        <div class="icon">🗓️</div>
+        <div class="txt">
+          <b>Step 2: Make Sure You Arrive To Your Appointment On Time</b>
+          <span>(In A Quiet Place With No Distractions)</span>
+        </div>
+      </div>
+    </div>
   </div>
 </section>
 
@@ -180,6 +222,14 @@ fbq('track', 'PageView');
     ⚡ FlashBooked — Built for Irish Plumbing &amp; Heating Companies · <a href="https://flashbooked.com">flashbooked.com</a>
   </div>
 </footer>
+
+<div class="legal-footer">
+  <div class="wrap">
+    <p>This website is not a part of the Facebook website or Facebook Inc. Additionally, this website is NOT endorsed by Facebook in any way. Facebook is a trademark of Meta Platforms, Inc.</p>
+    <p class="copyright">Copyright 2026 FlashBooked | All Rights Reserved | <a href="/privacy/">Privacy Policy</a> | <a href="/terms/">Terms &amp; Conditions</a></p>
+    <p class="powered">Powered by Automateclients.io™</p>
+  </div>
+</div>
 
 </body>
 </html>
