@@ -6,22 +6,29 @@
 //
 // Auth: header x-webhook-secret must match FLASHBOOKED_LEAD_SECRET (shared with lead.js /
 // book-discovery-call.js — all three are Aoife-triggered, same trust boundary).
+//
+// Always responds 200 with a `message` field on failure — handed straight to the LLM mid-call.
 
 const GHL_API = 'https://services.leadconnectorhq.com';
 const CALENDAR_ID = 'hgIjFYqlXqgWBunrrOaO';
 const TIMEZONE = 'Europe/Dublin';
 const MAX_SLOTS_RETURNED = 6;
+const FALLBACK_MESSAGE = "I'm having trouble pulling up the calendar right now — take the caller's name and number and let them know the team will follow up to find a time.";
 
 module.exports = async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).end();
 
   const secret = req.headers['x-webhook-secret'];
   if (!process.env.FLASHBOOKED_LEAD_SECRET || secret !== process.env.FLASHBOOKED_LEAD_SECRET) {
-    return res.status(401).json({ error: 'unauthorized' });
+    console.error('check-availability: unauthorized');
+    return res.status(200).json({ ok: false, message: FALLBACK_MESSAGE });
   }
 
   const pit = process.env.GHL_PIT_FLASHBOOKED;
-  if (!pit) return res.status(500).json({ error: 'GHL_PIT_FLASHBOOKED not configured' });
+  if (!pit) {
+    console.error('check-availability: GHL_PIT_FLASHBOOKED not configured');
+    return res.status(200).json({ ok: false, message: FALLBACK_MESSAGE });
+  }
 
   const startDate = Date.now();
   const endDate = startDate + 7 * 24 * 60 * 60 * 1000;
@@ -32,7 +39,10 @@ module.exports = async function handler(req, res) {
       headers: { Authorization: `Bearer ${pit}`, Version: '2021-04-15' },
     });
     const data = await ghlRes.json();
-    if (!ghlRes.ok) return res.status(502).json({ error: 'GHL free-slots error', detail: data });
+    if (!ghlRes.ok) {
+      console.error('check-availability: GHL free-slots error', JSON.stringify(data));
+      return res.status(200).json({ ok: false, message: FALLBACK_MESSAGE });
+    }
 
     // The calendar's raw free-slots span all hours (including the middle of the night in
     // Dublin, presumably for other timezones) — filter down to reasonable calling hours
@@ -74,10 +84,11 @@ module.exports = async function handler(req, res) {
     });
 
     if (!options.length) {
-      return res.status(200).json({ ok: true, options: [], message: 'No open slots found in the next 7 days.' });
+      return res.status(200).json({ ok: true, options: [], message: 'No open slots in the next 7 days — take the caller\'s details and let them know the team will follow up to find a time.' });
     }
     return res.status(200).json({ ok: true, options });
   } catch (err) {
-    return res.status(500).json({ error: err.message });
+    console.error('check-availability error', err.message);
+    return res.status(200).json({ ok: false, message: FALLBACK_MESSAGE });
   }
 };
