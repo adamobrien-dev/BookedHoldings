@@ -39,21 +39,30 @@ module.exports = async function handler(req, res) {
     // before offering anything to a caller.
     const MIN_HOUR = 9;
     const MAX_HOUR = 23;
-    const slots = [];
-    for (const day of Object.values(data)) {
-      if (!day?.slots) continue;
-      for (const iso of day.slots) {
-        const hour = Number(new Date(iso).toLocaleString('en-IE', { hour: 'numeric', hour12: false, timeZone: TIMEZONE }));
-        if (hour < MIN_HOUR || hour >= MAX_HOUR) continue;
-        slots.push(iso);
-        if (slots.length >= MAX_SLOTS_RETURNED * 4) break; // grab plenty before spacing out below
+    const hourOf = iso => Number(new Date(iso).toLocaleString('en-IE', { hour: 'numeric', hour12: false, timeZone: TIMEZONE }));
+
+    // Pick per-day, not from one pooled/truncated list — otherwise a busy first day can eat
+    // the whole cap and later days barely show up. Take a small spread from each day (early,
+    // mid, late in the eligible window) and walk forward through days until we have enough.
+    const perDay = Object.entries(data)
+      .sort(([a], [b]) => (a < b ? -1 : 1))
+      .map(([, day]) => (day?.slots || []).filter(iso => {
+        const h = hourOf(iso);
+        return h >= MIN_HOUR && h < MAX_HOUR;
+      }))
+      .filter(daySlots => daySlots.length > 0);
+
+    const picked = [];
+    const perDayTake = 2;
+    for (const daySlots of perDay) {
+      if (picked.length >= MAX_SLOTS_RETURNED) break;
+      const idxs = perDayTake === 1 ? [0] : [0, daySlots.length - 1];
+      const chosen = [...new Set(idxs)].map(i => daySlots[i]);
+      for (const iso of chosen) {
+        if (picked.length >= MAX_SLOTS_RETURNED) break;
+        picked.push(iso);
       }
     }
-
-    // Spread picks across different days/times rather than dumping the first N (which would
-    // all be the same morning) — take roughly every Nth slot up to MAX_SLOTS_RETURNED.
-    const step = Math.max(1, Math.floor(slots.length / MAX_SLOTS_RETURNED));
-    const picked = slots.filter((_, i) => i % step === 0).slice(0, MAX_SLOTS_RETURNED);
 
     const options = picked.map(iso => {
       const d = new Date(iso);
