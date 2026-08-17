@@ -38,7 +38,7 @@ module.exports = async function handler(req, res) {
     // Dublin, presumably for other timezones) — filter down to reasonable calling hours
     // before offering anything to a caller.
     const MIN_HOUR = 9;
-    const MAX_HOUR = 18;
+    const MAX_HOUR = 23;
     const slots = [];
     for (const day of Object.values(data)) {
       if (!day?.slots) continue;
