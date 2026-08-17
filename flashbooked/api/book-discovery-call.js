@@ -5,11 +5,14 @@
 //
 // Auth: header x-webhook-secret must match FLASHBOOKED_LEAD_SECRET (shared with lead.js /
 // check-availability.js).
+//
+// Always responds 200 with a `message` field on failure — handed straight to the LLM mid-call.
 
 const GHL_API = 'https://services.leadconnectorhq.com';
 const LOCATION_ID = 'M8E6rSDwYijkpGWK1AWR'; // FlashBooked (formerly Sandy / My Adult Primary Care)
 const CALENDAR_ID = 'hgIjFYqlXqgWBunrrOaO';
 const CALL_MINUTES = 15;
+const FALLBACK_MESSAGE = "I'm having trouble locking that time in right now — take the caller's name, number, and the time they wanted, and let them know the team will confirm it shortly.";
 
 async function ghl(method, path, body, pit, version = '2021-07-28') {
   const res = await fetch(`${GHL_API}${path}`, {
@@ -26,17 +29,25 @@ module.exports = async function handler(req, res) {
 
   const secret = req.headers['x-webhook-secret'];
   if (!process.env.FLASHBOOKED_LEAD_SECRET || secret !== process.env.FLASHBOOKED_LEAD_SECRET) {
-    return res.status(401).json({ error: 'unauthorized' });
+    console.error('book-discovery-call: unauthorized');
+    return res.status(200).json({ ok: false, message: FALLBACK_MESSAGE });
   }
 
   const pit = process.env.GHL_PIT_FLASHBOOKED;
-  if (!pit) return res.status(500).json({ error: 'GHL_PIT_FLASHBOOKED not configured' });
+  if (!pit) {
+    console.error('book-discovery-call: GHL_PIT_FLASHBOOKED not configured');
+    return res.status(200).json({ ok: false, message: FALLBACK_MESSAGE });
+  }
 
   const { name, phone, start_time } = req.body || {};
-  if (!phone || !start_time) return res.status(400).json({ error: 'phone and start_time required' });
+  if (!phone || !start_time) {
+    return res.status(200).json({ ok: false, message: 'Need the caller\'s phone number and the exact time they picked before booking — ask again if either is missing.' });
+  }
 
   const startDate = new Date(start_time);
-  if (isNaN(startDate.getTime())) return res.status(400).json({ error: 'invalid start_time' });
+  if (isNaN(startDate.getTime())) {
+    return res.status(200).json({ ok: false, message: 'That time didn\'t match one of the available options — offer the caller the list again.' });
+  }
   const endTime = new Date(startDate.getTime() + CALL_MINUTES * 60 * 1000).toISOString();
 
   try {
@@ -50,9 +61,15 @@ module.exports = async function handler(req, res) {
       source: 'Aoife Demo Call - Discovery Booking',
     }, pit);
 
-    if (!upsert.ok) return res.status(502).json({ error: 'GHL upsert failed', detail: upsert.data });
+    if (!upsert.ok) {
+      console.error('book-discovery-call: GHL upsert failed', JSON.stringify(upsert.data));
+      return res.status(200).json({ ok: false, message: FALLBACK_MESSAGE });
+    }
     const contactId = upsert.data?.contact?.id;
-    if (!contactId) return res.status(502).json({ error: 'GHL upsert returned no contact id', detail: upsert.data });
+    if (!contactId) {
+      console.error('book-discovery-call: GHL upsert returned no contact id', JSON.stringify(upsert.data));
+      return res.status(200).json({ ok: false, message: FALLBACK_MESSAGE });
+    }
 
     await ghl('POST', `/contacts/${contactId}/tags`, { tags: ['booked via aoife demo'] }, pit);
 
@@ -66,10 +83,14 @@ module.exports = async function handler(req, res) {
       appointmentStatus: 'confirmed',
     }, pit, 'v3');
 
-    if (!booking.ok) return res.status(502).json({ error: 'GHL appointment creation failed', detail: booking.data });
+    if (!booking.ok) {
+      console.error('book-discovery-call: GHL appointment creation failed', JSON.stringify(booking.data));
+      return res.status(200).json({ ok: false, message: FALLBACK_MESSAGE });
+    }
 
     return res.status(200).json({ ok: true, contactId, appointmentId: booking.data?.id, message: 'Discovery call booked.' });
   } catch (err) {
-    return res.status(500).json({ error: err.message });
+    console.error('book-discovery-call error', err.message);
+    return res.status(200).json({ ok: false, message: FALLBACK_MESSAGE });
   }
 };
