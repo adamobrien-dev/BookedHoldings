@@ -34,10 +34,17 @@ module.exports = async function handler(req, res) {
     const data = await ghlRes.json();
     if (!ghlRes.ok) return res.status(502).json({ error: 'GHL free-slots error', detail: data });
 
+    // The calendar's raw free-slots span all hours (including the middle of the night in
+    // Dublin, presumably for other timezones) — filter down to reasonable calling hours
+    // before offering anything to a caller.
+    const MIN_HOUR = 9;
+    const MAX_HOUR = 18;
     const slots = [];
     for (const day of Object.values(data)) {
       if (!day?.slots) continue;
       for (const iso of day.slots) {
+        const hour = Number(new Date(iso).toLocaleString('en-IE', { hour: 'numeric', hour12: false, timeZone: TIMEZONE }));
+        if (hour < MIN_HOUR || hour >= MAX_HOUR) continue;
         slots.push(iso);
         if (slots.length >= MAX_SLOTS_RETURNED * 4) break; // grab plenty before spacing out below
       }
@@ -52,7 +59,7 @@ module.exports = async function handler(req, res) {
       const d = new Date(iso);
       const label = d.toLocaleString('en-IE', {
         weekday: 'long', month: 'long', day: 'numeric',
-        hour: 'numeric', minute: '2-digit', timeZone: TIMEZONE,
+        hour: 'numeric', minute: '2-digit', hour12: true, timeZone: TIMEZONE,
       });
       return { start_time: iso, label: `${label} (Dublin time)` };
     });
