@@ -32,153 +32,67 @@
     line-height:1.5;
   }
   a{color:inherit;}
-  .wrap{max-width:1040px;margin:0 auto;padding:0 24px;}
+  ul{list-style:none;}
+  .wrap{max-width:1100px;margin:0 auto;padding:0 24px;}
 
-  header{
-    padding:22px 0;
-    border-bottom:1px solid var(--line);
-  }
-  header .wrap{display:flex;align-items:center;justify-content:space-between;}
-  .logo{font-size:20px;font-weight:800;letter-spacing:-0.02em;}
+  header{padding:0 24px;border-bottom:1px solid var(--line);}
+  .header-inner{max-width:1100px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;height:56px;}
+  .logo{font-size:18px;font-weight:800;letter-spacing:-0.02em;}
   .logo span{color:var(--orange);}
-  .backlink{font-size:14px;color:var(--grey);text-decoration:none;border:1px solid var(--line);padding:8px 14px;border-radius:8px;transition:border-color .15s;}
-  .backlink:hover{border-color:var(--orange);color:var(--cream);}
+  .backlink{font-size:13px;color:var(--grey);text-decoration:none;}
+  .backlink:hover{color:var(--cream);}
 
+  .hero{padding:32px 24px 24px;text-align:center;border-bottom:1px solid var(--line);}
+  .hero-inner{max-width:800px;margin:0 auto;}
   .badge{
     display:inline-flex;align-items:center;gap:8px;
     background:rgba(229,119,47,0.12);
     border:1px solid rgba(229,119,47,0.35);
     color:var(--orange-2);
-    font-size:13px;font-weight:600;
-    padding:6px 14px;border-radius:999px;
-    margin-bottom:22px;
-  }
-
-  .hero{
-    padding:72px 0 48px;
-    text-align:center;
-  }
-  .hero h1{
-    font-size:clamp(32px,5vw,52px);
-    font-weight:800;
-    letter-spacing:-0.02em;
-    line-height:1.08;
-    margin-bottom:20px;
-  }
-  .hero h1 em{
-    font-style:normal;
-    color:var(--orange-2);
-  }
-  .hero p.lead{
-    font-size:19px;
-    color:var(--grey);
-    max-width:620px;
-    margin:0 auto 8px;
-  }
-
-  .proof-row{
-    display:flex;
-    justify-content:center;
-    gap:36px;
-    flex-wrap:wrap;
-    margin:36px 0 4px;
-    padding:24px 0;
-    border-top:1px solid var(--line);
-    border-bottom:1px solid var(--line);
-  }
-  .proof-row .stat{text-align:center;}
-  .proof-row .num{font-size:26px;font-weight:800;color:var(--orange-2);}
-  .proof-row .label{font-size:13px;color:var(--grey);max-width:150px;}
-
-  .agenda{
-    padding:56px 0 20px;
-  }
-  .agenda h2{
-    text-align:center;
-    font-size:26px;
-    font-weight:800;
-    margin-bottom:8px;
-  }
-  .agenda p.sub{
-    text-align:center;
-    color:var(--grey);
-    max-width:520px;
-    margin:0 auto 36px;
-    font-size:15px;
-  }
-  .agenda-grid{
-    display:grid;
-    grid-template-columns:repeat(3,1fr);
-    gap:20px;
-  }
-  .agenda-card{
-    background:var(--navy-2);
-    border:1px solid var(--line);
-    border-radius:14px;
-    padding:24px 20px;
-  }
-  .agenda-card .n{
-    display:inline-flex;align-items:center;justify-content:center;
-    width:30px;height:30px;border-radius:8px;
-    background:rgba(229,119,47,0.15);
-    color:var(--orange-2);font-weight:800;font-size:14px;
+    font-size:12px;font-weight:600;
+    padding:5px 12px;border-radius:999px;
     margin-bottom:14px;
   }
-  .agenda-card h3{font-size:16px;margin-bottom:6px;}
-  .agenda-card p{font-size:14px;color:var(--grey);}
-
-  .book-section{
-    padding:60px 0 90px;
-  }
-  .book-section h2{
-    text-align:center;
-    font-size:28px;
+  .hero h1{
+    font-size:clamp(24px,4vw,34px);
     font-weight:800;
-    margin-bottom:8px;
+    letter-spacing:-0.02em;
+    line-height:1.15;
+    margin-bottom:10px;
   }
-  .book-section p.sub{
-    text-align:center;
-    color:var(--grey);
-    max-width:480px;
-    margin:0 auto 30px;
-    font-size:15px;
-  }
-  .calendar-frame{
+  .hero p.sub{font-size:15px;color:var(--grey);max-width:560px;margin:0 auto;}
+
+  .main{padding:32px 0 60px;}
+  .two-col{display:grid;grid-template-columns:1fr 1fr;gap:32px;align-items:start;}
+
+  .left-col{display:flex;flex-direction:column;gap:26px;}
+  .info-block h2{font-size:15px;font-weight:800;margin-bottom:12px;color:var(--cream);}
+  .info-list{display:flex;flex-direction:column;gap:9px;}
+  .info-list li{display:flex;align-items:flex-start;gap:9px;font-size:14px;color:var(--grey);line-height:1.5;}
+  .info-list svg{width:16px;height:16px;flex-shrink:0;margin-top:2px;color:var(--orange-2);}
+
+  .cal-card{
     background:var(--cream);
+    color:#1c2333;
     border-radius:16px;
-    overflow:hidden;
+    padding:24px;
     box-shadow:0 20px 60px rgba(0,0,0,0.35);
-    max-width:760px;
-    margin:0 auto;
+    position:sticky;
+    top:24px;
   }
-  .calendar-frame iframe{
-    width:100%;
-    border:none;
-    min-height:780px;
-    display:block;
-  }
+  .cal-title{font-size:16px;font-weight:800;margin-bottom:4px;}
+  .cal-tz{font-size:12px;color:#6b7280;margin-bottom:16px;}
+  .ghl-calendar-slot{width:100%;overflow:hidden;border-radius:10px;}
+  .ghl-calendar-slot iframe{width:100% !important;border:none !important;display:block;height:720px;overflow:hidden;}
+  .cal-reassurance{font-size:12px;color:#6b7280;margin-top:12px;text-align:center;}
 
-  .no-fit{
-    text-align:center;
-    font-size:13px;
-    color:var(--grey);
-    max-width:480px;
-    margin:22px auto 0;
-  }
-
-  footer{
-    border-top:1px solid var(--line);
-    padding:32px 0;
-    text-align:center;
-    color:var(--grey);
-    font-size:13px;
-  }
+  footer{border-top:1px solid var(--line);padding:32px 0;text-align:center;color:var(--grey);font-size:13px;}
   footer a{color:var(--orange-2);text-decoration:none;}
 
-  @media (max-width:720px){
-    .agenda-grid{grid-template-columns:1fr;}
-    .proof-row{gap:22px;}
-    .hero{padding:52px 0 36px;}
+  @media (max-width:800px){
+    .two-col{grid-template-columns:1fr;gap:24px;}
+    .cal-card{position:static;order:-1;}
+    .hero{padding:24px 16px 20px;}
   }
 </style>
 <!-- Meta Pixel -->
@@ -192,64 +106,66 @@ fbq('track', 'PageView');
 <body>
 
 <header>
-  <div class="wrap">
+  <div class="header-inner">
     <div class="logo">⚡ Flash<span>Booked</span></div>
     <a class="backlink" href="https://flashbooked.com">← Back to flashbooked.com</a>
   </div>
 </header>
 
 <section class="hero">
-  <div class="wrap">
+  <div class="hero-inner">
     <div class="badge">🇮🇪 For Irish Plumbing &amp; Heating Companies</div>
-    <h1>See how many jobs<br><em>you're losing to a ringing phone.</em></h1>
-    <p class="lead">Book a free 15-minute discovery call. We'll walk through your current call handling, show you exactly how FlashBooked's AI receptionist would work for your business, and you can decide from there — no pressure, no obligation.</p>
-
-    <div class="proof-row">
-      <div class="stat"><div class="num">27%</div><div class="label">of inbound trade calls go unanswered</div></div>
-      <div class="stat"><div class="num">24/7</div><div class="label">is when the next plumber answers instead</div></div>
-      <div class="stat"><div class="num">72hrs</div><div class="label">to get live and answering calls</div></div>
-    </div>
+    <h1>See how many jobs you're losing to a ringing phone.</h1>
+    <p class="sub">Book a free 15-minute discovery call — no pressure, no obligation. Pick a time on the right and it's locked in.</p>
   </div>
 </section>
 
-<section class="agenda">
+<div class="main">
   <div class="wrap">
-    <h2>What happens on the call</h2>
-    <p class="sub">15 minutes, straight to the point — here's exactly what we'll cover.</p>
-    <div class="agenda-grid">
-      <div class="agenda-card">
-        <div class="n">1</div>
-        <h3>How you handle calls today</h3>
-        <p>A few quick questions on call volume, missed calls, and how leads currently get followed up.</p>
-      </div>
-      <div class="agenda-card">
-        <div class="n">2</div>
-        <h3>What it's costing you</h3>
-        <p>We'll do the maths on what missed and slow-followed-up calls are actually worth to your business each month.</p>
-      </div>
-      <div class="agenda-card">
-        <div class="n">3</div>
-        <h3>Whether FlashBooked fits</h3>
-        <p>An honest answer on whether an AI receptionist makes sense for you — and what it would look like if it does.</p>
-      </div>
-    </div>
-  </div>
-</section>
+    <div class="two-col">
 
-<section class="book-section" id="book">
-  <div class="wrap">
-    <h2>Pick a time that suits</h2>
-    <p class="sub">Choose whatever slot works for you — the call is with a real person on our end, not Aoife.</p>
-    <div class="calendar-frame">
-      <iframe
-        src="https://api.leadconnectorhq.com/widget/booking/hgIjFYqlXqgWBunrrOaO"
-        scrolling="no"
-        id="hgIjFYqlXqgWBunrrOaO_book"
-      ></iframe>
+      <div class="left-col">
+        <div class="info-block">
+          <h2>What we'll cover</h2>
+          <ul class="info-list">
+            <li><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg>How you handle calls today — volume, missed calls, follow-up</li>
+            <li><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg>What missed and slow-followed-up calls are actually costing you</li>
+            <li><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg>An honest answer on whether FlashBooked fits your business</li>
+          </ul>
+        </div>
+
+        <div class="info-block">
+          <h2>Why this matters</h2>
+          <ul class="info-list">
+            <li><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg>27% of inbound trade calls go unanswered</li>
+            <li><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg>24/7 is when the next plumber answers instead</li>
+            <li><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg>72 hours to get live and answering calls</li>
+          </ul>
+        </div>
+
+        <div class="info-block">
+          <h2>Not ready to book?</h2>
+          <p style="font-size:14px;color:var(--grey);">Have a read through <a href="https://flashbooked.com" style="color:var(--orange-2);">how FlashBooked works</a> first, or email <a href="mailto:adam@bookedjobs.ca" style="color:var(--orange-2);">adam@bookedjobs.ca</a> with any questions.</p>
+        </div>
+      </div>
+
+      <!-- RIGHT COLUMN -->
+      <div class="cal-card">
+        <div class="cal-title">Pick a time that suits</div>
+        <div class="cal-tz">The call is with a real person on our end, not Aoife.</div>
+        <div class="ghl-calendar-slot">
+          <iframe
+            src="https://api.leadconnectorhq.com/widget/booking/hgIjFYqlXqgWBunrrOaO"
+            scrolling="no"
+            id="hgIjFYqlXqgWBunrrOaO_book"
+          ></iframe>
+        </div>
+        <p class="cal-reassurance">No pressure. If it's not a fit, we'll say so.</p>
+      </div>
+
     </div>
-    <p class="no-fit">Not ready to book yet? Have a read through <a href="https://flashbooked.com" style="color:var(--orange-2);">how FlashBooked works</a> first, or email <a href="mailto:adam@bookedjobs.ca" style="color:var(--orange-2);">adam@bookedjobs.ca</a> with any questions.</p>
   </div>
-</section>
+</div>
 
 <footer>
   <div class="wrap">
