@@ -71,6 +71,7 @@
     text-decoration:none;
     border:2px solid transparent;
     cursor:pointer;
+    white-space:nowrap;
     transition:transform .15s ease, box-shadow .15s ease;
   }
   .btn:hover{transform:translateY(-2px);}
@@ -98,7 +99,14 @@
   .nav-links a{text-decoration:none; color:var(--ink);}
   .nav-cta{display:flex; align-items:center; gap:14px;}
   .nav-cta .btn{padding:10px 18px; font-size:14px;}
-  @media (max-width:760px){ .nav-links{display:none;} }
+  @media (max-width:760px){
+    .nav-links{display:none;}
+    .nav-inner{padding:14px 16px;}
+    .logo{font-size:17px;}
+    .nav-cta{gap:8px;}
+    .nav-cta a.btn-outline{display:none;}
+    .nav-cta .btn{padding:8px 14px; font-size:13px;}
+  }
 
   /* HERO */
   .hero{
