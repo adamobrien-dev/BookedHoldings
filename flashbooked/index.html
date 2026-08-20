@@ -105,6 +105,15 @@
     .nav-cta{gap:8px;}
     .nav-cta a.btn-outline{display:none;}
     .nav-cta .btn{padding:8px 14px; font-size:13px;}
+
+    /* Desktop sizing (80px section padding, 34px+ headlines, large buttons)
+       doesn't scale down for mobile anywhere else in this file — everything
+       below is proportioned for a screen viewed up close, not far away. */
+    h1{font-size:clamp(26px,7.5vw,36px);}
+    section{padding:48px 0;}
+    .section-head{margin:0 auto 28px;}
+    .hero{padding:44px 0 32px;}
+    .btn-lg{padding:15px 24px; font-size:15px;}
   }
 
   /* HERO */
