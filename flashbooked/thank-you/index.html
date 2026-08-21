@@ -35,8 +35,11 @@
     border-bottom:1px solid var(--line);
     text-align:center;
   }
-  .logo{font-size:20px;font-weight:800;letter-spacing:-0.02em;text-decoration:none;}
+  .logo{font-size:20px;font-weight:800;letter-spacing:-0.02em;text-decoration:none;display:inline-flex;align-items:center;gap:6px;}
   .logo span{color:var(--orange);}
+  .logo .bolt{color:var(--orange);display:flex;}
+  .logo .bolt svg{width:17px;height:17px;display:block;}
+  .foot-bolt{width:13px;height:13px;vertical-align:-2px;color:var(--orange-2);}
 
   .conf-hero{padding:72px 0 48px;text-align:center;}
   .conf-check{
@@ -121,7 +124,7 @@ fbq('track', 'Schedule');
 
 <header>
   <div class="wrap">
-    <a href="https://flashbooked.com" class="logo">⚡ Flash<span>Booked</span></a>
+    <a href="https://flashbooked.com" class="logo"><span class="bolt"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M13 2 3 14h7l-2 8 10-12h-7l2-8Z"/></svg></span>Flash<span>Booked</span></a>
   </div>
 </header>
 
@@ -224,7 +227,7 @@ fbq('track', 'Schedule');
 
 <footer>
   <div class="wrap">
-    ⚡ FlashBooked — Built for Irish Home Service Businesses · <a href="https://flashbooked.com">flashbooked.com</a>
+    <svg class="foot-bolt" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M13 2 3 14h7l-2 8 10-12h-7l2-8Z"/></svg> FlashBooked — Built for Irish Home Service Businesses · <a href="https://flashbooked.com">flashbooked.com</a>
   </div>
 </footer>
 
