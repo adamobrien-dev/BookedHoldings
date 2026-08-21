@@ -181,7 +181,6 @@ fbq('track', 'PageView');
 window.addEventListener('message', function(e) {
   if (Array.isArray(e.data)) {
     if (e.data[0] === 'msgsndr-booking-complete') {
-      if (typeof fbq !== 'undefined') { fbq('track', 'Schedule'); }
       setTimeout(function() { window.location.href = '../thank-you/'; }, 800);
     }
   }
