@@ -96,7 +96,9 @@
     padding:16px 24px; max-width:1120px; margin:0 auto;
   }
   .logo{font-family:Georgia,serif; font-weight:700; font-size:22px; color:var(--navy); text-decoration:none; display:flex; align-items:center; gap:8px;}
-  .logo .bolt{color:var(--accent);}
+  .logo .bolt{color:var(--accent); display:flex;}
+  .logo .bolt svg{width:20px; height:20px; display:block;}
+  .foot-bolt{width:14px; height:14px; vertical-align:-2px; color:var(--accent);}
   .nav-links{display:flex; gap:28px; font-size:15px; font-weight:600;}
   .nav-links a{text-decoration:none; color:var(--ink);}
   .nav-cta{display:flex; align-items:center; gap:14px;}
@@ -344,7 +346,7 @@ fbq('track', 'PageView');
 
 <header class="site-nav">
   <div class="nav-inner">
-    <a href="#top" class="logo"><span class="bolt">⚡</span>FlashBooked</a>
+    <a href="#top" class="logo"><span class="bolt"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M13 2 3 14h7l-2 8 10-12h-7l2-8Z"/></svg></span>FlashBooked</a>
     <nav class="nav-links">
       <a href="#how-it-works">How It Works</a>
       <a href="#whats-included">What's Included</a>
@@ -611,7 +613,7 @@ fbq('track', 'PageView');
 
 <footer>
   <div class="wrap">
-    <div>⚡ FlashBooked — Turn More Calls Into Booked Jobs.</div>
+    <div><svg class="foot-bolt" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M13 2 3 14h7l-2 8 10-12h-7l2-8Z"/></svg> FlashBooked — Turn More Calls Into Booked Jobs.</div>
     <div class="foot-links">
       <a href="#how-it-works">How It Works</a>
       <a href="#pricing">Pricing</a>
