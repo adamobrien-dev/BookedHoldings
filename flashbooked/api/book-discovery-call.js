@@ -39,7 +39,9 @@ module.exports = async function handler(req, res) {
     return res.status(200).json({ ok: false, message: FALLBACK_MESSAGE });
   }
 
-  const { name, phone, start_time } = req.body || {};
+  // Retell wraps function args as { name, call, args } by default — unwrap either shape.
+  const params = req.body?.args || req.body || {};
+  const { name, phone, start_time } = params;
   if (!phone || !start_time) {
     return res.status(200).json({ ok: false, message: 'Need the caller\'s phone number and the exact time they picked before booking — ask again if either is missing.' });
   }
