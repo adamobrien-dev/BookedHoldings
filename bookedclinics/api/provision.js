@@ -9,8 +9,9 @@
 //   phone        string  — E.164, e.g. +15125550100
 //   niche        string  — e.g. 'Chiropractic'
 //   city         string
-//   state        string  — 2-letter
+//   state        string  — 2-letter for US; county/region for other countries
 //   zip          string
+//   country      string? — 2-letter ISO code, e.g. 'US', 'IE' (default 'US')
 //   website      string  — optional
 //   timezone     string  — IANA, e.g. 'America/Chicago'
 //   snapshotId   string? — GHL snapshot ID (omit to skip)
@@ -46,7 +47,7 @@ async function createLocation(client, agencyPit, companyId) {
     city: client.city,
     state: client.state,
     postalCode: client.zip,
-    country: 'US',
+    country: client.country || 'US',
     timezone: client.timezone,
     settings: {
       allowDuplicateContact: false,
@@ -82,7 +83,7 @@ async function createContact(client, locationId, clientPit) {
     city: client.city,
     state: client.state,
     postalCode: client.zip,
-    country: 'US',
+    country: client.country || 'US',
     tags: ['bookedclinics-client', client.niche.toLowerCase().replace(/[^a-z0-9]+/g, '-')],
     source: 'BookedClinics Onboarding',
   }, clientPit);
