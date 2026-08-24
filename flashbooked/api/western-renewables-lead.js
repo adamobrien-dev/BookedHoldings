@@ -66,11 +66,14 @@ module.exports = async function handler(req, res) {
     return res.status(200).json({ ok: false, message: FALLBACK_MESSAGE });
   }
 
+  // Retell wraps function args as { name, call, args } by default (unless "Payload: args
+  // only" is set on the tool, which we don't rely on) — unwrap either shape defensively.
+  const params = req.body?.args || req.body || {};
   const {
     name, phone, email, enquiry_type, location,
     residential_or_commercial, existing_customer, urgency,
     requested_next_step, call_summary,
-  } = req.body || {};
+  } = params;
 
   if (!phone) return res.status(200).json({ ok: false, message: 'Ask the caller for a callback phone number before saving their details.' });
 
