@@ -147,6 +147,20 @@ they're different failure modes and tuning one doesn't fix the other. If a calle
 off specifically on multi-part answers (phone numbers, addresses), it's the STT setting, not
 responsiveness.
 
+**Before tuning any of these settings for a "caller got talked over" complaint, check the flow
+graph for a double-ask first.** A cutoff that survives several rounds of settings tuning is more
+likely a structural bug than a timing one: if a failure-edge `transition_condition` tells the model
+to speak ("say the tool's message naturally, get the missing detail from the caller") AND the
+destination node it routes to *also* independently asks for that same detail in its own
+instruction, you get two separate agent turns generating the same question back-to-back (seen live
+with a ~0.17s gap between them) — the caller answers into the gap and gets run over by the second
+one. This looks identical to a settings problem in the transcript (short gap, caller cut off) but no
+amount of `endpointing_ms`/`responsiveness` tuning fixes it, because the agent is behaving exactly
+as instructed on both turns. Fix by making the failure edge pure routing — retry, brief
+acknowledgment only, explicitly forbid asking the question there — and leaving the actual question
+solely on the destination node. Check every failure/retry edge for this pattern, not just the
+capture-lead one.
+
 Also keep the phone-number question itself short in the prompt — a single clause ("What's the best
 number for you?"), not a longer justified version ("...just in case the team needs to call you
 back"). A longer question gives more time for the caller to start answering before the agent
@@ -249,7 +263,8 @@ how Aoife is dialed from `flashbooked/index.html`) is simpler and already proven
 | Symptom | Actual cause | Fix |
 |---|---|---|
 | Agent sounds noticeably worse/flatter than Aoife | `handbook_config` unset (doesn't default to Aoife's setting) | set explicitly, see table above |
-| Agent talks over the caller mid-answer, especially on phone numbers | STT endpointing fires on short in-answer pauses (default ~250ms) | `stt_mode: "custom"`, `endpointing_ms: 700` (started at 500, wasn't enough — this is the most persistent issue found, may need to go higher still) |
+| Agent talks over the caller mid-answer, especially on phone numbers | STT endpointing fires on short in-answer pauses (default ~250ms) — but check this is actually the cause before tuning, see below | `stt_mode: "custom"`, `endpointing_ms: 700` (started at 500, wasn't enough) |
+| Same cutoff symptom recurs after `endpointing_ms`/`responsiveness` are already tuned well | a failure/retry edge's `transition_condition` tells the model to speak AND its destination node also asks the same question — two turns generate the same question back-to-back with only ~0.17s between them, caller answers into the gap | make the failure edge pure routing with no speech, leave the question solely on the destination node — see the note under the settings table in step 6 |
 | Agent replies noticeably slowly, dead air | `responsiveness` too low | raise toward 0.75-1, balance against the interruption issue above |
 | Agent saves a 2-4 digit phone fragment as real data | endpoint only checked `!phone`, not digit count | `phoneDigits.length < 7` check |
 | Agent asks "anything else?" then hangs up before you can answer | Capture Lead node instruction wasn't restricted, raced the End Call transition | restrict Capture Lead node to a bare acknowledgment only |
