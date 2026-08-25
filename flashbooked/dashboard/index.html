@@ -51,6 +51,9 @@
     border-bottom: 1px solid var(--border);
     padding: 20px 32px;
   }
+  @media (max-width: 700px) {
+    header { padding: 16px 18px; }
+  }
   header .inner {
     max-width: 1100px;
     margin: 0 auto;
@@ -80,6 +83,9 @@
     max-width: 1100px;
     margin: 0 auto;
     padding: 32px;
+  }
+  @media (max-width: 700px) {
+    main { padding: 18px; }
   }
   .stats-grid {
     display: grid;
@@ -131,6 +137,43 @@
     vertical-align: top;
   }
   tbody tr:last-child td { border-bottom: none; }
+
+  @media (max-width: 700px) {
+    table, thead, tbody, th, td, tr { display: block; }
+    thead { display: none; }
+    table { border-radius: var(--radius-md); }
+    tbody tr {
+      border-bottom: 1px solid var(--border);
+      padding: 14px 16px;
+    }
+    tbody tr:last-child { border-bottom: none; }
+    tbody td {
+      border-bottom: none;
+      padding: 6px 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 12px;
+    }
+    tbody td::before {
+      content: attr(data-label);
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--text-secondary);
+      font-weight: 600;
+      flex: 0 0 auto;
+      padding-top: 2px;
+    }
+    tbody td[data-label="Number"] { font-size: 16px; }
+    tbody td[data-label=""] {
+      display: block;
+      margin-top: 8px;
+    }
+    tbody td[data-label=""]::before { content: none; }
+    .usage-wrap { min-width: 0; width: 100%; }
+    .call-btn { width: 100%; text-align: center; }
+  }
   .number {
     font-family: var(--font-display);
     font-weight: 700;
@@ -316,12 +359,12 @@ async function load() {
 
       return `
         <tr>
-          <td class="number">${escapeHtml(n.phone_number)}</td>
-          <td>${usedBy}${agentTag}</td>
-          <td><span class="pill ${meta.pill}">${meta.label}</span></td>
-          <td>${usageCell}</td>
-          <td><div class="note">${escapeHtml(n.note || '')}</div></td>
-          <td>${callBtn}</td>
+          <td class="number" data-label="Number">${escapeHtml(n.phone_number)}</td>
+          <td data-label="Used by">${usedBy}${agentTag}</td>
+          <td data-label="Status"><span class="pill ${meta.pill}">${meta.label}</span></td>
+          <td data-label="Usage this month">${usageCell}</td>
+          <td data-label="Details"><div class="note">${escapeHtml(n.note || '')}</div></td>
+          ${callBtn ? `<td data-label="">${callBtn}</td>` : ''}
         </tr>
       `;
     }).join('');
