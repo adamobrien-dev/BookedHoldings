@@ -139,6 +139,11 @@
   tbody tr:last-child td { border-bottom: none; }
 
   @media (max-width: 700px) {
+    /* Label-above-value stacked cards, not label-beside-value flex rows — a flex row with
+       justify-content:space-between over a bare escaped-text td (the Number column has no
+       wrapper element) renders unpredictably in some browsers: the value can end up clipped
+       or invisible depending on content length, since raw text nodes as flex items don't
+       behave like normal block/inline-block items. Stacking avoids that whole class of bug. */
     table, thead, tbody, th, td, tr { display: block; }
     thead { display: none; }
     table { border-radius: var(--radius-md); }
@@ -150,26 +155,19 @@
     tbody td {
       border-bottom: none;
       padding: 6px 0;
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      gap: 12px;
     }
     tbody td::before {
       content: attr(data-label);
+      display: block;
       font-size: 11px;
       text-transform: uppercase;
       letter-spacing: 0.06em;
       color: var(--text-secondary);
       font-weight: 600;
-      flex: 0 0 auto;
-      padding-top: 2px;
+      margin-bottom: 3px;
     }
     tbody td[data-label="Number"] { font-size: 16px; }
-    tbody td[data-label=""] {
-      display: block;
-      margin-top: 8px;
-    }
+    tbody td[data-label=""] { margin-top: 8px; }
     tbody td[data-label=""]::before { content: none; }
     .usage-wrap { min-width: 0; width: 100%; }
     .call-btn { width: 100%; text-align: center; }
