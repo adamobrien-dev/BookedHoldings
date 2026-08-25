@@ -47,7 +47,12 @@ module.exports = async function handler(req, res) {
   // only" is set on the tool, which we don't rely on) — unwrap either shape defensively.
   const params = req.body?.args || req.body || {};
   const { name, phone, address, issue, urgency, notes } = params;
-  if (!phone) return res.status(200).json({ ok: false, message: 'Ask the caller for a callback phone number before saving their details.' });
+  // A truthy check alone lets an obviously-incomplete number through (e.g. a caller cut off
+  // mid-number). Require enough digits to plausibly be a real number.
+  const phoneDigits = (phone || '').replace(/\D/g, '');
+  if (phoneDigits.length < 7) {
+    return res.status(200).json({ ok: false, message: 'That number sounded incomplete — ask the caller to repeat their full callback number before saving their details.' });
+  }
 
   try {
     const [firstName, ...rest] = (name || '').trim().split(/\s+/).filter(Boolean);
