@@ -8,7 +8,6 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Inter+Tight:wght@600;700;800&display=swap" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/retell-client-js-sdk/dist/index.umd.js"></script>
 <style>
   :root {
     --bg: #0a0c11;
@@ -438,10 +437,18 @@ async function load() {
 }
 
 load();
+</script>
 
+<script type="module">
 // --- In-browser test calling (Retell Web SDK) -----------------------------------------------
+// Loaded as an ES module bundle (jsDelivr's +esm) rather than the package's own UMD build,
+// which throws "Cannot read properties of undefined (reading 'EventEmitter')" in a plain
+// browser script tag — its dist/index.umd.js assumes an external `events` global that only
+// exists in a bundler/Node context, not a bare <script src>. The +esm endpoint bundles that
+// dependency in properly.
+import { RetellWebClient } from "https://cdn.jsdelivr.net/npm/retell-client-js-sdk/+esm";
 
-const retellClient = new retellClientJsSdk.RetellWebClient();
+const retellClient = new RetellWebClient();
 let isMuted = false;
 
 retellClient.on('call_started', () => {
@@ -505,6 +512,12 @@ function toggleMute() {
   if (isMuted) { retellClient.mute(); } else { retellClient.unmute(); }
   document.getElementById('mute-btn').textContent = isMuted ? 'Unmute' : 'Mute';
 }
+
+// Module-scope declarations aren't implicitly global — the inline onclick="" handlers in the
+// table rows and call panel need these attached to window explicitly.
+window.startTestCall = startTestCall;
+window.endTestCall = endTestCall;
+window.toggleMute = toggleMute;
 </script>
 
 </body>
