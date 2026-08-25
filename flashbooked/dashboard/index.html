@@ -487,6 +487,21 @@ async function startTestCall(agentId, label) {
   isMuted = false;
   panel.classList.add('open');
 
+  // Request the mic explicitly, synchronously in the click handler, before anything else —
+  // some browsers only honor a getUserMedia prompt within the original click's "user gesture"
+  // window, and it can silently fail (agent audio still plays, but your mic never gets
+  // captured) if that request happens after an awaited network call instead. Every prior test
+  // call showed this exact symptom: the agent's greeting played fine, but zero words of the
+  // caller's speech ever reached Retell.
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    stream.getTracks().forEach(t => t.stop()); // just proving access — the SDK opens its own track
+  } catch (err) {
+    document.getElementById('call-panel-status').textContent =
+      'Microphone access denied or blocked — check your browser\'s site permissions and try again.';
+    return;
+  }
+
   try {
     const res = await fetch('/api/create-web-call', {
       method: 'POST',
