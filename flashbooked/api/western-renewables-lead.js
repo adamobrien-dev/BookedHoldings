@@ -75,7 +75,13 @@ module.exports = async function handler(req, res) {
     requested_next_step, call_summary,
   } = params;
 
-  if (!phone) return res.status(200).json({ ok: false, message: 'Ask the caller for a callback phone number before saving their details.' });
+  // A truthy check alone lets an obviously-incomplete number through — seen live on the CB
+  // Scaffolding endpoint: "778" (a caller cut off mid-number) passed this check and got saved
+  // as a real contact phone number. Require enough digits to plausibly be a real number.
+  const phoneDigits = (phone || '').replace(/\D/g, '');
+  if (phoneDigits.length < 7) {
+    return res.status(200).json({ ok: false, message: 'That number sounded incomplete — ask the caller to repeat their full callback number before saving their details.' });
+  }
 
   try {
     const [firstName, ...rest] = (name || '').trim().split(/\s+/).filter(Boolean);

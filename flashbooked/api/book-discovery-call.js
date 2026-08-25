@@ -42,8 +42,11 @@ module.exports = async function handler(req, res) {
   // Retell wraps function args as { name, call, args } by default — unwrap either shape.
   const params = req.body?.args || req.body || {};
   const { name, phone, start_time } = params;
-  if (!phone || !start_time) {
-    return res.status(200).json({ ok: false, message: 'Need the caller\'s phone number and the exact time they picked before booking — ask again if either is missing.' });
+  // A truthy check alone lets an obviously-incomplete number through (e.g. a caller cut off
+  // mid-number). Require enough digits to plausibly be a real number.
+  const phoneDigits = (phone || '').replace(/\D/g, '');
+  if (phoneDigits.length < 7 || !start_time) {
+    return res.status(200).json({ ok: false, message: 'Need the caller\'s full phone number and the exact time they picked before booking — ask again if either is missing or sounded incomplete.' });
   }
 
   const startDate = new Date(start_time);
