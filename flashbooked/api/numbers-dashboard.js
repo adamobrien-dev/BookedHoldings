@@ -24,6 +24,46 @@ async function retellGet(path) {
   return res.json();
 }
 
+async function retellPost(path, body) {
+  const res = await fetch(`${RETELL_API}${path}`, {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${process.env.RETELL_API_KEY}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(body),
+  });
+  if (!res.ok) throw new Error(`Retell POST ${path} -> ${res.status}`);
+  return res.json();
+}
+
+const INCLUDED_MINUTES_PER_MONTH = 300; // standard FlashBooked founding-client package allowance
+
+// Pulls this-agent's calls and sums duration for the current calendar month. Fetches the most
+// recent 200 calls (descending) and filters client-side by start_timestamp, rather than relying
+// on server-side date filtering — simpler and plenty for early-stage call volumes.
+async function monthToDateUsage(agentId) {
+  const calls = await retellPost('/v2/list-calls', {
+    filter_criteria: { agent_id: [agentId] },
+    sort_order: 'descending',
+    limit: 200,
+  });
+
+  const now = new Date();
+  const monthStart = Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), 1);
+
+  const thisMonth = (Array.isArray(calls) ? calls : []).filter(
+    c => (c.start_timestamp || 0) >= monthStart
+  );
+
+  const totalMs = thisMonth.reduce((sum, c) => sum + (c.duration_ms || 0), 0);
+  return {
+    calls_this_month: thisMonth.length,
+    minutes_used: Math.round((totalMs / 60000) * 10) / 10,
+    included_minutes: INCLUDED_MINUTES_PER_MONTH,
+  };
+}
+
 module.exports = async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   if (req.method !== 'GET') return res.status(405).end();
@@ -59,6 +99,18 @@ module.exports = async function handler(req, res) {
       agents.filter(Boolean).map(a => [a.agent_id, a.agent_name])
     );
 
+    // Usage lookups only make sense for numbers with a live agent — fetch them in parallel,
+    // keyed by agent_id, tolerating individual failures without breaking the whole response.
+    const liveAgentIds = [...new Set(
+      twilioNumbers
+        .filter(tw => tw.trunk_sid && retellByNumber[tw.phone_number]?.inbound_agents?.[0])
+        .map(tw => retellByNumber[tw.phone_number].inbound_agents[0].agent_id)
+    )];
+    const usageEntries = await Promise.all(
+      liveAgentIds.map(id => monthToDateUsage(id).then(u => [id, u]).catch(() => [id, null]))
+    );
+    const usageByAgentId = Object.fromEntries(usageEntries);
+
     const numbers = twilioNumbers.map(tw => {
       const e164 = tw.phone_number;
       const retell = retellByNumber[e164];
@@ -88,6 +140,8 @@ module.exports = async function handler(req, res) {
         note = `Voice URL: ${tw.voice_url}`;
       }
 
+      const usage = inboundAgent ? usageByAgentId[inboundAgent.agent_id] : null;
+
       return {
         phone_number: e164,
         friendly_name: tw.friendly_name,
@@ -98,6 +152,7 @@ module.exports = async function handler(req, res) {
         twilio_trunk_name: trunk?.friendly_name || null,
         voice_url: tw.voice_url || null,
         note,
+        usage_this_month: usage,
       };
     });
 
