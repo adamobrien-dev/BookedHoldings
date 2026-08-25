@@ -139,7 +139,7 @@ one of these needs to be set on `create-agent` (or a follow-up `update-agent` + 
 | `interruption_sensitivity` | `0.9` | how fast the agent yields once the caller starts talking |
 | `responsiveness` | `0.75` | how fast the agent replies after a pause — 1.0 (max) cuts callers off ~0.6s after asking a question; 0.5 produces 3-4.5s dead air. 0.75 is the working middle ground found by testing both extremes |
 | `stt_mode` | `"custom"` | needed to set endpointing below |
-| `custom_stt_config` | `{"provider": "deepgram", "endpointing_ms": 500}` | default fast STT mode fires on ~250ms pauses, which reads as end-of-turn during a hesitant multi-part answer like a phone number ("at... [pause] ...seven seven eight") and causes the agent to interrupt mid-answer. 500ms gives more room without feeling laggy |
+| `custom_stt_config` | `{"provider": "deepgram", "endpointing_ms": 700}` | default fast STT mode fires on ~250ms pauses, which reads as end-of-turn during a hesitant multi-part answer like a phone number ("at... [pause] ...seven seven eight") and causes the agent to interrupt mid-answer. 500ms still wasn't enough on live retests — this is the single most recurring complaint across the whole build. 700 is the current value; treat it as a starting point to retest, not a guarantee — this is inherently probabilistic (real-time turn-taking, not a fixed timer) and trades against dead air if pushed too high |
 
 `responsiveness` and `interruption_sensitivity` govern pacing *after* a turn is detected as over;
 `custom_stt_config.endpointing_ms` governs *detecting* that the turn is over in the first place —
@@ -249,7 +249,7 @@ how Aoife is dialed from `flashbooked/index.html`) is simpler and already proven
 | Symptom | Actual cause | Fix |
 |---|---|---|
 | Agent sounds noticeably worse/flatter than Aoife | `handbook_config` unset (doesn't default to Aoife's setting) | set explicitly, see table above |
-| Agent talks over the caller mid-answer, especially on phone numbers | STT endpointing fires on short in-answer pauses (default ~250ms) | `stt_mode: "custom"`, `endpointing_ms: 500` |
+| Agent talks over the caller mid-answer, especially on phone numbers | STT endpointing fires on short in-answer pauses (default ~250ms) | `stt_mode: "custom"`, `endpointing_ms: 700` (started at 500, wasn't enough — this is the most persistent issue found, may need to go higher still) |
 | Agent replies noticeably slowly, dead air | `responsiveness` too low | raise toward 0.75-1, balance against the interruption issue above |
 | Agent saves a 2-4 digit phone fragment as real data | endpoint only checked `!phone`, not digit count | `phoneDigits.length < 7` check |
 | Agent asks "anything else?" then hangs up before you can answer | Capture Lead node instruction wasn't restricted, raced the End Call transition | restrict Capture Lead node to a bare acknowledgment only |
