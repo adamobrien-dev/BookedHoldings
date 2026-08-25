@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>FlashBooked — Numbers Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Inter+Tight:wght@600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0c11;
+    --bg-raised: #12151d;
+    --border: #212632;
+    --text-primary: #f4f6f9;
+    --text-secondary: #9aa4b6;
+    --accent: #7c7ff2;
+    --success: #3ddc9b;
+    --success-soft: rgba(61, 220, 155, 0.12);
+    --success-border: rgba(61, 220, 155, 0.3);
+    --warning: #f5b955;
+    --warning-soft: rgba(245, 185, 85, 0.12);
+    --warning-border: rgba(245, 185, 85, 0.3);
+    --danger: #f2726b;
+    --danger-soft: rgba(242, 114, 107, 0.12);
+    --danger-border: rgba(242, 114, 107, 0.3);
+    --info: #6ba7f7;
+    --info-soft: rgba(107, 167, 247, 0.12);
+    --info-border: rgba(107, 167, 247, 0.3);
+    --radius-sm: 7px;
+    --radius-md: 12px;
+    --radius-lg: 16px;
+    --font-sans: 'Inter', system-ui, sans-serif;
+    --font-display: 'Inter Tight', system-ui, sans-serif;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text-primary);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+  }
+  header {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background: rgba(10, 12, 17, 0.85);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--border);
+    padding: 20px 32px;
+  }
+  header .inner {
+    max-width: 1100px;
+    margin: 0 auto;
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+  h1 {
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: 20px;
+    margin: 0;
+    letter-spacing: -0.01em;
+  }
+  .subtitle {
+    color: var(--text-secondary);
+    font-size: 13px;
+    margin-top: 2px;
+  }
+  #generated {
+    font-size: 12px;
+    color: var(--text-secondary);
+  }
+  main {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 32px;
+  }
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 14px;
+    margin-bottom: 28px;
+  }
+  .stat-card {
+    background: var(--bg-raised);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: 16px 18px;
+  }
+  .stat-card .label {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--text-secondary);
+    font-weight: 600;
+    margin-bottom: 6px;
+  }
+  .stat-card .value {
+    font-family: var(--font-display);
+    font-size: 26px;
+    font-weight: 800;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    background: var(--bg-raised);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+  }
+  thead th {
+    text-align: left;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--text-secondary);
+    font-weight: 600;
+    padding: 12px 18px;
+    border-bottom: 1px solid var(--border);
+  }
+  tbody td {
+    padding: 16px 18px;
+    border-bottom: 1px solid var(--border);
+    font-size: 14px;
+    vertical-align: top;
+  }
+  tbody tr:last-child td { border-bottom: none; }
+  .number {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 15px;
+    white-space: nowrap;
+  }
+  .used-by {
+    font-weight: 600;
+  }
+  .note {
+    color: var(--text-secondary);
+    font-size: 12.5px;
+    margin-top: 3px;
+  }
+  .pill {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 999px;
+    font-size: 11.5px;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+  .pill-green { background: var(--success-soft); color: var(--success); border: 1px solid var(--success-border); }
+  .pill-yellow { background: var(--warning-soft); color: var(--warning); border: 1px solid var(--warning-border); }
+  .pill-red { background: var(--danger-soft); color: var(--danger); border: 1px solid var(--danger-border); }
+  .pill-blue { background: var(--info-soft); color: var(--info); border: 1px solid var(--info-border); }
+  .pill-gray { background: rgba(154, 164, 182, 0.12); color: var(--text-secondary); border: 1px solid rgba(154, 164, 182, 0.25); }
+  .agent-tag {
+    display: inline-block;
+    margin-top: 4px;
+    font-size: 11.5px;
+    color: var(--accent);
+  }
+  #error {
+    background: var(--danger-soft);
+    border: 1px solid var(--danger-border);
+    color: var(--danger);
+    padding: 14px 18px;
+    border-radius: var(--radius-md);
+    font-size: 13px;
+    display: none;
+  }
+  #loading {
+    color: var(--text-secondary);
+    font-size: 13px;
+    padding: 20px 0;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="inner">
+    <div>
+      <h1>FlashBooked — Numbers</h1>
+      <div class="subtitle">Which Twilio number goes to which agent, live from Twilio + Retell</div>
+    </div>
+    <div id="generated"></div>
+  </div>
+</header>
+
+<main>
+  <div id="error"></div>
+  <div id="loading">Loading…</div>
+  <div id="stats" class="stats-grid" style="display:none"></div>
+  <table id="table" style="display:none">
+    <thead>
+      <tr>
+        <th>Number</th>
+        <th>Used by</th>
+        <th>Status</th>
+        <th>Details</th>
+      </tr>
+    </thead>
+    <tbody id="tbody"></tbody>
+  </table>
+</main>
+
+<script>
+const STATUS_META = {
+  'live-ai-agent':               { label: 'Live — AI agent',       pill: 'pill-green' },
+  'retell-registered-not-routed':{ label: 'Registered, not routed', pill: 'pill-yellow' },
+  'manual-forward':              { label: 'Manual forward',        pill: 'pill-blue' },
+  'unconfigured':                { label: 'Unconfigured',          pill: 'pill-gray' },
+  'other':                       { label: 'Other',                 pill: 'pill-gray' },
+};
+
+function escapeHtml(s) {
+  if (s == null) return '';
+  return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+async function load() {
+  try {
+    const res = await fetch('/api/numbers-dashboard');
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Request failed');
+
+    document.getElementById('generated').textContent =
+      'Updated ' + new Date(data.generatedAt).toLocaleString('en-IE', { dateStyle: 'medium', timeStyle: 'short' });
+
+    const numbers = data.numbers || [];
+    const live = numbers.filter(n => n.status === 'live-ai-agent').length;
+    const unconfigured = numbers.filter(n => n.status === 'unconfigured').length;
+
+    const stats = document.getElementById('stats');
+    stats.innerHTML = `
+      <div class="stat-card"><div class="label">Total numbers</div><div class="value">${numbers.length}</div></div>
+      <div class="stat-card"><div class="label">Live AI agents</div><div class="value">${live}</div></div>
+      <div class="stat-card"><div class="label">Unconfigured</div><div class="value">${unconfigured}</div></div>
+    `;
+    stats.style.display = 'grid';
+
+    const tbody = document.getElementById('tbody');
+    tbody.innerHTML = numbers.map(n => {
+      const meta = STATUS_META[n.status] || { label: n.status, pill: 'pill-gray' };
+      const usedBy = n.used_by
+        ? `<div class="used-by">${escapeHtml(n.used_by)}</div>`
+        : `<div class="used-by" style="color:var(--text-secondary);font-weight:400">—</div>`;
+      const agentTag = n.retell_agent_id
+        ? `<div class="agent-tag">${escapeHtml(n.retell_agent_id)}</div>`
+        : '';
+      return `
+        <tr>
+          <td class="number">${escapeHtml(n.phone_number)}</td>
+          <td>${usedBy}${agentTag}</td>
+          <td><span class="pill ${meta.pill}">${meta.label}</span></td>
+          <td><div class="note">${escapeHtml(n.note || '')}</div></td>
+        </tr>
+      `;
+    }).join('');
+
+    document.getElementById('table').style.display = 'table';
+    document.getElementById('loading').style.display = 'none';
+  } catch (err) {
+    const errEl = document.getElementById('error');
+    errEl.textContent = 'Failed to load: ' + err.message;
+    errEl.style.display = 'block';
+    document.getElementById('loading').style.display = 'none';
+  }
+}
+
+load();
+</script>
+
+</body>
+</html>
