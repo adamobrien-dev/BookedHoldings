@@ -80,7 +80,12 @@ function adIdFromOpportunity(opp) {
 // whose attributed ad_id is one we recognize from this campaign's own ad list, so leads from
 // other sources (organic, referrals, other campaigns) don't get mixed in. Returns null (not an
 // empty map) if GHL isn't reachable, so callers can tell "no signed leads" apart from "couldn't check".
-async function fetchSignedLeadsByAdId(knownAdIds) {
+//
+// `nameToId` is a fallback: two ads (13, 15) briefly had their utm_content tag misconfigured
+// to pass the ad's *name* instead of its numeric id (fixed 2026-08-26 by swapping both ads to
+// a corrected creative) — leads captured during that window still have the ad name in
+// utmContent, not the id, so they'd otherwise never match `knownAdIds`.
+async function fetchSignedLeadsByAdId(knownAdIds, nameToId) {
   const pit = process.env.GHL_PIT_FLASHBOOKED;
   if (!pit) return null;
 
@@ -97,7 +102,8 @@ async function fetchSignedLeadsByAdId(knownAdIds) {
 
     const byAdId = {};
     for (const opp of opps) {
-      const adId = adIdFromOpportunity(opp);
+      let adId = adIdFromOpportunity(opp);
+      if (adId && !knownAdIds.has(adId) && nameToId[adId]) adId = nameToId[adId];
       if (!adId || !knownAdIds.has(adId)) continue;
       if (!byAdId[adId]) byAdId[adId] = { total: 0, won: 0, lost: 0 };
       byAdId[adId].total += 1;
@@ -198,7 +204,8 @@ module.exports = async function handler(req, res) {
     }
 
     const knownAdIds = new Set((adInsightsRes.data || []).map(a => a.ad_id));
-    const signedByAdId = await fetchSignedLeadsByAdId(knownAdIds);
+    const nameToId = Object.fromEntries((adInsightsRes.data || []).map(a => [a.ad_name, a.ad_id]));
+    const signedByAdId = await fetchSignedLeadsByAdId(knownAdIds, nameToId);
 
     const totals = campaignInsightsRes.data?.[0] || {};
     const spendNative = Number(totals.spend || 0);
