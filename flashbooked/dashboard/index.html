@@ -331,6 +331,30 @@
     /* Column headers (where desktop sorting lives) are hidden by the card-stacking rules
        above, so sorting needs a separate control on mobile — this dropdown, shown only here. */
     .mobile-sort { display: block; }
+
+    /* The campaign tables (ad sets, individual ads) are mostly short numeric fields — Days,
+       Spend, Leads, CPC, CTR, etc. — which waste a lot of vertical space one-per-line under
+       the generic stacked-card rules above. Packs each row into a compact grid instead;
+       higher specificity than the bare `tbody td { display: block }` above wins without
+       touching the Numbers table, whose fields (phone numbers, agent tags, usage bars, notes)
+       genuinely need full width. */
+    #adset-table tbody tr,
+    #ads-table tbody tr {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(84px, 1fr));
+      gap: 12px 14px;
+    }
+    #adset-table tbody td,
+    #ads-table tbody td {
+      display: block;
+      padding: 0;
+    }
+    #ads-table tbody td[data-label="Ad"],
+    #ads-table tbody td[data-label="Ad set"],
+    #ads-table tbody td[data-label="Verdict"],
+    #adset-table tbody td[data-label="Ad set"] {
+      grid-column: 1 / -1;
+    }
   }
 </style>
 </head>
