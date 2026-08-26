@@ -310,6 +310,8 @@
   .cpl-vs-target { font-size: 13px; color: var(--text-secondary); margin-top: 4px; }
   .cpl-vs-target.under { color: var(--success); }
   .cpl-vs-target.over { color: var(--warning); }
+  .verdict-reason { font-size: 11.5px; color: var(--text-secondary); margin-top: 3px; max-width: 260px; }
+  #ads-table { margin-top: 12px; }
 </style>
 </head>
 <body>
@@ -345,6 +347,25 @@
         </tr>
       </thead>
       <tbody id="adset-tbody"></tbody>
+    </table>
+
+    <div class="section-title" style="margin-top:28px">Individual ads</div>
+    <div class="section-sub">Kill/scale rules of thumb: 2x target cost/lead before judging, &lt;0.5% CTR at 1K+ impressions, 3.5+ frequency, no spend in 72h. The 2-week CTR-drop rule needs more history than this campaign has yet.</div>
+    <table id="ads-table" style="display:none">
+      <thead>
+        <tr>
+          <th>Ad</th>
+          <th>Ad set</th>
+          <th>Verdict</th>
+          <th>Spend</th>
+          <th>Leads</th>
+          <th>Cost/lead</th>
+          <th>Impr.</th>
+          <th>CTR</th>
+          <th>Freq</th>
+        </tr>
+      </thead>
+      <tbody id="ads-tbody"></tbody>
     </table>
   </section>
 
@@ -469,6 +490,34 @@ async function loadCampaign() {
       </tr>
     `).join('');
     document.getElementById('adset-table').style.display = 'table';
+
+    const VERDICT_PILL = {
+      'paused': 'pill-gray',
+      'promising': 'pill-green',
+      'gathering-data': 'pill-blue',
+    };
+    const adsTbody = document.getElementById('ads-tbody');
+    adsTbody.innerHTML = (data.ads || []).map(a => {
+      const v = a.verdict || { code: 'gathering-data', label: 'Gathering data' };
+      const pillClass = VERDICT_PILL[v.code] || (v.code.startsWith('kill-') ? 'pill-red' : 'pill-gray');
+      return `
+        <tr>
+          <td data-label="Ad">${escapeHtml(a.name)}</td>
+          <td data-label="Ad set">${escapeHtml(a.adsetName)}</td>
+          <td data-label="Verdict">
+            <span class="pill ${pillClass}">${escapeHtml(v.label)}</span>
+            ${v.reason ? `<div class="verdict-reason">${escapeHtml(v.reason)}</div>` : ''}
+          </td>
+          <td data-label="Spend">${fmtMoney(a.spend_native, acct.currency)}</td>
+          <td data-label="Leads">${a.leads}</td>
+          <td data-label="Cost/lead">${a.cpl_eur != null ? fmtMoney(a.cpl_eur, 'EUR') : '—'}</td>
+          <td data-label="Impr.">${a.impressions.toLocaleString()}</td>
+          <td data-label="CTR">${a.ctr != null ? a.ctr.toFixed(2) + '%' : '—'}</td>
+          <td data-label="Freq">${a.frequency != null ? a.frequency.toFixed(2) : '—'}</td>
+        </tr>
+      `;
+    }).join('');
+    document.getElementById('ads-table').style.display = 'table';
 
     document.getElementById('generated').textContent =
       'Updated ' + new Date(data.generatedAt).toLocaleString('en-IE', { dateStyle: 'medium', timeStyle: 'short' });
