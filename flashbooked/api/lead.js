@@ -46,12 +46,20 @@ module.exports = async function handler(req, res) {
   // Retell wraps function args as { name, call, args } by default (unless "Payload: args
   // only" is set on the tool, which we don't rely on) — unwrap either shape defensively.
   const params = req.body?.args || req.body || {};
-  const { name, phone, address, issue, urgency, notes } = params;
+  const { name, address, issue, urgency, notes } = params;
+  let phone = params.phone;
   // A truthy check alone lets an obviously-incomplete number through (e.g. a caller cut off
-  // mid-number). Require enough digits to plausibly be a real number.
+  // mid-number). Require enough digits to plausibly be a real number. If what the caller gave
+  // doesn't clear that bar, fall back to the call's own caller ID (Twilio always has this,
+  // regardless of what got transcribed) rather than losing the lead outright.
   const phoneDigits = (phone || '').replace(/\D/g, '');
   if (phoneDigits.length < 7) {
-    return res.status(200).json({ ok: false, message: 'That number sounded incomplete — ask the caller to repeat their full callback number before saving their details.' });
+    const callerId = req.body?.call?.from_number;
+    if (callerId && callerId.replace(/\D/g, '').length >= 7) {
+      phone = callerId;
+    } else {
+      return res.status(200).json({ ok: false, message: 'That number sounded incomplete — ask the caller to repeat their full callback number before saving their details.' });
+    }
   }
 
   try {
