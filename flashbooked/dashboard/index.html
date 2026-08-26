@@ -315,6 +315,23 @@
   thead th.sortable { cursor: pointer; user-select: none; }
   thead th.sortable:hover { color: var(--text-primary); }
   thead th.sort-active { color: var(--text-primary); }
+  .mobile-sort { display: none; }
+  .mobile-sort select {
+    width: 100%;
+    background: var(--bg-raised);
+    color: var(--text-primary);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 10px 12px;
+    font-family: var(--font-sans);
+    font-size: 13.5px;
+    margin-bottom: 10px;
+  }
+  @media (max-width: 700px) {
+    /* Column headers (where desktop sorting lives) are hidden by the card-stacking rules
+       above, so sorting needs a separate control on mobile — this dropdown, shown only here. */
+    .mobile-sort { display: block; }
+  }
 </style>
 </head>
 <body>
@@ -338,6 +355,7 @@
     <div id="campaign-verdict" class="verdict-banner" style="display:none"></div>
     <div id="campaign-stats" class="stats-grid" style="display:none"></div>
     <div id="campaign-progress" class="progress-wrap" style="display:none"></div>
+    <div class="mobile-sort" id="adset-table-mobile-sort"></div>
     <table id="adset-table" style="display:none">
       <thead>
         <tr>
@@ -354,6 +372,7 @@
 
     <div class="section-title" style="margin-top:28px">Individual ads</div>
     <div class="section-sub">Kill/scale rules of thumb: 2x target cost/lead before judging, &lt;0.5% CTR at 1K+ impressions, 3.5+ frequency, no spend in 72h. The 2-week CTR-drop rule needs more history than this campaign has yet. "Signed" is real closed clients from FlashBooked's GHL pipeline, matched to the specific ad that brought them in — not just booked calls.</div>
+    <div class="mobile-sort" id="ads-table-mobile-sort"></div>
     <div style="overflow-x:auto">
     <table id="ads-table" style="display:none">
       <thead>
@@ -384,6 +403,7 @@
     <div id="error"></div>
     <div id="loading">Loading…</div>
     <div id="stats" class="stats-grid" style="display:none"></div>
+    <div class="mobile-sort" id="table-mobile-sort"></div>
     <table id="table" style="display:none">
       <thead>
         <tr>
@@ -432,37 +452,63 @@ function fmtMoney(n, currency) {
 // {key: row => value, type: 'number'|'string'}. `getRows`/`renderFn` read/write the table's
 // current data so sorting doesn't need a re-fetch. Nulls always sort to the end, in either
 // direction, so "no data yet" rows don't jump to the top on a descending numeric sort.
+// Column headers double as sort controls on desktop, but the mobile card-stacking layout
+// hides the whole <thead> (see the max-width:700px rules), so there'd be no way to sort on a
+// phone otherwise. If a `${tableId}-mobile-sort` container exists, this also builds a <select>
+// there wired to the exact same sort logic, so both controls stay in sync.
 function makeSortable(tableId, getRows, renderFn, columns) {
   const table = document.getElementById(tableId);
   const ths = Array.from(table.querySelectorAll('thead th'));
+  const mobileContainer = document.getElementById(`${tableId}-mobile-sort`);
   let active = { index: null, dir: 1 };
+  let select = null;
+
+  function applySort(i, dir) {
+    const spec = columns[i];
+    active = { index: i, dir };
+
+    const sorted = getRows().slice().sort((a, b) => {
+      const va = spec.key(a), vb = spec.key(b);
+      if (va == null && vb == null) return 0;
+      if (va == null) return 1;
+      if (vb == null) return -1;
+      return spec.type === 'string'
+        ? dir * String(va).localeCompare(String(vb))
+        : dir * (va - vb);
+    });
+    renderFn(sorted);
+
+    ths.forEach((t, j) => {
+      t.classList.toggle('sort-active', j === i);
+      t.textContent = t.dataset.label + (j === i ? (dir === 1 ? ' ▲' : ' ▼') : '');
+    });
+    if (select) select.value = `${i}:${dir}`;
+  }
+
+  if (mobileContainer) {
+    select = document.createElement('select');
+    select.innerHTML = '<option value="">Sort by…</option>' + ths
+      .map((th, i) => (columns[i] ? i : null))
+      .filter(i => i != null)
+      .flatMap(i => [
+        `<option value="${i}:1">${escapeHtml(ths[i].textContent)} (low → high)</option>`,
+        `<option value="${i}:-1">${escapeHtml(ths[i].textContent)} (high → low)</option>`,
+      ])
+      .join('');
+    select.addEventListener('change', () => {
+      if (!select.value) return;
+      const [i, dir] = select.value.split(':').map(Number);
+      applySort(i, dir);
+    });
+    mobileContainer.appendChild(select);
+  }
 
   ths.forEach((th, i) => {
     const spec = columns[i];
     if (!spec) return;
     th.classList.add('sortable');
     th.dataset.label = th.textContent;
-
-    th.addEventListener('click', () => {
-      const dir = (active.index === i) ? -active.dir : 1;
-      active = { index: i, dir };
-
-      const sorted = getRows().slice().sort((a, b) => {
-        const va = spec.key(a), vb = spec.key(b);
-        if (va == null && vb == null) return 0;
-        if (va == null) return 1;
-        if (vb == null) return -1;
-        return spec.type === 'string'
-          ? dir * String(va).localeCompare(String(vb))
-          : dir * (va - vb);
-      });
-      renderFn(sorted);
-
-      ths.forEach((t, j) => {
-        t.classList.toggle('sort-active', j === i);
-        t.textContent = t.dataset.label + (j === i ? (dir === 1 ? ' ▲' : ' ▼') : '');
-      });
-    });
+    th.addEventListener('click', () => applySort(i, active.index === i ? -active.dir : 1));
   });
 }
 
