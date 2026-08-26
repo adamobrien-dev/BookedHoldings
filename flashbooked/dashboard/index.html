@@ -407,9 +407,9 @@
           <th>Ad</th>
           <th>Ad set</th>
           <th>Verdict</th>
-          <th>Days</th>
-          <th>Spend</th>
           <th>Leads</th>
+          <th>Spend</th>
+          <th>Days</th>
           <th>Signed</th>
           <th>Cost/lead</th>
           <th>CPC</th>
@@ -570,9 +570,9 @@ function renderAdsRows(rows) {
           <span class="pill ${pillClass}">${escapeHtml(v.label)}</span>
           ${v.reason ? `<div class="verdict-reason">${escapeHtml(v.reason)}</div>` : ''}
         </td>
-        <td data-label="Days">${a.daysRunning != null ? a.daysRunning : '—'}</td>
-        <td data-label="Spend">${fmtMoney(a.spend_native, acctInfo.currency)}</td>
         <td data-label="Leads">${a.leads}</td>
+        <td data-label="Spend">${fmtMoney(a.spend_native, acctInfo.currency)}</td>
+        <td data-label="Days">${a.daysRunning != null ? a.daysRunning : '—'}</td>
         <td data-label="Signed">${a.signedLeads != null ? a.signedLeads : '—'}</td>
         <td data-label="Cost/lead">${a.cpl_eur != null ? fmtMoney(a.cpl_eur, 'EUR') : '—'}</td>
         <td data-label="CPC">${a.cpc_native != null ? fmtMoney(a.cpc_native, acctInfo.currency) : '—'}</td>
@@ -755,9 +755,9 @@ makeSortable('ads-table', () => adsRows, renderAdsRows, [
   { key: r => r.name, type: 'string' },
   { key: r => r.adsetName, type: 'string' },
   { key: r => (r.verdict || {}).label || '', type: 'string' },
-  { key: r => r.daysRunning, type: 'number' },
-  { key: r => r.spend_native, type: 'number' },
   { key: r => r.leads, type: 'number' },
+  { key: r => r.spend_native, type: 'number' },
+  { key: r => r.daysRunning, type: 'number' },
   { key: r => r.signedLeads, type: 'number' },
   { key: r => r.cpl_eur, type: 'number' },
   { key: r => r.cpc_native, type: 'number' },
