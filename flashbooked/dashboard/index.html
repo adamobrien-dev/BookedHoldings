@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="robots" content="noindex, nofollow">
-<title>FlashBooked — Numbers Dashboard</title>
+<title>FlashBooked — Dashboard</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Inter+Tight:wght@600;700;800&display=swap" rel="stylesheet">
@@ -264,6 +264,52 @@
     white-space: nowrap;
   }
   .call-btn:hover { opacity: 0.88; }
+
+  .section-title {
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: 16px;
+    margin: 0 0 4px;
+  }
+  .section-sub {
+    color: var(--text-secondary);
+    font-size: 13px;
+    margin: 0 0 16px;
+  }
+  section + section { margin-top: 40px; }
+  .verdict-banner {
+    border-radius: var(--radius-md);
+    padding: 14px 18px;
+    font-size: 13.5px;
+    margin-bottom: 20px;
+    border: 1px solid var(--border);
+  }
+  .verdict-gathering-data { background: var(--info-soft); border-color: var(--info-border); color: var(--info); }
+  .verdict-on-target { background: var(--success-soft); border-color: var(--success-border); color: var(--success); }
+  .verdict-needs-review { background: var(--warning-soft); border-color: var(--warning-border); color: var(--warning); }
+  .verdict-banner b { color: var(--text-primary); }
+  .progress-wrap { margin-bottom: 28px; }
+  .progress-label {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12.5px;
+    color: var(--text-secondary);
+    margin-bottom: 6px;
+  }
+  .progress-track {
+    height: 8px;
+    border-radius: 999px;
+    background: rgba(154, 164, 182, 0.15);
+    overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%;
+    border-radius: 999px;
+    background: var(--accent);
+  }
+  .cpl-vs-target { font-size: 13px; color: var(--text-secondary); margin-top: 4px; }
+  .cpl-vs-target.under { color: var(--success); }
+  .cpl-vs-target.over { color: var(--warning); }
 </style>
 </head>
 <body>
@@ -271,30 +317,57 @@
 <header>
   <div class="inner">
     <div>
-      <h1>FlashBooked — Numbers</h1>
-      <div class="subtitle">Which Twilio number goes to which agent, live from Twilio + Retell</div>
+      <h1>FlashBooked — Dashboard</h1>
+      <div class="subtitle">Numbers, agents &amp; campaign tracking, live</div>
     </div>
     <div id="generated"></div>
   </div>
 </header>
 
 <main>
-  <div id="error"></div>
-  <div id="loading">Loading…</div>
-  <div id="stats" class="stats-grid" style="display:none"></div>
-  <table id="table" style="display:none">
-    <thead>
-      <tr>
-        <th>Number</th>
-        <th>Used by</th>
-        <th>Status</th>
-        <th>Usage this month</th>
-        <th>Details</th>
-        <th></th>
-      </tr>
-    </thead>
-    <tbody id="tbody"></tbody>
-  </table>
+  <section id="campaign-section">
+    <div class="section-title">Flash Booked Ireland — Campaign Tracker</div>
+    <div class="section-sub">Tracking against target: €99 cost/lead (1-in-3 close rate on a €297/mo client), needs 10-15 leads before the numbers are trustworthy.</div>
+    <div id="campaign-error" style="display:none"></div>
+    <div id="campaign-loading">Loading…</div>
+    <div id="campaign-verdict" class="verdict-banner" style="display:none"></div>
+    <div id="campaign-stats" class="stats-grid" style="display:none"></div>
+    <div id="campaign-progress" class="progress-wrap" style="display:none"></div>
+    <table id="adset-table" style="display:none">
+      <thead>
+        <tr>
+          <th>Ad set</th>
+          <th>Spend</th>
+          <th>Leads</th>
+          <th>Cost/lead</th>
+          <th>Clicks</th>
+          <th>CTR</th>
+        </tr>
+      </thead>
+      <tbody id="adset-tbody"></tbody>
+    </table>
+  </section>
+
+  <section id="numbers-section">
+    <div class="section-title">Numbers</div>
+    <div class="section-sub">Which Twilio number goes to which agent, live from Twilio + Retell</div>
+    <div id="error"></div>
+    <div id="loading">Loading…</div>
+    <div id="stats" class="stats-grid" style="display:none"></div>
+    <table id="table" style="display:none">
+      <thead>
+        <tr>
+          <th>Number</th>
+          <th>Used by</th>
+          <th>Status</th>
+          <th>Usage this month</th>
+          <th>Details</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody id="tbody"></tbody>
+    </table>
+  </section>
 </main>
 
 <script>
@@ -311,14 +384,108 @@ function escapeHtml(s) {
   return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 }
 
+const VERDICT_META = {
+  'gathering-data': { label: 'Gathering data', cls: 'verdict-gathering-data' },
+  'on-target':      { label: 'On target',      cls: 'verdict-on-target' },
+  'needs-review':   { label: 'Needs review',    cls: 'verdict-needs-review' },
+};
+
+function fmtMoney(n, currency) {
+  if (n == null) return '—';
+  return new Intl.NumberFormat('en-IE', { style: 'currency', currency }).format(n);
+}
+
+async function loadCampaign() {
+  try {
+    const res = await fetch('/api/campaign-status');
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Request failed');
+
+    const t = data.totals, tg = data.targets, p = data.progress, acct = data.account;
+
+    const verdictMeta = VERDICT_META[data.verdict] || { label: data.verdict, cls: 'verdict-gathering-data' };
+    const verdictEl = document.getElementById('campaign-verdict');
+    let verdictMsg;
+    if (data.verdict === 'gathering-data') {
+      verdictMsg = p.estReadyDate
+        ? `<b>${escapeHtml(verdictMeta.label)}</b> — ${p.leadsSoFar} of ${tg.leadTargetMin}-${tg.leadTargetMax} leads needed for a trustworthy read. At the current pace, expect enough data around <b>${escapeHtml(p.estReadyDate)}</b>. Nothing to act on before then.`
+        : `<b>${escapeHtml(verdictMeta.label)}</b> — ${p.leadsSoFar} of ${tg.leadTargetMin}-${tg.leadTargetMax} leads needed for a trustworthy read.`;
+    } else if (data.verdict === 'on-target') {
+      verdictMsg = `<b>${escapeHtml(verdictMeta.label)}</b> — cost/lead (${fmtMoney(t.cpl_eur, 'EUR')}) is at or under the €${tg.targetCplEur} target, with a trustworthy sample size (${p.leadsSoFar} leads).`;
+    } else {
+      verdictMsg = `<b>${escapeHtml(verdictMeta.label)}</b> — cost/lead (${fmtMoney(t.cpl_eur, 'EUR')}) is still above the €${tg.targetCplEur} target after a trustworthy sample size and spend past the review threshold (€${tg.spendThresholdMinEur}+). Worth a look at offer/creative.`;
+    }
+    verdictEl.className = 'verdict-banner ' + verdictMeta.cls;
+    verdictEl.innerHTML = verdictMsg;
+    verdictEl.style.display = 'block';
+
+    const cplClass = t.cpl_eur != null ? (t.cpl_eur <= tg.targetCplEur ? 'under' : 'over') : '';
+    const cplDiff = t.cpl_eur != null
+      ? (t.cpl_eur <= tg.targetCplEur
+          ? `${Math.round((1 - t.cpl_eur / tg.targetCplEur) * 100)}% under target`
+          : `${Math.round((t.cpl_eur / tg.targetCplEur - 1) * 100)}% over target`)
+      : 'no leads yet';
+
+    document.getElementById('campaign-stats').innerHTML = `
+      <div class="stat-card">
+        <div class="label">Spend so far</div>
+        <div class="value">${fmtMoney(t.spend_native, acct.currency)}</div>
+        <div class="cpl-vs-target">${fmtMoney(t.spend_eur, 'EUR')}</div>
+      </div>
+      <div class="stat-card">
+        <div class="label">Leads</div>
+        <div class="value">${t.leads}</div>
+        <div class="cpl-vs-target">${data.campaign.daysLive} days live</div>
+      </div>
+      <div class="stat-card">
+        <div class="label">Cost / lead</div>
+        <div class="value">${fmtMoney(t.cpl_eur, 'EUR')}</div>
+        <div class="cpl-vs-target ${cplClass}">${cplDiff} (target €${tg.targetCplEur})</div>
+      </div>
+      <div class="stat-card">
+        <div class="label">Days to trustworthy sample</div>
+        <div class="value">${p.estDaysToMinLeadTarget != null ? p.estDaysToMinLeadTarget : '—'}</div>
+        <div class="cpl-vs-target">${p.estReadyDate ? 'ready ~' + escapeHtml(p.estReadyDate) : 'need more leads first'}</div>
+      </div>
+    `;
+    document.getElementById('campaign-stats').style.display = 'grid';
+
+    const pct = Math.min(100, Math.round((p.leadsSoFar / tg.leadTargetMin) * 100));
+    document.getElementById('campaign-progress').innerHTML = `
+      <div class="progress-label"><span>Leads toward trustworthy sample</span><span>${p.leadsSoFar} / ${tg.leadTargetMin}-${tg.leadTargetMax}</span></div>
+      <div class="progress-track"><div class="progress-fill" style="width:${pct}%"></div></div>
+    `;
+    document.getElementById('campaign-progress').style.display = 'block';
+
+    const tbody = document.getElementById('adset-tbody');
+    tbody.innerHTML = (data.adsets || []).map(a => `
+      <tr>
+        <td data-label="Ad set">${escapeHtml(a.name)}</td>
+        <td data-label="Spend">${fmtMoney(a.spend_native, acct.currency)}</td>
+        <td data-label="Leads">${a.leads}</td>
+        <td data-label="Cost/lead">${a.cpl_eur != null ? fmtMoney(a.cpl_eur, 'EUR') : '—'}</td>
+        <td data-label="Clicks">${a.clicks}</td>
+        <td data-label="CTR">${a.ctr != null ? a.ctr.toFixed(2) + '%' : '—'}</td>
+      </tr>
+    `).join('');
+    document.getElementById('adset-table').style.display = 'table';
+
+    document.getElementById('generated').textContent =
+      'Updated ' + new Date(data.generatedAt).toLocaleString('en-IE', { dateStyle: 'medium', timeStyle: 'short' });
+    document.getElementById('campaign-loading').style.display = 'none';
+  } catch (err) {
+    const errEl = document.getElementById('campaign-error');
+    errEl.textContent = 'Failed to load campaign status: ' + err.message;
+    errEl.style.display = 'block';
+    document.getElementById('campaign-loading').style.display = 'none';
+  }
+}
+
 async function load() {
   try {
     const res = await fetch('/api/numbers-dashboard');
     const data = await res.json();
     if (!res.ok) throw new Error(data.error || 'Request failed');
-
-    document.getElementById('generated').textContent =
-      'Updated ' + new Date(data.generatedAt).toLocaleString('en-IE', { dateStyle: 'medium', timeStyle: 'short' });
 
     const numbers = data.numbers || [];
     const live = numbers.filter(n => n.status === 'live-ai-agent').length;
@@ -382,6 +549,7 @@ async function load() {
   }
 }
 
+loadCampaign();
 load();
 </script>
 
