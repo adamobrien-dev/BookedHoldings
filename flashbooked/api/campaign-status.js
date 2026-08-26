@@ -206,28 +206,19 @@ module.exports = async function handler(req, res) {
     const knownAdIds = new Set((adInsightsRes.data || []).map(a => a.ad_id));
     const nameToId = Object.fromEntries((adInsightsRes.data || []).map(a => [a.ad_name, a.ad_id]));
     const signedByAdId = await fetchSignedLeadsByAdId(knownAdIds, nameToId);
+    // GHL's pipeline is ground truth once an ad's utm_content is attributing correctly — Meta's
+    // own pixel count can overcount (confirmed 2026-08-26: Ad 13/15's misconfigured utm_content
+    // tag correlated with ~4 duplicate "Schedule" pixel fires that were never real distinct
+    // bookings — see project_flashbooked_new_company memory). Once GHL is reachable, every
+    // "leads" figure below — per ad, per ad set, and campaign total — is the verified GHL
+    // opportunity count, not the raw pixel number. Falls back to the pixel count only if GHL
+    // can't be reached at all, so the dashboard never just goes blank.
+    const leadsSource = signedByAdId ? 'ghl-verified' : 'meta-pixel-fallback';
 
     const totals = campaignInsightsRes.data?.[0] || {};
     const spendNative = Number(totals.spend || 0);
-    const leads = leadsFromActions(totals.actions);
+    const leadsMetaPixel = leadsFromActions(totals.actions);
     const spendEur = spendNative * cadToEur;
-    const cplNativeVal = leads > 0 ? spendNative / leads : null;
-    const cplEurVal = leads > 0 ? spendEur / leads : null;
-
-    const adsets = (adsetInsightsRes.data || []).map(a => {
-      const s = Number(a.spend || 0);
-      const l = leadsFromActions(a.actions);
-      return {
-        name: a.adset_name,
-        spend_native: Math.round(s * 100) / 100,
-        spend_eur: Math.round(s * cadToEur * 100) / 100,
-        leads: l,
-        cpl_native: l > 0 ? Math.round((s / l) * 100) / 100 : null,
-        cpl_eur: l > 0 ? Math.round(((s * cadToEur) / l) * 100) / 100 : null,
-        clicks: Number(a.clicks || 0),
-        ctr: a.ctr ? Number(a.ctr) : null,
-      };
-    });
 
     const statusByAdId = Object.fromEntries(
       (adsListRes.data || []).map(a => [a.id, a.effective_status])
@@ -243,7 +234,13 @@ module.exports = async function handler(req, res) {
 
     const ads = (adInsightsRes.data || []).map(a => {
       const s = Number(a.spend || 0);
-      const l = leadsFromActions(a.actions);
+      const metaPixelLeads = leadsFromActions(a.actions);
+      const signed = signedByAdId ? (signedByAdId[a.ad_id] || { total: 0, won: 0, lost: 0 }) : null;
+      // Verified (GHL) count wins whenever it's available — see leadsSource note above. A GHL
+      // opportunity can lag a few minutes behind the pixel firing (webhook sync delay), so this
+      // can very briefly under-count a just-this-second booking; that's a far safer failure mode
+      // than the duplicate-pixel overcounting it replaces.
+      const l = signed ? signed.total : metaPixelLeads;
       const sEur = s * cadToEur;
       const cpl = l > 0 ? sEur / l : null;
       const ctrVal = a.ctr ? Number(a.ctr) : 0;
@@ -259,8 +256,6 @@ module.exports = async function handler(req, res) {
       const linkClicks = actionValue(a.actions, 'link_click');
       const landingPageViews = actionValue(a.actions, 'landing_page_view');
       const arrivalRatePct = linkClicks > 0 ? (landingPageViews / linkClicks) * 100 : null;
-
-      const signed = signedByAdId ? (signedByAdId[a.ad_id] || { total: 0, won: 0, lost: 0 }) : null;
 
       const verdict = verdictForAd({
         status,
@@ -284,6 +279,7 @@ module.exports = async function handler(req, res) {
         spend_eur: Math.round(sEur * 100) / 100,
         spend_last3d_native: Math.round(spend3d * 100) / 100,
         leads: l,
+        leads_meta_pixel: metaPixelLeads,
         cpl_eur: cpl != null ? Math.round(cpl * 100) / 100 : null,
         impressions: Number(a.impressions || 0),
         clicks: Number(a.clicks || 0),
@@ -300,6 +296,31 @@ module.exports = async function handler(req, res) {
         verdict,
       };
     }).sort((x, y) => y.spend_native - x.spend_native);
+
+    // Ad-set and campaign-level "leads" are sums of the verified per-ad counts above, not a
+    // second independent Meta pixel query — keeps every number on the page internally
+    // consistent instead of two different sources of truth silently disagreeing.
+    const leadsByAdsetName = {};
+    for (const a of ads) leadsByAdsetName[a.adsetName] = (leadsByAdsetName[a.adsetName] || 0) + a.leads;
+
+    const adsets = (adsetInsightsRes.data || []).map(a => {
+      const s = Number(a.spend || 0);
+      const l = leadsByAdsetName[a.adset_name] || 0;
+      return {
+        name: a.adset_name,
+        spend_native: Math.round(s * 100) / 100,
+        spend_eur: Math.round(s * cadToEur * 100) / 100,
+        leads: l,
+        cpl_native: l > 0 ? Math.round((s / l) * 100) / 100 : null,
+        cpl_eur: l > 0 ? Math.round(((s * cadToEur) / l) * 100) / 100 : null,
+        clicks: Number(a.clicks || 0),
+        ctr: a.ctr ? Number(a.ctr) : null,
+      };
+    });
+
+    const leads = ads.reduce((sum, a) => sum + a.leads, 0);
+    const cplNativeVal = leads > 0 ? spendNative / leads : null;
+    const cplEurVal = leads > 0 ? spendEur / leads : null;
 
     const leadsPerDay = leads / daysLive;
     const leadsNeeded = Math.max(0, LEAD_TARGET_MIN - leads);
@@ -347,6 +368,7 @@ module.exports = async function handler(req, res) {
         spend_native: Math.round(spendNative * 100) / 100,
         spend_eur: Math.round(spendEur * 100) / 100,
         leads,
+        leads_meta_pixel: leadsMetaPixel,
         cpl_native: cplNativeVal != null ? Math.round(cplNativeVal * 100) / 100 : null,
         cpl_eur: cplEurVal != null ? Math.round(cplEurVal * 100) / 100 : null,
         impressions: Number(totals.impressions || 0),
@@ -357,6 +379,7 @@ module.exports = async function handler(req, res) {
         signedLeads: signedByAdId ? ads.reduce((sum, a) => sum + (a.signedLeads || 0), 0) : null,
       },
       ghl: { attributionAvailable: signedByAdId != null },
+      leadsSource,
       progress: {
         leadsSoFar: leads,
         leadsNeededForMinSample: leadsNeeded,

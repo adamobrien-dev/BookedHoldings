@@ -375,6 +375,9 @@
     <div class="section-title">Flash Booked Ireland — Campaign Tracker</div>
     <div class="section-sub">Tracking against target: €99 cost/lead (1-in-3 close rate on a €297/mo client), needs 10-15 leads before the numbers are trustworthy.</div>
     <div id="campaign-error" style="display:none"></div>
+    <div id="ghl-fallback-warning" class="verdict-banner verdict-needs-review" style="display:none">
+      <b>GHL unreachable — lead counts below are Meta's raw pixel numbers</b>, which have been shown to overcount (a misconfigured tracking tag briefly caused ~4 duplicate "Schedule" events — see 2026-08-26). Treat these as upper bounds, not verified counts, until GHL is reachable again.
+    </div>
     <div id="campaign-loading">Loading…</div>
     <div id="campaign-verdict" class="verdict-banner" style="display:none"></div>
     <div id="campaign-stats" class="stats-grid" style="display:none"></div>
@@ -629,6 +632,9 @@ async function loadCampaign() {
     const data = await res.json();
     if (!res.ok) throw new Error(data.error || 'Request failed');
 
+    document.getElementById('ghl-fallback-warning').style.display =
+      data.leadsSource === 'meta-pixel-fallback' ? 'block' : 'none';
+
     const t = data.totals, tg = data.targets, p = data.progress, acct = data.account;
 
     const verdictMeta = VERDICT_META[data.verdict] || { label: data.verdict, cls: 'verdict-gathering-data' };
@@ -661,9 +667,9 @@ async function loadCampaign() {
         <div class="cpl-vs-target">${fmtMoney(t.spend_eur, 'EUR')}</div>
       </div>
       <div class="stat-card">
-        <div class="label">Leads</div>
+        <div class="label">Leads${data.leadsSource === 'ghl-verified' ? ' (verified)' : ''}</div>
         <div class="value">${t.leads}</div>
-        <div class="cpl-vs-target">${data.campaign.daysLive} days live</div>
+        <div class="cpl-vs-target">${data.campaign.daysLive} days live${data.leadsSource === 'ghl-verified' && t.leads_meta_pixel !== t.leads ? ` · Meta pixel says ${t.leads_meta_pixel}` : ''}</div>
       </div>
       <div class="stat-card">
         <div class="label">Cost / lead</div>
