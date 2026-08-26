@@ -4,6 +4,13 @@
 //     10-15 lead sample size needed before the numbers are trustworthy enough to act on.
 //     Read-only. Pulls live from the Graph API using the same META_SYSTEM_TOKEN already used
 //     by capi.js. Ad account is CAD-denominated; converts to EUR for the target comparison.
+//
+//   Also breaks down to individual-ad level and applies kill/scale rules of thumb (adapted
+//   from a common paid-ads framework — 2x target CPL before judging, <0.5% CTR at 1K+
+//   impressions, 3.5+ frequency, no spend in 72h) so specific underperforming creatives can
+//   be spotted, not just whole ad sets. The 30%-CTR-drop-over-2-weeks rule needs daily
+//   history this endpoint doesn't fetch, so it's surfaced as "not yet evaluable" rather than
+//   silently skipped.
 
 const GRAPH_API = 'https://graph.facebook.com/v21.0';
 const AD_ACCOUNT_ID = 'act_913731484412697'; // "Booked Clinics" — shared agency account, also runs FlashBooked's ads
@@ -45,6 +52,36 @@ function leadsFromActions(actions) {
   return entry ? Number(entry.value) : 0;
 }
 
+// Applies the 5-rule kill framework at the individual-ad level. Only flags a hard "kill"
+// verdict when a rule's own data requirement is actually met (e.g. won't call CTR too low
+// off a handful of impressions) — otherwise reports why it's too early to judge.
+function verdictForAd({ status, spendEur, impressions, ctr, frequency, leads, cplEur, spend3dNative, targetCplEur, spendThresholdMinEur }) {
+  if (status && status !== 'ACTIVE') return { code: 'paused', label: 'Paused' };
+
+  if (spend3dNative <= 0) {
+    return { code: 'kill-no-recent-spend', label: 'Kill — no spend in 72h', reason: 'Delivery has stopped (low relevance, budget-starved, or disapproved) — check Ads Manager for a delivery issue.' };
+  }
+  if (frequency >= 3.5) {
+    return { code: 'kill-high-frequency', label: 'Kill — frequency 3.5+', reason: `Frequency is ${frequency.toFixed(1)} — audience is seeing this too often; creative fatigue.` };
+  }
+  if (impressions >= 1000 && ctr < 0.5) {
+    return { code: 'kill-low-ctr', label: 'Kill — CTR under 0.5%', reason: `${ctr.toFixed(2)}% CTR on ${impressions.toLocaleString()} impressions — the hook isn't landing.` };
+  }
+  if (spendEur >= spendThresholdMinEur && leads > 0 && cplEur > targetCplEur) {
+    return { code: 'kill-over-target', label: 'Kill — over target after 2x spend', reason: `€${cplEur.toFixed(0)} cost/lead vs €${targetCplEur} target, after spending past the 2x review threshold.` };
+  }
+  if (spendEur >= spendThresholdMinEur && leads === 0) {
+    return { code: 'kill-no-leads', label: 'Kill — no leads after 2x spend', reason: `€${spendEur.toFixed(0)} spent (past the 2x review threshold) with zero leads.` };
+  }
+  // Rule 4 (CTR down 30% over 2 weeks) needs daily history this endpoint doesn't pull, and
+  // can't apply before the campaign itself is 2 weeks old anyway — surfaced via adKillRules.note
+  // in the response instead of a per-ad check.
+  if (leads > 0 && cplEur != null && cplEur <= targetCplEur) {
+    return { code: 'promising', label: 'Promising — under target', reason: `€${cplEur.toFixed(0)} cost/lead, at or under the €${targetCplEur} target — small sample, worth more spend before scaling hard.` };
+  }
+  return { code: 'gathering-data', label: 'Gathering data', reason: 'Hasn’t hit any rule’s minimum data bar yet (spend, impressions, or leads) — too early to judge.' };
+}
+
 module.exports = async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   if (req.method !== 'GET') return res.status(405).end();
@@ -54,7 +91,7 @@ module.exports = async function handler(req, res) {
   }
 
   try {
-    const [account, campaignInsightsRes, adsetInsightsRes, cadToEur] = await Promise.all([
+    const [account, campaignInsightsRes, adsetInsightsRes, adInsightsRes, adInsights3dRes, adsListRes, cadToEur] = await Promise.all([
       metaGet(`/${AD_ACCOUNT_ID}`, { fields: 'name,currency' }),
       metaGet(`/${CAMPAIGN_ID}/insights`, {
         fields: 'spend,impressions,clicks,ctr,cpc,cpm,reach,frequency,actions',
@@ -65,6 +102,20 @@ module.exports = async function handler(req, res) {
         fields: 'adset_name,spend,impressions,clicks,ctr,cpc,actions',
         date_preset: 'maximum',
       }),
+      metaGet(`/${CAMPAIGN_ID}/insights`, {
+        level: 'ad',
+        fields: 'ad_id,ad_name,adset_name,spend,impressions,clicks,ctr,frequency,actions',
+        date_preset: 'maximum',
+      }),
+      metaGet(`/${CAMPAIGN_ID}/insights`, {
+        level: 'ad',
+        fields: 'ad_id,spend',
+        time_range: JSON.stringify({
+          since: new Date(Date.now() - 3 * 86400000).toISOString().slice(0, 10),
+          until: new Date().toISOString().slice(0, 10),
+        }),
+      }),
+      metaGet(`/${CAMPAIGN_ID}/ads`, { fields: 'id,name,effective_status', limit: 100 }),
       fetchCadToEurRate(),
     ]);
 
@@ -90,10 +141,59 @@ module.exports = async function handler(req, res) {
       };
     });
 
+    const statusByAdId = Object.fromEntries(
+      (adsListRes.data || []).map(a => [a.id, a.effective_status])
+    );
+    const spend3dByAdId = Object.fromEntries(
+      (adInsights3dRes.data || []).map(a => [a.ad_id, Number(a.spend || 0)])
+    );
+
     const daysLive = Math.max(
       1,
       Math.round((Date.now() - new Date(CAMPAIGN_LAUNCH_DATE).getTime()) / 86400000)
     );
+
+    const ads = (adInsightsRes.data || []).map(a => {
+      const s = Number(a.spend || 0);
+      const l = leadsFromActions(a.actions);
+      const sEur = s * cadToEur;
+      const cpl = l > 0 ? sEur / l : null;
+      const ctrVal = a.ctr ? Number(a.ctr) : 0;
+      const freqVal = a.frequency ? Number(a.frequency) : 0;
+      const status = statusByAdId[a.ad_id] || null;
+      const spend3d = spend3dByAdId[a.ad_id] ?? s; // fall back to lifetime if not in the 3d window at all
+
+      const verdict = verdictForAd({
+        status,
+        spendEur: sEur,
+        impressions: Number(a.impressions || 0),
+        ctr: ctrVal,
+        frequency: freqVal,
+        leads: l,
+        cplEur: cpl,
+        spend3dNative: spend3d,
+        targetCplEur: TARGET_CPL_EUR,
+        spendThresholdMinEur: TARGET_CPL_EUR * SPEND_MULTIPLIER_MIN,
+      });
+
+      return {
+        id: a.ad_id,
+        name: a.ad_name,
+        adsetName: a.adset_name,
+        status,
+        spend_native: Math.round(s * 100) / 100,
+        spend_eur: Math.round(sEur * 100) / 100,
+        spend_last3d_native: Math.round(spend3d * 100) / 100,
+        leads: l,
+        cpl_eur: cpl != null ? Math.round(cpl * 100) / 100 : null,
+        impressions: Number(a.impressions || 0),
+        clicks: Number(a.clicks || 0),
+        ctr: a.ctr ? Number(a.ctr) : null,
+        frequency: a.frequency ? Number(a.frequency) : null,
+        verdict,
+      };
+    }).sort((x, y) => y.spend_native - x.spend_native);
+
     const leadsPerDay = leads / daysLive;
     const leadsNeeded = Math.max(0, LEAD_TARGET_MIN - leads);
     const daysToMinLeadTarget = leadsPerDay > 0 ? Math.ceil(leadsNeeded / leadsPerDay) : null;
@@ -159,6 +259,15 @@ module.exports = async function handler(req, res) {
       },
       verdict,
       adsets,
+      ads,
+      adKillRules: {
+        spendMultiplierBeforeJudging: SPEND_MULTIPLIER_MIN,
+        minCtrPct: 0.5,
+        minImpressionsForCtrRule: 1000,
+        maxFrequency: 3.5,
+        noSpendWindowHours: 72,
+        note: 'CTR-drop-over-2-weeks rule needs daily history not pulled here — not evaluated.',
+      },
     });
   } catch (err) {
     return res.status(500).json({ error: err.message });
