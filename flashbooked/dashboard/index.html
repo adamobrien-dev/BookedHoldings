@@ -312,6 +312,9 @@
   .cpl-vs-target.over { color: var(--warning); }
   .verdict-reason { font-size: 11.5px; color: var(--text-secondary); margin-top: 3px; max-width: 260px; }
   #ads-table { margin-top: 12px; }
+  thead th.sortable { cursor: pointer; user-select: none; }
+  thead th.sortable:hover { color: var(--text-primary); }
+  thead th.sort-active { color: var(--text-primary); }
 </style>
 </head>
 <body>
@@ -411,9 +414,133 @@ const VERDICT_META = {
   'needs-review':   { label: 'Needs review',    cls: 'verdict-needs-review' },
 };
 
+let adsetRows = [], adsRows = [], numberRows = [], acctInfo = { currency: 'CAD' };
+
 function fmtMoney(n, currency) {
   if (n == null) return '—';
   return new Intl.NumberFormat('en-IE', { style: 'currency', currency }).format(n);
+}
+
+// Makes a table's headers clickable to sort its body. `columns` is parallel to the <th>
+// elements in DOM order — null for a column that shouldn't sort, otherwise
+// {key: row => value, type: 'number'|'string'}. `getRows`/`renderFn` read/write the table's
+// current data so sorting doesn't need a re-fetch. Nulls always sort to the end, in either
+// direction, so "no data yet" rows don't jump to the top on a descending numeric sort.
+function makeSortable(tableId, getRows, renderFn, columns) {
+  const table = document.getElementById(tableId);
+  const ths = Array.from(table.querySelectorAll('thead th'));
+  let active = { index: null, dir: 1 };
+
+  ths.forEach((th, i) => {
+    const spec = columns[i];
+    if (!spec) return;
+    th.classList.add('sortable');
+    th.dataset.label = th.textContent;
+
+    th.addEventListener('click', () => {
+      const dir = (active.index === i) ? -active.dir : 1;
+      active = { index: i, dir };
+
+      const sorted = getRows().slice().sort((a, b) => {
+        const va = spec.key(a), vb = spec.key(b);
+        if (va == null && vb == null) return 0;
+        if (va == null) return 1;
+        if (vb == null) return -1;
+        return spec.type === 'string'
+          ? dir * String(va).localeCompare(String(vb))
+          : dir * (va - vb);
+      });
+      renderFn(sorted);
+
+      ths.forEach((t, j) => {
+        t.classList.toggle('sort-active', j === i);
+        t.textContent = t.dataset.label + (j === i ? (dir === 1 ? ' ▲' : ' ▼') : '');
+      });
+    });
+  });
+}
+
+const VERDICT_PILL = {
+  'paused': 'pill-gray',
+  'promising': 'pill-green',
+  'gathering-data': 'pill-blue',
+};
+
+function renderAdsetRows(rows) {
+  document.getElementById('adset-tbody').innerHTML = rows.map(a => `
+    <tr>
+      <td data-label="Ad set">${escapeHtml(a.name)}</td>
+      <td data-label="Spend">${fmtMoney(a.spend_native, acctInfo.currency)}</td>
+      <td data-label="Leads">${a.leads}</td>
+      <td data-label="Cost/lead">${a.cpl_eur != null ? fmtMoney(a.cpl_eur, 'EUR') : '—'}</td>
+      <td data-label="Clicks">${a.clicks}</td>
+      <td data-label="CTR">${a.ctr != null ? a.ctr.toFixed(2) + '%' : '—'}</td>
+    </tr>
+  `).join('');
+}
+
+function renderAdsRows(rows) {
+  document.getElementById('ads-tbody').innerHTML = rows.map(a => {
+    const v = a.verdict || { code: 'gathering-data', label: 'Gathering data' };
+    const pillClass = VERDICT_PILL[v.code] || (v.code.startsWith('kill-') ? 'pill-red' : 'pill-gray');
+    return `
+      <tr>
+        <td data-label="Ad">${escapeHtml(a.name)}</td>
+        <td data-label="Ad set">${escapeHtml(a.adsetName)}</td>
+        <td data-label="Verdict">
+          <span class="pill ${pillClass}">${escapeHtml(v.label)}</span>
+          ${v.reason ? `<div class="verdict-reason">${escapeHtml(v.reason)}</div>` : ''}
+        </td>
+        <td data-label="Spend">${fmtMoney(a.spend_native, acctInfo.currency)}</td>
+        <td data-label="Leads">${a.leads}</td>
+        <td data-label="Cost/lead">${a.cpl_eur != null ? fmtMoney(a.cpl_eur, 'EUR') : '—'}</td>
+        <td data-label="Impr.">${a.impressions.toLocaleString()}</td>
+        <td data-label="CTR">${a.ctr != null ? a.ctr.toFixed(2) + '%' : '—'}</td>
+        <td data-label="Freq">${a.frequency != null ? a.frequency.toFixed(2) : '—'}</td>
+      </tr>
+    `;
+  }).join('');
+}
+
+function renderNumberRows(rows) {
+  document.getElementById('tbody').innerHTML = rows.map(n => {
+    const meta = STATUS_META[n.status] || { label: n.status, pill: 'pill-gray' };
+    const usedBy = n.used_by
+      ? `<div class="used-by">${escapeHtml(n.used_by)}</div>`
+      : `<div class="used-by" style="color:var(--text-secondary);font-weight:400">—</div>`;
+    const agentTag = n.retell_agent_id
+      ? `<div class="agent-tag">${escapeHtml(n.retell_agent_id)}</div>`
+      : '';
+
+    let usageCell = '<span style="color:var(--text-secondary)">—</span>';
+    if (n.usage_this_month) {
+      const u = n.usage_this_month;
+      const pct = Math.min(100, (u.minutes_used / u.included_minutes) * 100);
+      const fillClass = u.minutes_used > u.included_minutes ? 'over' : pct >= 70 ? 'warn' : 'ok';
+      usageCell = `
+        <div class="usage-wrap">
+          <div class="usage-label">${u.minutes_used} / ${u.included_minutes} min</div>
+          <div class="usage-track"><div class="usage-fill ${fillClass}" style="width:${pct}%"></div></div>
+          <div class="usage-calls">${u.calls_this_month} call${u.calls_this_month === 1 ? '' : 's'} this month</div>
+        </div>
+      `;
+    }
+
+    const callBtn = n.status === 'live-ai-agent'
+      ? `<a class="call-btn" href="tel:${escapeHtml(n.phone_number)}">Call to test</a>`
+      : '';
+
+    return `
+      <tr>
+        <td class="number" data-label="Number">${escapeHtml(n.phone_number)}</td>
+        <td data-label="Used by">${usedBy}${agentTag}</td>
+        <td data-label="Status"><span class="pill ${meta.pill}">${meta.label}</span></td>
+        <td data-label="Usage this month">${usageCell}</td>
+        <td data-label="Details"><div class="note">${escapeHtml(n.note || '')}</div></td>
+        ${callBtn ? `<td data-label="">${callBtn}</td>` : ''}
+      </tr>
+    `;
+  }).join('');
 }
 
 async function loadCampaign() {
@@ -478,45 +605,13 @@ async function loadCampaign() {
     `;
     document.getElementById('campaign-progress').style.display = 'block';
 
-    const tbody = document.getElementById('adset-tbody');
-    tbody.innerHTML = (data.adsets || []).map(a => `
-      <tr>
-        <td data-label="Ad set">${escapeHtml(a.name)}</td>
-        <td data-label="Spend">${fmtMoney(a.spend_native, acct.currency)}</td>
-        <td data-label="Leads">${a.leads}</td>
-        <td data-label="Cost/lead">${a.cpl_eur != null ? fmtMoney(a.cpl_eur, 'EUR') : '—'}</td>
-        <td data-label="Clicks">${a.clicks}</td>
-        <td data-label="CTR">${a.ctr != null ? a.ctr.toFixed(2) + '%' : '—'}</td>
-      </tr>
-    `).join('');
+    acctInfo = acct;
+    adsetRows = data.adsets || [];
+    renderAdsetRows(adsetRows);
     document.getElementById('adset-table').style.display = 'table';
 
-    const VERDICT_PILL = {
-      'paused': 'pill-gray',
-      'promising': 'pill-green',
-      'gathering-data': 'pill-blue',
-    };
-    const adsTbody = document.getElementById('ads-tbody');
-    adsTbody.innerHTML = (data.ads || []).map(a => {
-      const v = a.verdict || { code: 'gathering-data', label: 'Gathering data' };
-      const pillClass = VERDICT_PILL[v.code] || (v.code.startsWith('kill-') ? 'pill-red' : 'pill-gray');
-      return `
-        <tr>
-          <td data-label="Ad">${escapeHtml(a.name)}</td>
-          <td data-label="Ad set">${escapeHtml(a.adsetName)}</td>
-          <td data-label="Verdict">
-            <span class="pill ${pillClass}">${escapeHtml(v.label)}</span>
-            ${v.reason ? `<div class="verdict-reason">${escapeHtml(v.reason)}</div>` : ''}
-          </td>
-          <td data-label="Spend">${fmtMoney(a.spend_native, acct.currency)}</td>
-          <td data-label="Leads">${a.leads}</td>
-          <td data-label="Cost/lead">${a.cpl_eur != null ? fmtMoney(a.cpl_eur, 'EUR') : '—'}</td>
-          <td data-label="Impr.">${a.impressions.toLocaleString()}</td>
-          <td data-label="CTR">${a.ctr != null ? a.ctr.toFixed(2) + '%' : '—'}</td>
-          <td data-label="Freq">${a.frequency != null ? a.frequency.toFixed(2) : '—'}</td>
-        </tr>
-      `;
-    }).join('');
+    adsRows = data.ads || [];
+    renderAdsRows(adsRows);
     document.getElementById('ads-table').style.display = 'table';
 
     document.getElementById('generated').textContent =
@@ -548,45 +643,8 @@ async function load() {
     `;
     stats.style.display = 'grid';
 
-    const tbody = document.getElementById('tbody');
-    tbody.innerHTML = numbers.map(n => {
-      const meta = STATUS_META[n.status] || { label: n.status, pill: 'pill-gray' };
-      const usedBy = n.used_by
-        ? `<div class="used-by">${escapeHtml(n.used_by)}</div>`
-        : `<div class="used-by" style="color:var(--text-secondary);font-weight:400">—</div>`;
-      const agentTag = n.retell_agent_id
-        ? `<div class="agent-tag">${escapeHtml(n.retell_agent_id)}</div>`
-        : '';
-
-      let usageCell = '<span style="color:var(--text-secondary)">—</span>';
-      if (n.usage_this_month) {
-        const u = n.usage_this_month;
-        const pct = Math.min(100, (u.minutes_used / u.included_minutes) * 100);
-        const fillClass = u.minutes_used > u.included_minutes ? 'over' : pct >= 70 ? 'warn' : 'ok';
-        usageCell = `
-          <div class="usage-wrap">
-            <div class="usage-label">${u.minutes_used} / ${u.included_minutes} min</div>
-            <div class="usage-track"><div class="usage-fill ${fillClass}" style="width:${pct}%"></div></div>
-            <div class="usage-calls">${u.calls_this_month} call${u.calls_this_month === 1 ? '' : 's'} this month</div>
-          </div>
-        `;
-      }
-
-      const callBtn = n.status === 'live-ai-agent'
-        ? `<a class="call-btn" href="tel:${escapeHtml(n.phone_number)}">Call to test</a>`
-        : '';
-
-      return `
-        <tr>
-          <td class="number" data-label="Number">${escapeHtml(n.phone_number)}</td>
-          <td data-label="Used by">${usedBy}${agentTag}</td>
-          <td data-label="Status"><span class="pill ${meta.pill}">${meta.label}</span></td>
-          <td data-label="Usage this month">${usageCell}</td>
-          <td data-label="Details"><div class="note">${escapeHtml(n.note || '')}</div></td>
-          ${callBtn ? `<td data-label="">${callBtn}</td>` : ''}
-        </tr>
-      `;
-    }).join('');
+    numberRows = numbers;
+    renderNumberRows(numberRows);
 
     document.getElementById('table').style.display = 'table';
     document.getElementById('loading').style.display = 'none';
@@ -597,6 +655,36 @@ async function load() {
     document.getElementById('loading').style.display = 'none';
   }
 }
+
+makeSortable('adset-table', () => adsetRows, renderAdsetRows, [
+  { key: r => r.name, type: 'string' },
+  { key: r => r.spend_native, type: 'number' },
+  { key: r => r.leads, type: 'number' },
+  { key: r => r.cpl_eur, type: 'number' },
+  { key: r => r.clicks, type: 'number' },
+  { key: r => r.ctr, type: 'number' },
+]);
+
+makeSortable('ads-table', () => adsRows, renderAdsRows, [
+  { key: r => r.name, type: 'string' },
+  { key: r => r.adsetName, type: 'string' },
+  { key: r => (r.verdict || {}).label || '', type: 'string' },
+  { key: r => r.spend_native, type: 'number' },
+  { key: r => r.leads, type: 'number' },
+  { key: r => r.cpl_eur, type: 'number' },
+  { key: r => r.impressions, type: 'number' },
+  { key: r => r.ctr, type: 'number' },
+  { key: r => r.frequency, type: 'number' },
+]);
+
+makeSortable('table', () => numberRows, renderNumberRows, [
+  { key: r => r.phone_number, type: 'string' },
+  { key: r => r.used_by, type: 'string' },
+  { key: r => r.status, type: 'string' },
+  { key: r => (r.usage_this_month || {}).minutes_used, type: 'number' },
+  null,
+  null,
+]);
 
 loadCampaign();
 load();
