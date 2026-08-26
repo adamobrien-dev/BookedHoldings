@@ -181,6 +181,10 @@ module.exports = async function handler(req, res) {
         fields: 'ad_id,spend',
         time_increment: 1,
         date_preset: 'maximum',
+        // Default page size (25) silently truncates this — up to ~17 ads x growing day count
+        // needs headroom well past that, or most ads' rows just never arrive (confirmed live:
+        // 25 rows back covering only 10 of 17 ad_ids, all misreported as no first-spend date).
+        limit: 1000,
       }),
       metaGet(`/${CAMPAIGN_ID}/ads`, { fields: 'id,name,effective_status', limit: 100 }),
       fetchCadToEurRate(),
