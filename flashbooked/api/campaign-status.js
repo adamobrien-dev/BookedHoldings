@@ -17,6 +17,12 @@ const AD_ACCOUNT_ID = 'act_913731484412697'; // "Booked Clinics" — shared agen
 const CAMPAIGN_ID = '52568457569176'; // "Flash Booked Ireland"
 const CAMPAIGN_LAUNCH_DATE = '2026-08-17';
 
+const GHL_API = 'https://services.leadconnectorhq.com';
+const GHL_LOCATION_ID = 'M8E6rSDwYijkpGWK1AWR'; // FlashBooked — same location lead.js/book-discovery-call.js write to
+const GHL_PIPELINE_ID = 'w611GWtjqoj03tK8uYgC'; // "Master Pipeline"
+const GHL_WON_STAGE_ID = '52eac318-5157-4711-957b-52f680e005a9'; // "💰 Won"
+const GHL_LOST_STAGE_ID = 'af84d738-f769-4bff-8f71-388e25ffba53'; // "🥦 Lost (Not Sold)"
+
 const CLIENT_VALUE_EUR = 297;
 const TARGET_CLOSE_RATE = 1 / 3;
 const TARGET_CPL_EUR = Math.round(CLIENT_VALUE_EUR * TARGET_CLOSE_RATE); // 99 — break-even-in-month-1 standard
@@ -50,6 +56,58 @@ async function fetchCadToEurRate() {
 function leadsFromActions(actions) {
   const entry = (actions || []).find(a => a.action_type === 'offsite_conversion.fb_pixel_custom');
   return entry ? Number(entry.value) : 0;
+}
+
+function actionValue(actions, type) {
+  const entry = (actions || []).find(a => a.action_type === type);
+  return entry ? Number(entry.value) : 0;
+}
+
+// FlashBooked's booking page passes the Meta ad_id through as the utm_content param, and GHL
+// records it per-opportunity in `attributions[]`. Prefers the last-touch attribution (closest
+// to when the opportunity was actually created) so a contact who first arrived via one ad but
+// booked from a retargeting/direct visit attributes to the touch that actually converted them.
+function adIdFromOpportunity(opp) {
+  const attrs = opp.attributions || [];
+  const last = attrs.find(a => a.isLast && a.utmContent);
+  if (last) return last.utmContent;
+  const withContent = attrs.find(a => a.utmContent);
+  return withContent ? withContent.utmContent : null;
+}
+
+// Won/Lost counts per Meta ad_id, from FlashBooked's GHL pipeline — cross-references actual
+// signed clients against ad spend, not just booked-a-call leads. Only counts opportunities
+// whose attributed ad_id is one we recognize from this campaign's own ad list, so leads from
+// other sources (organic, referrals, other campaigns) don't get mixed in. Returns null (not an
+// empty map) if GHL isn't reachable, so callers can tell "no signed leads" apart from "couldn't check".
+async function fetchSignedLeadsByAdId(knownAdIds) {
+  const pit = process.env.GHL_PIT_FLASHBOOKED;
+  if (!pit) return null;
+
+  try {
+    // Single page (limit 100) — FlashBooked's whole pipeline is a handful of opportunities
+    // right now; revisit with real pagination if volume grows past that.
+    const res = await fetch(
+      `${GHL_API}/opportunities/search?location_id=${GHL_LOCATION_ID}&pipeline_id=${GHL_PIPELINE_ID}&limit=100`,
+      { headers: { Authorization: `Bearer ${pit}`, Version: '2021-07-28' } }
+    );
+    if (!res.ok) return null;
+    const data = await res.json();
+    const opps = data.opportunities || [];
+
+    const byAdId = {};
+    for (const opp of opps) {
+      const adId = adIdFromOpportunity(opp);
+      if (!adId || !knownAdIds.has(adId)) continue;
+      if (!byAdId[adId]) byAdId[adId] = { total: 0, won: 0, lost: 0 };
+      byAdId[adId].total += 1;
+      if (opp.pipelineStageId === GHL_WON_STAGE_ID) byAdId[adId].won += 1;
+      else if (opp.pipelineStageId === GHL_LOST_STAGE_ID) byAdId[adId].lost += 1;
+    }
+    return byAdId;
+  } catch (_) {
+    return null;
+  }
 }
 
 // Applies the 5-rule kill framework at the individual-ad level. Only flags a hard "kill"
@@ -91,7 +149,7 @@ module.exports = async function handler(req, res) {
   }
 
   try {
-    const [account, campaignInsightsRes, adsetInsightsRes, adInsightsRes, adInsights3dRes, adsListRes, cadToEur] = await Promise.all([
+    const [account, campaignInsightsRes, adsetInsightsRes, adInsightsRes, adInsights3dRes, adInsightsDailyRes, adsListRes, cadToEur] = await Promise.all([
       metaGet(`/${AD_ACCOUNT_ID}`, { fields: 'name,currency' }),
       metaGet(`/${CAMPAIGN_ID}/insights`, {
         fields: 'spend,impressions,clicks,ctr,cpc,cpm,reach,frequency,actions',
@@ -104,7 +162,7 @@ module.exports = async function handler(req, res) {
       }),
       metaGet(`/${CAMPAIGN_ID}/insights`, {
         level: 'ad',
-        fields: 'ad_id,ad_name,adset_name,spend,impressions,clicks,ctr,frequency,actions',
+        fields: 'ad_id,ad_name,adset_name,spend,impressions,clicks,ctr,cpc,frequency,actions',
         date_preset: 'maximum',
       }),
       metaGet(`/${CAMPAIGN_ID}/insights`, {
@@ -115,9 +173,28 @@ module.exports = async function handler(req, res) {
           until: new Date().toISOString().slice(0, 10),
         }),
       }),
+      // Per-day spend per ad, just to find each ad's first day with real delivery — Meta has
+      // no direct "first spend date" field, and lifetime totals alone can't tell a 9-day-old
+      // ad from one that started 2 days ago (see 2026-08-25 memory note on this exact mixup).
+      metaGet(`/${CAMPAIGN_ID}/insights`, {
+        level: 'ad',
+        fields: 'ad_id,spend',
+        time_increment: 1,
+        date_preset: 'maximum',
+      }),
       metaGet(`/${CAMPAIGN_ID}/ads`, { fields: 'id,name,effective_status', limit: 100 }),
       fetchCadToEurRate(),
     ]);
+
+    const firstSpendDateByAdId = {};
+    for (const row of (adInsightsDailyRes.data || [])) {
+      if (Number(row.spend || 0) <= 0) continue;
+      const existing = firstSpendDateByAdId[row.ad_id];
+      if (!existing || row.date_start < existing) firstSpendDateByAdId[row.ad_id] = row.date_start;
+    }
+
+    const knownAdIds = new Set((adInsightsRes.data || []).map(a => a.ad_id));
+    const signedByAdId = await fetchSignedLeadsByAdId(knownAdIds);
 
     const totals = campaignInsightsRes.data?.[0] || {};
     const spendNative = Number(totals.spend || 0);
@@ -163,6 +240,17 @@ module.exports = async function handler(req, res) {
       const status = statusByAdId[a.ad_id] || null;
       const spend3d = spend3dByAdId[a.ad_id] ?? s; // fall back to lifetime if not in the 3d window at all
 
+      const firstSpendDate = firstSpendDateByAdId[a.ad_id] || null;
+      const daysRunning = firstSpendDate
+        ? Math.max(1, Math.round((Date.now() - new Date(firstSpendDate).getTime()) / 86400000))
+        : null;
+
+      const linkClicks = actionValue(a.actions, 'link_click');
+      const landingPageViews = actionValue(a.actions, 'landing_page_view');
+      const arrivalRatePct = linkClicks > 0 ? (landingPageViews / linkClicks) * 100 : null;
+
+      const signed = signedByAdId ? (signedByAdId[a.ad_id] || { total: 0, won: 0, lost: 0 }) : null;
+
       const verdict = verdictForAd({
         status,
         spendEur: sEur,
@@ -189,7 +277,15 @@ module.exports = async function handler(req, res) {
         impressions: Number(a.impressions || 0),
         clicks: Number(a.clicks || 0),
         ctr: a.ctr ? Number(a.ctr) : null,
+        cpc_native: a.cpc ? Number(a.cpc) : null,
         frequency: a.frequency ? Number(a.frequency) : null,
+        firstSpendDate,
+        daysRunning,
+        landingPageViews,
+        arrivalRatePct: arrivalRatePct != null ? Math.round(arrivalRatePct * 10) / 10 : null,
+        signedLeads: signed ? signed.won : null,
+        lostLeads: signed ? signed.lost : null,
+        pipelineLeads: signed ? signed.total : null,
         verdict,
       };
     }).sort((x, y) => y.spend_native - x.spend_native);
@@ -247,7 +343,9 @@ module.exports = async function handler(req, res) {
         ctr: totals.ctr ? Number(totals.ctr) : null,
         cpc_native: totals.cpc ? Number(totals.cpc) : null,
         frequency: totals.frequency ? Number(totals.frequency) : null,
+        signedLeads: signedByAdId ? ads.reduce((sum, a) => sum + (a.signedLeads || 0), 0) : null,
       },
+      ghl: { attributionAvailable: signedByAdId != null },
       progress: {
         leadsSoFar: leads,
         leadsNeededForMinSample: leadsNeeded,
