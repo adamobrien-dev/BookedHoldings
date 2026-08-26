@@ -70,17 +70,25 @@ module.exports = async function handler(req, res) {
   // only" is set on the tool, which we don't rely on) — unwrap either shape defensively.
   const params = req.body?.args || req.body || {};
   const {
-    name, phone, email, enquiry_type, location,
+    name, email, enquiry_type, location,
     residential_or_commercial, existing_customer, urgency,
     requested_next_step, call_summary,
   } = params;
+  let phone = params.phone;
 
   // A truthy check alone lets an obviously-incomplete number through — seen live on the CB
   // Scaffolding endpoint: "778" (a caller cut off mid-number) passed this check and got saved
-  // as a real contact phone number. Require enough digits to plausibly be a real number.
+  // as a real contact phone number. Require enough digits to plausibly be a real number. If
+  // what the caller gave doesn't clear that bar, fall back to the call's own caller ID (Twilio
+  // always has this, regardless of what got transcribed) rather than losing the lead outright.
   const phoneDigits = (phone || '').replace(/\D/g, '');
   if (phoneDigits.length < 7) {
-    return res.status(200).json({ ok: false, message: 'That number sounded incomplete — ask the caller to repeat their full callback number before saving their details.' });
+    const callerId = req.body?.call?.from_number;
+    if (callerId && callerId.replace(/\D/g, '').length >= 7) {
+      phone = callerId;
+    } else {
+      return res.status(200).json({ ok: false, message: 'That number sounded incomplete — ask the caller to repeat their full callback number before saving their details.' });
+    }
   }
 
   try {
