@@ -182,7 +182,8 @@
 
   /* MODES */
   .modes{display:grid; grid-template-columns:repeat(3,1fr); gap:24px; margin-top:40px;}
-  @media (max-width:800px){ .modes{grid-template-columns:1fr;} }
+  .modes.modes-pair{grid-template-columns:repeat(2,1fr);}
+  @media (max-width:800px){ .modes{grid-template-columns:1fr;} .modes.modes-pair{grid-template-columns:1fr;} }
   .mode-card{background:#fff; border-radius:var(--radius); padding:26px; border:1px solid var(--line); position:relative;}
   .mode-card .badge{display:inline-block; font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:.05em; color:#fff; background:var(--navy); padding:4px 10px; border-radius:999px; margin-bottom:14px;}
 
@@ -551,7 +552,7 @@ fbq('track', 'PageView');
       <h2>Aoife's the front door. She's not the only system we build.</h2>
       <p class="muted">Different businesses lose revenue in different places — some of it happens over text and WhatsApp, not just on the phone.</p>
     </div>
-    <div class="modes" style="grid-template-columns:repeat(2,1fr);">
+    <div class="modes modes-pair">
       <div class="mode-card">
         <span class="badge">Voice Receptionist</span>
         <h3>Answers the phone, books the job</h3>
