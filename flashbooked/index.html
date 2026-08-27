@@ -96,9 +96,9 @@
     padding:16px 24px; max-width:1120px; margin:0 auto;
   }
   .logo{font-family:Georgia,serif; font-weight:700; font-size:22px; color:var(--navy); text-decoration:none; display:flex; align-items:center; gap:8px;}
-  .logo .bolt{color:var(--accent); display:flex;}
-  .logo .bolt svg{width:20px; height:20px; display:block;}
-  .foot-bolt{width:14px; height:14px; vertical-align:-2px; color:var(--accent);}
+  .logo .bolt{display:flex;}
+  .logo .bolt img{height:22px; width:auto; display:block;}
+  .foot-bolt{height:15px; width:auto; vertical-align:-3px;}
   .nav-links{display:flex; gap:28px; font-size:15px; font-weight:600;}
   .nav-links a{text-decoration:none; color:var(--ink);}
   .nav-cta{display:flex; align-items:center; gap:14px;}
@@ -346,10 +346,11 @@ fbq('track', 'PageView');
 
 <header class="site-nav">
   <div class="nav-inner">
-    <a href="#top" class="logo"><span class="bolt"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M13 2 3 14h7l-2 8 10-12h-7l2-8Z"/></svg></span>FlashBooked</a>
+    <a href="#top" class="logo"><span class="bolt"><img src="/favicon.png" alt="" aria-hidden="true"></span>FlashBooked</a>
     <nav class="nav-links">
       <a href="#how-it-works">How It Works</a>
       <a href="#whats-included">What's Included</a>
+      <a href="#other-systems">Other Systems</a>
       <a href="#pricing">Pricing</a>
       <a href="#faq">FAQ</a>
     </nav>
@@ -543,6 +544,37 @@ fbq('track', 'PageView');
   </div>
 </section>
 
+<section id="other-systems">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="eyebrow">Beyond The Phone</span>
+      <h2>Aoife's the front door. She's not the only system we build.</h2>
+      <p class="muted">Different businesses lose revenue in different places — some of it happens over text and WhatsApp, not just on the phone.</p>
+    </div>
+    <div class="modes" style="grid-template-columns:repeat(2,1fr);">
+      <div class="mode-card">
+        <span class="badge">Voice Receptionist</span>
+        <h3>Answers the phone, books the job</h3>
+        <p class="muted">This is Aoife — the core FlashBooked system on this page. Answers every call, qualifies the customer, and books directly into your calendar.</p>
+      </div>
+      <div class="mode-card">
+        <span class="badge">WhatsApp Quote Bot</span>
+        <h3>Answers WhatsApp, quotes the job</h3>
+        <p class="muted">Built for businesses whose customers message instead of call — reads what they're asking for and replies instantly with a price from your own price list.</p>
+        <div class="call-bubble" style="margin-top:16px;">
+          <b>Customer</b>
+          "How much for a deep clean on my SUV?"
+        </div>
+        <div class="call-bubble ai">
+          <b>WhatsApp Bot · Mobile Detailing Example</b>
+          "That's €120 for a Deep Clean on a large vehicle/SUV — want me to book you in?"
+        </div>
+      </div>
+    </div>
+    <p class="pill-note" style="text-align:center; margin-top:28px;">Every system is built around your business — ask on the call which one fits how your customers actually reach you.</p>
+  </div>
+</section>
+
 <section class="alt" id="pricing">
   <div class="wrap">
     <div class="section-head">
@@ -613,7 +645,7 @@ fbq('track', 'PageView');
 
 <footer>
   <div class="wrap">
-    <div><svg class="foot-bolt" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M13 2 3 14h7l-2 8 10-12h-7l2-8Z"/></svg> FlashBooked — Turn More Calls Into Booked Jobs.</div>
+    <div><img class="foot-bolt" src="/favicon.png" alt="" aria-hidden="true"> FlashBooked — Turn More Calls Into Booked Jobs.</div>
     <div class="foot-links">
       <a href="#how-it-works">How It Works</a>
       <a href="#pricing">Pricing</a>
