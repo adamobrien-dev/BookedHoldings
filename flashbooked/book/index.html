@@ -39,9 +39,9 @@
   .header-inner{max-width:1100px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;height:56px;}
   .logo{font-size:18px;font-weight:800;letter-spacing:-0.02em;text-decoration:none;display:inline-flex;align-items:center;gap:6px;}
   .logo span{color:var(--orange);}
-  .logo .bolt{color:var(--orange);display:flex;}
-  .logo .bolt svg{width:16px;height:16px;display:block;}
-  .foot-bolt{width:13px;height:13px;vertical-align:-2px;color:var(--orange-2);}
+  .logo .bolt{display:flex;}
+  .logo .bolt img{height:18px;width:auto;display:block;}
+  .foot-bolt{height:15px;width:auto;vertical-align:-3px;}
   .backlink{font-size:13px;color:var(--grey);text-decoration:none;}
   .backlink:hover{color:var(--cream);}
 
@@ -92,11 +92,28 @@
   footer{border-top:1px solid var(--line);padding:32px 0;text-align:center;color:var(--grey);font-size:13px;}
   footer a{color:var(--orange-2);text-decoration:none;}
 
+  .try-aoife{padding:26px 24px;border-bottom:1px solid var(--line);background:rgba(229,119,47,0.07);}
+  .try-aoife-inner{max-width:1100px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:24px;flex-wrap:wrap;}
+  .try-aoife-text h2{font-size:17px;font-weight:800;margin-bottom:4px;}
+  .try-aoife-text p{font-size:13.5px;color:var(--grey);max-width:480px;}
+  .btn-call{
+    display:inline-flex;align-items:center;gap:12px;flex-shrink:0;
+    background:var(--orange);color:#fff;
+    padding:13px 20px;border-radius:12px;text-decoration:none;
+    box-shadow:0 8px 20px rgba(229,119,47,0.35);
+    transition:transform .15s ease;
+  }
+  .btn-call:hover{transform:translateY(-2px);}
+  .btn-call svg{width:22px;height:22px;flex-shrink:0;}
+  .btn-call .call-label{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.04em;opacity:.9;}
+  .btn-call .call-num{font-size:16px;font-weight:800;display:block;}
+
   @media (max-width:800px){
     .two-col{grid-template-columns:1fr;gap:24px;}
     .cal-card{position:static;order:-1;padding:20px 2px;}
     .cal-title,.cal-tz,.cal-reassurance{padding:0 14px;}
     .hero{padding:24px 16px 20px;}
+    .try-aoife-inner{flex-direction:column;text-align:center;}
   }
 </style>
 <!-- Meta Pixel -->
@@ -111,7 +128,7 @@ fbq('track', 'PageView');
 
 <header>
   <div class="header-inner">
-    <div class="logo"><span class="bolt"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M13 2 3 14h7l-2 8 10-12h-7l2-8Z"/></svg></span>Flash<span>Booked</span></div>
+    <div class="logo"><span class="bolt"><img src="/favicon.png" alt="" aria-hidden="true"></span>Flash<span>Booked</span></div>
     <a class="backlink" href="https://flashbooked.com">← Back to flashbooked.com</a>
   </div>
 </header>
@@ -121,6 +138,22 @@ fbq('track', 'PageView');
     <div class="badge">The Revenue Recovery System for Irish Home Service Businesses</div>
     <h1>See how much revenue is sitting untouched in your business.</h1>
     <p class="sub">Book a free 15-minute discovery call — no pressure, no obligation. Pick a time on the right and it's locked in.</p>
+  </div>
+</section>
+
+<section class="try-aoife">
+  <div class="try-aoife-inner">
+    <div class="try-aoife-text">
+      <h2>Not sure an AI can handle your customers?</h2>
+      <p>Call Aoife yourself before you book anything. Pretend your boiler's broken. Ask awkward questions. Try to catch her out.</p>
+    </div>
+    <a href="tel:+35319640379" class="btn-call">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 002.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-.97 1.293c-.282.376-.769.542-1.21.38a12.035 12.035 0 01-7.143-7.143c-.162-.441.004-.928.38-1.21l1.293-.97c.363-.271.527-.734.417-1.173L6.963 3.102a1.125 1.125 0 00-1.091-.852H4.5A2.25 2.25 0 002.25 4.5v2.25z"/></svg>
+      <span>
+        <span class="call-label">Call Aoife</span>
+        <span class="call-num">+353 1 964 0379</span>
+      </span>
+    </a>
   </div>
 </section>
 
@@ -173,7 +206,7 @@ fbq('track', 'PageView');
 
 <footer>
   <div class="wrap">
-    <svg class="foot-bolt" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M13 2 3 14h7l-2 8 10-12h-7l2-8Z"/></svg> FlashBooked — Built for Irish Home Service Businesses · <a href="https://flashbooked.com">flashbooked.com</a>
+    <img class="foot-bolt" src="/favicon.png" alt="" aria-hidden="true"> FlashBooked — Built for Irish Home Service Businesses · <a href="https://flashbooked.com">flashbooked.com</a>
   </div>
 </footer>
 
