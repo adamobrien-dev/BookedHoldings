@@ -51,6 +51,16 @@
     <priority>0.8</priority>
   </url>
   <url>
+    <loc>https://flashbooked.com/blog/</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://flashbooked.com/blog/cost-of-missed-calls-irish-plumbers/</loc>
+    <changefreq>yearly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
     <loc>https://flashbooked.com/privacy/</loc>
     <changefreq>yearly</changefreq>
     <priority>0.2</priority>
