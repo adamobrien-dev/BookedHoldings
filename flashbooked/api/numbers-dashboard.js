@@ -2,6 +2,13 @@
 //   — Cross-references every Twilio number on the FlashBooked account with Retell's phone
 //     number registry, so "which number is used by who" is always answered from live state
 //     instead of a manually-maintained list that drifts. Read-only.
+//
+// GET /api/numbers-dashboard?agent_id=...&limit=3   — list recent calls for an agent
+// GET /api/numbers-dashboard?call_id=...            — full call detail incl. transcript_with_tool_calls
+//   — folded in from the former debug-call.js (removed to stay under Vercel's 12-serverless-
+//     function Hobby-plan cap; same read-only unauthenticated pattern, so merged rather than
+//     dropped — see [[feedback_consolidate_dont_delete]]). Proxies Retell's own list-calls/
+//     get-call so a transcript can be pulled and diagnosed without local Retell API key access.
 
 const TWILIO_API = 'https://api.twilio.com/2010-04-01';
 const TRUNKING_API = 'https://trunking.twilio.com/v1';
@@ -74,6 +81,30 @@ module.exports = async function handler(req, res) {
   }
   if (!process.env.RETELL_API_KEY) {
     return res.status(500).json({ error: 'RETELL_API_KEY not configured' });
+  }
+
+  // debug-call.js's former behavior: takes priority over the dashboard response when either
+  // param is present, since they're mutually exclusive use cases hitting the same endpoint.
+  const { agent_id: debugAgentId, call_id: debugCallId, limit: debugLimit } = req.query;
+  if (debugCallId) {
+    try {
+      const call = await retellGet(`/v2/get-call/${debugCallId}`);
+      return res.status(200).json(call);
+    } catch (err) {
+      return res.status(500).json({ error: err.message });
+    }
+  }
+  if (debugAgentId) {
+    try {
+      const calls = await retellPost('/v2/list-calls', {
+        filter_criteria: { agent_id: [debugAgentId] },
+        sort_order: 'descending',
+        limit: debugLimit ? parseInt(debugLimit, 10) : 5,
+      });
+      return res.status(200).json(calls);
+    } catch (err) {
+      return res.status(500).json({ error: err.message });
+    }
   }
 
   try {
