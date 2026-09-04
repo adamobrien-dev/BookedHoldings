@@ -286,8 +286,8 @@
   }
   .verdict-gathering-data { background: var(--info-soft); border-color: var(--info-border); color: var(--info); }
   .verdict-great { background: var(--success-soft); border-color: var(--success-border); color: var(--success); }
-  .verdict-fine { background: var(--info-soft); border-color: var(--info-border); color: var(--info); }
-  .verdict-weak { background: var(--warning-soft); border-color: var(--warning-border); color: var(--warning); }
+  .verdict-good { background: var(--success-soft); border-color: var(--success-border); color: var(--success); }
+  .verdict-acceptable { background: var(--warning-soft); border-color: var(--warning-border); color: var(--warning); }
   .verdict-bad { background: var(--danger-soft); border-color: var(--danger-border); color: var(--danger); }
   .verdict-banner b { color: var(--text-primary); }
   .kpi-status { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; }
@@ -380,9 +380,9 @@
 <main>
   <section id="campaign-section">
     <div class="section-title">Flash Booked Ireland — Campaign Tracker</div>
-    <div class="section-sub">Funnel-based KPIs (not flat CPL) — Instant Form leads can look cheap while unqualified, so cost/lead is judged together with booked-call rate. Needs 10-15 leads before the numbers are trustworthy.</div>
+    <div class="section-sub">Funnel-based KPIs (not flat CPL) — priority order is qualified rate &gt; booked-call rate &gt; CPL &gt; CTR &gt; frequency, since Instant Form leads can look cheap while unqualified. Needs 10-15 leads before the numbers are trustworthy.</div>
     <div id="campaign-error" style="display:none"></div>
-    <div id="ghl-fallback-warning" class="verdict-banner verdict-weak" style="display:none">
+    <div id="ghl-fallback-warning" class="verdict-banner verdict-acceptable" style="display:none">
       <b>GHL unreachable — lead counts below are Meta's raw pixel numbers</b>, which have been shown to overcount (a misconfigured tracking tag briefly caused ~4 duplicate "Schedule" events — see 2026-08-26). Treat these as upper bounds, not verified counts, until GHL is reachable again.
     </div>
     <div id="campaign-loading">Loading…</div>
@@ -408,7 +408,7 @@
     </table>
 
     <div class="section-title" style="margin-top:28px">Individual ads</div>
-    <div class="section-sub">Kill/scale rules of thumb: 2x the €80 "Bad" cost/lead line before judging, &lt;0.5% CTR at 1K+ impressions, 3.5+ frequency, no spend in 72h. "Promising" means CPL is in the €30-60 ideal band — check the booked-call rate above before scaling on that alone. The 2-week CTR-drop rule needs more history than this campaign has yet. "Signed" is real closed clients from FlashBooked's GHL pipeline, matched to the specific ad that brought them in — not just booked calls.</div>
+    <div class="section-sub">Kill rules of thumb (CAD, lead-form-specific): CTR under 0.7% at 1K+ impressions, no spend in 72h, spend past CA$130 with zero leads or CPL still over CA$70, or — once there are enough leads — under 25% qualified or under 25% booking a call. Frequency is diagnostic only, not an automatic kill (only matters alongside rising CPL or falling CTR). CPL bands: Great ≤CA$40, Good ≤CA$55, Acceptable ≤CA$70 — but check qualified/booked-call rate above before scaling on CPL alone. "Signed" is real closed clients from FlashBooked's GHL pipeline, matched to the specific ad that brought them in — not just booked calls.</div>
     <div class="mobile-sort" id="ads-table-mobile-sort"></div>
     <div style="overflow-x:auto">
     <table id="ads-table" style="display:none">
@@ -474,8 +474,8 @@ function escapeHtml(s) {
 const VERDICT_META = {
   'gathering-data': { label: 'Gathering data', cls: 'verdict-gathering-data' },
   'great':          { label: 'Great',          cls: 'verdict-great' },
-  'fine':           { label: 'Fine',           cls: 'verdict-fine' },
-  'weak':           { label: 'Weak',           cls: 'verdict-weak' },
+  'good':           { label: 'Good',           cls: 'verdict-good' },
+  'acceptable':     { label: 'Acceptable',     cls: 'verdict-acceptable' },
   'bad':            { label: 'Bad',            cls: 'verdict-bad' },
 };
 
@@ -563,7 +563,9 @@ function makeSortable(tableId, getRows, renderFn, columns) {
 
 const VERDICT_PILL = {
   'paused': 'pill-gray',
-  'promising': 'pill-green',
+  'great': 'pill-green',
+  'good': 'pill-green',
+  'acceptable': 'pill-yellow',
   'gathering-data': 'pill-blue',
 };
 
@@ -580,16 +582,20 @@ function funnelCard(label, valueTxt, statusPass, statusTxt, subTxt) {
   `;
 }
 
-function renderFunnelCards(f, tg) {
-  const bookedStatus = kpiStatus(f.bookedCallRatePct, 'min', tg.bookedCallRatePctMin, tg.bookedCallRatePctMax);
+function renderFunnelCards(f, tg, currency) {
+  const qualifiedStatus = kpiStatus(f.qualifiedRatePct, 'min', tg.qualifiedRateKillPct, null);
+  const bookedStatus = kpiStatus(f.bookedCallRatePct, 'min', tg.bookedCallRateKillPct, null);
   const showStatus = kpiStatus(f.showRatePct, 'min', tg.showRatePctMin, tg.showRatePctMax);
   const closeStatus = kpiStatus(f.closeRatePct, 'min', tg.closeRatePctMin, tg.closeRatePctMax);
-  const cacStatus = kpiStatus(f.cacEur, 'max', null, tg.cacEurMax);
-  const costPerBookedStatus = kpiStatus(f.costPerBookedCallEur, 'max', null, tg.costPerBookedCallEurMax);
+  const cacStatus = kpiStatus(f.cacNative, 'max', null, tg.cacCadMax);
+  const costPerBookedStatus = kpiStatus(f.costPerBookedCallNative, 'max', null, tg.costPerBookedCallCadMax);
 
   return [
+    funnelCard('Qualified rate', f.qualifiedRatePct != null ? f.qualifiedRatePct.toFixed(0) + '%' : '—',
+      qualifiedStatus, `floor ${tg.qualifiedRateKillPct}%`,
+      f.reviewed > 0 ? `${f.qualified} of ${f.reviewed} reviewed leads` : 'no leads reviewed yet'),
     funnelCard('Booked call rate', f.bookedCallRatePct != null ? f.bookedCallRatePct.toFixed(0) + '%' : '—',
-      bookedStatus, `target ${tg.bookedCallRatePctMin}-${tg.bookedCallRatePctMax}%+`,
+      bookedStatus, `floor ${tg.bookedCallRateKillPct}%`,
       `${f.bookedCall} of ${f.leads} leads`),
     funnelCard('Show rate', f.showRatePct != null ? f.showRatePct.toFixed(0) + '%' : '—',
       showStatus, `target ${tg.showRatePctMin}-${tg.showRatePctMax}%+`,
@@ -597,11 +603,11 @@ function renderFunnelCards(f, tg) {
     funnelCard('Close rate', f.closeRatePct != null ? f.closeRatePct.toFixed(0) + '%' : '—',
       closeStatus, `target ${tg.closeRatePctMin}-${tg.closeRatePctMax}%+`,
       f.showed > 0 ? `${f.won} of ${f.showed} shown calls` : 'no calls shown yet'),
-    funnelCard('CAC', f.cacEur != null ? fmtMoney(f.cacEur, 'EUR') : '—',
-      cacStatus, `target under €${tg.cacEurMax}`,
+    funnelCard('CAC', f.cacNative != null ? fmtMoney(f.cacNative, currency) : '—',
+      cacStatus, `target under ${fmtMoney(tg.cacCadMax, currency)}`,
       f.won > 0 ? `${f.won} won client${f.won === 1 ? '' : 's'}` : 'no clients won yet'),
-    funnelCard('Cost / booked call', f.costPerBookedCallEur != null ? fmtMoney(f.costPerBookedCallEur, 'EUR') : '—',
-      costPerBookedStatus, `north-star target €${tg.costPerBookedCallEurMin}-${tg.costPerBookedCallEurMax}`,
+    funnelCard('Cost / booked call', f.costPerBookedCallNative != null ? fmtMoney(f.costPerBookedCallNative, currency) : '—',
+      costPerBookedStatus, `north-star target ${fmtMoney(tg.costPerBookedCallCadMin, currency)}-${fmtMoney(tg.costPerBookedCallCadMax, currency)}`,
       f.bookedCall > 0 ? `${f.bookedCall} booked calls` : 'no calls booked yet'),
   ].join('');
 }
@@ -612,7 +618,7 @@ function renderAdsetRows(rows) {
       <td data-label="Ad set">${escapeHtml(a.name)}</td>
       <td data-label="Spend">${fmtMoney(a.spend_native, acctInfo.currency)}</td>
       <td data-label="Leads">${a.leads}</td>
-      <td data-label="Cost/lead">${a.cpl_eur != null ? fmtMoney(a.cpl_eur, 'EUR') : '—'}</td>
+      <td data-label="Cost/lead">${a.cpl_native != null ? fmtMoney(a.cpl_native, acctInfo.currency) : '—'}</td>
       <td data-label="Clicks">${a.clicks}</td>
       <td data-label="CTR">${a.ctr != null ? a.ctr.toFixed(2) + '%' : '—'}</td>
     </tr>
@@ -635,7 +641,7 @@ function renderAdsRows(rows) {
         <td data-label="Spend">${fmtMoney(a.spend_native, acctInfo.currency)}</td>
         <td data-label="Days">${a.daysRunning != null ? a.daysRunning : '—'}</td>
         <td data-label="Signed">${a.signedLeads != null ? a.signedLeads : '—'}</td>
-        <td data-label="Cost/lead">${a.cpl_eur != null ? fmtMoney(a.cpl_eur, 'EUR') : '—'}</td>
+        <td data-label="Cost/lead">${a.cpl_native != null ? fmtMoney(a.cpl_native, acctInfo.currency) : '—'}</td>
         <td data-label="CPC">${a.cpc_native != null ? fmtMoney(a.cpc_native, acctInfo.currency) : '—'}</td>
         <td data-label="Impr.">${a.impressions.toLocaleString()}</td>
         <td data-label="CTR">${a.ctr != null ? a.ctr.toFixed(2) + '%' : '—'}</td>
@@ -701,39 +707,41 @@ async function loadCampaign() {
     const verdictMeta = VERDICT_META[data.verdict] || { label: data.verdictLabel || data.verdict, cls: 'verdict-gathering-data' };
     const verdictEl = document.getElementById('campaign-verdict');
     const bookedPctTxt = f.bookedCallRatePct != null ? f.bookedCallRatePct.toFixed(0) + '%' : 'no calls booked yet';
+    const qualifiedPctTxt = f.qualifiedRatePct != null ? f.qualifiedRatePct.toFixed(0) + '%' : 'no leads reviewed yet';
     let verdictMsg;
     if (data.verdict === 'gathering-data') {
       verdictMsg = p.estReadyDate
         ? `<b>${escapeHtml(verdictMeta.label)}</b> — ${p.leadsSoFar} of ${tg.leadTargetMin}-${tg.leadTargetMax} leads needed for a trustworthy read. At the current pace, expect enough data around <b>${escapeHtml(p.estReadyDate)}</b>. Nothing to act on before then.`
         : `<b>${escapeHtml(verdictMeta.label)}</b> — ${p.leadsSoFar} of ${tg.leadTargetMin}-${tg.leadTargetMax} leads needed for a trustworthy read.`;
-    } else if (data.verdict === 'great') {
-      verdictMsg = `<b>${escapeHtml(verdictMeta.label)}</b> — cost/lead (${fmtMoney(t.cpl_eur, 'EUR')}) is at/under €50 with a ${bookedPctTxt} booked-call rate (40%+ target). Worth scaling.`;
-    } else if (data.verdict === 'weak') {
-      verdictMsg = `<b>${escapeHtml(verdictMeta.label)}</b> — cost/lead (${fmtMoney(t.cpl_eur, 'EUR')}) looks cheap, but only ${bookedPctTxt} of leads are booking a call (under the 20% floor). Don't scale on CPL alone — check lead quality/qualification.`;
+    } else if (data.verdict === 'bad' && f.qualifiedRatePct != null && f.qualifiedRatePct < tg.qualifiedRateKillPct) {
+      verdictMsg = `<b>${escapeHtml(verdictMeta.label)}</b> — cost/lead (${fmtMoney(t.cpl_native, acct.currency)}) might look fine, but only ${qualifiedPctTxt} of reviewed leads actually qualify (under the ${tg.qualifiedRateKillPct}% floor). Don't scale on CPL alone — check offer/creative for who it's attracting.`;
+    } else if (data.verdict === 'bad' && f.bookedCallRatePct != null && f.bookedCallRatePct < tg.bookedCallRateKillPct) {
+      verdictMsg = `<b>${escapeHtml(verdictMeta.label)}</b> — cost/lead (${fmtMoney(t.cpl_native, acct.currency)}) with ${qualifiedPctTxt} qualified, but only ${bookedPctTxt} of leads are booking a call (under the ${tg.bookedCallRateKillPct}% floor).`;
     } else if (data.verdict === 'bad') {
-      verdictMsg = `<b>${escapeHtml(verdictMeta.label)}</b> — cost/lead (${fmtMoney(t.cpl_eur, 'EUR')}) is €${tg.adCplBadEur}+ and only ${bookedPctTxt} of leads are booking a call. Worth a look at offer/creative.`;
+      verdictMsg = `<b>${escapeHtml(verdictMeta.label)}</b> — cost/lead (${fmtMoney(t.cpl_native, acct.currency)}) is over the ${fmtMoney(tg.cplAcceptableMaxCad, acct.currency)} acceptable line. Worth a look at offer/creative.`;
+    } else if (data.verdict === 'great') {
+      verdictMsg = `<b>${escapeHtml(verdictMeta.label)}</b> — cost/lead (${fmtMoney(t.cpl_native, acct.currency)}) with ${qualifiedPctTxt} qualified and a ${bookedPctTxt} booked-call rate. Worth scaling.`;
     } else {
-      verdictMsg = `<b>${escapeHtml(verdictMeta.label)}</b> — cost/lead (${fmtMoney(t.cpl_eur, 'EUR')}) with a ${bookedPctTxt} booked-call rate. Decent, not yet scale-worthy.`;
+      verdictMsg = `<b>${escapeHtml(verdictMeta.label)}</b> — cost/lead (${fmtMoney(t.cpl_native, acct.currency)}) with ${qualifiedPctTxt} qualified and a ${bookedPctTxt} booked-call rate. Decent, not yet scale-worthy.`;
     }
     verdictEl.className = 'verdict-banner ' + verdictMeta.cls;
     verdictEl.innerHTML = verdictMsg;
     verdictEl.style.display = 'block';
 
-    // Below the ideal band isn't "good" here — Adam's whole point is that a suspiciously cheap
-    // Instant Form CPL is a warning sign (unqualified leads), not something to celebrate on its
-    // own, so it gets its own neutral-ish "cheap" label rather than reusing the "under" success
-    // styling that a CPL genuinely inside the ideal band gets.
     let cplClass = '', cplDiff = 'no leads yet';
-    if (t.cpl_eur != null) {
-      if (t.cpl_eur < tg.cplEurMin) {
-        cplClass = 'cheap';
-        cplDiff = `below the €${tg.cplEurMin}-${tg.cplEurMax} ideal band — check booked-call rate`;
-      } else if (t.cpl_eur <= tg.cplEurMax) {
+    if (t.cpl_native != null) {
+      if (t.cpl_native <= tg.cplGreatMaxCad) {
         cplClass = 'under';
-        cplDiff = `in the €${tg.cplEurMin}-${tg.cplEurMax} ideal band`;
+        cplDiff = `Great — under ${fmtMoney(tg.cplGreatMaxCad, acct.currency)}`;
+      } else if (t.cpl_native <= tg.cplGoodMaxCad) {
+        cplClass = 'under';
+        cplDiff = `Good — under ${fmtMoney(tg.cplGoodMaxCad, acct.currency)}`;
+      } else if (t.cpl_native <= tg.cplAcceptableMaxCad) {
+        cplClass = '';
+        cplDiff = `Acceptable — under ${fmtMoney(tg.cplAcceptableMaxCad, acct.currency)}`;
       } else {
         cplClass = 'over';
-        cplDiff = `${Math.round((t.cpl_eur / tg.cplEurMax - 1) * 100)}% over the €${tg.cplEurMax} ideal-band top`;
+        cplDiff = `${Math.round((t.cpl_native / tg.cplAcceptableMaxCad - 1) * 100)}% over the ${fmtMoney(tg.cplAcceptableMaxCad, acct.currency)} acceptable line`;
       }
     }
 
@@ -750,7 +758,7 @@ async function loadCampaign() {
       </div>
       <div class="stat-card">
         <div class="label">Cost / lead</div>
-        <div class="value">${fmtMoney(t.cpl_eur, 'EUR')}</div>
+        <div class="value">${fmtMoney(t.cpl_native, acct.currency)}</div>
         <div class="cpl-vs-target ${cplClass}">${cplDiff}</div>
       </div>
       <div class="stat-card">
@@ -768,7 +776,7 @@ async function loadCampaign() {
     `;
     document.getElementById('campaign-progress').style.display = 'block';
 
-    document.getElementById('campaign-funnel').innerHTML = renderFunnelCards(f, tg);
+    document.getElementById('campaign-funnel').innerHTML = renderFunnelCards(f, tg, acct.currency);
     document.getElementById('campaign-funnel').style.display = 'grid';
 
     acctInfo = acct;
@@ -826,7 +834,7 @@ makeSortable('adset-table', () => adsetRows, renderAdsetRows, [
   { key: r => r.name, type: 'string' },
   { key: r => r.spend_native, type: 'number' },
   { key: r => r.leads, type: 'number' },
-  { key: r => r.cpl_eur, type: 'number' },
+  { key: r => r.cpl_native, type: 'number' },
   { key: r => r.clicks, type: 'number' },
   { key: r => r.ctr, type: 'number' },
 ]);
@@ -839,7 +847,7 @@ makeSortable('ads-table', () => adsRows, renderAdsRows, [
   { key: r => r.spend_native, type: 'number' },
   { key: r => r.daysRunning, type: 'number' },
   { key: r => r.signedLeads, type: 'number' },
-  { key: r => r.cpl_eur, type: 'number' },
+  { key: r => r.cpl_native, type: 'number' },
   { key: r => r.cpc_native, type: 'number' },
   { key: r => r.impressions, type: 'number' },
   { key: r => r.ctr, type: 'number' },
