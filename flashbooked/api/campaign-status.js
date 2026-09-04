@@ -260,23 +260,33 @@ function normalizePhone(raw) {
 async function fetchNativeLeadAdIdMaps(adIds) {
   const phoneToAdId = {};
   const emailToAdId = {};
+  const raw = []; // TEMPORARY (2026-09-04) — full lead list for diagnosing Meta-vs-GHL count
+                   // mismatches via ?debug=leads. Remove once the count discrepancy is understood.
   try {
     const results = await Promise.all(
-      adIds.map(id => metaGet(`/${id}/leads`, { fields: 'field_data' }).catch(() => ({ data: [] })))
+      adIds.map(id => metaGet(`/${id}/leads`, { fields: 'field_data,created_time' }).catch(() => ({ data: [] })))
     );
     adIds.forEach((adId, i) => {
       for (const lead of (results[i].data || [])) {
         const fields = lead.field_data || [];
+        const nameField = fields.find(f => /name/i.test(f.name));
         const phoneField = fields.find(f => /phone/i.test(f.name));
         const phone = phoneField?.values?.[0] ? normalizePhone(phoneField.values[0]) : null;
         if (phone) phoneToAdId[phone] = adId;
         const emailField = fields.find(f => /email/i.test(f.name));
         const email = emailField?.values?.[0] ? String(emailField.values[0]).trim().toLowerCase() : null;
         if (email) emailToAdId[email] = adId;
+        raw.push({
+          adId,
+          name: nameField?.values?.[0] || null,
+          phone: phoneField?.values?.[0] || null,
+          email: emailField?.values?.[0] || null,
+          created_time: lead.created_time || null,
+        });
       }
     });
   } catch (_) { /* leave maps empty */ }
-  return { phoneToAdId, emailToAdId };
+  return { phoneToAdId, emailToAdId, raw };
 }
 
 const emptyFunnelBucket = () => ({
@@ -484,7 +494,10 @@ module.exports = async function handler(req, res) {
     const knownAdIds = new Set((adInsightsRes.data || []).map(a => a.ad_id));
     const nameToId = Object.fromEntries((adInsightsRes.data || []).map(a => [a.ad_name, a.ad_id]));
     const oldCampaignAdIds = new Set((oldAdsListRes.data || []).map(a => a.id));
-    const { phoneToAdId, emailToAdId } = await fetchNativeLeadAdIdMaps([...knownAdIds]);
+    const { phoneToAdId, emailToAdId, raw: rawNativeLeads } = await fetchNativeLeadAdIdMaps([...knownAdIds]);
+    if (req.query.debug === 'leads') {
+      return res.status(200).json({ nativeLeadCount: rawNativeLeads.length, nativeLeads: rawNativeLeads });
+    }
     const signedResult = await fetchSignedLeadsByAdId(knownAdIds, nameToId, phoneToAdId, emailToAdId, oldCampaignAdIds);
     const signedByAdId = signedResult ? signedResult.byAdId : null;
     const unattributedLeads = signedResult ? signedResult.unattributed : null;
