@@ -174,39 +174,35 @@ function normalizePhone(raw) {
 // submission came from — more reliable than GHL's attributions[] field, which is confirmed
 // (2026-09-04, cross-checked against Meta's own Leads Centre by Adam) to sometimes be flat
 // missing and sometimes just wrong for these leads. Fetched per-ad via Graph API's leads edge
-// and matched to GHL contacts by phone number, since every Meta lead carries one but email is
-// optional. Returns {} (not null) on any failure — including missing `leads_retrieval`
-// permission on META_SYSTEM_TOKEN — so callers fall back to GHL-only attribution rather than
-// breaking.
-async function fetchNativeLeadAdIdByPhone(adIds) {
+// and matched to GHL contacts by phone first, falling back to email — confirmed live
+// (2026-09-04) that at least one of this campaign's forms doesn't collect a phone number at
+// all, so a lead can have neither a GHL attribution nor a phone to match on, but every form
+// here does collect email. Returns {} maps (not null) on any failure — including missing
+// `leads_retrieval` permission on META_SYSTEM_TOKEN — so callers fall back to GHL-only
+// attribution rather than breaking.
+async function fetchNativeLeadAdIdMaps(adIds) {
   const phoneToAdId = {};
-  // TEMPORARY diagnostics (2026-09-04) — surfaced via debug.nativeLeadAttribution in the
-  // response so this can be checked live without guessing whether the fallback is failing on
-  // a missing leads_retrieval permission vs. a bug in field/phone matching. Remove once
-  // confirmed working (or fixed).
-  const debug = { perAd: [] };
+  const emailToAdId = {};
   try {
     const results = await Promise.all(
-      adIds.map(id => metaGet(`/${id}/leads`, { fields: 'field_data' })
-        .then(r => ({ ok: true, data: r.data || [] }))
-        .catch(e => ({ ok: false, error: e.message })))
+      adIds.map(id => metaGet(`/${id}/leads`, { fields: 'field_data' }).catch(() => ({ data: [] })))
     );
     adIds.forEach((adId, i) => {
-      const r = results[i];
-      if (!r.ok) { debug.perAd.push({ adId, error: r.error }); return; }
-      let matched = 0;
-      for (const lead of r.data) {
-        const phoneField = (lead.field_data || []).find(f => /phone/i.test(f.name));
+      for (const lead of (results[i].data || [])) {
+        const fields = lead.field_data || [];
+        const phoneField = fields.find(f => /phone/i.test(f.name));
         const phone = phoneField?.values?.[0] ? normalizePhone(phoneField.values[0]) : null;
-        if (phone) { phoneToAdId[phone] = adId; matched++; }
+        if (phone) phoneToAdId[phone] = adId;
+        const emailField = fields.find(f => /email/i.test(f.name));
+        const email = emailField?.values?.[0] ? String(emailField.values[0]).trim().toLowerCase() : null;
+        if (email) emailToAdId[email] = adId;
       }
-      debug.perAd.push({ adId, leadCount: r.data.length, matched, fieldNames: r.data[0]?.field_data?.map(f => f.name) || [] });
     });
-  } catch (e) { debug.error = e.message; }
-  return { phoneToAdId, debug };
+  } catch (_) { /* leave maps empty */ }
+  return { phoneToAdId, emailToAdId };
 }
 
-async function fetchSignedLeadsByAdId(knownAdIds, nameToId, phoneToAdId) {
+async function fetchSignedLeadsByAdId(knownAdIds, nameToId, phoneToAdId, emailToAdId) {
   const pit = process.env.GHL_PIT_FLASHBOOKED;
   if (!pit) return null;
 
@@ -232,9 +228,11 @@ async function fetchSignedLeadsByAdId(knownAdIds, nameToId, phoneToAdId) {
       if (adId && !knownAdIds.has(adId) && nameToId[adId]) adId = nameToId[adId];
       if (!adId || !knownAdIds.has(adId)) {
         // GHL had no (or no valid) attribution — fall back to Meta's own lead-to-ad match by
-        // phone before giving up to the unattributed bucket.
+        // phone, then email, before giving up to the unattributed bucket.
         const phone = normalizePhone(opp.contact?.phone);
+        const email = opp.contact?.email ? String(opp.contact.email).trim().toLowerCase() : null;
         if (phone && phoneToAdId[phone]) adId = phoneToAdId[phone];
+        else if (email && emailToAdId[email]) adId = emailToAdId[email];
       }
       const isAttributed = adId && knownAdIds.has(adId);
       const tags = opp.contact?.tags || [];
@@ -358,8 +356,8 @@ module.exports = async function handler(req, res) {
 
     const knownAdIds = new Set((adInsightsRes.data || []).map(a => a.ad_id));
     const nameToId = Object.fromEntries((adInsightsRes.data || []).map(a => [a.ad_name, a.ad_id]));
-    const { phoneToAdId, debug: nativeLeadDebug } = await fetchNativeLeadAdIdByPhone([...knownAdIds]);
-    const signedResult = await fetchSignedLeadsByAdId(knownAdIds, nameToId, phoneToAdId);
+    const { phoneToAdId, emailToAdId } = await fetchNativeLeadAdIdMaps([...knownAdIds]);
+    const signedResult = await fetchSignedLeadsByAdId(knownAdIds, nameToId, phoneToAdId, emailToAdId);
     const signedByAdId = signedResult ? signedResult.byAdId : null;
     const unattributedLeads = signedResult ? signedResult.unattributed : null;
     const funnelCounts = signedResult ? signedResult.funnel : null;
@@ -578,7 +576,6 @@ module.exports = async function handler(req, res) {
         noSpendWindowHours: 72,
         note: 'CTR-drop-over-2-weeks rule needs daily history not pulled here — not evaluated.',
       },
-      debug: { nativeLeadAttribution: nativeLeadDebug },
     });
   } catch (err) {
     return res.status(500).json({ error: err.message });
