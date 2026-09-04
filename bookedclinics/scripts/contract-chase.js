@@ -126,7 +126,7 @@ module.exports = async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   if (req.method !== 'GET') return res.status(405).end();
 
-  const pit = process.env.GHL_PIT_AGENCY || 'pit-4c3b0e38-6f82-4429-a33a-b54628e9a03d';
+  const pit = process.env.GHL_PIT_AGENCY || 'pit-e4f008f0-1bf3-47d6-b22e-2cbca0390d82';
   const dsKey = process.env.DROPBOX_SIGN_API_KEY;
   const dry = req.query.send !== 'true';
 
