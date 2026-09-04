@@ -316,6 +316,7 @@
   .cpl-vs-target { font-size: 13px; color: var(--text-secondary); margin-top: 4px; }
   .cpl-vs-target.under { color: var(--success); }
   .cpl-vs-target.over { color: var(--warning); }
+  .cpl-vs-target.cheap { color: var(--info); }
   .verdict-reason { font-size: 11.5px; color: var(--text-secondary); margin-top: 3px; max-width: 260px; }
   #ads-table { margin-top: 12px; }
   thead th.sortable { cursor: pointer; user-select: none; }
@@ -718,12 +719,23 @@ async function loadCampaign() {
     verdictEl.innerHTML = verdictMsg;
     verdictEl.style.display = 'block';
 
-    const cplClass = t.cpl_eur != null ? (t.cpl_eur <= tg.cplEurMax ? 'under' : 'over') : '';
-    const cplDiff = t.cpl_eur != null
-      ? (t.cpl_eur <= tg.cplEurMax
-          ? `in the €${tg.cplEurMin}-${tg.cplEurMax} ideal band`
-          : `${Math.round((t.cpl_eur / tg.cplEurMax - 1) * 100)}% over the €${tg.cplEurMax} ideal-band top`)
-      : 'no leads yet';
+    // Below the ideal band isn't "good" here — Adam's whole point is that a suspiciously cheap
+    // Instant Form CPL is a warning sign (unqualified leads), not something to celebrate on its
+    // own, so it gets its own neutral-ish "cheap" label rather than reusing the "under" success
+    // styling that a CPL genuinely inside the ideal band gets.
+    let cplClass = '', cplDiff = 'no leads yet';
+    if (t.cpl_eur != null) {
+      if (t.cpl_eur < tg.cplEurMin) {
+        cplClass = 'cheap';
+        cplDiff = `below the €${tg.cplEurMin}-${tg.cplEurMax} ideal band — check booked-call rate`;
+      } else if (t.cpl_eur <= tg.cplEurMax) {
+        cplClass = 'under';
+        cplDiff = `in the €${tg.cplEurMin}-${tg.cplEurMax} ideal band`;
+      } else {
+        cplClass = 'over';
+        cplDiff = `${Math.round((t.cpl_eur / tg.cplEurMax - 1) * 100)}% over the €${tg.cplEurMax} ideal-band top`;
+      }
+    }
 
     document.getElementById('campaign-stats').innerHTML = `
       <div class="stat-card">
