@@ -1,21 +1,25 @@
 // GET /api/campaign-status
 //   — Tracks the "Flash Booked Ireland Lead forms" Meta campaign against a funnel-stage KPI
-//     framework (set 2026-09-04, see FUNNEL_TARGETS below), not a flat CPL target. That older
-//     model (€297/mo retainer, 1-in-3 close rate → €99 target CPL) assumed a monthly-retainer
-//     offer and treated cost-per-lead as the whole story; FlashBooked's actual offer is a
-//     €1,000 upfront sale, and native Instant Form leads can look cheap on CPL alone while
-//     being unqualified. So CPL is now judged together with how many leads actually book a
-//     call, show up, and close — using FlashBooked's real GHL pipeline stages (Leads: New →
-//     Convo: Responded → DC: Upcoming → ... → SC: Upcoming → ... → Won/Lost) as the funnel.
-//     Read-only. Pulls live from the Graph API using the same META_SYSTEM_TOKEN already used
-//     by capi.js. Ad account is CAD-denominated; converts to EUR for the target comparisons.
+//     framework (set 2026-09-04, revised same day after live testing — see FUNNEL_TARGETS,
+//     AD_CPL_*_CAD, and campaignHealthVerdict below), not a flat CPL target. CPL alone is
+//     misleading for a 2-question Instant Form (just "what business" + "what are you
+//     struggling with") — it can look great while the leads are junk. So every CPL number is
+//     read alongside qualified rate and booked-call rate, in Adam's stated priority order:
+//     qualified leads > booked calls > CPL > CTR > frequency. Qualification uses FlashBooked's
+//     real GHL pipeline stages (Leads: New → Convo: Responded → Qualified/Disqualified → DC:
+//     Upcoming → ... → SC: Upcoming → ... → Won/Lost) — "Qualified" is a dedicated stage Adam
+//     added 2026-09-04 specifically to give lead quality a positive signal, not just the
+//     pre-existing negative one ("Disqualified"). Read-only. Pulls live from the Graph API
+//     using the same META_SYSTEM_TOKEN already used by capi.js. Ad account is CAD-denominated;
+//     every target here is CAD-native (no EUR conversion) since that's what spend is actually
+//     billed in — EUR fields in the response are informational only.
 //
-//   Also breaks down to individual-ad level and applies kill/scale rules of thumb (adapted
-//   from a common paid-ads framework — 2x a "bad" CPL threshold before judging, <0.5% CTR at
-//   1K+ impressions, 3.5+ frequency, no spend in 72h) so specific underperforming creatives
-//   can be spotted, not just whole ad sets. The 30%-CTR-drop-over-2-weeks rule needs daily
-//   history this endpoint doesn't fetch, so it's surfaced as "not yet evaluable" rather than
-//   silently skipped.
+//   Also breaks down to individual-ad level and applies kill/scale rules of thumb (spend
+//   threshold before judging a bad CPL or zero leads, a CTR floor, a lead-quality floor, and a
+//   booked-call-rate floor) so specific underperforming creatives can be spotted, not just
+//   whole ad sets. Frequency is NOT an automatic kill trigger (Adam's correction 2026-09-04) —
+//   it's only meaningful alongside a rising-CPL/falling-CTR trend, which needs daily history
+//   this endpoint doesn't fetch, so it's surfaced as informational only.
 
 const GRAPH_API = 'https://graph.facebook.com/v21.0';
 const AD_ACCOUNT_ID = 'act_913731484412697'; // "Booked Clinics" — shared agency account, also runs FlashBooked's ads
@@ -33,7 +37,14 @@ const GHL_WON_STAGE_ID = '52eac318-5157-4711-957b-52f680e005a9'; // "💰 Won"
 const GHL_LOST_STAGE_ID = 'af84d738-f769-4bff-8f71-388e25ffba53'; // "🥦 Lost (Not Sold)"
 
 // Master Pipeline's full stage list (fetched 2026-09-04 via GET /opportunities/pipelines) —
-// a two-call sales process, Discovery Call (DC) then Strategy Call (SC), before Won/Lost.
+// a two-call sales process, Discovery Call (DC) then Strategy Call (SC), before Won/Lost. The
+// "Qualified" stage was added by Adam 2026-09-04, specifically so lead quality (his own
+// definition: Irish trade/home-service business + real problem FlashBooked solves + capacity/
+// willingness to take on more work) has a positive signal to land on — before that, only a
+// *negative* signal existed ("Disqualified"), so a lead nobody had reviewed yet was
+// indistinguishable from one that had been actively judged good.
+const STAGE_QUALIFIED = '817f8775-cdf4-489e-a24d-8fcc3418deaa'; // "👍 Qualified"
+const STAGE_DISQUALIFIED = '21e81cb3-d1eb-43b7-bb62-8ad6845f6555'; // "👎 Disqualified"
 const STAGE_DC_UPCOMING = '73f0587c-1d51-4e41-b070-f1eeb016cb0c'; // "📞 DC: Upcoming"
 const STAGE_DC_CANCELLED = '59c5b2d1-dc45-4e29-87ac-9bb4447b12ba'; // "❌ DC: Cancelled"
 const STAGE_DC_NO_SHOW = '3adb4b6b-6d26-497d-b781-d8561c708a52'; // "👻 DC: No Show"
@@ -43,6 +54,14 @@ const STAGE_SC_CANCELLED = '1c053852-b049-49d1-a171-57de75284de4'; // "❌ SC: C
 const STAGE_SC_NO_SHOW = 'd45b407a-d836-40c1-9ebf-7da1543a0b6a'; // "👻 SC: No Show"
 const STAGE_SC_FOLLOW_UP = '6314c5a6-4ad0-4935-94e5-0aaff362ff0c'; // "💲 SC: Follow Up"
 
+// Anything other than "still sitting untouched" — i.e. someone has actually looked at this
+// lead and made a qualify/disqualify call, whether or not it's gone further since.
+const REVIEWED_STAGES = new Set([
+  STAGE_QUALIFIED, STAGE_DISQUALIFIED,
+  STAGE_DC_UPCOMING, STAGE_DC_CANCELLED, STAGE_DC_NO_SHOW, STAGE_DC_FOLLOW_UP,
+  STAGE_SC_UPCOMING, STAGE_SC_CANCELLED, STAGE_SC_NO_SHOW, STAGE_SC_FOLLOW_UP,
+  GHL_WON_STAGE_ID, GHL_LOST_STAGE_ID,
+]);
 // Adam's stated funnel (2026-09-04) is 3 stages — booked call → show → close — simpler than
 // the real two-call DC-then-SC pipeline above. Collapsing DC and SC together to match that:
 // any of these means a Discovery Call was booked at some point. GHL's API only exposes an
@@ -64,43 +83,66 @@ const RESOLVED_CALL_STAGES = new Set([
 const NO_SHOW_STAGES = new Set([STAGE_DC_NO_SHOW, STAGE_SC_NO_SHOW]);
 const CANCELLED_STAGES = new Set([STAGE_DC_CANCELLED, STAGE_SC_CANCELLED]);
 
-// Kept for the per-ad kill/scale spend-threshold rule (verdictForAd) — unrelated to the old
-// CPL/close-rate target model retired 2026-09-04 in favor of FUNNEL_TARGETS below.
-const SPEND_MULTIPLIER_MIN = 2;
-const SPEND_MULTIPLIER_MAX = 3;
-const FALLBACK_CAD_TO_EUR = 0.62; // used only if the live FX lookup fails
+const FALLBACK_CAD_TO_EUR = 0.62; // used only if the live FX lookup fails; spend/CPL EUR fields
+                                   // are informational only now — every target below is CAD-native
 const LEAD_TARGET_MIN = 10;
 const LEAD_TARGET_MAX = 15;
 
-// Ad-level CPL reference points, replacing the old flat €99 target — top of Adam's "ideal"
-// CPL band (promising) and his own "Bad: €80+ CPL" line (kill threshold).
-const AD_CPL_IDEAL_MAX_EUR = 60;
-const AD_CPL_BAD_EUR = 80;
+// Below this many leads/reviewed-leads, the quality/booking-rate kill rules don't fire — no
+// hard number was given for "once you've got enough leads," so this is a judgment call, easy
+// to raise once real volume shows up.
+const MIN_SAMPLE_FOR_QUALITY_RULES = 5;
 
-// Campaign-level funnel KPI targets for native Lead Form campaigns, from Adam's own benchmarks
-// (2026-09-04) for this funnel: Ad → Instant Form → Lead → AI call/SMS → Booked call (DC:
-// Upcoming+) → Show → Closed (Won). CPL alone is misleading for Instant Forms (can look cheap
-// while unqualified), so it's always read together with the booked-call rate.
+// CAD-native CPL bands (2026-09-04) for FlashBooked's specific 2-question Instant Form (just
+// "what business are you in" + "what are you struggling with") — reset lower than the general
+// lead-forms guidance because that low friction should produce a cheaper CPL, which raises the
+// bar on lead quality mattering even more. Replaces the earlier EUR ideal-band/bad-line
+// constants entirely; spend is CAD-native so there's no FX conversion needed for these checks.
+const AD_CPL_GREAT_MAX_CAD = 40;
+const AD_CPL_GOOD_MAX_CAD = 55;
+const AD_CPL_ACCEPTABLE_MAX_CAD = 70; // "Bad" is anything above this
+const AD_SPEND_KILL_THRESHOLD_CAD = 130; // ~midpoint of Adam's "roughly CA$120–140"
+const AD_CTR_KILL_PCT = 0.7; // lead-form-specific — loosened from the 0.5% general-ads figure
+const QUALIFIED_RATE_KILL_PCT = 25; // below this % of *reviewed* leads qualified → kill
+const BOOKED_CALL_RATE_KILL_PCT = 25; // below this % of leads booking a call → kill
+// Frequency (3.5+) is deliberately NOT an automatic kill signal — Adam's correction 2026-09-04:
+// it only matters alongside CPL rising or CTR/conversions falling, which needs a spend/CTR
+// trend this endpoint doesn't track daily. Still shown as a column in the ads table so it can
+// be eyeballed against the CPL/CTR columns next to it.
+
+// Campaign-level funnel KPI targets for native Lead Form campaigns. CPL alone is misleading for
+// Instant Forms (can look cheap while unqualified), so it's always read alongside qualified
+// rate and booked-call rate — Adam's stated priority: qualified leads > booked calls > CPL >
+// CTR > frequency.
 const FUNNEL_TARGETS = {
-  ctrPctMin: 2, // 2%+
-  cpcEurMax: 3, // < €2–3
-  cplEurMin: 30, cplEurMax: 60, // €30–60 ideal
-  bookedCallRatePctMin: 30, bookedCallRatePctMax: 50, // qualified/booked lead rate
+  ctrKillPct: AD_CTR_KILL_PCT,
+  cpcCadMax: 3,
+  cplGreatMaxCad: AD_CPL_GREAT_MAX_CAD,
+  cplGoodMaxCad: AD_CPL_GOOD_MAX_CAD,
+  cplAcceptableMaxCad: AD_CPL_ACCEPTABLE_MAX_CAD,
+  qualifiedRateKillPct: QUALIFIED_RATE_KILL_PCT,
+  bookedCallRateKillPct: BOOKED_CALL_RATE_KILL_PCT,
   showRatePctMin: 65, showRatePctMax: 80,
   closeRatePctMin: 20, closeRatePctMax: 30, // of those who showed, % that close
-  cacEurMax: 500, // spend per Won client
-  costPerBookedCallEurMin: 150, costPerBookedCallEurMax: 200, // north-star once the AI caller is live
+  cacCadMax: 500, // spend per Won client — TODO: revisit in CAD terms, currently a placeholder carried over from the EUR-era target
+  costPerBookedCallCadMin: 150, costPerBookedCallCadMax: 200, // north-star once the AI caller is live
 };
 
-// Adam's own Great/Fine/Weak/Bad bands (2026-09-04) for judging an Instant Form campaign —
-// weighs CPL together with the booked-call rate (the earliest available proxy for lead
-// quality, before enough calls have happened to score show/close rates directly).
-function campaignHealthVerdict(cplEur, bookedCallRatePct) {
-  if (cplEur == null || bookedCallRatePct == null) return null;
-  if (cplEur <= 50 && bookedCallRatePct >= 40) return { code: 'great', label: 'Great' };
-  if (bookedCallRatePct < 20) return { code: 'weak', label: 'Weak — cheap leads, low qualification' };
-  if (cplEur >= AD_CPL_BAD_EUR && bookedCallRatePct < 25) return { code: 'bad', label: 'Bad' };
-  return { code: 'fine', label: 'Fine' };
+// Adam's Great/Good/Acceptable/Bad bands (2026-09-04), weighted by his stated priority order —
+// qualified rate and booked-call rate override CPL, since a cheap CPL with bad lead quality is
+// worse than a pricier CPL with good quality.
+function campaignHealthVerdict(cplCad, qualifiedRatePct, bookedCallRatePct) {
+  if (qualifiedRatePct != null && qualifiedRatePct < QUALIFIED_RATE_KILL_PCT) {
+    return { code: 'bad', label: 'Bad — low lead quality' };
+  }
+  if (bookedCallRatePct != null && bookedCallRatePct < BOOKED_CALL_RATE_KILL_PCT) {
+    return { code: 'bad', label: 'Bad — low booking rate' };
+  }
+  if (cplCad == null) return null;
+  if (cplCad <= AD_CPL_GREAT_MAX_CAD) return { code: 'great', label: 'Great' };
+  if (cplCad <= AD_CPL_GOOD_MAX_CAD) return { code: 'good', label: 'Good' };
+  if (cplCad <= AD_CPL_ACCEPTABLE_MAX_CAD) return { code: 'acceptable', label: 'Acceptable' };
+  return { code: 'bad', label: 'Bad — CPL over target' };
 }
 
 async function metaGet(path, params) {
@@ -217,12 +259,34 @@ async function fetchSignedLeadsByAdId(knownAdIds, nameToId, phoneToAdId, emailTo
     const data = await res.json();
     const opps = data.opportunities || [];
 
+    const emptyBucket = () => ({
+      total: 0, won: 0, lost: 0,
+      reviewed: 0, qualified: 0, disqualified: 0,
+      bookedCall: 0, resolved: 0, showed: 0,
+    });
+    // Mutates `bucket` with this opportunity's stage — shared by the per-ad, unattributed, and
+    // campaign-wide funnel tallies so the three can't drift out of sync with each other.
+    function tally(bucket, stage) {
+      bucket.total += 1;
+      if (stage === GHL_WON_STAGE_ID) bucket.won += 1;
+      else if (stage === GHL_LOST_STAGE_ID) bucket.lost += 1;
+      if (REVIEWED_STAGES.has(stage)) {
+        bucket.reviewed += 1;
+        if (stage === STAGE_DISQUALIFIED) bucket.disqualified += 1;
+        else bucket.qualified += 1;
+      }
+      if (BOOKED_CALL_STAGES.has(stage)) {
+        bucket.bookedCall += 1;
+        if (RESOLVED_CALL_STAGES.has(stage)) {
+          bucket.resolved += 1;
+          if (!NO_SHOW_STAGES.has(stage) && !CANCELLED_STAGES.has(stage)) bucket.showed += 1;
+        }
+      }
+    }
+
     const byAdId = {};
-    const unattributed = { total: 0, won: 0, lost: 0 };
-    // Funnel counts span every campaign lead (attributed or not) — the funnel is about the
-    // campaign as a whole, not per-ad, so it doesn't need the ad_id match that byAdId/
-    // unattributed do.
-    const funnel = { leads: 0, bookedCall: 0, resolved: 0, showed: 0, won: 0 };
+    const unattributed = emptyBucket();
+    const funnel = emptyBucket();
     for (const opp of opps) {
       let adId = adIdFromOpportunity(opp);
       if (adId && !knownAdIds.has(adId) && nameToId[adId]) adId = nameToId[adId];
@@ -239,27 +303,14 @@ async function fetchSignedLeadsByAdId(knownAdIds, nameToId, phoneToAdId, emailTo
       const isUnattributedCampaignLead = !isAttributed && tags.includes(UNATTRIBUTED_LEAD_TAG);
       if (!isAttributed && !isUnattributedCampaignLead) continue;
 
-      if (isAttributed) {
-        if (!byAdId[adId]) byAdId[adId] = { total: 0, won: 0, lost: 0 };
-        byAdId[adId].total += 1;
-        if (opp.pipelineStageId === GHL_WON_STAGE_ID) byAdId[adId].won += 1;
-        else if (opp.pipelineStageId === GHL_LOST_STAGE_ID) byAdId[adId].lost += 1;
-      } else {
-        unattributed.total += 1;
-        if (opp.pipelineStageId === GHL_WON_STAGE_ID) unattributed.won += 1;
-        else if (opp.pipelineStageId === GHL_LOST_STAGE_ID) unattributed.lost += 1;
-      }
-
-      funnel.leads += 1;
       const stage = opp.pipelineStageId;
-      if (BOOKED_CALL_STAGES.has(stage)) {
-        funnel.bookedCall += 1;
-        if (RESOLVED_CALL_STAGES.has(stage)) {
-          funnel.resolved += 1;
-          if (!NO_SHOW_STAGES.has(stage) && !CANCELLED_STAGES.has(stage)) funnel.showed += 1;
-        }
+      if (isAttributed) {
+        if (!byAdId[adId]) byAdId[adId] = emptyBucket();
+        tally(byAdId[adId], stage);
+      } else {
+        tally(unattributed, stage);
       }
-      if (stage === GHL_WON_STAGE_ID) funnel.won += 1;
+      tally(funnel, stage);
     }
     return { byAdId, unattributed, funnel };
   } catch (_) {
@@ -267,34 +318,47 @@ async function fetchSignedLeadsByAdId(knownAdIds, nameToId, phoneToAdId, emailTo
   }
 }
 
-// Applies the 5-rule kill framework at the individual-ad level. Only flags a hard "kill"
-// verdict when a rule's own data requirement is actually met (e.g. won't call CTR too low
-// off a handful of impressions) — otherwise reports why it's too early to judge.
-function verdictForAd({ status, spendEur, impressions, ctr, frequency, leads, cplEur, spend3dNative, adCplBadEur, adCplIdealMaxEur, spendThresholdMinEur }) {
+// Applies Adam's kill framework (revised 2026-09-04) at the individual-ad level, in his stated
+// priority order — qualified rate > booked-call rate > CPL > CTR > frequency. Only flags a hard
+// "kill" verdict when a rule's own data requirement is actually met (e.g. won't call CTR too
+// low off a handful of impressions, or quality/booking rate off a couple of leads) — otherwise
+// reports why it's too early to judge. Frequency is deliberately NOT a kill trigger here — see
+// the comment on AD_CTR_KILL_PCT above for why.
+function verdictForAd({ status, spendNative, impressions, ctr, leads, cplNative, spend3dNative, reviewed, qualified, bookedCall }) {
   if (status && status !== 'ACTIVE') return { code: 'paused', label: 'Paused' };
 
   if (spend3dNative <= 0) {
     return { code: 'kill-no-recent-spend', label: 'Kill — no spend in 72h', reason: 'Delivery has stopped (low relevance, budget-starved, or disapproved) — check Ads Manager for a delivery issue.' };
   }
-  if (frequency >= 3.5) {
-    return { code: 'kill-high-frequency', label: 'Kill — frequency 3.5+', reason: `Frequency is ${frequency.toFixed(1)} — audience is seeing this too often; creative fatigue.` };
+  if (impressions >= 1000 && ctr < AD_CTR_KILL_PCT) {
+    return { code: 'kill-low-ctr', label: `Kill — CTR under ${AD_CTR_KILL_PCT}%`, reason: `${ctr.toFixed(2)}% CTR on ${impressions.toLocaleString()} impressions — the hook isn't landing.` };
   }
-  if (impressions >= 1000 && ctr < 0.5) {
-    return { code: 'kill-low-ctr', label: 'Kill — CTR under 0.5%', reason: `${ctr.toFixed(2)}% CTR on ${impressions.toLocaleString()} impressions — the hook isn't landing.` };
+  if (spendNative >= AD_SPEND_KILL_THRESHOLD_CAD && leads === 0) {
+    return { code: 'kill-no-leads', label: 'Kill — no leads after spend threshold', reason: `CA$${spendNative.toFixed(0)} spent (past the CA$${AD_SPEND_KILL_THRESHOLD_CAD} review threshold) with zero leads.` };
   }
-  if (spendEur >= spendThresholdMinEur && leads > 0 && cplEur > adCplBadEur) {
-    return { code: 'kill-over-target', label: 'Kill — CPL in the "Bad" range', reason: `€${cplEur.toFixed(0)} cost/lead vs the €${adCplBadEur}+ "Bad" line, after spending past the 2x review threshold.` };
+  if (spendNative >= AD_SPEND_KILL_THRESHOLD_CAD && leads > 0 && cplNative > AD_CPL_ACCEPTABLE_MAX_CAD) {
+    return { code: 'kill-bad-cpl', label: 'Kill — CPL in the "Bad" range', reason: `CA$${cplNative.toFixed(0)} cost/lead vs the CA$${AD_CPL_ACCEPTABLE_MAX_CAD}+ "Bad" line, after spending past the CA$${AD_SPEND_KILL_THRESHOLD_CAD} review threshold.` };
   }
-  if (spendEur >= spendThresholdMinEur && leads === 0) {
-    return { code: 'kill-no-leads', label: 'Kill — no leads after 2x spend', reason: `€${spendEur.toFixed(0)} spent (past the 2x review threshold) with zero leads.` };
+  if (reviewed >= MIN_SAMPLE_FOR_QUALITY_RULES) {
+    const qualifiedRatePct = (qualified / reviewed) * 100;
+    if (qualifiedRatePct < QUALIFIED_RATE_KILL_PCT) {
+      return { code: 'kill-bad-quality', label: 'Kill — low lead quality', reason: `Only ${qualifiedRatePct.toFixed(0)}% of ${reviewed} reviewed leads qualified (business + real problem + capacity) — under the ${QUALIFIED_RATE_KILL_PCT}% floor.` };
+    }
   }
-  // Rule 4 (CTR down 30% over 2 weeks) needs daily history this endpoint doesn't pull, and
-  // can't apply before the campaign itself is 2 weeks old anyway — surfaced via adKillRules.note
-  // in the response instead of a per-ad check.
-  if (leads > 0 && cplEur != null && cplEur <= adCplIdealMaxEur) {
-    return { code: 'promising', label: 'Promising — CPL in the ideal range', reason: `€${cplEur.toFixed(0)} cost/lead, at or under the €${adCplIdealMaxEur} ideal-band top — small sample, and CPL alone isn't enough for Instant Forms; check booked-call rate too before scaling.` };
+  if (leads >= MIN_SAMPLE_FOR_QUALITY_RULES) {
+    const bookedCallRatePct = (bookedCall / leads) * 100;
+    if (bookedCallRatePct < BOOKED_CALL_RATE_KILL_PCT) {
+      return { code: 'kill-bad-booking-rate', label: 'Kill — low booking rate', reason: `Only ${bookedCallRatePct.toFixed(0)}% of ${leads} leads booked a call — under the ${BOOKED_CALL_RATE_KILL_PCT}% floor.` };
+    }
   }
-  return { code: 'gathering-data', label: 'Gathering data', reason: 'Hasn’t hit any rule’s minimum data bar yet (spend, impressions, or leads) — too early to judge.' };
+  // Rule needing a CTR/CPL trend over daily history (down 30% over 2 weeks) can't be checked
+  // here — surfaced via adKillRules.note in the response instead of a per-ad check.
+  if (leads > 0 && cplNative != null) {
+    if (cplNative <= AD_CPL_GREAT_MAX_CAD) return { code: 'great', label: 'Great — CPL in target range', reason: `CA$${cplNative.toFixed(0)} cost/lead — but check qualified/booked-call rate above before scaling; CPL alone can look great on unqualified leads.` };
+    if (cplNative <= AD_CPL_GOOD_MAX_CAD) return { code: 'good', label: 'Good — CPL in target range', reason: `CA$${cplNative.toFixed(0)} cost/lead, in the CA$${AD_CPL_GOOD_MAX_CAD} "Good" band.` };
+    if (cplNative <= AD_CPL_ACCEPTABLE_MAX_CAD) return { code: 'acceptable', label: 'Acceptable', reason: `CA$${cplNative.toFixed(0)} cost/lead, in the CA$${AD_CPL_ACCEPTABLE_MAX_CAD} "Acceptable" band — not bad enough to kill yet, not cheap enough to scale hard.` };
+  }
+  return { code: 'gathering-data', label: 'Gathering data', reason: 'Hasn’t hit any rule’s minimum data bar yet (spend, impressions, leads, or reviewed count) — too early to judge.' };
 }
 
 module.exports = async function handler(req, res) {
@@ -387,19 +451,21 @@ module.exports = async function handler(req, res) {
       Math.round((Date.now() - new Date(CAMPAIGN_LAUNCH_DATE).getTime()) / 86400000)
     );
 
+    const emptySignedBucket = { total: 0, won: 0, lost: 0, reviewed: 0, qualified: 0, disqualified: 0, bookedCall: 0, resolved: 0, showed: 0 };
+
     const ads = (adInsightsRes.data || []).map(a => {
       const s = Number(a.spend || 0);
       const metaPixelLeads = leadsFromActions(a.actions);
-      const signed = signedByAdId ? (signedByAdId[a.ad_id] || { total: 0, won: 0, lost: 0 }) : null;
+      const signed = signedByAdId ? (signedByAdId[a.ad_id] || emptySignedBucket) : null;
       // Verified (GHL) count wins whenever it's available — see leadsSource note above. A GHL
       // opportunity can lag a few minutes behind the pixel firing (webhook sync delay), so this
       // can very briefly under-count a just-this-second booking; that's a far safer failure mode
       // than the duplicate-pixel overcounting it replaces.
       const l = signed ? signed.total : metaPixelLeads;
       const sEur = s * cadToEur;
-      const cpl = l > 0 ? sEur / l : null;
+      const cpl = l > 0 ? s / l : null; // CAD-native — CPL targets are CAD, not EUR (see 2026-09-04 KPI rework)
+      const cplEur = l > 0 ? sEur / l : null; // informational only
       const ctrVal = a.ctr ? Number(a.ctr) : 0;
-      const freqVal = a.frequency ? Number(a.frequency) : 0;
       const status = statusByAdId[a.ad_id] || null;
       const spend3d = spend3dByAdId[a.ad_id] ?? s; // fall back to lifetime if not in the 3d window at all
 
@@ -414,16 +480,15 @@ module.exports = async function handler(req, res) {
 
       const verdict = verdictForAd({
         status,
-        spendEur: sEur,
+        spendNative: s,
         impressions: Number(a.impressions || 0),
         ctr: ctrVal,
-        frequency: freqVal,
         leads: l,
-        cplEur: cpl,
+        cplNative: cpl,
         spend3dNative: spend3d,
-        adCplBadEur: AD_CPL_BAD_EUR,
-        adCplIdealMaxEur: AD_CPL_IDEAL_MAX_EUR,
-        spendThresholdMinEur: AD_CPL_BAD_EUR * SPEND_MULTIPLIER_MIN,
+        reviewed: signed ? signed.reviewed : 0,
+        qualified: signed ? signed.qualified : 0,
+        bookedCall: signed ? signed.bookedCall : 0,
       });
 
       return {
@@ -436,7 +501,8 @@ module.exports = async function handler(req, res) {
         spend_last3d_native: Math.round(spend3d * 100) / 100,
         leads: l,
         leads_meta_pixel: metaPixelLeads,
-        cpl_eur: cpl != null ? Math.round(cpl * 100) / 100 : null,
+        cpl_native: cpl != null ? Math.round(cpl * 100) / 100 : null,
+        cpl_eur: cplEur != null ? Math.round(cplEur * 100) / 100 : null,
         impressions: Number(a.impressions || 0),
         clicks: Number(a.clicks || 0),
         ctr: a.ctr ? Number(a.ctr) : null,
@@ -449,6 +515,10 @@ module.exports = async function handler(req, res) {
         signedLeads: signed ? signed.won : null,
         lostLeads: signed ? signed.lost : null,
         pipelineLeads: signed ? signed.total : null,
+        reviewedLeads: signed ? signed.reviewed : null,
+        qualifiedLeads: signed ? signed.qualified : null,
+        disqualifiedLeads: signed ? signed.disqualified : null,
+        bookedCallLeads: signed ? signed.bookedCall : null,
         verdict,
       };
     }).sort((x, y) => y.spend_native - x.spend_native);
@@ -475,8 +545,8 @@ module.exports = async function handler(req, res) {
     });
 
     const leads = ads.reduce((sum, a) => sum + a.leads, 0) + (unattributedLeads?.total || 0);
-    const cplNativeVal = leads > 0 ? spendNative / leads : null;
-    const cplEurVal = leads > 0 ? spendEur / leads : null;
+    const cplNativeVal = leads > 0 ? spendNative / leads : null; // CAD-native — the number targets are judged against
+    const cplEurVal = leads > 0 ? spendEur / leads : null; // informational only
 
     const leadsPerDay = leads / daysLive;
     const leadsNeeded = Math.max(0, LEAD_TARGET_MIN - leads);
@@ -485,23 +555,25 @@ module.exports = async function handler(req, res) {
       ? new Date(Date.now() + daysToMinLeadTarget * 86400000).toISOString().slice(0, 10)
       : null;
 
-    const spendThresholdMinEur = AD_CPL_BAD_EUR * SPEND_MULTIPLIER_MIN;
-    const spendThresholdMaxEur = AD_CPL_BAD_EUR * SPEND_MULTIPLIER_MAX;
-    const pastSpendThreshold = spendEur >= spendThresholdMinEur;
+    const pastSpendThreshold = spendNative >= AD_SPEND_KILL_THRESHOLD_CAD;
     const sampleTrustworthy = leads >= LEAD_TARGET_MIN;
 
+    const reviewed = funnelCounts?.reviewed || 0;
+    const qualified = funnelCounts?.qualified || 0;
+    const disqualified = funnelCounts?.disqualified || 0;
     const bookedCall = funnelCounts?.bookedCall || 0;
     const resolved = funnelCounts?.resolved || 0;
     const showed = funnelCounts?.showed || 0;
     const won = funnelCounts?.won || 0;
+    const qualifiedRatePct = reviewed > 0 ? (qualified / reviewed) * 100 : null;
     const bookedCallRatePct = leads > 0 ? (bookedCall / leads) * 100 : null;
     const showRatePct = resolved > 0 ? (showed / resolved) * 100 : null;
     const closeRatePct = showed > 0 ? (won / showed) * 100 : null;
-    const cacEur = won > 0 ? spendEur / won : null;
-    const costPerBookedCallEur = bookedCall > 0 ? spendEur / bookedCall : null;
+    const cacNative = won > 0 ? spendNative / won : null;
+    const costPerBookedCallNative = bookedCall > 0 ? spendNative / bookedCall : null;
 
     const healthVerdict = sampleTrustworthy
-      ? campaignHealthVerdict(cplEurVal, bookedCallRatePct)
+      ? campaignHealthVerdict(cplNativeVal, qualifiedRatePct, bookedCallRatePct)
       : null;
     const verdict = healthVerdict ? healthVerdict.code : 'gathering-data';
 
@@ -517,12 +589,10 @@ module.exports = async function handler(req, res) {
       fx: { cadToEur: Math.round(cadToEur * 10000) / 10000 },
       targets: {
         ...FUNNEL_TARGETS,
-        adCplIdealMaxEur: AD_CPL_IDEAL_MAX_EUR,
-        adCplBadEur: AD_CPL_BAD_EUR,
         leadTargetMin: LEAD_TARGET_MIN,
         leadTargetMax: LEAD_TARGET_MAX,
-        spendThresholdMinEur: Math.round(spendThresholdMinEur * 100) / 100,
-        spendThresholdMaxEur: Math.round(spendThresholdMaxEur * 100) / 100,
+        adSpendKillThresholdCad: AD_SPEND_KILL_THRESHOLD_CAD,
+        minSampleForQualityRules: MIN_SAMPLE_FOR_QUALITY_RULES,
       },
       totals: {
         spend_native: Math.round(spendNative * 100) / 100,
@@ -554,6 +624,10 @@ module.exports = async function handler(req, res) {
       },
       funnel: {
         leads,
+        reviewed,
+        qualified,
+        disqualified,
+        qualifiedRatePct: qualifiedRatePct != null ? Math.round(qualifiedRatePct * 10) / 10 : null,
         bookedCall,
         bookedCallRatePct: bookedCallRatePct != null ? Math.round(bookedCallRatePct * 10) / 10 : null,
         resolved,
@@ -561,20 +635,22 @@ module.exports = async function handler(req, res) {
         showRatePct: showRatePct != null ? Math.round(showRatePct * 10) / 10 : null,
         won,
         closeRatePct: closeRatePct != null ? Math.round(closeRatePct * 10) / 10 : null,
-        cacEur: cacEur != null ? Math.round(cacEur * 100) / 100 : null,
-        costPerBookedCallEur: costPerBookedCallEur != null ? Math.round(costPerBookedCallEur * 100) / 100 : null,
+        cacNative: cacNative != null ? Math.round(cacNative * 100) / 100 : null,
+        costPerBookedCallNative: costPerBookedCallNative != null ? Math.round(costPerBookedCallNative * 100) / 100 : null,
       },
       verdict,
       verdictLabel: healthVerdict ? healthVerdict.label : 'Gathering data',
       adsets,
       ads,
       adKillRules: {
-        spendMultiplierBeforeJudging: SPEND_MULTIPLIER_MIN,
-        minCtrPct: 0.5,
+        adSpendKillThresholdCad: AD_SPEND_KILL_THRESHOLD_CAD,
+        minCtrPct: AD_CTR_KILL_PCT,
         minImpressionsForCtrRule: 1000,
-        maxFrequency: 3.5,
+        qualifiedRateKillPct: QUALIFIED_RATE_KILL_PCT,
+        bookedCallRateKillPct: BOOKED_CALL_RATE_KILL_PCT,
+        minSampleForQualityRules: MIN_SAMPLE_FOR_QUALITY_RULES,
         noSpendWindowHours: 72,
-        note: 'CTR-drop-over-2-weeks rule needs daily history not pulled here — not evaluated.',
+        note: 'Frequency (3.5+) is a diagnostic signal, not an automatic kill — only matters alongside rising CPL or falling CTR, which needs daily history not pulled here. CTR-drop-over-2-weeks rule also needs that history — not evaluated.',
       },
     });
   } catch (err) {
