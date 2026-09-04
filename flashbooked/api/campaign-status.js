@@ -165,7 +165,37 @@ function adIdFromOpportunity(opp) {
 // attribution) still counts toward the total, bucketed separately from the per-ad breakdown.
 const UNATTRIBUTED_LEAD_TAG = 'flashbooked ireland lead';
 
-async function fetchSignedLeadsByAdId(knownAdIds, nameToId) {
+function normalizePhone(raw) {
+  const digits = String(raw || '').replace(/\D/g, '');
+  return digits ? digits.slice(-9) : null; // last 9 digits — robust to +353/0/00 prefix differences
+}
+
+// Meta's own Lead Ads data is the authoritative source for which ad a native Lead Form
+// submission came from — more reliable than GHL's attributions[] field, which is confirmed
+// (2026-09-04, cross-checked against Meta's own Leads Centre by Adam) to sometimes be flat
+// missing and sometimes just wrong for these leads. Fetched per-ad via Graph API's leads edge
+// and matched to GHL contacts by phone number, since every Meta lead carries one but email is
+// optional. Returns {} (not null) on any failure — including missing `leads_retrieval`
+// permission on META_SYSTEM_TOKEN — so callers fall back to GHL-only attribution rather than
+// breaking.
+async function fetchNativeLeadAdIdByPhone(adIds) {
+  const phoneToAdId = {};
+  try {
+    const results = await Promise.all(
+      adIds.map(id => metaGet(`/${id}/leads`, { fields: 'field_data' }).catch(() => ({ data: [] })))
+    );
+    adIds.forEach((adId, i) => {
+      for (const lead of (results[i].data || [])) {
+        const phoneField = (lead.field_data || []).find(f => /phone/i.test(f.name));
+        const phone = phoneField?.values?.[0] ? normalizePhone(phoneField.values[0]) : null;
+        if (phone) phoneToAdId[phone] = adId;
+      }
+    });
+  } catch (_) { /* leave phoneToAdId empty */ }
+  return phoneToAdId;
+}
+
+async function fetchSignedLeadsByAdId(knownAdIds, nameToId, phoneToAdId) {
   const pit = process.env.GHL_PIT_FLASHBOOKED;
   if (!pit) return null;
 
@@ -189,6 +219,12 @@ async function fetchSignedLeadsByAdId(knownAdIds, nameToId) {
     for (const opp of opps) {
       let adId = adIdFromOpportunity(opp);
       if (adId && !knownAdIds.has(adId) && nameToId[adId]) adId = nameToId[adId];
+      if (!adId || !knownAdIds.has(adId)) {
+        // GHL had no (or no valid) attribution — fall back to Meta's own lead-to-ad match by
+        // phone before giving up to the unattributed bucket.
+        const phone = normalizePhone(opp.contact?.phone);
+        if (phone && phoneToAdId[phone]) adId = phoneToAdId[phone];
+      }
       const isAttributed = adId && knownAdIds.has(adId);
       const tags = opp.contact?.tags || [];
       const isUnattributedCampaignLead = !isAttributed && tags.includes(UNATTRIBUTED_LEAD_TAG);
@@ -311,7 +347,8 @@ module.exports = async function handler(req, res) {
 
     const knownAdIds = new Set((adInsightsRes.data || []).map(a => a.ad_id));
     const nameToId = Object.fromEntries((adInsightsRes.data || []).map(a => [a.ad_name, a.ad_id]));
-    const signedResult = await fetchSignedLeadsByAdId(knownAdIds, nameToId);
+    const phoneToAdId = await fetchNativeLeadAdIdByPhone([...knownAdIds]);
+    const signedResult = await fetchSignedLeadsByAdId(knownAdIds, nameToId, phoneToAdId);
     const signedByAdId = signedResult ? signedResult.byAdId : null;
     const unattributedLeads = signedResult ? signedResult.unattributed : null;
     const funnelCounts = signedResult ? signedResult.funnel : null;
