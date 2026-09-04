@@ -285,9 +285,15 @@
     border: 1px solid var(--border);
   }
   .verdict-gathering-data { background: var(--info-soft); border-color: var(--info-border); color: var(--info); }
-  .verdict-on-target { background: var(--success-soft); border-color: var(--success-border); color: var(--success); }
-  .verdict-needs-review { background: var(--warning-soft); border-color: var(--warning-border); color: var(--warning); }
+  .verdict-great { background: var(--success-soft); border-color: var(--success-border); color: var(--success); }
+  .verdict-fine { background: var(--info-soft); border-color: var(--info-border); color: var(--info); }
+  .verdict-weak { background: var(--warning-soft); border-color: var(--warning-border); color: var(--warning); }
+  .verdict-bad { background: var(--danger-soft); border-color: var(--danger-border); color: var(--danger); }
   .verdict-banner b { color: var(--text-primary); }
+  .kpi-status { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; }
+  .kpi-status.met { color: var(--success); }
+  .kpi-status.miss { color: var(--danger); }
+  .kpi-status.nodata { color: var(--text-secondary); }
   .progress-wrap { margin-bottom: 28px; }
   .progress-label {
     display: flex;
@@ -373,15 +379,18 @@
 <main>
   <section id="campaign-section">
     <div class="section-title">Flash Booked Ireland — Campaign Tracker</div>
-    <div class="section-sub">Tracking against target: €99 cost/lead (1-in-3 close rate on a €297/mo client), needs 10-15 leads before the numbers are trustworthy.</div>
+    <div class="section-sub">Funnel-based KPIs (not flat CPL) — Instant Form leads can look cheap while unqualified, so cost/lead is judged together with booked-call rate. Needs 10-15 leads before the numbers are trustworthy.</div>
     <div id="campaign-error" style="display:none"></div>
-    <div id="ghl-fallback-warning" class="verdict-banner verdict-needs-review" style="display:none">
+    <div id="ghl-fallback-warning" class="verdict-banner verdict-weak" style="display:none">
       <b>GHL unreachable — lead counts below are Meta's raw pixel numbers</b>, which have been shown to overcount (a misconfigured tracking tag briefly caused ~4 duplicate "Schedule" events — see 2026-08-26). Treat these as upper bounds, not verified counts, until GHL is reachable again.
     </div>
     <div id="campaign-loading">Loading…</div>
     <div id="campaign-verdict" class="verdict-banner" style="display:none"></div>
     <div id="campaign-stats" class="stats-grid" style="display:none"></div>
     <div id="campaign-progress" class="progress-wrap" style="display:none"></div>
+    <div class="section-title" style="margin-top:8px; font-size:14px">Funnel &amp; KPI targets</div>
+    <div class="section-sub" style="margin-bottom:12px">Booked call = reached DC: Upcoming or later. Show rate excludes cancellations and calls still upcoming. Close rate is of those who showed. Cost per booked call is the north-star once the AI caller is live.</div>
+    <div id="campaign-funnel" class="stats-grid" style="display:none"></div>
     <div class="mobile-sort" id="adset-table-mobile-sort"></div>
     <table id="adset-table" style="display:none">
       <thead>
@@ -398,7 +407,7 @@
     </table>
 
     <div class="section-title" style="margin-top:28px">Individual ads</div>
-    <div class="section-sub">Kill/scale rules of thumb: 2x target cost/lead before judging, &lt;0.5% CTR at 1K+ impressions, 3.5+ frequency, no spend in 72h. The 2-week CTR-drop rule needs more history than this campaign has yet. "Signed" is real closed clients from FlashBooked's GHL pipeline, matched to the specific ad that brought them in — not just booked calls.</div>
+    <div class="section-sub">Kill/scale rules of thumb: 2x the €80 "Bad" cost/lead line before judging, &lt;0.5% CTR at 1K+ impressions, 3.5+ frequency, no spend in 72h. "Promising" means CPL is in the €30-60 ideal band — check the booked-call rate above before scaling on that alone. The 2-week CTR-drop rule needs more history than this campaign has yet. "Signed" is real closed clients from FlashBooked's GHL pipeline, matched to the specific ad that brought them in — not just booked calls.</div>
     <div class="mobile-sort" id="ads-table-mobile-sort"></div>
     <div style="overflow-x:auto">
     <table id="ads-table" style="display:none">
@@ -463,9 +472,21 @@ function escapeHtml(s) {
 
 const VERDICT_META = {
   'gathering-data': { label: 'Gathering data', cls: 'verdict-gathering-data' },
-  'on-target':      { label: 'On target',      cls: 'verdict-on-target' },
-  'needs-review':   { label: 'Needs review',    cls: 'verdict-needs-review' },
+  'great':          { label: 'Great',          cls: 'verdict-great' },
+  'fine':           { label: 'Fine',           cls: 'verdict-fine' },
+  'weak':           { label: 'Weak',           cls: 'verdict-weak' },
+  'bad':            { label: 'Bad',            cls: 'verdict-bad' },
 };
+
+// KPI target comparisons for the funnel section — 'min' passes at/above, 'max' passes at/below,
+// 'band' passes within [min,max] inclusive. Returns null (not applicable) when there's no
+// value to judge yet, so the UI can show "no data yet" instead of a false pass/fail.
+function kpiStatus(value, kind, min, max) {
+  if (value == null) return null;
+  if (kind === 'min') return value >= min;
+  if (kind === 'max') return value <= max;
+  return value >= min && value <= max;
+}
 
 let adsetRows = [], adsRows = [], numberRows = [], acctInfo = { currency: 'CAD' };
 
@@ -544,6 +565,45 @@ const VERDICT_PILL = {
   'promising': 'pill-green',
   'gathering-data': 'pill-blue',
 };
+
+function funnelCard(label, valueTxt, statusPass, statusTxt, subTxt) {
+  const statusCls = statusPass == null ? 'nodata' : (statusPass ? 'met' : 'miss');
+  const statusLabel = statusPass == null ? 'No data yet' : (statusPass ? statusTxt : `Below target — ${statusTxt}`);
+  return `
+    <div class="stat-card">
+      <div class="label">${escapeHtml(label)}</div>
+      <div class="value">${valueTxt}</div>
+      <div class="kpi-status ${statusCls}">${escapeHtml(statusLabel)}</div>
+      ${subTxt ? `<div class="cpl-vs-target">${escapeHtml(subTxt)}</div>` : ''}
+    </div>
+  `;
+}
+
+function renderFunnelCards(f, tg) {
+  const bookedStatus = kpiStatus(f.bookedCallRatePct, 'min', tg.bookedCallRatePctMin, tg.bookedCallRatePctMax);
+  const showStatus = kpiStatus(f.showRatePct, 'min', tg.showRatePctMin, tg.showRatePctMax);
+  const closeStatus = kpiStatus(f.closeRatePct, 'min', tg.closeRatePctMin, tg.closeRatePctMax);
+  const cacStatus = kpiStatus(f.cacEur, 'max', null, tg.cacEurMax);
+  const costPerBookedStatus = kpiStatus(f.costPerBookedCallEur, 'max', null, tg.costPerBookedCallEurMax);
+
+  return [
+    funnelCard('Booked call rate', f.bookedCallRatePct != null ? f.bookedCallRatePct.toFixed(0) + '%' : '—',
+      bookedStatus, `target ${tg.bookedCallRatePctMin}-${tg.bookedCallRatePctMax}%+`,
+      `${f.bookedCall} of ${f.leads} leads`),
+    funnelCard('Show rate', f.showRatePct != null ? f.showRatePct.toFixed(0) + '%' : '—',
+      showStatus, `target ${tg.showRatePctMin}-${tg.showRatePctMax}%+`,
+      f.resolved > 0 ? `${f.showed} of ${f.resolved} resolved calls` : 'no calls resolved yet'),
+    funnelCard('Close rate', f.closeRatePct != null ? f.closeRatePct.toFixed(0) + '%' : '—',
+      closeStatus, `target ${tg.closeRatePctMin}-${tg.closeRatePctMax}%+`,
+      f.showed > 0 ? `${f.won} of ${f.showed} shown calls` : 'no calls shown yet'),
+    funnelCard('CAC', f.cacEur != null ? fmtMoney(f.cacEur, 'EUR') : '—',
+      cacStatus, `target under €${tg.cacEurMax}`,
+      f.won > 0 ? `${f.won} won client${f.won === 1 ? '' : 's'}` : 'no clients won yet'),
+    funnelCard('Cost / booked call', f.costPerBookedCallEur != null ? fmtMoney(f.costPerBookedCallEur, 'EUR') : '—',
+      costPerBookedStatus, `north-star target €${tg.costPerBookedCallEurMin}-${tg.costPerBookedCallEurMax}`,
+      f.bookedCall > 0 ? `${f.bookedCall} booked calls` : 'no calls booked yet'),
+  ].join('');
+}
 
 function renderAdsetRows(rows) {
   document.getElementById('adset-tbody').innerHTML = rows.map(a => `
@@ -635,29 +695,34 @@ async function loadCampaign() {
     document.getElementById('ghl-fallback-warning').style.display =
       data.leadsSource === 'meta-pixel-fallback' ? 'block' : 'none';
 
-    const t = data.totals, tg = data.targets, p = data.progress, acct = data.account;
+    const t = data.totals, tg = data.targets, p = data.progress, f = data.funnel, acct = data.account;
 
-    const verdictMeta = VERDICT_META[data.verdict] || { label: data.verdict, cls: 'verdict-gathering-data' };
+    const verdictMeta = VERDICT_META[data.verdict] || { label: data.verdictLabel || data.verdict, cls: 'verdict-gathering-data' };
     const verdictEl = document.getElementById('campaign-verdict');
+    const bookedPctTxt = f.bookedCallRatePct != null ? f.bookedCallRatePct.toFixed(0) + '%' : 'no calls booked yet';
     let verdictMsg;
     if (data.verdict === 'gathering-data') {
       verdictMsg = p.estReadyDate
         ? `<b>${escapeHtml(verdictMeta.label)}</b> — ${p.leadsSoFar} of ${tg.leadTargetMin}-${tg.leadTargetMax} leads needed for a trustworthy read. At the current pace, expect enough data around <b>${escapeHtml(p.estReadyDate)}</b>. Nothing to act on before then.`
         : `<b>${escapeHtml(verdictMeta.label)}</b> — ${p.leadsSoFar} of ${tg.leadTargetMin}-${tg.leadTargetMax} leads needed for a trustworthy read.`;
-    } else if (data.verdict === 'on-target') {
-      verdictMsg = `<b>${escapeHtml(verdictMeta.label)}</b> — cost/lead (${fmtMoney(t.cpl_eur, 'EUR')}) is at or under the €${tg.targetCplEur} target, with a trustworthy sample size (${p.leadsSoFar} leads).`;
+    } else if (data.verdict === 'great') {
+      verdictMsg = `<b>${escapeHtml(verdictMeta.label)}</b> — cost/lead (${fmtMoney(t.cpl_eur, 'EUR')}) is at/under €50 with a ${bookedPctTxt} booked-call rate (40%+ target). Worth scaling.`;
+    } else if (data.verdict === 'weak') {
+      verdictMsg = `<b>${escapeHtml(verdictMeta.label)}</b> — cost/lead (${fmtMoney(t.cpl_eur, 'EUR')}) looks cheap, but only ${bookedPctTxt} of leads are booking a call (under the 20% floor). Don't scale on CPL alone — check lead quality/qualification.`;
+    } else if (data.verdict === 'bad') {
+      verdictMsg = `<b>${escapeHtml(verdictMeta.label)}</b> — cost/lead (${fmtMoney(t.cpl_eur, 'EUR')}) is €${tg.adCplBadEur}+ and only ${bookedPctTxt} of leads are booking a call. Worth a look at offer/creative.`;
     } else {
-      verdictMsg = `<b>${escapeHtml(verdictMeta.label)}</b> — cost/lead (${fmtMoney(t.cpl_eur, 'EUR')}) is still above the €${tg.targetCplEur} target after a trustworthy sample size and spend past the review threshold (€${tg.spendThresholdMinEur}+). Worth a look at offer/creative.`;
+      verdictMsg = `<b>${escapeHtml(verdictMeta.label)}</b> — cost/lead (${fmtMoney(t.cpl_eur, 'EUR')}) with a ${bookedPctTxt} booked-call rate. Decent, not yet scale-worthy.`;
     }
     verdictEl.className = 'verdict-banner ' + verdictMeta.cls;
     verdictEl.innerHTML = verdictMsg;
     verdictEl.style.display = 'block';
 
-    const cplClass = t.cpl_eur != null ? (t.cpl_eur <= tg.targetCplEur ? 'under' : 'over') : '';
+    const cplClass = t.cpl_eur != null ? (t.cpl_eur <= tg.cplEurMax ? 'under' : 'over') : '';
     const cplDiff = t.cpl_eur != null
-      ? (t.cpl_eur <= tg.targetCplEur
-          ? `${Math.round((1 - t.cpl_eur / tg.targetCplEur) * 100)}% under target`
-          : `${Math.round((t.cpl_eur / tg.targetCplEur - 1) * 100)}% over target`)
+      ? (t.cpl_eur <= tg.cplEurMax
+          ? `in the €${tg.cplEurMin}-${tg.cplEurMax} ideal band`
+          : `${Math.round((t.cpl_eur / tg.cplEurMax - 1) * 100)}% over the €${tg.cplEurMax} ideal-band top`)
       : 'no leads yet';
 
     document.getElementById('campaign-stats').innerHTML = `
@@ -674,7 +739,7 @@ async function loadCampaign() {
       <div class="stat-card">
         <div class="label">Cost / lead</div>
         <div class="value">${fmtMoney(t.cpl_eur, 'EUR')}</div>
-        <div class="cpl-vs-target ${cplClass}">${cplDiff} (target €${tg.targetCplEur})</div>
+        <div class="cpl-vs-target ${cplClass}">${cplDiff}</div>
       </div>
       <div class="stat-card">
         <div class="label">Days to trustworthy sample</div>
@@ -690,6 +755,9 @@ async function loadCampaign() {
       <div class="progress-track"><div class="progress-fill" style="width:${pct}%"></div></div>
     `;
     document.getElementById('campaign-progress').style.display = 'block';
+
+    document.getElementById('campaign-funnel').innerHTML = renderFunnelCards(f, tg);
+    document.getElementById('campaign-funnel').style.display = 'grid';
 
     acctInfo = acct;
     adsetRows = data.adsets || [];
