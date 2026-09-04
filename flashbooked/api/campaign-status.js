@@ -260,8 +260,12 @@ function normalizePhone(raw) {
 async function fetchNativeLeadAdIdMaps(adIds) {
   const phoneToAdId = {};
   const emailToAdId = {};
-  const raw = []; // TEMPORARY (2026-09-04) — full lead list for diagnosing Meta-vs-GHL count
-                   // mismatches via ?debug=leads. Remove once the count discrepancy is understood.
+  // Also doubles as the source of truth for totals.leads_meta_native — confirmed 2026-09-04 that
+  // GHL's native Lead Form sync can silently drop a real submission (found via this exact list:
+  // a lead named Gary Moran submitted via "Video 1" and never made it into GHL at all, a full
+  // day unfollowed before anyone noticed) — so the raw Meta list is worth surfacing permanently
+  // rather than only reaching for it once something already looks wrong.
+  const raw = [];
   try {
     const results = await Promise.all(
       adIds.map(id => metaGet(`/${id}/leads`, { fields: 'field_data,created_time' }).catch(() => ({ data: [] })))
@@ -495,9 +499,6 @@ module.exports = async function handler(req, res) {
     const nameToId = Object.fromEntries((adInsightsRes.data || []).map(a => [a.ad_name, a.ad_id]));
     const oldCampaignAdIds = new Set((oldAdsListRes.data || []).map(a => a.id));
     const { phoneToAdId, emailToAdId, raw: rawNativeLeads } = await fetchNativeLeadAdIdMaps([...knownAdIds]);
-    if (req.query.debug === 'leads') {
-      return res.status(200).json({ nativeLeadCount: rawNativeLeads.length, nativeLeads: rawNativeLeads });
-    }
     const signedResult = await fetchSignedLeadsByAdId(knownAdIds, nameToId, phoneToAdId, emailToAdId, oldCampaignAdIds);
     const signedByAdId = signedResult ? signedResult.byAdId : null;
     const unattributedLeads = signedResult ? signedResult.unattributed : null;
@@ -677,6 +678,13 @@ module.exports = async function handler(req, res) {
         spend_eur: Math.round(spendEur * 100) / 100,
         leads,
         leads_meta_pixel: leadsMetaPixel,
+        // Meta's own native Lead Form submission count for this campaign's ads — independent of
+        // whether GHL actually synced each one. A gap here (native > leads) means a real
+        // submission never made it into the pipeline at all (confirmed 2026-09-04 — see the
+        // comment on fetchNativeLeadAdIdMaps) — not a duplicate/overcount concern the way the
+        // old pixel-based leads_meta_pixel field was.
+        leads_meta_native: rawNativeLeads.length,
+        unsynced_leads_estimate: Math.max(0, rawNativeLeads.length - leads),
         cpl_native: cplNativeVal != null ? Math.round(cplNativeVal * 100) / 100 : null,
         cpl_eur: cplEurVal != null ? Math.round(cplEurVal * 100) / 100 : null,
         impressions: Number(totals.impressions || 0),

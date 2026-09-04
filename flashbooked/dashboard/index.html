@@ -388,6 +388,7 @@
     <div id="ghl-fallback-warning" class="verdict-banner verdict-acceptable" style="display:none">
       <b>GHL unreachable — lead counts below are Meta's raw pixel numbers</b>, which have been shown to overcount (a misconfigured tracking tag briefly caused ~4 duplicate "Schedule" events — see 2026-08-26). Treat these as upper bounds, not verified counts, until GHL is reachable again.
     </div>
+    <div id="sync-gap-warning" class="verdict-banner verdict-bad" style="display:none"></div>
     <div id="campaign-loading">Loading…</div>
     <div id="campaign-verdict" class="verdict-banner" style="display:none"></div>
     <div id="campaign-stats" class="stats-grid" style="display:none"></div>
@@ -747,6 +748,17 @@ async function loadCampaign() {
       data.leadsSource === 'meta-pixel-fallback' ? 'block' : 'none';
 
     const t = data.totals, tg = data.targets, p = data.progress, f = data.funnel, acct = data.account;
+
+    // Meta's native Lead Form count vs. what actually made it into GHL — a gap here means a
+    // real submission never synced at all (confirmed 2026-09-04: a lead named Gary Moran sat
+    // unfollowed for a full day before this was caught by comparing the two counts by hand).
+    const syncGapEl = document.getElementById('sync-gap-warning');
+    if (t.unsynced_leads_estimate > 0) {
+      syncGapEl.innerHTML = `<b>${t.unsynced_leads_estimate} lead${t.unsynced_leads_estimate === 1 ? '' : 's'} may not have synced to GHL</b> — Meta shows ${t.leads_meta_native} native form submissions but only ${t.leads} made it into the pipeline. Worth checking Meta's Leads Centre directly for anyone missing a follow-up.`;
+      syncGapEl.style.display = 'block';
+    } else {
+      syncGapEl.style.display = 'none';
+    }
 
     const verdictMeta = VERDICT_META[data.verdict] || { label: data.verdictLabel || data.verdict, cls: 'verdict-gathering-data' };
     const verdictEl = document.getElementById('campaign-verdict');
