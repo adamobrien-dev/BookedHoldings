@@ -346,20 +346,23 @@
        touching the Numbers table, whose fields (phone numbers, agent tags, usage bars, notes)
        genuinely need full width. */
     #adset-table tbody tr,
-    #ads-table tbody tr {
+    #ads-table tbody tr,
+    #lead-sources-table tbody tr {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(84px, 1fr));
       gap: 12px 14px;
     }
     #adset-table tbody td,
-    #ads-table tbody td {
+    #ads-table tbody td,
+    #lead-sources-table tbody td {
       display: block;
       padding: 0;
     }
     #ads-table tbody td[data-label="Ad"],
     #ads-table tbody td[data-label="Ad set"],
     #ads-table tbody td[data-label="Verdict"],
-    #adset-table tbody td[data-label="Ad set"] {
+    #adset-table tbody td[data-label="Ad set"],
+    #lead-sources-table tbody td[data-label="Source"] {
       grid-column: 1 / -1;
     }
   }
@@ -430,6 +433,31 @@
         </tr>
       </thead>
       <tbody id="ads-tbody"></tbody>
+    </table>
+    </div>
+  </section>
+
+  <section id="lead-sources-section">
+    <div class="section-title">Lead Sources</div>
+    <div class="section-sub">Every lead in the pipeline, by where it came from — the old (paused) campaign, the current one, Aoife's organic inbound calls, and anything unclassified. CPL only applies where there's ad spend behind the leads.</div>
+    <div id="lead-sources-error" style="display:none"></div>
+    <div id="lead-sources-loading">Loading…</div>
+    <div style="overflow-x:auto">
+    <table id="lead-sources-table" style="display:none">
+      <thead>
+        <tr>
+          <th>Source</th>
+          <th>Leads</th>
+          <th>Spend</th>
+          <th>Cost/lead</th>
+          <th>Qualified</th>
+          <th>Booked call</th>
+          <th>Show rate</th>
+          <th>Close rate</th>
+          <th>Won</th>
+        </tr>
+      </thead>
+      <tbody id="lead-sources-tbody"></tbody>
     </table>
     </div>
   </section>
@@ -652,6 +680,22 @@ function renderAdsRows(rows) {
   }).join('');
 }
 
+function renderLeadSourceRows(rows, currency) {
+  document.getElementById('lead-sources-tbody').innerHTML = rows.map(r => `
+    <tr>
+      <td data-label="Source">${escapeHtml(r.name)}</td>
+      <td data-label="Leads">${r.leads}</td>
+      <td data-label="Spend">${r.spend_native != null ? fmtMoney(r.spend_native, currency) : '—'}</td>
+      <td data-label="Cost/lead">${r.cpl_native != null ? fmtMoney(r.cpl_native, currency) : '—'}</td>
+      <td data-label="Qualified">${r.reviewed > 0 ? `${r.qualified}/${r.reviewed} (${r.qualifiedRatePct.toFixed(0)}%)` : '—'}</td>
+      <td data-label="Booked call">${r.leads > 0 ? `${r.bookedCall}/${r.leads} (${r.bookedCallRatePct.toFixed(0)}%)` : '—'}</td>
+      <td data-label="Show rate">${r.showRatePct != null ? r.showRatePct.toFixed(0) + '%' : '—'}</td>
+      <td data-label="Close rate">${r.closeRatePct != null ? r.closeRatePct.toFixed(0) + '%' : '—'}</td>
+      <td data-label="Won">${r.won}</td>
+    </tr>
+  `).join('');
+}
+
 function renderNumberRows(rows) {
   document.getElementById('tbody').innerHTML = rows.map(n => {
     const meta = STATUS_META[n.status] || { label: n.status, pill: 'pill-gray' };
@@ -788,6 +832,15 @@ async function loadCampaign() {
     renderAdsRows(adsRows);
     document.getElementById('ads-table').style.display = 'table';
 
+    if (data.leadSources) {
+      renderLeadSourceRows(data.leadSources, acct.currency);
+      document.getElementById('lead-sources-table').style.display = 'table';
+    } else {
+      document.getElementById('lead-sources-error').textContent = 'GHL unreachable — lead sources unavailable.';
+      document.getElementById('lead-sources-error').style.display = 'block';
+    }
+    document.getElementById('lead-sources-loading').style.display = 'none';
+
     document.getElementById('generated').textContent =
       'Updated ' + new Date(data.generatedAt).toLocaleString('en-IE', { dateStyle: 'medium', timeStyle: 'short' });
     document.getElementById('campaign-loading').style.display = 'none';
@@ -796,6 +849,7 @@ async function loadCampaign() {
     errEl.textContent = 'Failed to load campaign status: ' + err.message;
     errEl.style.display = 'block';
     document.getElementById('campaign-loading').style.display = 'none';
+    document.getElementById('lead-sources-loading').style.display = 'none';
   }
 }
 
