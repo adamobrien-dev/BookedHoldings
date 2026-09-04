@@ -29,6 +29,8 @@ const AD_ACCOUNT_ID = 'act_913731484412697'; // "Booked Clinics" — shared agen
 // other tracking logic needed to change, just which campaign is live.
 const CAMPAIGN_ID = '52571401069976'; // "Flash Booked Ireland Lead forms"
 const CAMPAIGN_LAUNCH_DATE = '2026-08-31';
+const OLD_CAMPAIGN_ID = '52568457569176'; // "Flash Booked Ireland" — paused, tracked read-only for the Lead Sources view
+const OLD_CAMPAIGN_NAME = 'Flash Booked Ireland (old)';
 
 const GHL_API = 'https://services.leadconnectorhq.com';
 const GHL_LOCATION_ID = 'M8E6rSDwYijkpGWK1AWR'; // FlashBooked — same location lead.js/book-discovery-call.js write to
@@ -145,6 +147,34 @@ function campaignHealthVerdict(cplCad, qualifiedRatePct, bookedCallRatePct) {
   return { code: 'bad', label: 'Bad — CPL over target' };
 }
 
+// Turns one lead-source funnel bucket into the row shape the Lead Sources view renders.
+// `spendNativeVal` is null for organic sources (Aoife's calls, "other") — CPL only makes sense
+// where there's ad spend behind the leads.
+function summarizeLeadSource(key, name, bucket, spendNativeVal) {
+  const qualifiedRatePct = bucket.reviewed > 0 ? (bucket.qualified / bucket.reviewed) * 100 : null;
+  const bookedCallRatePct = bucket.total > 0 ? (bucket.bookedCall / bucket.total) * 100 : null;
+  const showRatePct = bucket.resolved > 0 ? (bucket.showed / bucket.resolved) * 100 : null;
+  const closeRatePct = bucket.showed > 0 ? (bucket.won / bucket.showed) * 100 : null;
+  const cplVal = spendNativeVal != null && bucket.total > 0 ? spendNativeVal / bucket.total : null;
+  return {
+    key,
+    name,
+    spend_native: spendNativeVal != null ? Math.round(spendNativeVal * 100) / 100 : null,
+    leads: bucket.total,
+    cpl_native: cplVal != null ? Math.round(cplVal * 100) / 100 : null,
+    reviewed: bucket.reviewed,
+    qualified: bucket.qualified,
+    qualifiedRatePct: qualifiedRatePct != null ? Math.round(qualifiedRatePct * 10) / 10 : null,
+    bookedCall: bucket.bookedCall,
+    bookedCallRatePct: bookedCallRatePct != null ? Math.round(bookedCallRatePct * 10) / 10 : null,
+    resolved: bucket.resolved,
+    showed: bucket.showed,
+    showRatePct: showRatePct != null ? Math.round(showRatePct * 10) / 10 : null,
+    won: bucket.won,
+    closeRatePct: closeRatePct != null ? Math.round(closeRatePct * 10) / 10 : null,
+  };
+}
+
 async function metaGet(path, params) {
   const token = process.env.META_SYSTEM_TOKEN;
   const qs = new URLSearchParams({ ...params, access_token: token }).toString();
@@ -207,6 +237,11 @@ function adIdFromOpportunity(opp) {
 // attribution) still counts toward the total, bucketed separately from the per-ad breakdown.
 const UNATTRIBUTED_LEAD_TAG = 'flashbooked ireland lead';
 
+// Organic inbound calls to Aoife (the AI receptionist) — no ad involved, zero spend, so these
+// never carry ad attribution and shouldn't be lumped into either campaign's per-ad breakdown.
+// Tracked separately in the Lead Sources view instead (2026-09-04, Adam's request).
+const AOIFE_CALL_LOG_TAG = 'aoife call log';
+
 function normalizePhone(raw) {
   const digits = String(raw || '').replace(/\D/g, '');
   return digits ? digits.slice(-9) : null; // last 9 digits — robust to +353/0/00 prefix differences
@@ -244,7 +279,38 @@ async function fetchNativeLeadAdIdMaps(adIds) {
   return { phoneToAdId, emailToAdId };
 }
 
-async function fetchSignedLeadsByAdId(knownAdIds, nameToId, phoneToAdId, emailToAdId) {
+const emptyFunnelBucket = () => ({
+  total: 0, won: 0, lost: 0,
+  reviewed: 0, qualified: 0, disqualified: 0,
+  bookedCall: 0, resolved: 0, showed: 0,
+});
+// Mutates `bucket` with one opportunity's stage — shared by every tally below (per-ad,
+// unattributed, campaign-wide funnel, and the cross-source Lead Sources view) so they can't
+// drift out of sync with each other.
+function tallyStage(bucket, stage) {
+  bucket.total += 1;
+  if (stage === GHL_WON_STAGE_ID) bucket.won += 1;
+  else if (stage === GHL_LOST_STAGE_ID) bucket.lost += 1;
+  if (REVIEWED_STAGES.has(stage)) {
+    bucket.reviewed += 1;
+    if (stage === STAGE_DISQUALIFIED) bucket.disqualified += 1;
+    else bucket.qualified += 1;
+  }
+  if (BOOKED_CALL_STAGES.has(stage)) {
+    bucket.bookedCall += 1;
+    if (RESOLVED_CALL_STAGES.has(stage)) {
+      bucket.resolved += 1;
+      if (!NO_SHOW_STAGES.has(stage) && !CANCELLED_STAGES.has(stage)) bucket.showed += 1;
+    }
+  }
+}
+
+// `knownAdIds`/`nameToId`/`phoneToAdId`/`emailToAdId` are all scoped to the *current* campaign's
+// ads — old-campaign leads are identified via `oldCampaignAdIds` (attribution only; the old
+// campaign is paused, so no live Meta lead data to fall back on there) and Aoife's organic
+// inbound calls via AOIFE_CALL_LOG_TAG, keeping both fully separate from the current campaign's
+// per-ad kill-rule breakdown while still counting them in the cross-source `leadSources` view.
+async function fetchSignedLeadsByAdId(knownAdIds, nameToId, phoneToAdId, emailToAdId, oldCampaignAdIds) {
   const pit = process.env.GHL_PIT_FLASHBOOKED;
   if (!pit) return null;
 
@@ -259,34 +325,15 @@ async function fetchSignedLeadsByAdId(knownAdIds, nameToId, phoneToAdId, emailTo
     const data = await res.json();
     const opps = data.opportunities || [];
 
-    const emptyBucket = () => ({
-      total: 0, won: 0, lost: 0,
-      reviewed: 0, qualified: 0, disqualified: 0,
-      bookedCall: 0, resolved: 0, showed: 0,
-    });
-    // Mutates `bucket` with this opportunity's stage — shared by the per-ad, unattributed, and
-    // campaign-wide funnel tallies so the three can't drift out of sync with each other.
-    function tally(bucket, stage) {
-      bucket.total += 1;
-      if (stage === GHL_WON_STAGE_ID) bucket.won += 1;
-      else if (stage === GHL_LOST_STAGE_ID) bucket.lost += 1;
-      if (REVIEWED_STAGES.has(stage)) {
-        bucket.reviewed += 1;
-        if (stage === STAGE_DISQUALIFIED) bucket.disqualified += 1;
-        else bucket.qualified += 1;
-      }
-      if (BOOKED_CALL_STAGES.has(stage)) {
-        bucket.bookedCall += 1;
-        if (RESOLVED_CALL_STAGES.has(stage)) {
-          bucket.resolved += 1;
-          if (!NO_SHOW_STAGES.has(stage) && !CANCELLED_STAGES.has(stage)) bucket.showed += 1;
-        }
-      }
-    }
-
     const byAdId = {};
-    const unattributed = emptyBucket();
-    const funnel = emptyBucket();
+    const unattributed = emptyFunnelBucket();
+    const funnel = emptyFunnelBucket();
+    const leadSources = {
+      current: emptyFunnelBucket(),
+      old: emptyFunnelBucket(),
+      aoife: emptyFunnelBucket(),
+      other: emptyFunnelBucket(),
+    };
     for (const opp of opps) {
       let adId = adIdFromOpportunity(opp);
       if (adId && !knownAdIds.has(adId) && nameToId[adId]) adId = nameToId[adId];
@@ -301,18 +348,29 @@ async function fetchSignedLeadsByAdId(knownAdIds, nameToId, phoneToAdId, emailTo
       const isAttributed = adId && knownAdIds.has(adId);
       const tags = opp.contact?.tags || [];
       const isUnattributedCampaignLead = !isAttributed && tags.includes(UNATTRIBUTED_LEAD_TAG);
-      if (!isAttributed && !isUnattributedCampaignLead) continue;
-
       const stage = opp.pipelineStageId;
+
+      // Current-campaign-scoped tallies (per-ad kill rules + campaign funnel) — unchanged from
+      // before, still only sees this campaign's own leads.
       if (isAttributed) {
-        if (!byAdId[adId]) byAdId[adId] = emptyBucket();
-        tally(byAdId[adId], stage);
-      } else {
-        tally(unattributed, stage);
+        if (!byAdId[adId]) byAdId[adId] = emptyFunnelBucket();
+        tallyStage(byAdId[adId], stage);
+        tallyStage(funnel, stage);
+      } else if (isUnattributedCampaignLead) {
+        tallyStage(unattributed, stage);
+        tallyStage(funnel, stage);
       }
-      tally(funnel, stage);
+
+      // Cross-source Lead Sources view — every opportunity lands in exactly one bucket, so
+      // totals across all four always add up to the whole pipeline.
+      let source;
+      if (isAttributed || isUnattributedCampaignLead) source = 'current';
+      else if (adId && oldCampaignAdIds.has(adId)) source = 'old';
+      else if (tags.includes(AOIFE_CALL_LOG_TAG)) source = 'aoife';
+      else source = 'other';
+      tallyStage(leadSources[source], stage);
     }
-    return { byAdId, unattributed, funnel };
+    return { byAdId, unattributed, funnel, leadSources };
   } catch (_) {
     return null;
   }
@@ -370,7 +428,7 @@ module.exports = async function handler(req, res) {
   }
 
   try {
-    const [account, campaignInsightsRes, adsetInsightsRes, adInsightsRes, adInsights3dRes, adInsightsDailyRes, adsListRes, cadToEur] = await Promise.all([
+    const [account, campaignInsightsRes, adsetInsightsRes, adInsightsRes, adInsights3dRes, adInsightsDailyRes, adsListRes, cadToEur, oldCampaignInsightsRes, oldAdsListRes] = await Promise.all([
       metaGet(`/${AD_ACCOUNT_ID}`, { fields: 'name,currency' }),
       metaGet(`/${CAMPAIGN_ID}/insights`, {
         fields: 'spend,impressions,clicks,ctr,cpc,cpm,reach,frequency,actions',
@@ -409,6 +467,11 @@ module.exports = async function handler(req, res) {
       }),
       metaGet(`/${CAMPAIGN_ID}/ads`, { fields: 'id,name,effective_status', limit: 100 }),
       fetchCadToEurRate(),
+      // Old, paused campaign — just a total-spend snapshot for the Lead Sources view, not the
+      // full per-ad breakdown the active campaign gets (nothing actionable left to optimize on
+      // a paused campaign).
+      metaGet(`/${OLD_CAMPAIGN_ID}/insights`, { fields: 'spend', date_preset: 'maximum' }),
+      metaGet(`/${OLD_CAMPAIGN_ID}/ads`, { fields: 'id', limit: 100 }),
     ]);
 
     const firstSpendDateByAdId = {};
@@ -420,11 +483,13 @@ module.exports = async function handler(req, res) {
 
     const knownAdIds = new Set((adInsightsRes.data || []).map(a => a.ad_id));
     const nameToId = Object.fromEntries((adInsightsRes.data || []).map(a => [a.ad_name, a.ad_id]));
+    const oldCampaignAdIds = new Set((oldAdsListRes.data || []).map(a => a.id));
     const { phoneToAdId, emailToAdId } = await fetchNativeLeadAdIdMaps([...knownAdIds]);
-    const signedResult = await fetchSignedLeadsByAdId(knownAdIds, nameToId, phoneToAdId, emailToAdId);
+    const signedResult = await fetchSignedLeadsByAdId(knownAdIds, nameToId, phoneToAdId, emailToAdId, oldCampaignAdIds);
     const signedByAdId = signedResult ? signedResult.byAdId : null;
     const unattributedLeads = signedResult ? signedResult.unattributed : null;
     const funnelCounts = signedResult ? signedResult.funnel : null;
+    const leadSourceCounts = signedResult ? signedResult.leadSources : null;
     // GHL's pipeline is ground truth once an ad's utm_content is attributing correctly — Meta's
     // own pixel count can overcount (confirmed 2026-08-26: Ad 13/15's misconfigured utm_content
     // tag correlated with ~4 duplicate "Schedule" pixel fires that were never real distinct
@@ -642,6 +707,12 @@ module.exports = async function handler(req, res) {
       verdictLabel: healthVerdict ? healthVerdict.label : 'Gathering data',
       adsets,
       ads,
+      leadSources: leadSourceCounts ? [
+        summarizeLeadSource('current', 'Flash Booked Ireland Lead forms (current)', leadSourceCounts.current, spendNative),
+        summarizeLeadSource('old', OLD_CAMPAIGN_NAME, leadSourceCounts.old, Number(oldCampaignInsightsRes.data?.[0]?.spend || 0)),
+        summarizeLeadSource('aoife', 'Aoife Call Log (organic)', leadSourceCounts.aoife, null),
+        summarizeLeadSource('other', 'Other / Unknown', leadSourceCounts.other, null),
+      ] : null,
       adKillRules: {
         adSpendKillThresholdCad: AD_SPEND_KILL_THRESHOLD_CAD,
         minCtrPct: AD_CTR_KILL_PCT,
