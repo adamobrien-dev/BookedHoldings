@@ -1,14 +1,19 @@
 // GET /api/campaign-status
-//   — Tracks the "Flash Booked Ireland" Meta campaign against the unit economics Adam set:
-//     €297/mo client value, 1-in-3 target close rate → €99 target cost-per-lead, and a
-//     10-15 lead sample size needed before the numbers are trustworthy enough to act on.
+//   — Tracks the "Flash Booked Ireland Lead forms" Meta campaign against a funnel-stage KPI
+//     framework (set 2026-09-04, see FUNNEL_TARGETS below), not a flat CPL target. That older
+//     model (€297/mo retainer, 1-in-3 close rate → €99 target CPL) assumed a monthly-retainer
+//     offer and treated cost-per-lead as the whole story; FlashBooked's actual offer is a
+//     €1,000 upfront sale, and native Instant Form leads can look cheap on CPL alone while
+//     being unqualified. So CPL is now judged together with how many leads actually book a
+//     call, show up, and close — using FlashBooked's real GHL pipeline stages (Leads: New →
+//     Convo: Responded → DC: Upcoming → ... → SC: Upcoming → ... → Won/Lost) as the funnel.
 //     Read-only. Pulls live from the Graph API using the same META_SYSTEM_TOKEN already used
-//     by capi.js. Ad account is CAD-denominated; converts to EUR for the target comparison.
+//     by capi.js. Ad account is CAD-denominated; converts to EUR for the target comparisons.
 //
 //   Also breaks down to individual-ad level and applies kill/scale rules of thumb (adapted
-//   from a common paid-ads framework — 2x target CPL before judging, <0.5% CTR at 1K+
-//   impressions, 3.5+ frequency, no spend in 72h) so specific underperforming creatives can
-//   be spotted, not just whole ad sets. The 30%-CTR-drop-over-2-weeks rule needs daily
+//   from a common paid-ads framework — 2x a "bad" CPL threshold before judging, <0.5% CTR at
+//   1K+ impressions, 3.5+ frequency, no spend in 72h) so specific underperforming creatives
+//   can be spotted, not just whole ad sets. The 30%-CTR-drop-over-2-weeks rule needs daily
 //   history this endpoint doesn't fetch, so it's surfaced as "not yet evaluable" rather than
 //   silently skipped.
 
@@ -27,14 +32,76 @@ const GHL_PIPELINE_ID = 'w611GWtjqoj03tK8uYgC'; // "Master Pipeline"
 const GHL_WON_STAGE_ID = '52eac318-5157-4711-957b-52f680e005a9'; // "💰 Won"
 const GHL_LOST_STAGE_ID = 'af84d738-f769-4bff-8f71-388e25ffba53'; // "🥦 Lost (Not Sold)"
 
-const CLIENT_VALUE_EUR = 297;
-const TARGET_CLOSE_RATE = 1 / 3;
-const TARGET_CPL_EUR = Math.round(CLIENT_VALUE_EUR * TARGET_CLOSE_RATE); // 99 — break-even-in-month-1 standard
-const LEAD_TARGET_MIN = 10;
-const LEAD_TARGET_MAX = 15;
+// Master Pipeline's full stage list (fetched 2026-09-04 via GET /opportunities/pipelines) —
+// a two-call sales process, Discovery Call (DC) then Strategy Call (SC), before Won/Lost.
+const STAGE_DC_UPCOMING = '73f0587c-1d51-4e41-b070-f1eeb016cb0c'; // "📞 DC: Upcoming"
+const STAGE_DC_CANCELLED = '59c5b2d1-dc45-4e29-87ac-9bb4447b12ba'; // "❌ DC: Cancelled"
+const STAGE_DC_NO_SHOW = '3adb4b6b-6d26-497d-b781-d8561c708a52'; // "👻 DC: No Show"
+const STAGE_DC_FOLLOW_UP = '27118d50-4111-495b-8f64-25e97e1ea6d4'; // "💲 DC: Follow Up"
+const STAGE_SC_UPCOMING = 'f09360c1-a210-4fff-8630-5103db20e28e'; // "📞 SC: Upcoming"
+const STAGE_SC_CANCELLED = '1c053852-b049-49d1-a171-57de75284de4'; // "❌ SC: Cancelled"
+const STAGE_SC_NO_SHOW = 'd45b407a-d836-40c1-9ebf-7da1543a0b6a'; // "👻 SC: No Show"
+const STAGE_SC_FOLLOW_UP = '6314c5a6-4ad0-4935-94e5-0aaff362ff0c'; // "💲 SC: Follow Up"
+
+// Adam's stated funnel (2026-09-04) is 3 stages — booked call → show → close — simpler than
+// the real two-call DC-then-SC pipeline above. Collapsing DC and SC together to match that:
+// any of these means a Discovery Call was booked at some point. GHL's API only exposes an
+// opportunity's *current* stage, not its history, so a lead already further along (e.g. at
+// SC: Upcoming) still counts here, since forward-only pipeline progression means it must have
+// passed through DC: Upcoming to get there.
+const BOOKED_CALL_STAGES = new Set([
+  STAGE_DC_UPCOMING, STAGE_DC_CANCELLED, STAGE_DC_NO_SHOW, STAGE_DC_FOLLOW_UP,
+  STAGE_SC_UPCOMING, STAGE_SC_CANCELLED, STAGE_SC_NO_SHOW, STAGE_SC_FOLLOW_UP,
+  GHL_WON_STAGE_ID, GHL_LOST_STAGE_ID,
+]);
+// A booked call whose outcome is already known — excludes DC: Upcoming, which just means a
+// call is scheduled and hasn't happened yet, so it can't be scored as shown/no-show/cancelled.
+const RESOLVED_CALL_STAGES = new Set([
+  STAGE_DC_CANCELLED, STAGE_DC_NO_SHOW, STAGE_DC_FOLLOW_UP,
+  STAGE_SC_UPCOMING, STAGE_SC_CANCELLED, STAGE_SC_NO_SHOW, STAGE_SC_FOLLOW_UP,
+  GHL_WON_STAGE_ID, GHL_LOST_STAGE_ID,
+]);
+const NO_SHOW_STAGES = new Set([STAGE_DC_NO_SHOW, STAGE_SC_NO_SHOW]);
+const CANCELLED_STAGES = new Set([STAGE_DC_CANCELLED, STAGE_SC_CANCELLED]);
+
+// Kept for the per-ad kill/scale spend-threshold rule (verdictForAd) — unrelated to the old
+// CPL/close-rate target model retired 2026-09-04 in favor of FUNNEL_TARGETS below.
 const SPEND_MULTIPLIER_MIN = 2;
 const SPEND_MULTIPLIER_MAX = 3;
 const FALLBACK_CAD_TO_EUR = 0.62; // used only if the live FX lookup fails
+const LEAD_TARGET_MIN = 10;
+const LEAD_TARGET_MAX = 15;
+
+// Ad-level CPL reference points, replacing the old flat €99 target — top of Adam's "ideal"
+// CPL band (promising) and his own "Bad: €80+ CPL" line (kill threshold).
+const AD_CPL_IDEAL_MAX_EUR = 60;
+const AD_CPL_BAD_EUR = 80;
+
+// Campaign-level funnel KPI targets for native Lead Form campaigns, from Adam's own benchmarks
+// (2026-09-04) for this funnel: Ad → Instant Form → Lead → AI call/SMS → Booked call (DC:
+// Upcoming+) → Show → Closed (Won). CPL alone is misleading for Instant Forms (can look cheap
+// while unqualified), so it's always read together with the booked-call rate.
+const FUNNEL_TARGETS = {
+  ctrPctMin: 2, // 2%+
+  cpcEurMax: 3, // < €2–3
+  cplEurMin: 30, cplEurMax: 60, // €30–60 ideal
+  bookedCallRatePctMin: 30, bookedCallRatePctMax: 50, // qualified/booked lead rate
+  showRatePctMin: 65, showRatePctMax: 80,
+  closeRatePctMin: 20, closeRatePctMax: 30, // of those who showed, % that close
+  cacEurMax: 500, // spend per Won client
+  costPerBookedCallEurMin: 150, costPerBookedCallEurMax: 200, // north-star once the AI caller is live
+};
+
+// Adam's own Great/Fine/Weak/Bad bands (2026-09-04) for judging an Instant Form campaign —
+// weighs CPL together with the booked-call rate (the earliest available proxy for lead
+// quality, before enough calls have happened to score show/close rates directly).
+function campaignHealthVerdict(cplEur, bookedCallRatePct) {
+  if (cplEur == null || bookedCallRatePct == null) return null;
+  if (cplEur <= 50 && bookedCallRatePct >= 40) return { code: 'great', label: 'Great' };
+  if (bookedCallRatePct < 20) return { code: 'weak', label: 'Weak — cheap leads, low qualification' };
+  if (cplEur >= AD_CPL_BAD_EUR && bookedCallRatePct < 25) return { code: 'bad', label: 'Bad' };
+  return { code: 'fine', label: 'Fine' };
+}
 
 async function metaGet(path, params) {
   const token = process.env.META_SYSTEM_TOKEN;
@@ -115,24 +182,41 @@ async function fetchSignedLeadsByAdId(knownAdIds, nameToId) {
 
     const byAdId = {};
     const unattributed = { total: 0, won: 0, lost: 0 };
+    // Funnel counts span every campaign lead (attributed or not) — the funnel is about the
+    // campaign as a whole, not per-ad, so it doesn't need the ad_id match that byAdId/
+    // unattributed do.
+    const funnel = { leads: 0, bookedCall: 0, resolved: 0, showed: 0, won: 0 };
     for (const opp of opps) {
       let adId = adIdFromOpportunity(opp);
       if (adId && !knownAdIds.has(adId) && nameToId[adId]) adId = nameToId[adId];
-      if (!adId || !knownAdIds.has(adId)) {
-        const tags = opp.contact?.tags || [];
-        if (tags.includes(UNATTRIBUTED_LEAD_TAG)) {
-          unattributed.total += 1;
-          if (opp.pipelineStageId === GHL_WON_STAGE_ID) unattributed.won += 1;
-          else if (opp.pipelineStageId === GHL_LOST_STAGE_ID) unattributed.lost += 1;
-        }
-        continue;
+      const isAttributed = adId && knownAdIds.has(adId);
+      const tags = opp.contact?.tags || [];
+      const isUnattributedCampaignLead = !isAttributed && tags.includes(UNATTRIBUTED_LEAD_TAG);
+      if (!isAttributed && !isUnattributedCampaignLead) continue;
+
+      if (isAttributed) {
+        if (!byAdId[adId]) byAdId[adId] = { total: 0, won: 0, lost: 0 };
+        byAdId[adId].total += 1;
+        if (opp.pipelineStageId === GHL_WON_STAGE_ID) byAdId[adId].won += 1;
+        else if (opp.pipelineStageId === GHL_LOST_STAGE_ID) byAdId[adId].lost += 1;
+      } else {
+        unattributed.total += 1;
+        if (opp.pipelineStageId === GHL_WON_STAGE_ID) unattributed.won += 1;
+        else if (opp.pipelineStageId === GHL_LOST_STAGE_ID) unattributed.lost += 1;
       }
-      if (!byAdId[adId]) byAdId[adId] = { total: 0, won: 0, lost: 0 };
-      byAdId[adId].total += 1;
-      if (opp.pipelineStageId === GHL_WON_STAGE_ID) byAdId[adId].won += 1;
-      else if (opp.pipelineStageId === GHL_LOST_STAGE_ID) byAdId[adId].lost += 1;
+
+      funnel.leads += 1;
+      const stage = opp.pipelineStageId;
+      if (BOOKED_CALL_STAGES.has(stage)) {
+        funnel.bookedCall += 1;
+        if (RESOLVED_CALL_STAGES.has(stage)) {
+          funnel.resolved += 1;
+          if (!NO_SHOW_STAGES.has(stage) && !CANCELLED_STAGES.has(stage)) funnel.showed += 1;
+        }
+      }
+      if (stage === GHL_WON_STAGE_ID) funnel.won += 1;
     }
-    return { byAdId, unattributed };
+    return { byAdId, unattributed, funnel };
   } catch (_) {
     return null;
   }
@@ -141,7 +225,7 @@ async function fetchSignedLeadsByAdId(knownAdIds, nameToId) {
 // Applies the 5-rule kill framework at the individual-ad level. Only flags a hard "kill"
 // verdict when a rule's own data requirement is actually met (e.g. won't call CTR too low
 // off a handful of impressions) — otherwise reports why it's too early to judge.
-function verdictForAd({ status, spendEur, impressions, ctr, frequency, leads, cplEur, spend3dNative, targetCplEur, spendThresholdMinEur }) {
+function verdictForAd({ status, spendEur, impressions, ctr, frequency, leads, cplEur, spend3dNative, adCplBadEur, adCplIdealMaxEur, spendThresholdMinEur }) {
   if (status && status !== 'ACTIVE') return { code: 'paused', label: 'Paused' };
 
   if (spend3dNative <= 0) {
@@ -153,8 +237,8 @@ function verdictForAd({ status, spendEur, impressions, ctr, frequency, leads, cp
   if (impressions >= 1000 && ctr < 0.5) {
     return { code: 'kill-low-ctr', label: 'Kill — CTR under 0.5%', reason: `${ctr.toFixed(2)}% CTR on ${impressions.toLocaleString()} impressions — the hook isn't landing.` };
   }
-  if (spendEur >= spendThresholdMinEur && leads > 0 && cplEur > targetCplEur) {
-    return { code: 'kill-over-target', label: 'Kill — over target after 2x spend', reason: `€${cplEur.toFixed(0)} cost/lead vs €${targetCplEur} target, after spending past the 2x review threshold.` };
+  if (spendEur >= spendThresholdMinEur && leads > 0 && cplEur > adCplBadEur) {
+    return { code: 'kill-over-target', label: 'Kill — CPL in the "Bad" range', reason: `€${cplEur.toFixed(0)} cost/lead vs the €${adCplBadEur}+ "Bad" line, after spending past the 2x review threshold.` };
   }
   if (spendEur >= spendThresholdMinEur && leads === 0) {
     return { code: 'kill-no-leads', label: 'Kill — no leads after 2x spend', reason: `€${spendEur.toFixed(0)} spent (past the 2x review threshold) with zero leads.` };
@@ -162,8 +246,8 @@ function verdictForAd({ status, spendEur, impressions, ctr, frequency, leads, cp
   // Rule 4 (CTR down 30% over 2 weeks) needs daily history this endpoint doesn't pull, and
   // can't apply before the campaign itself is 2 weeks old anyway — surfaced via adKillRules.note
   // in the response instead of a per-ad check.
-  if (leads > 0 && cplEur != null && cplEur <= targetCplEur) {
-    return { code: 'promising', label: 'Promising — under target', reason: `€${cplEur.toFixed(0)} cost/lead, at or under the €${targetCplEur} target — small sample, worth more spend before scaling hard.` };
+  if (leads > 0 && cplEur != null && cplEur <= adCplIdealMaxEur) {
+    return { code: 'promising', label: 'Promising — CPL in the ideal range', reason: `€${cplEur.toFixed(0)} cost/lead, at or under the €${adCplIdealMaxEur} ideal-band top — small sample, and CPL alone isn't enough for Instant Forms; check booked-call rate too before scaling.` };
   }
   return { code: 'gathering-data', label: 'Gathering data', reason: 'Hasn’t hit any rule’s minimum data bar yet (spend, impressions, or leads) — too early to judge.' };
 }
@@ -230,6 +314,7 @@ module.exports = async function handler(req, res) {
     const signedResult = await fetchSignedLeadsByAdId(knownAdIds, nameToId);
     const signedByAdId = signedResult ? signedResult.byAdId : null;
     const unattributedLeads = signedResult ? signedResult.unattributed : null;
+    const funnelCounts = signedResult ? signedResult.funnel : null;
     // GHL's pipeline is ground truth once an ad's utm_content is attributing correctly — Meta's
     // own pixel count can overcount (confirmed 2026-08-26: Ad 13/15's misconfigured utm_content
     // tag correlated with ~4 duplicate "Schedule" pixel fires that were never real distinct
@@ -290,8 +375,9 @@ module.exports = async function handler(req, res) {
         leads: l,
         cplEur: cpl,
         spend3dNative: spend3d,
-        targetCplEur: TARGET_CPL_EUR,
-        spendThresholdMinEur: TARGET_CPL_EUR * SPEND_MULTIPLIER_MIN,
+        adCplBadEur: AD_CPL_BAD_EUR,
+        adCplIdealMaxEur: AD_CPL_IDEAL_MAX_EUR,
+        spendThresholdMinEur: AD_CPL_BAD_EUR * SPEND_MULTIPLIER_MIN,
       });
 
       return {
@@ -353,21 +439,25 @@ module.exports = async function handler(req, res) {
       ? new Date(Date.now() + daysToMinLeadTarget * 86400000).toISOString().slice(0, 10)
       : null;
 
-    const spendThresholdMinEur = TARGET_CPL_EUR * SPEND_MULTIPLIER_MIN;
-    const spendThresholdMaxEur = TARGET_CPL_EUR * SPEND_MULTIPLIER_MAX;
+    const spendThresholdMinEur = AD_CPL_BAD_EUR * SPEND_MULTIPLIER_MIN;
+    const spendThresholdMaxEur = AD_CPL_BAD_EUR * SPEND_MULTIPLIER_MAX;
     const pastSpendThreshold = spendEur >= spendThresholdMinEur;
     const sampleTrustworthy = leads >= LEAD_TARGET_MIN;
 
-    let verdict;
-    if (!sampleTrustworthy) {
-      verdict = 'gathering-data'; // not enough leads yet regardless of what CPL looks like
-    } else if (cplEurVal != null && cplEurVal <= TARGET_CPL_EUR) {
-      verdict = 'on-target';
-    } else if (pastSpendThreshold) {
-      verdict = 'needs-review'; // enough leads AND enough spend, and still over target
-    } else {
-      verdict = 'gathering-data';
-    }
+    const bookedCall = funnelCounts?.bookedCall || 0;
+    const resolved = funnelCounts?.resolved || 0;
+    const showed = funnelCounts?.showed || 0;
+    const won = funnelCounts?.won || 0;
+    const bookedCallRatePct = leads > 0 ? (bookedCall / leads) * 100 : null;
+    const showRatePct = resolved > 0 ? (showed / resolved) * 100 : null;
+    const closeRatePct = showed > 0 ? (won / showed) * 100 : null;
+    const cacEur = won > 0 ? spendEur / won : null;
+    const costPerBookedCallEur = bookedCall > 0 ? spendEur / bookedCall : null;
+
+    const healthVerdict = sampleTrustworthy
+      ? campaignHealthVerdict(cplEurVal, bookedCallRatePct)
+      : null;
+    const verdict = healthVerdict ? healthVerdict.code : 'gathering-data';
 
     return res.status(200).json({
       generatedAt: new Date().toISOString(),
@@ -380,9 +470,9 @@ module.exports = async function handler(req, res) {
       account: { name: account.name, currency: account.currency },
       fx: { cadToEur: Math.round(cadToEur * 10000) / 10000 },
       targets: {
-        clientValueEur: CLIENT_VALUE_EUR,
-        targetCloseRate: TARGET_CLOSE_RATE,
-        targetCplEur: TARGET_CPL_EUR,
+        ...FUNNEL_TARGETS,
+        adCplIdealMaxEur: AD_CPL_IDEAL_MAX_EUR,
+        adCplBadEur: AD_CPL_BAD_EUR,
         leadTargetMin: LEAD_TARGET_MIN,
         leadTargetMax: LEAD_TARGET_MAX,
         spendThresholdMinEur: Math.round(spendThresholdMinEur * 100) / 100,
@@ -416,7 +506,20 @@ module.exports = async function handler(req, res) {
         estDaysToMinLeadTarget: daysToMinLeadTarget,
         estReadyDate,
       },
+      funnel: {
+        leads,
+        bookedCall,
+        bookedCallRatePct: bookedCallRatePct != null ? Math.round(bookedCallRatePct * 10) / 10 : null,
+        resolved,
+        showed,
+        showRatePct: showRatePct != null ? Math.round(showRatePct * 10) / 10 : null,
+        won,
+        closeRatePct: closeRatePct != null ? Math.round(closeRatePct * 10) / 10 : null,
+        cacEur: cacEur != null ? Math.round(cacEur * 100) / 100 : null,
+        costPerBookedCallEur: costPerBookedCallEur != null ? Math.round(costPerBookedCallEur * 100) / 100 : null,
+      },
       verdict,
+      verdictLabel: healthVerdict ? healthVerdict.label : 'Gathering data',
       adsets,
       ads,
       adKillRules: {
