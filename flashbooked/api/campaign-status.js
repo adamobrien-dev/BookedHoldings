@@ -286,6 +286,7 @@ async function fetchNativeLeadAdIdMaps(adIds) {
           phone: phoneField?.values?.[0] || null,
           email: emailField?.values?.[0] || null,
           created_time: lead.created_time || null,
+          allFields: Object.fromEntries(fields.map(f => [f.name, f.values?.[0] || null])), // TEMP 2026-09-04
         });
       }
     });
@@ -499,6 +500,9 @@ module.exports = async function handler(req, res) {
     const nameToId = Object.fromEntries((adInsightsRes.data || []).map(a => [a.ad_name, a.ad_id]));
     const oldCampaignAdIds = new Set((oldAdsListRes.data || []).map(a => a.id));
     const { phoneToAdId, emailToAdId, raw: rawNativeLeads } = await fetchNativeLeadAdIdMaps([...knownAdIds]);
+    if (req.query.debug === 'leads') { // TEMP 2026-09-04 — remove after Gary Moran manual add
+      return res.status(200).json(rawNativeLeads);
+    }
     const signedResult = await fetchSignedLeadsByAdId(knownAdIds, nameToId, phoneToAdId, emailToAdId, oldCampaignAdIds);
     const signedByAdId = signedResult ? signedResult.byAdId : null;
     const unattributedLeads = signedResult ? signedResult.unattributed : null;
