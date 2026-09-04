@@ -669,7 +669,7 @@ async function loadCampaign() {
       <div class="stat-card">
         <div class="label">Leads${data.leadsSource === 'ghl-verified' ? ' (verified)' : ''}</div>
         <div class="value">${t.leads}</div>
-        <div class="cpl-vs-target">${data.campaign.daysLive} days live${data.leadsSource === 'ghl-verified' && t.leads_meta_pixel !== t.leads ? ` · Meta pixel says ${t.leads_meta_pixel}` : ''}</div>
+        <div class="cpl-vs-target">${data.campaign.daysLive} days live${t.unattributed_leads ? ` · ${t.unattributed_leads} unattributed` : ''}${data.leadsSource === 'ghl-verified' && t.leads_meta_pixel !== t.leads ? ` · Meta pixel says ${t.leads_meta_pixel}` : ''}</div>
       </div>
       <div class="stat-card">
         <div class="label">Cost / lead</div>
