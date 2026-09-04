@@ -89,6 +89,15 @@ function adIdFromOpportunity(opp) {
 // to pass the ad's *name* instead of its numeric id (fixed 2026-08-26 by swapping both ads to
 // a corrected creative) — leads captured during that window still have the ad name in
 // utmContent, not the id, so they'd otherwise never match `knownAdIds`.
+//
+// Confirmed 2026-09-04: contacts synced in via GHL's native Meta Lead Form integration
+// (source "Meta Lead Form") carry no `attributions[]` at all, unlike the pixel/booking-page
+// flow — so they can never match an ad_id here. Rather than silently dropping real leads
+// from the campaign total just because we can't tell which ad drove them, anything tagged
+// UNATTRIBUTED_LEAD_TAG (applied by the lead-capture automation itself, independent of
+// attribution) still counts toward the total, bucketed separately from the per-ad breakdown.
+const UNATTRIBUTED_LEAD_TAG = 'flashbooked ireland lead';
+
 async function fetchSignedLeadsByAdId(knownAdIds, nameToId) {
   const pit = process.env.GHL_PIT_FLASHBOOKED;
   if (!pit) return null;
@@ -105,16 +114,25 @@ async function fetchSignedLeadsByAdId(knownAdIds, nameToId) {
     const opps = data.opportunities || [];
 
     const byAdId = {};
+    const unattributed = { total: 0, won: 0, lost: 0 };
     for (const opp of opps) {
       let adId = adIdFromOpportunity(opp);
       if (adId && !knownAdIds.has(adId) && nameToId[adId]) adId = nameToId[adId];
-      if (!adId || !knownAdIds.has(adId)) continue;
+      if (!adId || !knownAdIds.has(adId)) {
+        const tags = opp.contact?.tags || [];
+        if (tags.includes(UNATTRIBUTED_LEAD_TAG)) {
+          unattributed.total += 1;
+          if (opp.pipelineStageId === GHL_WON_STAGE_ID) unattributed.won += 1;
+          else if (opp.pipelineStageId === GHL_LOST_STAGE_ID) unattributed.lost += 1;
+        }
+        continue;
+      }
       if (!byAdId[adId]) byAdId[adId] = { total: 0, won: 0, lost: 0 };
       byAdId[adId].total += 1;
       if (opp.pipelineStageId === GHL_WON_STAGE_ID) byAdId[adId].won += 1;
       else if (opp.pipelineStageId === GHL_LOST_STAGE_ID) byAdId[adId].lost += 1;
     }
-    return byAdId;
+    return { byAdId, unattributed };
   } catch (_) {
     return null;
   }
@@ -209,7 +227,9 @@ module.exports = async function handler(req, res) {
 
     const knownAdIds = new Set((adInsightsRes.data || []).map(a => a.ad_id));
     const nameToId = Object.fromEntries((adInsightsRes.data || []).map(a => [a.ad_name, a.ad_id]));
-    const signedByAdId = await fetchSignedLeadsByAdId(knownAdIds, nameToId);
+    const signedResult = await fetchSignedLeadsByAdId(knownAdIds, nameToId);
+    const signedByAdId = signedResult ? signedResult.byAdId : null;
+    const unattributedLeads = signedResult ? signedResult.unattributed : null;
     // GHL's pipeline is ground truth once an ad's utm_content is attributing correctly — Meta's
     // own pixel count can overcount (confirmed 2026-08-26: Ad 13/15's misconfigured utm_content
     // tag correlated with ~4 duplicate "Schedule" pixel fires that were never real distinct
@@ -322,7 +342,7 @@ module.exports = async function handler(req, res) {
       };
     });
 
-    const leads = ads.reduce((sum, a) => sum + a.leads, 0);
+    const leads = ads.reduce((sum, a) => sum + a.leads, 0) + (unattributedLeads?.total || 0);
     const cplNativeVal = leads > 0 ? spendNative / leads : null;
     const cplEurVal = leads > 0 ? spendEur / leads : null;
 
@@ -380,7 +400,10 @@ module.exports = async function handler(req, res) {
         ctr: totals.ctr ? Number(totals.ctr) : null,
         cpc_native: totals.cpc ? Number(totals.cpc) : null,
         frequency: totals.frequency ? Number(totals.frequency) : null,
-        signedLeads: signedByAdId ? ads.reduce((sum, a) => sum + (a.signedLeads || 0), 0) : null,
+        signedLeads: signedByAdId
+          ? ads.reduce((sum, a) => sum + (a.signedLeads || 0), 0) + (unattributedLeads?.won || 0)
+          : null,
+        unattributed_leads: unattributedLeads?.total || 0,
       },
       ghl: { attributionAvailable: signedByAdId != null },
       leadsSource,
