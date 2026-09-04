@@ -101,7 +101,7 @@
     "locationId": "M8E6rSDwYijkpGWK1AWR",
     "pitEnv": "GHL_PIT_SANDY",
     "stripeId": "cus_UaJwH3H8f9x8je",
-    "status": "setup",
+    "status": "churned",
     "deal": "Flat $500/mo",
     "dealSub": null,
     "cycleDays": 30,
@@ -287,6 +287,29 @@
       "timezone": "America/Chicago",
       "website": "https://advancedjointschiropractic.com",
       "bookedNowUrl": "https://can-ho.bookednow.app"
+    }
+  },
+  {
+    "key": "irikefe",
+    "name": "Irikefe Ojevwe",
+    "biz": "Aspen Behavioral Health Services · Telepsychiatry (ADHD) · Pearland, TX",
+    "niche": "Telepsychiatry (ADHD) · Pearland, TX",
+    "locationId": "XHjz0hmM3d9YxWZWj3I8",
+    "pitEnv": "GHL_PIT_IRIKEFE",
+    "stripeId": "cus_V3lUeXRu83Uxh8",
+    "status": "setup",
+    "deal": "Flat $499/mo",
+    "dealSub": "Contract signed 2026-08-12, first month paid 2026-09-04",
+    "cycleDays": 30,
+    "retainerAmount": 499,
+    "_provision": {
+      "phone": "+17137246275",
+      "street": "3129 Kingsley Dr Ste 2030",
+      "city": "Pearland",
+      "state": "TX",
+      "zip": "77584",
+      "timezone": "America/Chicago",
+      "website": "https://www.aspenbehavioralservices.com"
     }
   }
 ]
