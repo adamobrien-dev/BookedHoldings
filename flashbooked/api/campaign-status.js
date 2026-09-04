@@ -14,8 +14,12 @@
 
 const GRAPH_API = 'https://graph.facebook.com/v21.0';
 const AD_ACCOUNT_ID = 'act_913731484412697'; // "Booked Clinics" — shared agency account, also runs FlashBooked's ads
-const CAMPAIGN_ID = '52568457569176'; // "Flash Booked Ireland"
-const CAMPAIGN_LAUNCH_DATE = '2026-08-17';
+// "Flash Booked Ireland" (52568457569176) was paused 2026-08-31 in favor of this native
+// Lead Ads campaign — same GHL utm_content attribution still applies (ad_id passes through
+// to opportunities.attributions[].utmContent same as the old pixel-based campaign), so no
+// other tracking logic needed to change, just which campaign is live.
+const CAMPAIGN_ID = '52571401069976'; // "Flash Booked Ireland Lead forms"
+const CAMPAIGN_LAUNCH_DATE = '2026-08-31';
 
 const GHL_API = 'https://services.leadconnectorhq.com';
 const GHL_LOCATION_ID = 'M8E6rSDwYijkpGWK1AWR'; // FlashBooked — same location lead.js/book-discovery-call.js write to
@@ -348,7 +352,7 @@ module.exports = async function handler(req, res) {
     return res.status(200).json({
       generatedAt: new Date().toISOString(),
       campaign: {
-        name: 'Flash Booked Ireland',
+        name: 'Flash Booked Ireland Lead forms',
         id: CAMPAIGN_ID,
         launchDate: CAMPAIGN_LAUNCH_DATE,
         daysLive,
