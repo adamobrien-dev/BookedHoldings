@@ -180,19 +180,30 @@ function normalizePhone(raw) {
 // breaking.
 async function fetchNativeLeadAdIdByPhone(adIds) {
   const phoneToAdId = {};
+  // TEMPORARY diagnostics (2026-09-04) — surfaced via debug.nativeLeadAttribution in the
+  // response so this can be checked live without guessing whether the fallback is failing on
+  // a missing leads_retrieval permission vs. a bug in field/phone matching. Remove once
+  // confirmed working (or fixed).
+  const debug = { perAd: [] };
   try {
     const results = await Promise.all(
-      adIds.map(id => metaGet(`/${id}/leads`, { fields: 'field_data' }).catch(() => ({ data: [] })))
+      adIds.map(id => metaGet(`/${id}/leads`, { fields: 'field_data' })
+        .then(r => ({ ok: true, data: r.data || [] }))
+        .catch(e => ({ ok: false, error: e.message })))
     );
     adIds.forEach((adId, i) => {
-      for (const lead of (results[i].data || [])) {
+      const r = results[i];
+      if (!r.ok) { debug.perAd.push({ adId, error: r.error }); return; }
+      let matched = 0;
+      for (const lead of r.data) {
         const phoneField = (lead.field_data || []).find(f => /phone/i.test(f.name));
         const phone = phoneField?.values?.[0] ? normalizePhone(phoneField.values[0]) : null;
-        if (phone) phoneToAdId[phone] = adId;
+        if (phone) { phoneToAdId[phone] = adId; matched++; }
       }
+      debug.perAd.push({ adId, leadCount: r.data.length, matched, fieldNames: r.data[0]?.field_data?.map(f => f.name) || [] });
     });
-  } catch (_) { /* leave phoneToAdId empty */ }
-  return phoneToAdId;
+  } catch (e) { debug.error = e.message; }
+  return { phoneToAdId, debug };
 }
 
 async function fetchSignedLeadsByAdId(knownAdIds, nameToId, phoneToAdId) {
@@ -347,7 +358,7 @@ module.exports = async function handler(req, res) {
 
     const knownAdIds = new Set((adInsightsRes.data || []).map(a => a.ad_id));
     const nameToId = Object.fromEntries((adInsightsRes.data || []).map(a => [a.ad_name, a.ad_id]));
-    const phoneToAdId = await fetchNativeLeadAdIdByPhone([...knownAdIds]);
+    const { phoneToAdId, debug: nativeLeadDebug } = await fetchNativeLeadAdIdByPhone([...knownAdIds]);
     const signedResult = await fetchSignedLeadsByAdId(knownAdIds, nameToId, phoneToAdId);
     const signedByAdId = signedResult ? signedResult.byAdId : null;
     const unattributedLeads = signedResult ? signedResult.unattributed : null;
@@ -567,6 +578,7 @@ module.exports = async function handler(req, res) {
         noSpendWindowHours: 72,
         note: 'CTR-drop-over-2-weeks rule needs daily history not pulled here — not evaluated.',
       },
+      debug: { nativeLeadAttribution: nativeLeadDebug },
     });
   } catch (err) {
     return res.status(500).json({ error: err.message });
