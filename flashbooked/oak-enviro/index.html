@@ -479,9 +479,9 @@
     </div>
     <div class="topbar-controls">
       <div class="week-nav">
-        <button aria-label="Previous week">‹</button>
-        <span class="week-label mono">14 – 20 Sep 2026</span>
-        <button aria-label="Next week">›</button>
+        <button id="week-prev" aria-label="Previous week">‹</button>
+        <span class="week-label mono" id="week-label">14 – 20 Sep 2026</span>
+        <button id="week-next" aria-label="Next week">›</button>
       </div>
       <div class="view-toggle" role="tablist" aria-label="View">
         <button id="btn-planner" class="active" role="tab" aria-selected="true">Board</button>
@@ -637,15 +637,33 @@
 </aside>
 
 <script>
-const days = [
-  {dow:'Mon', dom:'14', wknd:false},
-  {dow:'Tue', dom:'15', wknd:false},
-  {dow:'Wed', dom:'16', wknd:false},
-  {dow:'Thu', dom:'17', wknd:false},
-  {dow:'Fri', dom:'18', wknd:false},
-  {dow:'Sat', dom:'19', wknd:true},
-  {dow:'Sun', dom:'20', wknd:true},
-];
+const DOW_NAMES = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+const MONTH_NAMES = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+
+function addDays(date, n){ const d = new Date(date); d.setDate(d.getDate()+n); return d; }
+function toISODate(d){
+  const y = d.getFullYear(), m = String(d.getMonth()+1).padStart(2,'0'), day = String(d.getDate()).padStart(2,'0');
+  return `${y}-${m}-${day}`;
+}
+function getWeekDays(weekStart){
+  return Array.from({length:7}, (_,i)=>{
+    const d = addDays(weekStart, i);
+    const dow = d.getDay();
+    return { date: toISODate(d), dow: DOW_NAMES[dow], dom: String(d.getDate()), month: MONTH_NAMES[d.getMonth()], wknd: dow===0 || dow===6 };
+  });
+}
+function formatWeekLabel(weekStart){
+  const end = addDays(weekStart, 6);
+  const sameMonth = weekStart.getMonth() === end.getMonth();
+  return sameMonth
+    ? `${weekStart.getDate()} – ${end.getDate()} ${MONTH_NAMES[weekStart.getMonth()]} ${weekStart.getFullYear()}`
+    : `${weekStart.getDate()} ${MONTH_NAMES[weekStart.getMonth()]} – ${end.getDate()} ${MONTH_NAMES[end.getMonth()]} ${end.getFullYear()}`;
+}
+
+// The board opens on the week photographed from the real whiteboard (Mon 14 Sep 2026).
+// Prev/next navigation moves this anchor by 7 days — jobs are keyed by real date, not position.
+let currentWeekStart = new Date(2026, 8, 14);
+let days = getWeekDays(currentWeekStart);
 
 const sections = [
   { label:'Recyclers', cat:'recycler', assets:[
@@ -719,11 +737,17 @@ const rawJobs = {
   '202-Rehab|1': {status:'booked', title:'Garry + Cate — Allone', site:'Allone site', client:'Private client', po:'OE-4541', time:'08:00 – 16:00', crew:['—'], notes:'', docs:[]},
 };
 
+// rawJobs is keyed by day offset (0-6) from the anchor week for readability — convert to real dates.
+const seedWeekStart = new Date(2026, 8, 14);
 const jobs = {};
-Object.entries(rawJobs).forEach(([key, job])=>{ jobs[key] = [job]; });
+Object.entries(rawJobs).forEach(([key, job])=>{
+  const [asset, offsetStr] = key.split('|');
+  const dateKey = toISODate(addDays(seedWeekStart, Number(offsetStr)));
+  jobs[asset+'|'+dateKey] = [job];
+});
 
 // Example: one van, two jobs in a day — ADR wraps Drogheda early Friday and squeezes in a second callout.
-jobs['ADR|4'].push({status:'booked', title:'Naas — CTL Callout', site:'Naas Enterprise Park', client:'CTL', po:'OE-4473', time:'14:00 – 16:30', crew:['PJ'], notes:'Second job of the day — added once Drogheda wrapped early.', docs:[]});
+jobs['ADR|' + toISODate(addDays(seedWeekStart, 4))].push({status:'booked', title:'Naas — CTL Callout', site:'Naas Enterprise Park', client:'CTL', po:'OE-4473', time:'14:00 – 16:30', crew:['PJ'], notes:'Second job of the day — added once Drogheda wrapped early.', docs:[]});
 
 const statusMeta = {
   booked:   {cls:'job--booked',   pillBg:'var(--accent-2)', pillInk:'var(--accent-2-ink)', label:'Booked',            short:'Booked'},
@@ -749,15 +773,15 @@ function buildGrid(){
   let html = '';
   html += `<div class="cell col-head corner"></div>`;
   days.forEach(d=>{
-    html += `<div class="cell col-head ${d.wknd?'weekend':''}"><span class="dow">${d.dow}</span><span class="dom mono">${d.dom} Sep</span></div>`;
+    html += `<div class="cell col-head ${d.wknd?'weekend':''}"><span class="dow">${d.dow}</span><span class="dom mono">${d.dom} ${d.month}</span></div>`;
   });
 
   sections.forEach(section=>{
     html += `<div class="section-label" data-cat="${section.cat}">${section.label}</div>`;
     section.assets.forEach(asset=>{
       html += `<div class="row-head" data-cat="${section.cat}"><span class="asset-name">${asset.name}</span><span class="asset-reg mono">${asset.reg}</span></div>`;
-      days.forEach((d,i)=>{
-        const key = asset.name+'|'+i;
+      days.forEach(d=>{
+        const key = asset.name+'|'+d.date;
         const cellJobs = jobs[key] || [];
         const jobsHtml = cellJobs.map((job, idx)=>{
           const meta = statusMeta[job.status];
@@ -768,9 +792,9 @@ function buildGrid(){
           </button>`;
         }).join('');
         const addHtml = cellJobs.length
-          ? `<button class="add-more" data-asset="${asset.name}" data-day="${i}" type="button">+ Add job</button>`
-          : `<button class="empty-cell" data-asset="${asset.name}" data-day="${i}" aria-label="Add job for ${asset.name} on ${d.dow} ${d.dom} Sep" type="button">＋</button>`;
-        html += `<div class="cell" data-cat="${section.cat}" data-asset="${asset.name}" data-day="${i}">
+          ? `<button class="add-more" data-asset="${asset.name}" data-date="${d.date}" type="button">+ Add job</button>`
+          : `<button class="empty-cell" data-asset="${asset.name}" data-date="${d.date}" aria-label="Add job for ${asset.name} on ${d.dow} ${d.dom} ${d.month}" type="button">＋</button>`;
+        html += `<div class="cell" data-cat="${section.cat}" data-asset="${asset.name}" data-date="${d.date}">
           <div class="cell-jobs">${jobsHtml}${addHtml}</div>
         </div>`;
       });
@@ -780,6 +804,18 @@ function buildGrid(){
   grid.innerHTML = html;
 }
 buildGrid();
+
+// ---- Week navigation ----
+document.getElementById('week-label').textContent = formatWeekLabel(currentWeekStart);
+function goToWeek(offsetDays){
+  currentWeekStart = addDays(currentWeekStart, offsetDays);
+  days = getWeekDays(currentWeekStart);
+  document.getElementById('week-label').textContent = formatWeekLabel(currentWeekStart);
+  buildGrid();
+  applyFilters();
+}
+document.getElementById('week-prev').addEventListener('click', ()=> goToWeek(-7));
+document.getElementById('week-next').addEventListener('click', ()=> goToWeek(7));
 
 // ---- Drawer: view / create / edit ----
 const drawer = document.getElementById('drawer');
@@ -853,15 +889,15 @@ function statusOptionsHtml(selected){
   return Object.entries(statusMeta).map(([k,m])=>`<option value="${k}" ${k===selected?'selected':''}>${m.label}</option>`).join('');
 }
 
-function openForm(existingKey, existingIdx, asset, day){
+function openForm(existingKey, existingIdx, asset, dateStr){
   const isEdit = existingKey != null && existingIdx != null;
   const job = isEdit ? jobs[existingKey][existingIdx] : {status:'booked', title:'', site:'', client:'', po:'', time:'', crew:[], notes:'', docs:[]};
   const targetAsset = isEdit ? existingKey.split('|')[0] : asset;
-  const targetDay = isEdit ? Number(existingKey.split('|')[1]) : day;
-  const dayInfo = days[targetDay];
+  const targetDate = isEdit ? existingKey.split('|')[1] : dateStr;
+  const dayInfo = days.find(d=>d.date===targetDate) || {dow:'', dom:'', month:''};
 
   setDrawerHead(isEdit ? 'Editing' : 'New job', 'var(--surface-2)', 'var(--ink)',
-    isEdit ? job.title : 'New job', `${targetAsset} · ${dayInfo.dow} ${dayInfo.dom} Sep`);
+    isEdit ? job.title : 'New job', `${targetAsset} · ${dayInfo.dow} ${dayInfo.dom} ${dayInfo.month}`);
 
   drawerBody.innerHTML = `
     <div class="form-field"><label for="f-title">Job title</label>
@@ -908,7 +944,7 @@ function openForm(existingKey, existingIdx, asset, day){
       docs: isEdit ? (jobs[existingKey][existingIdx].docs||[]) : [],
     };
     if(!newJob.crew.length) newJob.crew = ['—'];
-    const key = targetAsset + '|' + targetDay;
+    const key = targetAsset + '|' + targetDate;
     if(!jobs[key]) jobs[key] = [];
     if(isEdit){ jobs[key][existingIdx] = newJob; } else { jobs[key].push(newJob); }
     const savedIdx = isEdit ? existingIdx : jobs[key].length - 1;
@@ -934,7 +970,7 @@ grid.addEventListener('click', e=>{
   const jobBtn = e.target.closest('.job');
   if(jobBtn){ openView(jobBtn.dataset.key, Number(jobBtn.dataset.idx)); return; }
   const addBtn = e.target.closest('.empty-cell, .add-more');
-  if(addBtn){ openForm(null, null, addBtn.dataset.asset, Number(addBtn.dataset.day)); return; }
+  if(addBtn){ openForm(null, null, addBtn.dataset.asset, addBtn.dataset.date); return; }
 });
 
 // ---- Drag and drop rescheduling ----
@@ -977,7 +1013,7 @@ grid.addEventListener('drop', e=>{
   const cell = e.target.closest('.cell[data-asset]');
   if(!cell || !dragRef) return;
   e.preventDefault();
-  const newKey = cell.dataset.asset + '|' + cell.dataset.day;
+  const newKey = cell.dataset.asset + '|' + cell.dataset.date;
   const moving = jobs[dragRef.key][dragRef.idx];
   jobs[dragRef.key].splice(dragRef.idx, 1);
   if(jobs[dragRef.key].length === 0) delete jobs[dragRef.key];
