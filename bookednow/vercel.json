@@ -122,6 +122,11 @@
     },
     {
       "source": "/(.*)",
+      "has": [{ "type": "host", "value": "aspen.bookednow.app" }],
+      "destination": "/aspen/$1"
+    },
+    {
+      "source": "/(.*)",
       "destination": "/home/$1"
     }
   ]

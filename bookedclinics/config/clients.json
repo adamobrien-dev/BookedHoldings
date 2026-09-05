@@ -309,7 +309,8 @@
       "state": "TX",
       "zip": "77584",
       "timezone": "America/Chicago",
-      "website": "https://www.aspenbehavioralservices.com"
+      "website": "https://www.aspenbehavioralhealthservices.com/",
+      "bookedNowUrl": "https://aspen.bookednow.app"
     }
   }
 ]
