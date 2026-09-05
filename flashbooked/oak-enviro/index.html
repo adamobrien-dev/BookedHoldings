@@ -193,8 +193,6 @@
   .filter-search input:focus{ outline:2px solid var(--accent); outline-offset:1px; border-color:var(--accent); }
   .filter-search input::-webkit-search-cancel-button{ cursor:pointer; }
 
-  .cell-dim .job{ opacity:0.25; }
-
   /* ---- Planner grid ---- */
   .planner-shell{
     background:var(--surface); border:1px solid var(--line);
@@ -250,8 +248,10 @@
     position:sticky; left:0;
   }
 
+  .cell-jobs{ display:flex; flex-direction:column; gap:5px; height:100%; }
+
   .job{
-    height:100%; width:100%;
+    width:100%;
     border:none; border-radius:7px;
     padding:6px 8px;
     text-align:left; cursor:pointer;
@@ -266,6 +266,7 @@
   .job:focus-visible{ outline:2px solid var(--ink); outline-offset:-2px; }
   .job[draggable="true"]{ cursor:grab; }
   .job.dragging{ opacity:0.35; cursor:grabbing; }
+  .job.cell-dim{ opacity:0.25; }
   .cell.drop-target{ background:color-mix(in srgb, var(--accent) 18%, var(--surface)); }
   .cell.drop-target .empty-cell{ border-color:var(--accent); color:var(--accent); }
 
@@ -275,7 +276,7 @@
   .job--complete{ background:var(--accent-bg); color:var(--accent-text); border-left:3px solid var(--accent); }
 
   .empty-cell{
-    height:100%; width:100%;
+    flex:1; width:100%;
     border:1px dashed transparent;
     border-radius:7px;
     background:none;
@@ -288,6 +289,13 @@
   }
   .cell:hover .empty-cell{ border-color:var(--line-strong); }
   .empty-cell:hover, .empty-cell:focus-visible{ color:var(--accent); border-color:var(--accent); outline:none; }
+
+  .add-more{
+    width:100%; border:1px dashed var(--line-strong); border-radius:6px;
+    padding:4px; font-size:10px; font-family:inherit; color:var(--faint);
+    background:none; cursor:pointer;
+  }
+  .add-more:hover, .add-more:focus-visible{ color:var(--accent); border-color:var(--accent); outline:none; }
 
   /* fleet filter removes non-matching rows entirely */
   .row-head.row-dim, .cell.row-dim, .section-label.row-dim{ display:none; }
@@ -663,8 +671,8 @@ const sections = [
   ]},
 ];
 
-// jobs keyed "AssetName|dayIndex"
-const jobs = {
+// jobs keyed "AssetName|dayIndex" -> array of jobs (a van can run more than one job in a day)
+const rawJobs = {
   'ADR|0': {status:'booked', title:'EPS Drogheda — Grit Trap 2', site:'Drogheda WWTP', client:'Irish Water / EPS contract', po:'OE-4471', time:'07:30 – 16:00', crew:['PJ','ML','LE'], notes:'Grit trap 2 jetting + tanker offload. Follow-on to inlet works Tuesday. Confined space permit already on file.', docs:['RAMS — confined space entry.pdf','Site induction — Drogheda WWTP.pdf']},
   'ADR|1': {status:'service', title:'Scheduled service', site:'Oak Enviro depot', client:'Internal', po:'SVC-1188', time:'All day', crew:['PJ','ML'], notes:'150-hour service + pump seal check before EPS Drogheda block resumes Wednesday.', docs:['Service checklist — ADR.pdf']},
   'ADR|2': {status:'booked', title:'EPS Drogheda — Grit Trap 2', site:'Drogheda WWTP', client:'Irish Water / EPS contract', po:'OE-4471', time:'07:30 – 15:00', crew:['PJ'], notes:'Continuation of grit trap clearance.', docs:['RAMS — confined space entry.pdf']},
@@ -711,6 +719,12 @@ const jobs = {
   '202-Rehab|1': {status:'booked', title:'Garry + Cate — Allone', site:'Allone site', client:'Private client', po:'OE-4541', time:'08:00 – 16:00', crew:['—'], notes:'', docs:[]},
 };
 
+const jobs = {};
+Object.entries(rawJobs).forEach(([key, job])=>{ jobs[key] = [job]; });
+
+// Example: one van, two jobs in a day — ADR wraps Drogheda early Friday and squeezes in a second callout.
+jobs['ADR|4'].push({status:'booked', title:'Naas — CTL Callout', site:'Naas Enterprise Park', client:'CTL', po:'OE-4473', time:'14:00 – 16:30', crew:['PJ'], notes:'Second job of the day — added once Drogheda wrapped early.', docs:[]});
+
 const statusMeta = {
   booked:   {cls:'job--booked',   pillBg:'var(--accent-2)', pillInk:'var(--accent-2-ink)', label:'Booked',            short:'Booked'},
   service:  {cls:'job--service',  pillBg:'var(--amber)',    pillInk:'var(--amber-bg)',     label:'Servicing',         short:'Service'},
@@ -744,21 +758,21 @@ function buildGrid(){
       html += `<div class="row-head" data-cat="${section.cat}"><span class="asset-name">${asset.name}</span><span class="asset-reg mono">${asset.reg}</span></div>`;
       days.forEach((d,i)=>{
         const key = asset.name+'|'+i;
-        const job = jobs[key];
-        if(job){
+        const cellJobs = jobs[key] || [];
+        const jobsHtml = cellJobs.map((job, idx)=>{
           const meta = statusMeta[job.status];
-          html += `<div class="cell" data-cat="${section.cat}" data-asset="${asset.name}" data-day="${i}">
-            <button class="job ${meta.cls}" data-key="${key}" draggable="true">
-              <span class="job-meta"><span>${meta.short}</span><span class="job-time">${startTime(job)}</span></span>
-              <span class="job-title">${esc(job.title)}</span>
-              <span class="job-sub">${esc(job.site)}</span>
-            </button>
-          </div>`;
-        } else {
-          html += `<div class="cell" data-cat="${section.cat}" data-asset="${asset.name}" data-day="${i}">
-            <button class="empty-cell" data-asset="${asset.name}" data-day="${i}" aria-label="Add job for ${asset.name} on ${d.dow} ${d.dom} Sep" type="button">＋</button>
-          </div>`;
-        }
+          return `<button class="job ${meta.cls}" data-key="${key}" data-idx="${idx}" draggable="true">
+            <span class="job-meta"><span>${meta.short}</span><span class="job-time">${startTime(job)}</span></span>
+            <span class="job-title">${esc(job.title)}</span>
+            <span class="job-sub">${esc(job.site)}</span>
+          </button>`;
+        }).join('');
+        const addHtml = cellJobs.length
+          ? `<button class="add-more" data-asset="${asset.name}" data-day="${i}" type="button">+ Add job</button>`
+          : `<button class="empty-cell" data-asset="${asset.name}" data-day="${i}" aria-label="Add job for ${asset.name} on ${d.dow} ${d.dom} Sep" type="button">＋</button>`;
+        html += `<div class="cell" data-cat="${section.cat}" data-asset="${asset.name}" data-day="${i}">
+          <div class="cell-jobs">${jobsHtml}${addHtml}</div>
+        </div>`;
       });
     });
   });
@@ -792,12 +806,13 @@ function docsHtml(docs){
   return '<div class="doc-chip"><span>—</span><span>No documents attached</span></div>';
 }
 
-function openView(key){
-  const job = jobs[key];
+function openView(key, idx){
+  const job = jobs[key] && jobs[key][idx];
   if(!job) return;
   const [assetName] = key.split('|');
   const meta = statusMeta[job.status];
-  setDrawerHead(meta.label, meta.pillBg, meta.pillInk, job.title, assetName);
+  const countNote = jobs[key].length > 1 ? ` · job ${idx+1} of ${jobs[key].length}` : '';
+  setDrawerHead(meta.label, meta.pillBg, meta.pillInk, job.title, assetName + countNote);
 
   drawerBody.innerHTML = `
     <div class="field-group">
@@ -823,9 +838,10 @@ function openView(key){
       <button class="btn" id="btn-delete-job" type="button" style="color:var(--rust)">Remove job</button>
     </div>
   `;
-  document.getElementById('btn-edit-job').addEventListener('click', ()=> openForm(key));
+  document.getElementById('btn-edit-job').addEventListener('click', ()=> openForm(key, idx));
   document.getElementById('btn-delete-job').addEventListener('click', ()=>{
-    delete jobs[key];
+    jobs[key].splice(idx, 1);
+    if(jobs[key].length === 0) delete jobs[key];
     buildGrid();
     applyFilters();
     closeDrawer();
@@ -837,14 +853,15 @@ function statusOptionsHtml(selected){
   return Object.entries(statusMeta).map(([k,m])=>`<option value="${k}" ${k===selected?'selected':''}>${m.label}</option>`).join('');
 }
 
-function openForm(existingKey, asset, day){
-  const job = existingKey ? jobs[existingKey] : {status:'booked', title:'', site:'', client:'', po:'', time:'', crew:[], notes:'', docs:[]};
-  const targetAsset = existingKey ? existingKey.split('|')[0] : asset;
-  const targetDay = existingKey ? Number(existingKey.split('|')[1]) : day;
+function openForm(existingKey, existingIdx, asset, day){
+  const isEdit = existingKey != null && existingIdx != null;
+  const job = isEdit ? jobs[existingKey][existingIdx] : {status:'booked', title:'', site:'', client:'', po:'', time:'', crew:[], notes:'', docs:[]};
+  const targetAsset = isEdit ? existingKey.split('|')[0] : asset;
+  const targetDay = isEdit ? Number(existingKey.split('|')[1]) : day;
   const dayInfo = days[targetDay];
 
-  setDrawerHead(existingKey ? 'Editing' : 'New job', 'var(--surface-2)', 'var(--ink)',
-    existingKey ? job.title : 'New job', `${targetAsset} · ${dayInfo.dow} ${dayInfo.dom} Sep`);
+  setDrawerHead(isEdit ? 'Editing' : 'New job', 'var(--surface-2)', 'var(--ink)',
+    isEdit ? job.title : 'New job', `${targetAsset} · ${dayInfo.dow} ${dayInfo.dom} Sep`);
 
   drawerBody.innerHTML = `
     <div class="form-field"><label for="f-title">Job title</label>
@@ -869,12 +886,12 @@ function openForm(existingKey, asset, day){
       <textarea id="f-notes" placeholder="Site access, permits, follow-on jobs…">${esc(job.notes)}</textarea></div>
     <div class="drawer-actions">
       <button class="btn" id="btn-cancel-form" type="button">Cancel</button>
-      <button class="btn btn-primary" id="btn-save-form" type="button">${existingKey ? 'Save changes' : 'Create job'}</button>
+      <button class="btn btn-primary" id="btn-save-form" type="button">${isEdit ? 'Save changes' : 'Create job'}</button>
     </div>
   `;
 
   document.getElementById('btn-cancel-form').addEventListener('click', ()=>{
-    if(existingKey) openView(existingKey); else closeDrawer();
+    if(isEdit) openView(existingKey, existingIdx); else closeDrawer();
   });
   document.getElementById('btn-save-form').addEventListener('click', ()=>{
     const title = document.getElementById('f-title').value.trim();
@@ -888,14 +905,16 @@ function openForm(existingKey, asset, day){
       po: document.getElementById('f-po').value.trim(),
       crew: document.getElementById('f-crew').value.split(',').map(s=>s.trim()).filter(Boolean),
       notes: document.getElementById('f-notes').value.trim(),
-      docs: existingKey ? (jobs[existingKey].docs||[]) : [],
+      docs: isEdit ? (jobs[existingKey][existingIdx].docs||[]) : [],
     };
     if(!newJob.crew.length) newJob.crew = ['—'];
     const key = targetAsset + '|' + targetDay;
-    jobs[key] = newJob;
+    if(!jobs[key]) jobs[key] = [];
+    if(isEdit){ jobs[key][existingIdx] = newJob; } else { jobs[key].push(newJob); }
+    const savedIdx = isEdit ? existingIdx : jobs[key].length - 1;
     buildGrid();
     applyFilters();
-    openView(key);
+    openView(key, savedIdx);
   });
   showDrawer();
   document.getElementById('f-title').focus();
@@ -913,37 +932,39 @@ function closeDrawer(){
 }
 grid.addEventListener('click', e=>{
   const jobBtn = e.target.closest('.job');
-  if(jobBtn){ openView(jobBtn.dataset.key); return; }
-  const addBtn = e.target.closest('.empty-cell');
-  if(addBtn){ openForm(null, addBtn.dataset.asset, Number(addBtn.dataset.day)); return; }
+  if(jobBtn){ openView(jobBtn.dataset.key, Number(jobBtn.dataset.idx)); return; }
+  const addBtn = e.target.closest('.empty-cell, .add-more');
+  if(addBtn){ openForm(null, null, addBtn.dataset.asset, Number(addBtn.dataset.day)); return; }
 });
 
 // ---- Drag and drop rescheduling ----
-let dragKey = null;
+// Dropping onto a cell that already has jobs ADDS to it (a van can run more than one job a day)
+// rather than swapping — dragging onto an empty cell just moves it there.
+let dragRef = null; // {key, idx}
 
 grid.addEventListener('dragstart', e=>{
   const btn = e.target.closest('.job');
   if(!btn) return;
-  dragKey = btn.dataset.key;
+  dragRef = {key: btn.dataset.key, idx: Number(btn.dataset.idx)};
   e.dataTransfer.effectAllowed = 'move';
-  e.dataTransfer.setData('text/plain', dragKey);
+  e.dataTransfer.setData('text/plain', dragRef.key);
   requestAnimationFrame(()=> btn.classList.add('dragging'));
 });
 grid.addEventListener('dragend', e=>{
   const btn = e.target.closest('.job');
   if(btn) btn.classList.remove('dragging');
   document.querySelectorAll('.cell.drop-target').forEach(c=>c.classList.remove('drop-target'));
-  dragKey = null;
+  dragRef = null;
 });
 grid.addEventListener('dragover', e=>{
   const cell = e.target.closest('.cell[data-asset]');
-  if(!cell || !dragKey) return;
+  if(!cell || !dragRef) return;
   e.preventDefault();
   e.dataTransfer.dropEffect = 'move';
 });
 grid.addEventListener('dragenter', e=>{
   const cell = e.target.closest('.cell[data-asset]');
-  if(!cell || !dragKey) return;
+  if(!cell || !dragRef) return;
   cell.classList.add('drop-target');
 });
 grid.addEventListener('dragleave', e=>{
@@ -954,18 +975,17 @@ grid.addEventListener('dragleave', e=>{
 });
 grid.addEventListener('drop', e=>{
   const cell = e.target.closest('.cell[data-asset]');
-  if(!cell || !dragKey) return;
+  if(!cell || !dragRef) return;
   e.preventDefault();
   const newKey = cell.dataset.asset + '|' + cell.dataset.day;
-  if(newKey !== dragKey){
-    const moving = jobs[dragKey];
-    const existing = jobs[newKey];
-    if(existing){ jobs[dragKey] = existing; } else { delete jobs[dragKey]; }
-    jobs[newKey] = moving;
-    buildGrid();
-    applyFilters();
-  }
-  dragKey = null;
+  const moving = jobs[dragRef.key][dragRef.idx];
+  jobs[dragRef.key].splice(dragRef.idx, 1);
+  if(jobs[dragRef.key].length === 0) delete jobs[dragRef.key];
+  if(!jobs[newKey]) jobs[newKey] = [];
+  jobs[newKey].push(moving);
+  buildGrid();
+  applyFilters();
+  dragRef = null;
 });
 document.getElementById('d-close').addEventListener('click', closeDrawer);
 scrim.addEventListener('click', closeDrawer);
@@ -989,12 +1009,13 @@ function applyFilters(){
     el.classList.toggle('row-dim', !(activeCat==='all' || el.dataset.cat===activeCat));
   });
 
-  document.querySelectorAll('.cell[data-asset]').forEach(cell=>{
-    const job = jobs[cell.dataset.asset+'|'+cell.dataset.day];
-    if(!job){ cell.classList.remove('cell-dim'); return; }
+  document.querySelectorAll('.cell[data-asset] .job').forEach(jobEl=>{
+    const cellJobs = jobs[jobEl.dataset.key] || [];
+    const job = cellJobs[Number(jobEl.dataset.idx)];
+    if(!job){ jobEl.classList.remove('cell-dim'); return; }
     const statusOk = activeStatus==='all' || job.status===activeStatus;
     const queryOk = !query || jobHaystack(job).includes(query);
-    cell.classList.toggle('cell-dim', !(statusOk && queryOk));
+    jobEl.classList.toggle('cell-dim', !(statusOk && queryOk));
   });
 }
 
