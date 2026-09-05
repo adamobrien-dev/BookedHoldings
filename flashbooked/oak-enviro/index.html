@@ -27,6 +27,7 @@
     --rust:#9C3F27;
     --rust-bg:#F3DAD1;
     --rust-ink:#4A1D10;
+    --slate:#5B6B7A;
     --shadow: 0 1px 2px rgba(20,24,16,0.06), 0 8px 24px -12px rgba(20,24,16,0.18);
     --radius: 10px;
     color-scheme: light;
@@ -55,6 +56,7 @@
       --rust:#D07A5C;
       --rust-bg:#3A2015;
       --rust-ink:#F3D3C4;
+      --slate:#8FA3B3;
       --shadow: 0 1px 2px rgba(0,0,0,0.4), 0 8px 28px -12px rgba(0,0,0,0.6);
       color-scheme: dark;
     }
@@ -405,6 +407,45 @@
   .status-step.done{ background:var(--accent); color:var(--accent-ink); border-color:var(--accent); }
   .status-step.now{ background:var(--accent-2); color:var(--accent-2-ink); border-color:var(--accent-2); }
 
+  /* ---- Pipeline (leads + job progress) ---- */
+  .pipeline-wrap{ display:none; }
+  .pipeline-wrap.active{ display:block; }
+  .kanban-section{ margin-bottom:30px; }
+  .kanban-section h2{ font-size:21px; font-weight:700; margin:0 0 3px; }
+  .kanban-sub{ font-size:13px; color:var(--muted); margin:0 0 14px; }
+  .kanban-board{ display:flex; gap:12px; overflow-x:auto; padding-bottom:8px; align-items:flex-start; }
+  .kanban-col{
+    flex:0 0 232px; background:var(--surface-2); border:1px solid var(--line);
+    border-top:3px solid var(--col-color, var(--line-strong));
+    border-radius:10px; padding:10px; display:flex; flex-direction:column; gap:8px;
+    min-height:90px;
+  }
+  .kanban-col.drop-target{ background:color-mix(in srgb, var(--col-color, var(--accent)) 16%, var(--surface-2)); }
+  .kanban-col-head{
+    display:flex; justify-content:space-between; align-items:center;
+    font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.05em; color:var(--muted);
+    padding:0 2px 2px;
+  }
+  .kanban-col-head .count{
+    background:var(--surface); border:1px solid var(--line); border-radius:999px;
+    padding:1px 7px; font-size:10.5px; font-family:'IBM Plex Mono',monospace;
+  }
+  .kc-card{
+    background:var(--surface); border:1px solid var(--line); border-left:3px solid var(--col-color, var(--accent-2));
+    border-radius:8px; padding:10px 11px; cursor:pointer;
+    display:flex; flex-direction:column; gap:3px; text-align:left; width:100%; font-family:inherit;
+  }
+  .kc-card:hover{ border-color:var(--line-strong); }
+  .kc-card.dragging{ opacity:0.4; }
+  .kc-card .kc-title{ font-size:13px; font-weight:700; line-height:1.25; color:var(--ink); }
+  .kc-card .kc-meta{ font-size:11.5px; color:var(--muted); line-height:1.3; }
+  .kc-card .kc-value{ font-family:'IBM Plex Mono',monospace; font-size:12px; font-weight:600; color:var(--ink); margin-top:2px; font-variant-numeric:tabular-nums; }
+  .kc-add{
+    border:1px dashed var(--line-strong); background:none; color:var(--faint);
+    border-radius:8px; padding:9px; font-size:12px; font-family:inherit; cursor:pointer;
+  }
+  .kc-add:hover{ color:var(--accent); border-color:var(--accent); }
+
   .footnote{ text-align:center; font-size:11.5px; color:var(--faint); margin-top:26px; }
 
   @media (max-width:760px){
@@ -437,11 +478,12 @@
       <div class="view-toggle" role="tablist" aria-label="View">
         <button id="btn-planner" class="active" role="tab" aria-selected="true">Board</button>
         <button id="btn-mobile" role="tab" aria-selected="false">Crew view</button>
+        <button id="btn-pipeline" role="tab" aria-selected="false">Pipeline</button>
       </div>
     </div>
   </div>
 
-  <div class="stats">
+  <div class="stats" id="board-stats">
     <div class="stat stat--accent">
       <div class="num">13</div>
       <div class="label">Specialist units shown</div>
@@ -552,6 +594,22 @@
         </div>
       </div>
     </div>
+  </div>
+
+  <div class="pipeline-wrap" id="pipeline-wrap">
+    <div class="stats" id="pipeline-stats"></div>
+
+    <section class="kanban-section">
+      <h2>Sales leads</h2>
+      <p class="kanban-sub">First enquiry through to a signed job. Drag a card to move it, or click it to update the stage.</p>
+      <div class="kanban-board" id="leads-board"></div>
+    </section>
+
+    <section class="kanban-section">
+      <h2>Job progress</h2>
+      <p class="kanban-sub">Every scheduled job, from the board through to payment.</p>
+      <div class="kanban-board" id="jobs-board"></div>
+    </section>
   </div>
 
   <div class="footnote">Prototype for demo purposes — Oak Enviro Fleet Planner · built from your dispatch board, week of 14 Sep 2026</div>
@@ -951,27 +1009,37 @@ function applyFilters(){
 });
 jobSearch.addEventListener('input', applyFilters);
 
-// ---- View toggle ----
+// ---- View toggle (Board / Crew view / Pipeline) ----
 const btnPlanner = document.getElementById('btn-planner');
 const btnMobile = document.getElementById('btn-mobile');
+const btnPipeline = document.getElementById('btn-pipeline');
 const plannerShell = document.getElementById('planner-shell');
+const boardStats = document.getElementById('board-stats');
 const legend = document.querySelector('.legend');
 const filters = document.querySelector('.filters');
 const dragHint = document.querySelector('.drag-hint');
 const mobileWrap = document.getElementById('mobile-wrap');
+const pipelineWrap = document.getElementById('pipeline-wrap');
+const viewTabs = [btnPlanner, btnMobile, btnPipeline];
 
-btnMobile.addEventListener('click', ()=>{
-  btnMobile.classList.add('active'); btnMobile.setAttribute('aria-selected','true');
-  btnPlanner.classList.remove('active'); btnPlanner.setAttribute('aria-selected','false');
-  plannerShell.style.display='none'; legend.style.display='none'; filters.style.display='none'; dragHint.style.display='none';
-  mobileWrap.classList.add('active');
-});
-btnPlanner.addEventListener('click', ()=>{
-  btnPlanner.classList.add('active'); btnPlanner.setAttribute('aria-selected','true');
-  btnMobile.classList.remove('active'); btnMobile.setAttribute('aria-selected','false');
-  plannerShell.style.display=''; legend.style.display=''; filters.style.display=''; dragHint.style.display='';
-  mobileWrap.classList.remove('active');
-});
+function setView(view){
+  viewTabs.forEach(btn=>{
+    const active = btn.id === view;
+    btn.classList.toggle('active', active);
+    btn.setAttribute('aria-selected', String(active));
+  });
+  plannerShell.style.display = view==='btn-planner' ? '' : 'none';
+  boardStats.style.display = view==='btn-planner' ? '' : 'none';
+  legend.style.display = view==='btn-planner' ? '' : 'none';
+  filters.style.display = view==='btn-planner' ? '' : 'none';
+  dragHint.style.display = view==='btn-planner' ? '' : 'none';
+  mobileWrap.classList.toggle('active', view==='btn-mobile');
+  pipelineWrap.classList.toggle('active', view==='btn-pipeline');
+  if(view==='btn-pipeline') renderPipeline();
+}
+btnPlanner.addEventListener('click', ()=> setView('btn-planner'));
+btnMobile.addEventListener('click', ()=> setView('btn-mobile'));
+btnPipeline.addEventListener('click', ()=> setView('btn-pipeline'));
 
 // ---- Mobile status track interaction ----
 document.querySelectorAll('.status-track').forEach(track=>{
@@ -987,4 +1055,257 @@ document.querySelectorAll('.status-track').forEach(track=>{
     });
   });
 });
+
+// ---- Pipeline: sales leads + job progress (Kanban) ----
+const leadStageMeta = {
+  new:    {label:'New Inquiry',       border:'var(--muted)',    pillBg:'var(--muted)',    pillInk:'var(--surface)'},
+  visit:  {label:'Site Visit Booked', border:'var(--accent-2)', pillBg:'var(--accent-2)', pillInk:'var(--accent-2-ink)'},
+  quoted: {label:'Quote Sent',        border:'var(--amber)',    pillBg:'var(--amber)',    pillInk:'var(--amber-bg)'},
+  won:    {label:'Won',               border:'var(--accent)',   pillBg:'var(--accent)',   pillInk:'var(--accent-ink)'},
+  lost:   {label:'Lost',              border:'var(--rust)',     pillBg:'var(--rust)',     pillInk:'var(--rust-bg)'},
+};
+const leadStageOrder = ['new','visit','quoted','won','lost'];
+
+const leads = {
+  L1: {stage:'new',    name:'Kilkenny County Council', job:'CCTV Drainage Survey',              value:4200,  source:'Council tender portal',                 contact:'B. Nolan, Roads Dept',   next:'Review tender docs, respond by Fri', added:'3 Sep'},
+  L2: {stage:'visit',  name:'Aldi Ireland',             job:'Grease Trap Servicing — 12 stores', value:18000, source:'Referral — existing Musgrave contact',  contact:'Facilities Manager',     next:'Site visit booked Tue 9am, Naas DC', added:'28 Aug'},
+  L3: {stage:'quoted', name:'Dublin Port Company',      job:'Tank Cleaning',                     value:9500,  source:'Website enquiry',                       contact:'Operations Supervisor',  next:'Awaiting sign-off — follow up Fri', added:'25 Aug'},
+  L4: {stage:'quoted', name:'Greenogue Business Park',  job:'Hydro Excavation — new duct run',   value:6100,  source:'Repeat customer',                       contact:'Site Manager',           next:'Quote sent, expires 12 Sep', added:'30 Aug'},
+  L5: {stage:'won',    name:'Musgrave Distribution',    job:'Annual Jetting Contract',           value:32000, source:'Referral',                              contact:'Facilities Director',    next:'Schedule kickoff — add to planner', added:'20 Aug'},
+  L6: {stage:'lost',   name:'Local cafe chain',         job:'One-off grease trap clean',         value:800,   source:'Website enquiry',                       contact:'Owner',                  next:'Went with a cheaper local operator', added:'18 Aug'},
+  L7: {stage:'new',    name:'Meath County Council',     job:'Manhole Rehabilitation',            value:15000, source:'Council tender portal',                 contact:'Engineer',               next:'Review tender docs', added:'3 Sep'},
+  L8: {stage:'visit',  name:'Equinix Data Centre',      job:'Septic System Install',             value:22000, source:'Cold outreach',                         contact:'Facilities Manager',     next:'Site visit Wed 2pm', added:'1 Sep'},
+};
+
+const jobStageMeta = {
+  scheduled: {label:'Scheduled',   border:'var(--accent-2)', pillBg:'var(--accent-2)', pillInk:'var(--accent-2-ink)'},
+  progress:  {label:'In Progress', border:'var(--amber)',    pillBg:'var(--amber)',    pillInk:'var(--amber-bg)'},
+  complete:  {label:'Complete',    border:'var(--accent)',   pillBg:'var(--accent)',   pillInk:'var(--accent-ink)'},
+  invoiced:  {label:'Invoiced',    border:'var(--slate)',    pillBg:'var(--slate)',    pillInk:'var(--surface)'},
+  paid:      {label:'Paid',        border:'var(--ink)',      pillBg:'var(--ink)',      pillInk:'var(--paper)'},
+};
+const jobStageOrder = ['scheduled','progress','complete','invoiced','paid'];
+
+const jobsProgress = {
+  J1: {stage:'progress', title:'EPS Drogheda — Grit Trap 2', client:'Irish Water / EPS contract', van:'ADR',        po:'OE-4471', value:3400},
+  J2: {stage:'complete', title:'Glanua — Alum 2',             client:'Glanua Ltd',                 van:'Recy 2',     po:'OE-4480', value:2100},
+  J3: {stage:'invoiced', title:'IDA Letterkenny',             client:'IDA Ireland',                van:'Recy 2',     po:'OE-4481', value:7600},
+  J4: {stage:'paid',     title:'FCC — Jonathon',              client:'FCC Environment',            van:'Jet-Vac 2',  po:'OE-4496', value:2950},
+  J5: {stage:'scheduled',title:'SLJV — DAA',                  client:'DAA',                        van:'232-CCTV',   po:'OE-4515', value:5200},
+  J6: {stage:'scheduled',title:'JPC — Rosslare',              client:'JPC',                        van:'251 4x4',    po:'OE-4536', value:1800},
+  J7: {stage:'complete', title:'Walls Clongriffin + Reeles',  client:'Walls Construction',         van:'251 4x4',    po:'OE-4535', value:2400},
+  J8: {stage:'invoiced', title:'RNCE — St Assams',            client:'Dublin City Council',        van:'202-Rehab',  po:'OE-4540', value:4100},
+  J9: {stage:'paid',     title:'Drogheda EPS — Cory',         client:'Irish Water / EPS contract', van:'212-CSU',    po:'OE-4530', value:2600},
+};
+
+function fmtEur(n){ return '€' + Number(n||0).toLocaleString('en-IE'); }
+
+function renderKanban(boardEl, data, stageMeta, stageOrder, kind){
+  boardEl.innerHTML = stageOrder.map(stage=>{
+    const meta = stageMeta[stage];
+    const items = Object.entries(data).filter(([id,d])=>d.stage===stage);
+    const cardsHtml = items.map(([id,d])=>{
+      const titleText = kind==='lead' ? esc(d.name) : esc(d.title);
+      const metaText = kind==='lead' ? esc(d.job) : `${esc(d.client)} · ${esc(d.van)}`;
+      return `<button class="kc-card" draggable="true" data-id="${id}" data-kind="${kind}" style="--col-color:${meta.border}">
+        <span class="kc-title">${titleText}</span>
+        <span class="kc-meta">${metaText}</span>
+        <span class="kc-value">${fmtEur(d.value)}</span>
+      </button>`;
+    }).join('');
+    return `<div class="kanban-col" data-stage="${stage}" data-kind="${kind}" style="--col-color:${meta.border}">
+      <div class="kanban-col-head"><span>${meta.label}</span><span class="count">${items.length}</span></div>
+      ${cardsHtml}
+      <button class="kc-add" data-kind="${kind}" data-stage="${stage}" type="button">+ Add ${kind==='lead'?'lead':'job'}</button>
+    </div>`;
+  }).join('');
+}
+
+function renderPipelineStats(){
+  const leadArr = Object.values(leads);
+  const jobArr = Object.values(jobsProgress);
+  const openLeads = leadArr.filter(l=>l.stage!=='won' && l.stage!=='lost');
+  const openValue = openLeads.reduce((s,l)=>s+l.value,0);
+  const decided = leadArr.filter(l=>l.stage==='won'||l.stage==='lost');
+  const winRate = decided.length ? Math.round(100*decided.filter(l=>l.stage==='won').length/decided.length) : 0;
+  const inProgressCount = jobArr.filter(j=>j.stage==='progress').length;
+  const awaitingPayment = jobArr.filter(j=>j.stage==='invoiced').reduce((s,j)=>s+j.value,0);
+
+  document.getElementById('pipeline-stats').innerHTML = `
+    <div class="stat stat--info"><div class="num">${fmtEur(openValue)}</div><div class="label">Open pipeline value</div><div class="sub">${openLeads.length} active leads</div></div>
+    <div class="stat stat--accent"><div class="num">${winRate}%</div><div class="label">Win rate</div><div class="sub">${decided.filter(l=>l.stage==='won').length} won of ${decided.length} decided</div></div>
+    <div class="stat stat--amber"><div class="num">${inProgressCount}</div><div class="label">Jobs in progress</div><div class="sub">across the fleet</div></div>
+    <div class="stat"><div class="num" style="color:var(--slate)">${fmtEur(awaitingPayment)}</div><div class="label">Awaiting payment</div><div class="sub">invoiced, not yet paid</div></div>
+  `;
+}
+
+function renderPipeline(){
+  renderPipelineStats();
+  renderKanban(document.getElementById('leads-board'), leads, leadStageMeta, leadStageOrder, 'lead');
+  renderKanban(document.getElementById('jobs-board'), jobsProgress, jobStageMeta, jobStageOrder, 'job');
+}
+
+// Pipeline drag-and-drop between stage columns
+let dragCard = null;
+pipelineWrap.addEventListener('dragstart', e=>{
+  const card = e.target.closest('.kc-card');
+  if(!card) return;
+  dragCard = {id:card.dataset.id, kind:card.dataset.kind};
+  e.dataTransfer.effectAllowed = 'move';
+  e.dataTransfer.setData('text/plain', card.dataset.id);
+  requestAnimationFrame(()=>card.classList.add('dragging'));
+});
+pipelineWrap.addEventListener('dragend', e=>{
+  const card = e.target.closest('.kc-card');
+  if(card) card.classList.remove('dragging');
+  document.querySelectorAll('.kanban-col.drop-target').forEach(c=>c.classList.remove('drop-target'));
+  dragCard = null;
+});
+pipelineWrap.addEventListener('dragover', e=>{
+  const col = e.target.closest('.kanban-col');
+  if(!col || !dragCard || col.dataset.kind !== dragCard.kind) return;
+  e.preventDefault();
+  e.dataTransfer.dropEffect = 'move';
+});
+pipelineWrap.addEventListener('dragenter', e=>{
+  const col = e.target.closest('.kanban-col');
+  if(!col || !dragCard || col.dataset.kind !== dragCard.kind) return;
+  col.classList.add('drop-target');
+});
+pipelineWrap.addEventListener('dragleave', e=>{
+  const col = e.target.closest('.kanban-col');
+  if(!col) return;
+  if(col.contains(e.relatedTarget)) return;
+  col.classList.remove('drop-target');
+});
+pipelineWrap.addEventListener('drop', e=>{
+  const col = e.target.closest('.kanban-col');
+  if(!col || !dragCard || col.dataset.kind !== dragCard.kind) return;
+  e.preventDefault();
+  const store = dragCard.kind === 'lead' ? leads : jobsProgress;
+  if(store[dragCard.id]) store[dragCard.id].stage = col.dataset.stage;
+  dragCard = null;
+  renderPipeline();
+});
+
+// Pipeline card click -> drawer (view + change stage), or add-card form
+pipelineWrap.addEventListener('click', e=>{
+  const addBtn = e.target.closest('.kc-add');
+  if(addBtn){ openPipelineForm(addBtn.dataset.kind, addBtn.dataset.stage); return; }
+  const card = e.target.closest('.kc-card');
+  if(card){ openPipelineView(card.dataset.kind, card.dataset.id); return; }
+});
+
+function stageSelectHtml(stageOrder, stageMeta, selected){
+  return `<select id="pf-stage">${stageOrder.map(s=>`<option value="${s}" ${s===selected?'selected':''}>${stageMeta[s].label}</option>`).join('')}</select>`;
+}
+
+function openPipelineView(kind, id){
+  const store = kind==='lead' ? leads : jobsProgress;
+  const stageMeta = kind==='lead' ? leadStageMeta : jobStageMeta;
+  const stageOrder = kind==='lead' ? leadStageOrder : jobStageOrder;
+  const d = store[id];
+  if(!d) return;
+  const meta = stageMeta[d.stage];
+  const title = kind==='lead' ? d.name : d.title;
+  const sub = kind==='lead' ? d.job : `${d.client} · ${d.van}`;
+  setDrawerHead(meta.label, meta.pillBg, meta.pillInk, title, sub);
+
+  const detailRows = kind==='lead'
+    ? `<dl class="field-row"><dt>Job</dt><dd>${esc(d.job)}</dd></dl>
+       <dl class="field-row"><dt>Value</dt><dd class="mono">${fmtEur(d.value)}</dd></dl>
+       <dl class="field-row"><dt>Source</dt><dd>${esc(d.source)}</dd></dl>
+       <dl class="field-row"><dt>Contact</dt><dd>${esc(d.contact)}</dd></dl>
+       <dl class="field-row"><dt>Added</dt><dd class="mono">${esc(d.added)}</dd></dl>`
+    : `<dl class="field-row"><dt>Client</dt><dd>${esc(d.client)}</dd></dl>
+       <dl class="field-row"><dt>Vehicle</dt><dd>${esc(d.van)}</dd></dl>
+       <dl class="field-row"><dt>PO / Job #</dt><dd class="mono">${esc(d.po)}</dd></dl>
+       <dl class="field-row"><dt>Value</dt><dd class="mono">${fmtEur(d.value)}</dd></dl>`;
+
+  drawerBody.innerHTML = `
+    <div class="field-group">${detailRows}</div>
+    ${kind==='lead' ? `<div><p class="drawer-section-title">Next action</p><div class="notes-box">${esc(d.next) || 'No next action noted.'}</div></div>` : ''}
+    <div class="form-field"><label for="pf-stage">Stage</label>${stageSelectHtml(stageOrder, stageMeta, d.stage)}</div>
+    <div class="drawer-actions">
+      <button class="btn" id="btn-remove-card" type="button" style="color:var(--rust)">Remove</button>
+      <button class="btn btn-primary" id="btn-save-stage" type="button">Update stage</button>
+    </div>
+  `;
+  document.getElementById('btn-save-stage').addEventListener('click', ()=>{
+    d.stage = document.getElementById('pf-stage').value;
+    renderPipeline();
+    openPipelineView(kind, id);
+  });
+  document.getElementById('btn-remove-card').addEventListener('click', ()=>{
+    delete store[id];
+    renderPipeline();
+    closeDrawer();
+  });
+  showDrawer();
+}
+
+function openPipelineForm(kind, stage){
+  const stageMeta = kind==='lead' ? leadStageMeta : jobStageMeta;
+  setDrawerHead('New', 'var(--surface-2)', 'var(--ink)', kind==='lead' ? 'New lead' : 'New job', stageMeta[stage].label);
+
+  const fieldsHtml = kind==='lead'
+    ? `<div class="form-field"><label for="pf-name">Company / contact</label><input id="pf-name" type="text" placeholder="e.g. Kilkenny County Council"></div>
+       <div class="form-field"><label for="pf-job">Job description</label><input id="pf-job" type="text" placeholder="e.g. CCTV Drainage Survey"></div>
+       <div class="form-row">
+         <div class="form-field"><label for="pf-value">Estimated value (€)</label><input id="pf-value" type="number" min="0" step="1" placeholder="4200"></div>
+         <div class="form-field"><label for="pf-source">Source</label><input id="pf-source" type="text" placeholder="Referral, website…"></div>
+       </div>
+       <div class="form-field"><label for="pf-contact">Contact</label><input id="pf-contact" type="text" placeholder="Name / role"></div>
+       <div class="form-field"><label for="pf-next">Next action</label><textarea id="pf-next" placeholder="What happens next"></textarea></div>`
+    : `<div class="form-field"><label for="pf-title">Job title</label><input id="pf-title" type="text" placeholder="e.g. EPS Drogheda — Grit Trap 2"></div>
+       <div class="form-row">
+         <div class="form-field"><label for="pf-client">Client</label><input id="pf-client" type="text" placeholder="Client name"></div>
+         <div class="form-field"><label for="pf-van">Vehicle</label><input id="pf-van" type="text" placeholder="e.g. ADR"></div>
+       </div>
+       <div class="form-row">
+         <div class="form-field"><label for="pf-po">PO / Job #</label><input id="pf-po" type="text" placeholder="OE-XXXX"></div>
+         <div class="form-field"><label for="pf-value">Value (€)</label><input id="pf-value" type="number" min="0" step="1" placeholder="3400"></div>
+       </div>`;
+
+  drawerBody.innerHTML = `
+    ${fieldsHtml}
+    <div class="drawer-actions">
+      <button class="btn" id="btn-cancel-pf" type="button">Cancel</button>
+      <button class="btn btn-primary" id="btn-save-pf" type="button">Add ${kind==='lead'?'lead':'job'}</button>
+    </div>
+  `;
+  document.getElementById('btn-cancel-pf').addEventListener('click', closeDrawer);
+  document.getElementById('btn-save-pf').addEventListener('click', ()=>{
+    const store = kind==='lead' ? leads : jobsProgress;
+    const id = (kind==='lead'?'L':'J') + Date.now();
+    if(kind==='lead'){
+      const name = document.getElementById('pf-name').value.trim();
+      if(!name) return;
+      store[id] = {
+        stage,
+        name,
+        job: document.getElementById('pf-job').value.trim(),
+        value: Number(document.getElementById('pf-value').value) || 0,
+        source: document.getElementById('pf-source').value.trim(),
+        contact: document.getElementById('pf-contact').value.trim(),
+        next: document.getElementById('pf-next').value.trim(),
+        added: 'Today',
+      };
+    } else {
+      const title = document.getElementById('pf-title').value.trim();
+      if(!title) return;
+      store[id] = {
+        stage,
+        title,
+        client: document.getElementById('pf-client').value.trim(),
+        van: document.getElementById('pf-van').value.trim(),
+        po: document.getElementById('pf-po').value.trim(),
+        value: Number(document.getElementById('pf-value').value) || 0,
+      };
+    }
+    renderPipeline();
+    openPipelineView(kind, id);
+  });
+  showDrawer();
+}
 </script>
