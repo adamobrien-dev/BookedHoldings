@@ -1,0 +1,988 @@
+<meta charset="UTF-8">
+<title>Oak Enviro Fleet Planner</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Public+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+  :root{
+    --paper:#F3F4EE;
+    --surface:#FFFFFF;
+    --surface-2:#EAEBE3;
+    --ink:#1A211C;
+    --muted:#5B6459;
+    --faint:#8B937F;
+    --line:#DBDED2;
+    --line-strong:#C4C8B8;
+    --accent:#2F6B44;
+    --accent-ink:#F3F8F4;
+    --accent-bg:#DCEEE1;
+    --accent-text:#163C25;
+    --accent-2:#2C6C8C;
+    --accent-2-ink:#EFF6F9;
+    --accent-2-bg:#DCEAF0;
+    --accent-2-text:#173A4A;
+    --amber:#9C6A17;
+    --amber-bg:#F4E6C8;
+    --amber-ink:#4A3106;
+    --rust:#9C3F27;
+    --rust-bg:#F3DAD1;
+    --rust-ink:#4A1D10;
+    --shadow: 0 1px 2px rgba(20,24,16,0.06), 0 8px 24px -12px rgba(20,24,16,0.18);
+    --radius: 10px;
+    color-scheme: light;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --paper:#12140F;
+      --surface:#191C15;
+      --surface-2:#20241B;
+      --ink:#E7EBE0;
+      --muted:#9AA48D;
+      --faint:#6C7563;
+      --line:#2B2F24;
+      --line-strong:#3A4030;
+      --accent:#5B9B71;
+      --accent-ink:#0E1710;
+      --accent-bg:#17301F;
+      --accent-text:#B9E6C6;
+      --accent-2:#5FA6C4;
+      --accent-2-ink:#0B1A20;
+      --accent-2-bg:#153140;
+      --accent-2-text:#BEE4F2;
+      --amber:#D9A54A;
+      --amber-bg:#3A2E12;
+      --amber-ink:#F3DFAE;
+      --rust:#D07A5C;
+      --rust-bg:#3A2015;
+      --rust-ink:#F3D3C4;
+      --shadow: 0 1px 2px rgba(0,0,0,0.4), 0 8px 28px -12px rgba(0,0,0,0.6);
+      color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"]{
+    --paper:#12140F;
+    --surface:#191C15;
+    --surface-2:#20241B;
+    --ink:#E7EBE0;
+    --muted:#9AA48D;
+    --faint:#6C7563;
+    --line:#2B2F24;
+    --line-strong:#3A4030;
+    --accent:#5B9B71;
+    --accent-ink:#0E1710;
+    --accent-2:#5FA6C4;
+    --accent-2-ink:#0B1A20;
+    --amber:#D9A54A;
+    --amber-bg:#3A2E12;
+    --amber-ink:#F3DFAE;
+    --rust:#D07A5C;
+    --rust-bg:#3A2015;
+    --rust-ink:#F3D3C4;
+    --shadow: 0 1px 2px rgba(0,0,0,0.4), 0 8px 28px -12px rgba(0,0,0,0.6);
+    color-scheme: dark;
+  }
+
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:'Public Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  h1,h2,h3,.display{
+    font-family:'Barlow Condensed', 'Public Sans', sans-serif;
+    text-wrap:balance;
+    letter-spacing:0.01em;
+  }
+  .mono{ font-family:'IBM Plex Mono', ui-monospace, monospace; font-variant-numeric:tabular-nums; }
+
+  .app{ max-width:1400px; margin:0 auto; padding:20px 20px 56px; }
+
+  /* ---- Top bar ---- */
+  .topbar{
+    display:flex; align-items:center; justify-content:space-between;
+    gap:16px; flex-wrap:wrap;
+    padding-bottom:16px; margin-bottom:18px;
+    border-bottom:1px solid var(--line);
+  }
+  .brand{ display:flex; align-items:center; gap:12px; }
+  .brand-mark{
+    width:38px; height:38px; border-radius:9px;
+    background:linear-gradient(155deg, var(--accent), var(--accent-2));
+    display:flex; align-items:center; justify-content:center;
+    color:var(--accent-ink); flex-shrink:0;
+  }
+  .brand-mark svg{ width:20px; height:20px; }
+  .brand-text .eyebrow{
+    font-size:11px; text-transform:uppercase; letter-spacing:0.11em;
+    color:var(--muted); font-weight:600;
+  }
+  .brand-text h1{ font-size:24px; line-height:1; margin:2px 0 0; font-weight:700; }
+
+  .topbar-controls{ display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
+  .week-nav{
+    display:flex; align-items:center; gap:2px;
+    background:var(--surface); border:1px solid var(--line);
+    border-radius:8px; padding:4px; box-shadow:var(--shadow);
+  }
+  .week-nav button{
+    width:30px; height:30px; border:none; background:transparent;
+    color:var(--muted); border-radius:6px; cursor:pointer; font-size:15px;
+    display:flex; align-items:center; justify-content:center;
+  }
+  .week-nav button:hover{ background:var(--surface-2); color:var(--ink); }
+  .week-label{ padding:0 10px; font-size:13px; font-weight:600; white-space:nowrap; }
+
+  .view-toggle{
+    display:flex; background:var(--surface); border:1px solid var(--line);
+    border-radius:8px; padding:3px; box-shadow:var(--shadow);
+  }
+  .view-toggle button{
+    border:none; background:transparent; color:var(--muted);
+    font-family:inherit; font-size:13px; font-weight:600;
+    padding:7px 14px; border-radius:6px; cursor:pointer;
+    display:flex; align-items:center; gap:6px;
+  }
+  .view-toggle button.active{ background:var(--accent); color:var(--accent-ink); }
+
+  /* ---- Stat strip ---- */
+  .stats{
+    display:grid; grid-template-columns:repeat(4,1fr); gap:12px;
+    margin-bottom:16px;
+  }
+  .stat{
+    background:var(--surface); border:1px solid var(--line);
+    border-radius:var(--radius); padding:14px 16px;
+    display:flex; flex-direction:column; gap:4px;
+  }
+  .stat .num{ font-family:'Barlow Condensed',sans-serif; font-size:32px; font-weight:700; line-height:1; }
+  .stat .label{ font-size:12px; color:var(--muted); font-weight:600; text-transform:uppercase; letter-spacing:0.06em; }
+  .stat.stat--accent .num{ color:var(--accent); }
+  .stat.stat--info .num{ color:var(--accent-2); }
+  .stat.stat--amber .num{ color:var(--amber); }
+  .stat .sub{ font-size:12px; color:var(--faint); }
+
+  /* ---- Filters ---- */
+  .drag-hint{ font-size:12px; color:var(--faint); margin:0 0 10px; }
+  .filters{ display:flex; align-items:center; gap:10px 22px; margin-bottom:14px; flex-wrap:wrap; }
+  .filter-group{ display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
+  .filters .filters-label{ font-size:11px; text-transform:uppercase; letter-spacing:0.08em; color:var(--faint); font-weight:600; margin-right:2px; }
+  .chip{
+    border:1px solid var(--line); background:var(--surface); color:var(--muted);
+    font-family:inherit; font-size:12.5px; font-weight:600; padding:6px 12px;
+    border-radius:999px; cursor:pointer; white-space:nowrap;
+    display:flex; align-items:center; gap:6px;
+  }
+  .chip .dot{ width:7px; height:7px; border-radius:50%; }
+  .chip.active{ background:var(--ink); color:var(--paper); border-color:var(--ink); }
+  .chip.active .dot{ box-shadow:0 0 0 2px var(--paper) inset; }
+
+  .filter-search{ position:relative; flex:1; min-width:190px; max-width:280px; margin-left:auto; }
+  .filter-search svg{
+    position:absolute; left:11px; top:50%; transform:translateY(-50%);
+    width:14px; height:14px; color:var(--faint); pointer-events:none;
+  }
+  .filter-search input{
+    width:100%; font-family:inherit; font-size:13px;
+    padding:8px 12px 8px 32px; border-radius:999px;
+    border:1px solid var(--line); background:var(--surface); color:var(--ink);
+  }
+  .filter-search input:focus{ outline:2px solid var(--accent); outline-offset:1px; border-color:var(--accent); }
+  .filter-search input::-webkit-search-cancel-button{ cursor:pointer; }
+
+  .cell-dim .job{ opacity:0.25; }
+
+  /* ---- Planner grid ---- */
+  .planner-shell{
+    background:var(--surface); border:1px solid var(--line);
+    border-radius:var(--radius); box-shadow:var(--shadow);
+    overflow:hidden;
+  }
+  .planner-scroll{ overflow-x:auto; }
+  .grid{
+    display:grid;
+    grid-template-columns: 210px repeat(7, minmax(126px, 1fr));
+    min-width:900px;
+  }
+  .cell{
+    border-bottom:1px solid var(--line);
+    border-right:1px solid var(--line);
+    padding:6px;
+    min-height:66px;
+    position:relative;
+  }
+  .grid > .cell:nth-child(8n){ border-right:none; }
+
+  .col-head{
+    position:sticky; top:0; z-index:3;
+    background:var(--surface);
+    padding:10px 12px;
+    display:flex; flex-direction:column; gap:2px;
+    min-height:0;
+  }
+  .col-head .dow{ font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.07em; color:var(--muted); }
+  .col-head .dom{ font-family:'Barlow Condensed',sans-serif; font-size:19px; font-weight:700; }
+  .col-head.weekend .dow{ color:var(--faint); }
+  .col-head.corner{ z-index:4; left:0; }
+
+  .row-head{
+    position:sticky; left:0; z-index:2;
+    background:var(--surface);
+    padding:10px 12px;
+    display:flex; flex-direction:column; justify-content:center; gap:2px;
+    border-right:1px solid var(--line-strong);
+  }
+  .row-head .asset-name{ font-family:'Barlow Condensed',sans-serif; font-size:17px; font-weight:600; line-height:1.1; }
+  .row-head .asset-reg{ font-size:11px; color:var(--faint); }
+
+  .section-row .cell{ background:var(--surface-2); border-bottom:1px solid var(--line-strong); }
+  .section-label{
+    grid-column: 1 / -1;
+    background:var(--surface-2);
+    padding:7px 12px;
+    font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.09em;
+    color:var(--muted);
+    border-bottom:1px solid var(--line-strong);
+    border-top:1px solid var(--line-strong);
+    position:sticky; left:0;
+  }
+
+  .job{
+    height:100%; width:100%;
+    border:none; border-radius:7px;
+    padding:6px 8px;
+    text-align:left; cursor:pointer;
+    display:flex; flex-direction:column; gap:2px;
+    font-family:inherit;
+  }
+  .job .job-meta{ display:flex; justify-content:space-between; align-items:baseline; font-size:9.5px; font-weight:700; text-transform:uppercase; letter-spacing:0.05em; opacity:0.75; }
+  .job .job-meta .job-time{ font-family:'IBM Plex Mono',monospace; font-weight:500; text-transform:none; letter-spacing:0; font-variant-numeric:tabular-nums; }
+  .job .job-title{ font-size:12.5px; font-weight:700; line-height:1.22; }
+  .job .job-sub{ font-size:11px; opacity:0.85; line-height:1.2; }
+  .job:hover{ filter:brightness(1.04); outline:2px solid var(--ink); outline-offset:-2px; }
+  .job:focus-visible{ outline:2px solid var(--ink); outline-offset:-2px; }
+  .job[draggable="true"]{ cursor:grab; }
+  .job.dragging{ opacity:0.35; cursor:grabbing; }
+  .cell.drop-target{ background:color-mix(in srgb, var(--accent) 18%, var(--surface)); }
+  .cell.drop-target .empty-cell{ border-color:var(--accent); color:var(--accent); }
+
+  .job--booked{ background:var(--accent-2-bg); color:var(--accent-2-text); border-left:3px solid var(--accent-2); }
+  .job--service{ background:var(--amber-bg); color:var(--amber-ink); border-left:3px solid var(--amber); }
+  .job--inspect{ background:var(--rust-bg); color:var(--rust-ink); border-left:3px solid var(--rust); }
+  .job--complete{ background:var(--accent-bg); color:var(--accent-text); border-left:3px solid var(--accent); }
+
+  .empty-cell{
+    height:100%; width:100%;
+    border:1px dashed transparent;
+    border-radius:7px;
+    background:none;
+    padding:0;
+    font-family:inherit;
+    color:var(--faint);
+    font-size:15px;
+    display:flex; align-items:center; justify-content:center;
+    cursor:pointer;
+  }
+  .cell:hover .empty-cell{ border-color:var(--line-strong); }
+  .empty-cell:hover, .empty-cell:focus-visible{ color:var(--accent); border-color:var(--accent); outline:none; }
+
+  /* dim non-matching rows on filter */
+  .row-head.row-dim, .cell.row-dim{ opacity:0.32; }
+
+  /* ---- legend ---- */
+  .legend{ display:flex; gap:16px; align-items:center; margin-top:12px; flex-wrap:wrap; padding:0 2px; }
+  .legend-item{ display:flex; align-items:center; gap:6px; font-size:12px; color:var(--muted); }
+  .legend-item .sw{ width:11px; height:11px; border-radius:3px; }
+  .sw--booked{ background:var(--accent-2); }
+  .sw--service{ background:var(--amber); }
+  .sw--inspect{ background:var(--rust); }
+  .sw--complete{ background:var(--accent); }
+
+  /* ---- Drawer ---- */
+  .scrim{
+    position:fixed; inset:0; background:rgba(10,12,8,0.38);
+    opacity:0; pointer-events:none; transition:opacity .18s ease;
+    z-index:10;
+  }
+  .scrim.open{ opacity:1; pointer-events:auto; }
+  .drawer{
+    position:fixed; top:0; right:0; height:100%; width:min(420px, 92vw);
+    background:var(--surface); border-left:1px solid var(--line);
+    box-shadow:-16px 0 40px -20px rgba(0,0,0,0.4);
+    transform:translateX(100%); transition:transform .2s ease;
+    z-index:11; display:flex; flex-direction:column;
+  }
+  .drawer.open{ transform:translateX(0); }
+  .drawer-head{
+    padding:20px 22px 16px; border-bottom:1px solid var(--line);
+    display:flex; align-items:flex-start; justify-content:space-between; gap:12px;
+  }
+  .drawer-head .status-pill{
+    display:inline-flex; align-items:center; gap:6px;
+    font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.06em;
+    padding:4px 10px; border-radius:999px; margin-bottom:8px;
+  }
+  .drawer-head h2{ font-size:22px; margin:0; font-weight:700; }
+  .drawer-head .drawer-sub{ font-size:13px; color:var(--muted); margin-top:2px; }
+  .drawer-close{
+    border:1px solid var(--line); background:var(--surface-2); color:var(--ink);
+    width:30px; height:30px; border-radius:8px; cursor:pointer; font-size:15px; flex-shrink:0;
+  }
+  .drawer-body{ padding:18px 22px; overflow-y:auto; flex:1; display:flex; flex-direction:column; gap:18px; }
+  .field-row{ display:grid; grid-template-columns:100px 1fr; gap:10px; font-size:13.5px; }
+  .field-row dt{ color:var(--faint); font-weight:600; }
+  .field-row dd{ margin:0; }
+  .field-group{ display:flex; flex-direction:column; gap:9px; }
+  .drawer-section-title{ font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.08em; color:var(--faint); margin:0 0 2px; }
+  .notes-box{ background:var(--surface-2); border:1px solid var(--line); border-radius:8px; padding:12px; font-size:13px; line-height:1.5; }
+  .doc-list{ display:flex; flex-direction:column; gap:6px; }
+  .doc-chip{
+    display:flex; align-items:center; gap:8px;
+    border:1px solid var(--line); border-radius:8px; padding:8px 10px;
+    font-size:12.5px; color:var(--muted);
+  }
+  .crew-avatars{ display:flex; gap:-4px; }
+  .avatar{
+    width:28px; height:28px; border-radius:50%; background:var(--accent);
+    color:var(--accent-ink); font-size:11px; font-weight:700;
+    display:flex; align-items:center; justify-content:center;
+    border:2px solid var(--surface); margin-left:-6px;
+  }
+  .avatar:first-child{ margin-left:0; }
+
+  .form-field{ display:flex; flex-direction:column; gap:5px; }
+  .form-field label{ font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.06em; color:var(--faint); }
+  .form-field input, .form-field select, .form-field textarea{
+    font-family:inherit; font-size:13.5px; padding:9px 10px; border-radius:8px;
+    border:1px solid var(--line); background:var(--surface-2); color:var(--ink);
+    width:100%;
+  }
+  .form-field textarea{ resize:vertical; min-height:70px; line-height:1.4; }
+  .form-field input:focus, .form-field select:focus, .form-field textarea:focus{
+    outline:2px solid var(--accent); outline-offset:1px; border-color:var(--accent);
+  }
+  .form-row{ display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+  .drawer-actions{ display:flex; gap:10px; }
+  .btn{
+    font-family:inherit; font-size:13.5px; font-weight:600; padding:10px 16px;
+    border-radius:8px; cursor:pointer; border:1px solid var(--line);
+    background:var(--surface-2); color:var(--ink); flex:1;
+  }
+  .btn:hover{ border-color:var(--line-strong); }
+  .btn-primary{ background:var(--accent); color:var(--accent-ink); border-color:var(--accent); }
+  .btn-primary:hover{ filter:brightness(1.06); }
+
+  /* ---- Mobile view ---- */
+  .mobile-wrap{ display:none; justify-content:center; padding:30px 12px 10px; overflow-x:hidden; }
+  .mobile-wrap.active{ display:flex; }
+  .phone{
+    width:min(340px, 100%); background:var(--surface); border:1px solid var(--line-strong);
+    border-radius:34px; box-shadow:var(--shadow); padding:14px 14px 20px;
+  }
+  .phone-status{ display:flex; justify-content:space-between; font-size:11px; color:var(--faint); padding:2px 6px 10px; }
+  .phone-head{ padding:2px 4px 14px; }
+  .phone-head .greet{ font-size:12px; color:var(--muted); }
+  .phone-head h3{ font-size:22px; margin:2px 0 0; font-weight:700; }
+  .phone-head .role-pill{
+    display:inline-block; margin-top:6px; font-size:11px; font-weight:600;
+    background:var(--surface-2); color:var(--muted); padding:3px 9px; border-radius:999px;
+  }
+  .phone-card{
+    background:var(--surface-2); border:1px solid var(--line);
+    border-radius:14px; padding:13px 14px; margin-bottom:10px;
+  }
+  .phone-card .pc-top{ display:flex; justify-content:space-between; align-items:flex-start; gap:8px; }
+  .phone-card .pc-title{ font-weight:700; font-size:14.5px; }
+  .phone-card .pc-time{ font-size:11.5px; color:var(--faint); font-family:'IBM Plex Mono',monospace; }
+  .phone-card .pc-site{ font-size:12.5px; color:var(--muted); margin-top:2px; }
+  .status-track{ display:flex; gap:4px; margin-top:10px; }
+  .status-step{
+    flex:1; text-align:center; font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:0.02em;
+    padding:6px 2px; border-radius:6px; background:var(--surface); color:var(--faint); border:1px solid var(--line);
+    cursor:pointer;
+  }
+  .status-step.done{ background:var(--accent); color:var(--accent-ink); border-color:var(--accent); }
+  .status-step.now{ background:var(--accent-2); color:var(--accent-2-ink); border-color:var(--accent-2); }
+
+  .footnote{ text-align:center; font-size:11.5px; color:var(--faint); margin-top:26px; }
+
+  @media (max-width:760px){
+    .stats{ grid-template-columns:repeat(2,1fr); }
+    .app{ padding:14px 12px 40px; }
+    .brand-text h1{ font-size:20px; }
+  }
+</style>
+
+<div class="app">
+
+  <div class="topbar">
+    <div class="brand">
+      <div class="brand-mark">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 4 9v6l8 7 8-7V9z"/><path d="M12 2v20"/></svg>
+      </div>
+      <div class="brand-text">
+        <div class="eyebrow">Oak Enviro · Operations</div>
+        <h1>Fleet Planner</h1>
+      </div>
+    </div>
+    <div class="topbar-controls">
+      <div class="week-nav">
+        <button aria-label="Previous week">‹</button>
+        <span class="week-label mono">14 – 20 Sep 2026</span>
+        <button aria-label="Next week">›</button>
+      </div>
+      <div class="view-toggle" role="tablist" aria-label="View">
+        <button id="btn-planner" class="active" role="tab" aria-selected="true">Board</button>
+        <button id="btn-mobile" role="tab" aria-selected="false">Crew view</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="stats">
+    <div class="stat stat--accent">
+      <div class="num">13</div>
+      <div class="label">Specialist units shown</div>
+      <div class="sub">of 30 registered assets</div>
+    </div>
+    <div class="stat stat--info">
+      <div class="num">9</div>
+      <div class="label">Booked today</div>
+      <div class="sub">Mon 14 Sep</div>
+    </div>
+    <div class="stat stat--amber">
+      <div class="num">3</div>
+      <div class="label">On service</div>
+      <div class="sub">ADR, Recy 1</div>
+    </div>
+    <div class="stat">
+      <div class="num" style="color:var(--rust)">1</div>
+      <div class="label">DOE inspection</div>
+      <div class="sub">Sat 19 Sep · 11:00</div>
+    </div>
+  </div>
+
+  <p class="drag-hint">Drag any job onto another van or day to reschedule it.</p>
+
+  <div class="filters">
+    <div class="filter-group" id="cat-filters">
+      <span class="filters-label">Fleet</span>
+      <button class="chip active" data-cat="all"><span class="dot" style="background:var(--ink)"></span>All units</button>
+      <button class="chip" data-cat="recycler"><span class="dot" style="background:#7C8AA0"></span>Recyclers</button>
+      <button class="chip" data-cat="jetvac"><span class="dot" style="background:#7C8AA0"></span>Jet-Vac</button>
+      <button class="chip" data-cat="inspect"><span class="dot" style="background:#7C8AA0"></span>CCTV &amp; Robotics</button>
+      <button class="chip" data-cat="support"><span class="dot" style="background:#7C8AA0"></span>Support</button>
+    </div>
+    <div class="filter-group" id="status-filters">
+      <span class="filters-label">Status</span>
+      <button class="chip active" data-status="all"><span class="dot" style="background:var(--ink)"></span>All</button>
+      <button class="chip" data-status="booked"><span class="dot" style="background:var(--accent-2)"></span>Booked</button>
+      <button class="chip" data-status="service"><span class="dot" style="background:var(--amber)"></span>Servicing</button>
+      <button class="chip" data-status="inspect"><span class="dot" style="background:var(--rust)"></span>DOE</button>
+      <button class="chip" data-status="complete"><span class="dot" style="background:var(--accent)"></span>Completed</button>
+    </div>
+    <div class="filter-search">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input type="search" id="job-search" placeholder="Search jobs, sites, clients…" aria-label="Search jobs">
+    </div>
+  </div>
+
+  <div id="planner-shell" class="planner-shell">
+    <div class="planner-scroll">
+      <div class="grid" id="grid"></div>
+    </div>
+  </div>
+
+  <div class="legend">
+    <div class="legend-item"><span class="sw sw--booked"></span>Booked job</div>
+    <div class="legend-item"><span class="sw sw--service"></span>Servicing</div>
+    <div class="legend-item"><span class="sw sw--inspect"></span>DOE / compliance</div>
+    <div class="legend-item"><span class="sw sw--complete"></span>Completed</div>
+  </div>
+
+  <div class="mobile-wrap" id="mobile-wrap">
+    <div class="phone">
+      <div class="phone-status"><span>9:14</span><span>Oak Enviro Crew</span></div>
+      <div class="phone-head">
+        <div class="greet">Good morning</div>
+        <h3>PJ Slavin</h3>
+        <span class="role-pill">ADR · 221-MN-6</span>
+      </div>
+
+      <div class="phone-card">
+        <div class="pc-top">
+          <div>
+            <div class="pc-title">EPS Drogheda — Grit Trap 2</div>
+            <div class="pc-site">Drogheda WWTP · site contact: T. Cosgrave</div>
+          </div>
+          <div class="pc-time">07:30</div>
+        </div>
+        <div class="status-track">
+          <div class="status-step done">Sched</div>
+          <div class="status-step done">En route</div>
+          <div class="status-step now">On site</div>
+          <div class="status-step">Done</div>
+        </div>
+      </div>
+
+      <div class="phone-card">
+        <div class="pc-top">
+          <div>
+            <div class="pc-title">EPS Drogheda — Inlet works</div>
+            <div class="pc-site">Drogheda WWTP · follow-on job</div>
+          </div>
+          <div class="pc-time">13:30</div>
+        </div>
+        <div class="status-track">
+          <div class="status-step">Sched</div>
+          <div class="status-step">En route</div>
+          <div class="status-step">On site</div>
+          <div class="status-step">Done</div>
+        </div>
+      </div>
+
+      <div class="phone-card" style="margin-bottom:0;">
+        <div class="pc-top">
+          <div>
+            <div class="pc-title">Tap to view job sheet &amp; RAMS</div>
+            <div class="pc-site">2 documents attached</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="footnote">Prototype for demo purposes — Oak Enviro Fleet Planner · built from your dispatch board, week of 14 Sep 2026</div>
+</div>
+
+<div class="scrim" id="scrim"></div>
+<aside class="drawer" id="drawer" aria-hidden="true">
+  <div class="drawer-head">
+    <div>
+      <span class="status-pill" id="d-status-pill"></span>
+      <h2 id="d-title">Job title</h2>
+      <div class="drawer-sub" id="d-sub">Asset · Registration</div>
+    </div>
+    <button class="drawer-close" id="d-close" aria-label="Close">✕</button>
+  </div>
+  <div class="drawer-body" id="drawer-body"></div>
+</aside>
+
+<script>
+const days = [
+  {dow:'Mon', dom:'14', wknd:false},
+  {dow:'Tue', dom:'15', wknd:false},
+  {dow:'Wed', dom:'16', wknd:false},
+  {dow:'Thu', dom:'17', wknd:false},
+  {dow:'Fri', dom:'18', wknd:false},
+  {dow:'Sat', dom:'19', wknd:true},
+  {dow:'Sun', dom:'20', wknd:true},
+];
+
+const sections = [
+  { label:'Recyclers', cat:'recycler', assets:[
+    {name:'Recy 1', reg:'212-MN-418'},
+    {name:'Recy 2', reg:'251-MN-928'},
+  ]},
+  { label:'Jet-Vac units', cat:'jetvac', assets:[
+    {name:'ADR', reg:'221-MN-6'},
+    {name:'Jet-Vac 1', reg:'222-MN-417'},
+    {name:'Jet-Vac 2', reg:'211-MN-1283'},
+    {name:'Jet-Vac 3', reg:'251-MN-929'},
+    {name:'201-Jetter', reg:'201-MN-713'},
+  ]},
+  { label:'CCTV & robotics', cat:'inspect', assets:[
+    {name:'232-CCTV', reg:'232-MN-386'},
+    {name:'202-Robot', reg:'202-D-20852'},
+    {name:'202-Rehab', reg:'202-MN-438'},
+    {name:'212-CSU', reg:'212-MN-26'},
+  ]},
+  { label:'Support', cat:'support', assets:[
+    {name:'251 4x4', reg:'251-MN-196'},
+    {name:'JD Tractor', reg:'—'},
+  ]},
+];
+
+// jobs keyed "AssetName|dayIndex"
+const jobs = {
+  'ADR|0': {status:'booked', title:'EPS Drogheda — Grit Trap 2', site:'Drogheda WWTP', client:'Irish Water / EPS contract', po:'OE-4471', time:'07:30 – 16:00', crew:['PJ','ML','LE'], notes:'Grit trap 2 jetting + tanker offload. Follow-on to inlet works Tuesday. Confined space permit already on file.', docs:['RAMS — confined space entry.pdf','Site induction — Drogheda WWTP.pdf']},
+  'ADR|1': {status:'service', title:'Scheduled service', site:'Oak Enviro depot', client:'Internal', po:'SVC-1188', time:'All day', crew:['PJ','ML'], notes:'150-hour service + pump seal check before EPS Drogheda block resumes Wednesday.', docs:['Service checklist — ADR.pdf']},
+  'ADR|2': {status:'booked', title:'EPS Drogheda — Grit Trap 2', site:'Drogheda WWTP', client:'Irish Water / EPS contract', po:'OE-4471', time:'07:30 – 15:00', crew:['PJ'], notes:'Continuation of grit trap clearance.', docs:['RAMS — confined space entry.pdf']},
+  'ADR|3': {status:'booked', title:'EPS Drogheda — Grit Trap 2', site:'Drogheda WWTP', client:'Irish Water / EPS contract', po:'OE-4471', time:'07:30 – 15:00', crew:['PJ'], notes:'Final day on grit trap 2 before mobilising to Naas Friday.', docs:[]},
+  'ADR|4': {status:'booked', title:'EPS Drogheda', site:'Drogheda WWTP', client:'Irish Water / EPS contract', po:'OE-4472', time:'07:30 – 13:00', crew:['PJ','SL'], notes:'Wrap-up + wash-down before weekend.', docs:[]},
+
+  'Recy 1|0': {status:'service', title:'Scheduled service', site:'Oak Enviro depot', client:'Internal', po:'SVC-1189', time:'All day', crew:['—'], notes:'Recycler unit due 500-hour service.', docs:['Service checklist — Recy 1.pdf']},
+  'Recy 1|1': {status:'service', title:'Scheduled service', site:'Oak Enviro depot', client:'Internal', po:'SVC-1189', time:'All day', crew:['—'], notes:'Parts on order — hydraulic hose replacement.', docs:[]},
+  'Recy 1|2': {status:'service', title:'Scheduled service', site:'Oak Enviro depot', client:'Internal', po:'SVC-1189', time:'All day', crew:['—'], notes:'Back in test Thursday afternoon.', docs:[]},
+  'Recy 1|3': {status:'service', title:'Scheduled service', site:'Oak Enviro depot', client:'Internal', po:'SVC-1189', time:'AM only', crew:['—'], notes:'Test run before returning to fleet.', docs:[]},
+  'Recy 1|5': {status:'inspect', title:'DOE inspection', site:'Oak Enviro depot', client:'Dept. of Environment', po:'DOE-0912', time:'11:00', crew:['Site mgr'], notes:'Routine compliance inspection — waste transfer records to be ready for review.', docs:['Waste transfer licence.pdf','EPA returns Q3.pdf']},
+
+  'Recy 2|0': {status:'booked', title:'Glanua — Alum 2', site:'Glanua treatment works', client:'Glanua Ltd', po:'OE-4480', time:'07:00 – 12:00', crew:['GR','BW'], notes:'Then relocating to IDA Letterkenny for Tuesday/Wednesday block — confirm access with site security before travel.', docs:[]},
+  'Recy 2|1': {status:'booked', title:'IDA Letterkenny', site:'IDA Business & Technology Park, Letterkenny', client:'IDA Ireland', po:'OE-4481', time:'08:00 – 17:00', crew:['GR','BW'], notes:'Day 1 of 2 — tank cleaning ahead of Wednesday shutdown window.', docs:['Permit to work — IDA Letterkenny.pdf']},
+  'Recy 2|2': {status:'complete', title:'IDA Letterkenny', site:'IDA Business & Technology Park, Letterkenny', client:'IDA Ireland', po:'OE-4481', time:'08:00 – 16:00', crew:['GR','BW'], notes:'Job closed out — job sheet signed on site.', docs:['Job sheet — signed.pdf']},
+
+  'Jet-Vac 1|1': {status:'booked', title:'FCC — Nicky', site:'FCC Environment, TBC', client:'FCC Environment', po:'OE-4490', time:'07:00 – 15:00', crew:['NC'], notes:'Site to be confirmed by 8am — awaiting call from Nicky.', docs:[]},
+  'Jet-Vac 1|2': {status:'booked', title:'FCC — Nicky', site:'FCC Environment, TBC', client:'FCC Environment', po:'OE-4490', time:'07:00 – 15:00', crew:['NC'], notes:'', docs:[]},
+  'Jet-Vac 1|3': {status:'booked', title:'FCC — Nicky', site:'FCC Environment, TBC', client:'FCC Environment', po:'OE-4490', time:'07:00 – 14:00', crew:['NC'], notes:'Final day of block.', docs:[]},
+
+  'Jet-Vac 2|0': {status:'booked', title:'RNCE — Julien’s', site:'Theatro DCC, St Assams', client:'Dublin City Council', po:'OE-4495', time:'07:00 – 16:00', crew:['JW'], notes:'', docs:[]},
+  'Jet-Vac 2|1': {status:'booked', title:'FCC — Jonathon', site:'FCC Environment', client:'FCC Environment', po:'OE-4496', time:'07:00 – 15:00', crew:['JW'], notes:'', docs:[]},
+  'Jet-Vac 2|2': {status:'booked', title:'FCC — Jonathon', site:'FCC Environment', client:'FCC Environment', po:'OE-4496', time:'07:00 – 15:00', crew:['JW'], notes:'', docs:[]},
+  'Jet-Vac 2|3': {status:'complete', title:'FCC — Jonathon', site:'FCC Environment', client:'FCC Environment', po:'OE-4496', time:'07:00 – 13:00', crew:['JW'], notes:'Job closed out.', docs:[]},
+
+  'Jet-Vac 3|2': {status:'booked', title:'Harte — 15 Block 9', site:'Cherrywood', client:'Harte Peat / Cherrywood JV', po:'OE-4502', time:'08:00 – 16:00', crew:['—'], notes:'', docs:[]},
+
+  '201-Jetter|0': {status:'booked', title:'Jons — HBX', site:'HBX Group site', client:'HBX Group', po:'OE-4505', time:'07:00 – 15:00', crew:['OR','PJ'], notes:'', docs:[]},
+
+  '232-CCTV|0': {status:'booked', title:'IW Navan — CCTV survey', site:'Navan WwTW', client:'Irish Water', po:'OE-4510', time:'07:30 – 16:00', crew:['BN'], notes:'', docs:[]},
+  '232-CCTV|1': {status:'booked', title:'IW FCC — day 1', site:'FCC Environment', client:'FCC Environment / Irish Water', po:'OE-4511', time:'07:30 – 16:00', crew:['BN'], notes:'', docs:[]},
+  '232-CCTV|2': {status:'booked', title:'SLJV — DAA', site:'Dublin Airport Authority', client:'DAA', po:'OE-4515', time:'06:00 – 14:00', crew:['C/O Stephen'], notes:'Airside escort required — confirm badge access day prior.', docs:['Airside access form.pdf']},
+  '232-CCTV|3': {status:'booked', title:'SLJV — DAA', site:'Dublin Airport Authority', client:'DAA', po:'OE-4515', time:'06:00 – 14:00', crew:['C/O Stephen'], notes:'', docs:[]},
+  '232-CCTV|4': {status:'inspect', title:'Malachy — Centra Ardee', site:'Centra Ardee', client:'Musgrave / Centra', po:'OE-4520', time:'09:00', crew:['—'], notes:'Set + CCTV 1 drop, plus DOE review at 15:45 on separate compliance matter.', docs:[]},
+
+  '202-Robot|0': {status:'booked', title:'Conor — Clongriffin', site:'Clongriffin', client:'Private developer', po:'OE-4525', time:'07:30 – 16:00', crew:['CN','BD'], notes:'', docs:[]},
+
+  '212-CSU|0': {status:'booked', title:'Drogheda EPS — Cory', site:'Drogheda WWTP', client:'Irish Water / EPS contract', po:'OE-4530', time:'07:30 – 15:00', crew:['CO'], notes:'', docs:[]},
+
+  '251 4x4|0': {status:'booked', title:'Walls Clongriffin + Reeles', site:'Clongriffin', client:'Walls Construction', po:'OE-4535', time:'07:00 – 16:00', crew:['—'], notes:'Support run for Recy 2 crew.', docs:[]},
+  '251 4x4|1': {status:'booked', title:'JPC — Rosslare', site:'Rosslare Europort', client:'JPC', po:'OE-4536', time:'06:30 – 17:00', crew:['—'], notes:'Long day — ferry-linked delivery window.', docs:[]},
+
+  '202-Rehab|0': {status:'booked', title:'RNCE — St Assams', site:'St Assam’s, Raheny', client:'Dublin City Council', po:'OE-4540', time:'08:00 – 16:00', crew:['VA','BR'], notes:'', docs:[]},
+  '202-Rehab|1': {status:'booked', title:'Garry + Cate — Allone', site:'Allone site', client:'Private client', po:'OE-4541', time:'08:00 – 16:00', crew:['—'], notes:'', docs:[]},
+};
+
+const statusMeta = {
+  booked:   {cls:'job--booked',   pillBg:'var(--accent-2)', pillInk:'var(--accent-2-ink)', label:'Booked',            short:'Booked'},
+  service:  {cls:'job--service',  pillBg:'var(--amber)',    pillInk:'var(--amber-bg)',     label:'Servicing',         short:'Service'},
+  inspect:  {cls:'job--inspect',  pillBg:'var(--rust)',     pillInk:'var(--rust-bg)',      label:'DOE / Compliance',  short:'DOE'},
+  complete: {cls:'job--complete', pillBg:'var(--accent)',   pillInk:'var(--accent-ink)',   label:'Completed',         short:'Done'},
+};
+
+function startTime(job){
+  if(!job.time) return '';
+  if(job.time.includes('–')) return job.time.split('–')[0].trim();
+  return job.time;
+}
+
+function esc(str){
+  return (str==null ? '' : String(str))
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+const grid = document.getElementById('grid');
+
+function buildGrid(){
+  let html = '';
+  html += `<div class="cell col-head corner"></div>`;
+  days.forEach(d=>{
+    html += `<div class="cell col-head ${d.wknd?'weekend':''}"><span class="dow">${d.dow}</span><span class="dom mono">${d.dom} Sep</span></div>`;
+  });
+
+  sections.forEach(section=>{
+    html += `<div class="section-label">${section.label}</div>`;
+    section.assets.forEach(asset=>{
+      html += `<div class="row-head" data-cat="${section.cat}"><span class="asset-name">${asset.name}</span><span class="asset-reg mono">${asset.reg}</span></div>`;
+      days.forEach((d,i)=>{
+        const key = asset.name+'|'+i;
+        const job = jobs[key];
+        if(job){
+          const meta = statusMeta[job.status];
+          html += `<div class="cell" data-cat="${section.cat}" data-asset="${asset.name}" data-day="${i}">
+            <button class="job ${meta.cls}" data-key="${key}" draggable="true">
+              <span class="job-meta"><span>${meta.short}</span><span class="job-time">${startTime(job)}</span></span>
+              <span class="job-title">${esc(job.title)}</span>
+              <span class="job-sub">${esc(job.site)}</span>
+            </button>
+          </div>`;
+        } else {
+          html += `<div class="cell" data-cat="${section.cat}" data-asset="${asset.name}" data-day="${i}">
+            <button class="empty-cell" data-asset="${asset.name}" data-day="${i}" aria-label="Add job for ${asset.name} on ${d.dow} ${d.dom} Sep" type="button">＋</button>
+          </div>`;
+        }
+      });
+    });
+  });
+
+  grid.innerHTML = html;
+}
+buildGrid();
+
+// ---- Drawer: view / create / edit ----
+const drawer = document.getElementById('drawer');
+const scrim = document.getElementById('scrim');
+const drawerBody = document.getElementById('drawer-body');
+
+function setDrawerHead(pillLabel, pillBg, pillInk, title, sub){
+  const pill = document.getElementById('d-status-pill');
+  pill.textContent = pillLabel;
+  pill.style.background = pillBg;
+  pill.style.color = pillInk;
+  document.getElementById('d-title').textContent = title;
+  document.getElementById('d-sub').textContent = sub;
+}
+
+function crewAvatarsHtml(crew){
+  const names = (crew||[]).filter(c=>c && c!=='—');
+  if(!names.length) return '<span style="font-size:12.5px;color:var(--faint)">Unassigned</span>';
+  return names.map(c=>`<div class="avatar">${esc(c.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase())}</div>`).join('');
+}
+
+function docsHtml(docs){
+  if(docs && docs.length) return docs.map(d=>`<div class="doc-chip"><span>📄</span><span>${esc(d)}</span></div>`).join('');
+  return '<div class="doc-chip"><span>—</span><span>No documents attached</span></div>';
+}
+
+function openView(key){
+  const job = jobs[key];
+  if(!job) return;
+  const [assetName] = key.split('|');
+  const meta = statusMeta[job.status];
+  setDrawerHead(meta.label, meta.pillBg, meta.pillInk, job.title, assetName);
+
+  drawerBody.innerHTML = `
+    <div class="field-group">
+      <dl class="field-row"><dt>Site</dt><dd>${esc(job.site)}</dd></dl>
+      <dl class="field-row"><dt>Client</dt><dd>${esc(job.client)}</dd></dl>
+      <dl class="field-row"><dt>PO / Job #</dt><dd class="mono">${esc(job.po)}</dd></dl>
+      <dl class="field-row"><dt>Time</dt><dd class="mono">${esc(job.time)}</dd></dl>
+    </div>
+    <div>
+      <p class="drawer-section-title">Crew assigned</p>
+      <div class="crew-avatars">${crewAvatarsHtml(job.crew)}</div>
+    </div>
+    <div>
+      <p class="drawer-section-title">Notes</p>
+      <div class="notes-box">${esc(job.notes) || 'No additional notes on file.'}</div>
+    </div>
+    <div>
+      <p class="drawer-section-title">Documents</p>
+      <div class="doc-list">${docsHtml(job.docs)}</div>
+    </div>
+    <div class="drawer-actions">
+      <button class="btn" id="btn-edit-job" type="button">Edit job</button>
+      <button class="btn" id="btn-delete-job" type="button" style="color:var(--rust)">Remove job</button>
+    </div>
+  `;
+  document.getElementById('btn-edit-job').addEventListener('click', ()=> openForm(key));
+  document.getElementById('btn-delete-job').addEventListener('click', ()=>{
+    delete jobs[key];
+    buildGrid();
+    applyFilters();
+    closeDrawer();
+  });
+  showDrawer();
+}
+
+function statusOptionsHtml(selected){
+  return Object.entries(statusMeta).map(([k,m])=>`<option value="${k}" ${k===selected?'selected':''}>${m.label}</option>`).join('');
+}
+
+function openForm(existingKey, asset, day){
+  const job = existingKey ? jobs[existingKey] : {status:'booked', title:'', site:'', client:'', po:'', time:'', crew:[], notes:'', docs:[]};
+  const targetAsset = existingKey ? existingKey.split('|')[0] : asset;
+  const targetDay = existingKey ? Number(existingKey.split('|')[1]) : day;
+  const dayInfo = days[targetDay];
+
+  setDrawerHead(existingKey ? 'Editing' : 'New job', 'var(--surface-2)', 'var(--ink)',
+    existingKey ? job.title : 'New job', `${targetAsset} · ${dayInfo.dow} ${dayInfo.dom} Sep`);
+
+  drawerBody.innerHTML = `
+    <div class="form-field"><label for="f-title">Job title</label>
+      <input id="f-title" type="text" value="${esc(job.title)}" placeholder="e.g. EPS Drogheda — Grit Trap 2"></div>
+    <div class="form-row">
+      <div class="form-field"><label for="f-status">Status</label>
+        <select id="f-status">${statusOptionsHtml(job.status)}</select></div>
+      <div class="form-field"><label for="f-time">Time</label>
+        <input id="f-time" type="text" value="${esc(job.time)}" placeholder="07:30 – 16:00"></div>
+    </div>
+    <div class="form-field"><label for="f-site">Site</label>
+      <input id="f-site" type="text" value="${esc(job.site)}" placeholder="Site name"></div>
+    <div class="form-row">
+      <div class="form-field"><label for="f-client">Client</label>
+        <input id="f-client" type="text" value="${esc(job.client)}" placeholder="Client name"></div>
+      <div class="form-field"><label for="f-po">PO / Job #</label>
+        <input id="f-po" type="text" value="${esc(job.po)}" placeholder="OE-XXXX"></div>
+    </div>
+    <div class="form-field"><label for="f-crew">Crew (comma separated)</label>
+      <input id="f-crew" type="text" value="${esc((job.crew||[]).filter(c=>c!=='—').join(', '))}" placeholder="PJ, ML"></div>
+    <div class="form-field"><label for="f-notes">Notes</label>
+      <textarea id="f-notes" placeholder="Site access, permits, follow-on jobs…">${esc(job.notes)}</textarea></div>
+    <div class="drawer-actions">
+      <button class="btn" id="btn-cancel-form" type="button">Cancel</button>
+      <button class="btn btn-primary" id="btn-save-form" type="button">${existingKey ? 'Save changes' : 'Create job'}</button>
+    </div>
+  `;
+
+  document.getElementById('btn-cancel-form').addEventListener('click', ()=>{
+    if(existingKey) openView(existingKey); else closeDrawer();
+  });
+  document.getElementById('btn-save-form').addEventListener('click', ()=>{
+    const title = document.getElementById('f-title').value.trim();
+    if(!title){ document.getElementById('f-title').focus(); return; }
+    const newJob = {
+      status: document.getElementById('f-status').value,
+      title,
+      time: document.getElementById('f-time').value.trim(),
+      site: document.getElementById('f-site').value.trim(),
+      client: document.getElementById('f-client').value.trim(),
+      po: document.getElementById('f-po').value.trim(),
+      crew: document.getElementById('f-crew').value.split(',').map(s=>s.trim()).filter(Boolean),
+      notes: document.getElementById('f-notes').value.trim(),
+      docs: existingKey ? (jobs[existingKey].docs||[]) : [],
+    };
+    if(!newJob.crew.length) newJob.crew = ['—'];
+    const key = targetAsset + '|' + targetDay;
+    jobs[key] = newJob;
+    buildGrid();
+    applyFilters();
+    openView(key);
+  });
+  showDrawer();
+  document.getElementById('f-title').focus();
+}
+
+function showDrawer(){
+  drawer.classList.add('open');
+  drawer.setAttribute('aria-hidden','false');
+  scrim.classList.add('open');
+}
+function closeDrawer(){
+  drawer.classList.remove('open');
+  drawer.setAttribute('aria-hidden','true');
+  scrim.classList.remove('open');
+}
+grid.addEventListener('click', e=>{
+  const jobBtn = e.target.closest('.job');
+  if(jobBtn){ openView(jobBtn.dataset.key); return; }
+  const addBtn = e.target.closest('.empty-cell');
+  if(addBtn){ openForm(null, addBtn.dataset.asset, Number(addBtn.dataset.day)); return; }
+});
+
+// ---- Drag and drop rescheduling ----
+let dragKey = null;
+
+grid.addEventListener('dragstart', e=>{
+  const btn = e.target.closest('.job');
+  if(!btn) return;
+  dragKey = btn.dataset.key;
+  e.dataTransfer.effectAllowed = 'move';
+  e.dataTransfer.setData('text/plain', dragKey);
+  requestAnimationFrame(()=> btn.classList.add('dragging'));
+});
+grid.addEventListener('dragend', e=>{
+  const btn = e.target.closest('.job');
+  if(btn) btn.classList.remove('dragging');
+  document.querySelectorAll('.cell.drop-target').forEach(c=>c.classList.remove('drop-target'));
+  dragKey = null;
+});
+grid.addEventListener('dragover', e=>{
+  const cell = e.target.closest('.cell[data-asset]');
+  if(!cell || !dragKey) return;
+  e.preventDefault();
+  e.dataTransfer.dropEffect = 'move';
+});
+grid.addEventListener('dragenter', e=>{
+  const cell = e.target.closest('.cell[data-asset]');
+  if(!cell || !dragKey) return;
+  cell.classList.add('drop-target');
+});
+grid.addEventListener('dragleave', e=>{
+  const cell = e.target.closest('.cell[data-asset]');
+  if(!cell) return;
+  if(cell.contains(e.relatedTarget)) return;
+  cell.classList.remove('drop-target');
+});
+grid.addEventListener('drop', e=>{
+  const cell = e.target.closest('.cell[data-asset]');
+  if(!cell || !dragKey) return;
+  e.preventDefault();
+  const newKey = cell.dataset.asset + '|' + cell.dataset.day;
+  if(newKey !== dragKey){
+    const moving = jobs[dragKey];
+    const existing = jobs[newKey];
+    if(existing){ jobs[dragKey] = existing; } else { delete jobs[dragKey]; }
+    jobs[newKey] = moving;
+    buildGrid();
+    applyFilters();
+  }
+  dragKey = null;
+});
+document.getElementById('d-close').addEventListener('click', closeDrawer);
+scrim.addEventListener('click', closeDrawer);
+document.addEventListener('keydown', e=>{ if(e.key==='Escape') closeDrawer(); });
+
+// ---- Filters: fleet category (row-level) + status (cell-level) + search (cell-level) ----
+const catFilters = document.getElementById('cat-filters');
+const statusFilters = document.getElementById('status-filters');
+const jobSearch = document.getElementById('job-search');
+
+function jobHaystack(job){
+  return [job.title, job.site, job.client, job.po, ...(job.crew||[])].join(' ').toLowerCase();
+}
+
+function applyFilters(){
+  const activeCat = catFilters.querySelector('.chip.active')?.dataset.cat || 'all';
+  const activeStatus = statusFilters.querySelector('.chip.active')?.dataset.status || 'all';
+  const query = jobSearch.value.trim().toLowerCase();
+
+  document.querySelectorAll('.row-head[data-cat], .cell[data-cat]').forEach(el=>{
+    el.classList.toggle('row-dim', !(activeCat==='all' || el.dataset.cat===activeCat));
+  });
+
+  document.querySelectorAll('.cell[data-asset]').forEach(cell=>{
+    const job = jobs[cell.dataset.asset+'|'+cell.dataset.day];
+    if(!job){ cell.classList.remove('cell-dim'); return; }
+    const statusOk = activeStatus==='all' || job.status===activeStatus;
+    const queryOk = !query || jobHaystack(job).includes(query);
+    cell.classList.toggle('cell-dim', !(statusOk && queryOk));
+  });
+}
+
+[catFilters, statusFilters].forEach(group=>{
+  group.addEventListener('click', e=>{
+    const chip = e.target.closest('.chip');
+    if(!chip) return;
+    group.querySelectorAll('.chip').forEach(c=>c.classList.remove('active'));
+    chip.classList.add('active');
+    applyFilters();
+  });
+});
+jobSearch.addEventListener('input', applyFilters);
+
+// ---- View toggle ----
+const btnPlanner = document.getElementById('btn-planner');
+const btnMobile = document.getElementById('btn-mobile');
+const plannerShell = document.getElementById('planner-shell');
+const legend = document.querySelector('.legend');
+const filters = document.querySelector('.filters');
+const dragHint = document.querySelector('.drag-hint');
+const mobileWrap = document.getElementById('mobile-wrap');
+
+btnMobile.addEventListener('click', ()=>{
+  btnMobile.classList.add('active'); btnMobile.setAttribute('aria-selected','true');
+  btnPlanner.classList.remove('active'); btnPlanner.setAttribute('aria-selected','false');
+  plannerShell.style.display='none'; legend.style.display='none'; filters.style.display='none'; dragHint.style.display='none';
+  mobileWrap.classList.add('active');
+});
+btnPlanner.addEventListener('click', ()=>{
+  btnPlanner.classList.add('active'); btnPlanner.setAttribute('aria-selected','true');
+  btnMobile.classList.remove('active'); btnMobile.setAttribute('aria-selected','false');
+  plannerShell.style.display=''; legend.style.display=''; filters.style.display=''; dragHint.style.display='';
+  mobileWrap.classList.remove('active');
+});
+
+// ---- Mobile status track interaction ----
+document.querySelectorAll('.status-track').forEach(track=>{
+  const steps = [...track.children];
+  track.addEventListener('click', e=>{
+    const step = e.target.closest('.status-step');
+    if(!step) return;
+    const idx = steps.indexOf(step);
+    steps.forEach((s,i)=>{
+      s.classList.remove('done','now');
+      if(i<idx) s.classList.add('done');
+      if(i===idx) s.classList.add('now');
+    });
+  });
+});
+</script>
