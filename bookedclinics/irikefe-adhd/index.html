@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ADHD Symptom Screener | Aspen Behavioral Health Services</title>
+<meta name="description" content="Take the free 60-second ADHD symptom screener from Aspen Behavioral Health Services — psychiatric care in Pearland, TX and telehealth across Texas.">
+<meta name="robots" content="noindex">
+<!-- Meta Pixel Code -->
+<!--
+  TODO(Adam): Aspen has no Meta ad account/pixel of her own yet (confirmed via Ads API —
+  no "Aspen"/"Irikefe" account exists, unlike Jackline or Mark who each have their own).
+  Per your call, you want a dedicated ad account + pixel set up for her (matching that
+  pattern) rather than reusing one of the shared "Booked Clinics" pixels. Do NOT paste in
+  another client's pixel ID here — once you've created Aspen's own pixel in Meta Events
+  Manager, send me the ID and I'll wire it into the init() call below and redeploy.
+  Until then this block is inert (PIXEL_ID_PENDING is not a real pixel ID, so fbq() calls
+  below silently no-op instead of misattributing events to the wrong dataset).
+-->
+<script>
+!function(f,b,e,v,n,t,s)
+{if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+n.queue=[];t=b.createElement(e);t.async=!0;
+t.src=v;s=b.getElementsByTagName(e)[0];
+s.parentNode.insertBefore(t,s)}(window, document,'script',
+'https://connect.facebook.net/en_US/fbevents.js');
+fbq('init', 'PIXEL_ID_PENDING');
+fbq('track', 'PageView');
+</script>
+<noscript><img height="1" width="1" style="display:none"
+src="https://www.facebook.com/tr?id=PIXEL_ID_PENDING&ev=PageView&noscript=1"
+/></noscript>
+<!-- End Meta Pixel Code -->
+<style>
+  :root{
+    --teal-dark:#0f4c46;
+    --teal:#0f766e;
+    --teal-light:#14b8a6;
+    --gold:#c9a24b;
+    --bg:#f6f4ee;
+    --card:#ffffff;
+    --text:#1c2b28;
+    --muted:#6b7a76;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    font-family:'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    background:linear-gradient(180deg, var(--teal-dark) 0%, var(--teal) 40%, var(--bg) 40%);
+    min-height:100vh;
+    display:flex;
+    align-items:flex-start;
+    justify-content:center;
+    padding:24px 12px 60px;
+  }
+  .phone{ width:100%; max-width:420px; }
+  .brand{ text-align:center; color:#fff; padding:18px 10px 26px; }
+  .brand .logo{ font-size:14px; letter-spacing:2px; text-transform:uppercase; opacity:.85; margin-bottom:4px; }
+  .brand h1{ font-size:22px; margin:0; font-weight:600; line-height:1.3; }
+  .card{
+    background:var(--card); border-radius:18px; box-shadow:0 20px 40px rgba(15,76,70,0.25);
+    padding:26px 22px 22px; min-height:340px; display:flex; flex-direction:column;
+  }
+  .progress-wrap{ display:flex; gap:6px; margin-bottom:18px; }
+  .progress-seg{ flex:1; height:5px; border-radius:3px; background:#e5e1d6; overflow:hidden; }
+  .progress-seg.filled{ background:var(--teal-light); }
+  .step-label{ font-size:12px; color:var(--muted); text-transform:uppercase; letter-spacing:1px; margin-bottom:6px; }
+  h2.question{ font-size:19px; color:var(--text); margin:0 0 18px; line-height:1.35; }
+  .options{ display:flex; flex-direction:column; gap:10px; flex:1; }
+  .opt{
+    text-align:left; border:1.5px solid #e2ded2; background:#fdfcf9; border-radius:12px;
+    padding:14px 16px; font-size:15px; color:var(--text); cursor:pointer; transition:all .15s ease;
+  }
+  .opt:hover{ border-color:var(--teal-light); background:#f0faf8; }
+  .opt.selected{ border-color:var(--teal); background:var(--teal); color:#fff; }
+  textarea.opt-text{
+    width:100%; min-height:100px; border:1.5px solid #e2ded2; border-radius:12px;
+    padding:14px 16px; font-size:15px; font-family:inherit; resize:vertical; color:var(--text);
+  }
+  textarea.opt-text:focus{ outline:none; border-color:var(--teal-light); }
+  input[type=text], input[type=email], input[type=tel]{
+    width:100%; border:1.5px solid #e2ded2; border-radius:12px; padding:14px 16px;
+    font-size:15px; font-family:inherit; margin-bottom:10px; color:var(--text);
+  }
+  input:focus{ outline:none; border-color:var(--teal-light); }
+  .nav-row{ display:flex; justify-content:space-between; align-items:center; margin-top:18px; }
+  .btn{
+    background:var(--teal); color:#fff; border:none; border-radius:30px; padding:13px 26px;
+    font-size:15px; font-weight:600; cursor:pointer; width:100%; transition:background .15s ease;
+  }
+  .btn:hover{ background:var(--teal-dark); }
+  .btn:disabled{ background:#9fb8b4; cursor:default; }
+  .back-link{ background:none; border:none; color:var(--muted); font-size:13px; cursor:pointer; padding:8px 0; }
+  .result-badge{
+    display:inline-block; background:linear-gradient(135deg, var(--gold), #e8cd85); color:var(--teal-dark);
+    font-weight:700; font-size:12px; letter-spacing:1px; text-transform:uppercase; padding:6px 14px;
+    border-radius:20px; margin-bottom:14px;
+  }
+  .result-title{ font-size:21px; font-weight:700; color:var(--text); margin:0 0 10px; line-height:1.3; }
+  .result-body{ font-size:14.5px; color:var(--muted); line-height:1.6; margin-bottom:18px; }
+  .result-body b{ color:var(--text); }
+  .urgency{
+    background:#fdf6e8; border:1px solid #eddcae; border-radius:10px; padding:10px 14px;
+    font-size:13px; color:#8a6a1f; margin-bottom:18px;
+  }
+  .error-note{
+    background:#fdeceb; border:1px solid #f3c9c5; border-radius:10px; padding:10px 14px;
+    font-size:12.5px; color:#8a2f26; margin-top:14px;
+  }
+  .disclaimer{ font-size:11px; color:#9aa39f; text-align:center; margin-top:16px; line-height:1.5; }
+</style>
+</head>
+<body>
+<div class="phone">
+  <div class="brand">
+    <div class="logo">Aspen Behavioral Health Services</div>
+    <h1>ADHD Symptom Screener</h1>
+  </div>
+
+  <div class="card" id="card"></div>
+
+  <div class="disclaimer">This screener does not diagnose ADHD; it's a starting point for a conversation with Aspen Behavioral Health Services.</div>
+</div>
+
+<script>
+const LEAD_ENDPOINT = '/api/submit-lead';
+const CLIENT_KEY = 'irikefe';
+// Aspen's real, live GHL calendar for this location (confirmed active + resolving before
+// wiring in — see calendar id 1y4JQqLz90Jrz4TBw63G under locationId XHjz0hmM3d9YxWZWj3I8).
+const BOOKING_LINK = 'https://api.leadconnectorhq.com/widget/booking/1y4JQqLz90Jrz4TBw63G';
+
+const state = { step: 0, answers: {}, submitting: false, submitError: null, disqualified: null };
+
+const steps = [
+  {
+    type: 'choice',
+    key: 'location',
+    label: 'Step 1 of 8',
+    question: 'First — are you currently located in Texas?',
+    options: [ 'Yes, I’m in Texas', 'No, I’m in a different state' ]
+  },
+  {
+    type: 'choice',
+    key: 'payment',
+    label: 'Step 2 of 8',
+    question: 'How will you be covering your visit?',
+    options: [ 'Medicaid', 'Other insurance', 'Paying out of pocket / self-pay' ]
+  },
+  {
+    type: 'choice',
+    key: 'symptom',
+    label: 'Step 3 of 8',
+    question: 'Which of these sounds most like you lately?',
+    options: [
+      'I space out mid-conversation and lose track of what people are saying',
+      'I miss deadlines even when I care about the work',
+      'I lose my keys, phone, or wallet almost daily',
+      "All of the above, more than I'd like to admit"
+    ]
+  },
+  {
+    type: 'choice',
+    key: 'duration',
+    label: 'Step 4 of 8',
+    question: 'How long has this been a pattern for you?',
+    options: [ 'Just the last few months', 'On and off for years', 'As long as I can remember', "Not sure — it comes and goes" ]
+  },
+  {
+    type: 'choice',
+    key: 'cost',
+    label: 'Step 5 of 8',
+    question: "What's it costing you day to day?",
+    options: [
+      'Falling behind at work or missed opportunities',
+      'Constant stress just trying to keep up',
+      'Strained relationships because I forget things',
+      "Exhausted from working twice as hard to keep up"
+    ]
+  },
+  {
+    type: 'text',
+    key: 'why',
+    label: 'Step 6 of 8',
+    question: "In your own words — what's making it hard to focus lately?",
+    placeholder: 'e.g. I can\'t get through a workday without losing track of what I\'m doing, I start ten things and finish none...'
+  },
+  {
+    type: 'choice',
+    key: 'timeline',
+    label: 'Step 7 of 8',
+    question: 'Are you open to starting an evaluation in the next 30 days?',
+    options: [ 'Yes, as soon as possible', 'Yes, within the next month', 'Just researching for now' ]
+  },
+  {
+    type: 'contact',
+    key: 'contact',
+    label: 'Step 8 of 8',
+    question: 'Almost done — where should we send your results?'
+  }
+];
+
+function render(){
+  const card = document.getElementById('card');
+  if(state.disqualified){ renderDisqualified(card); return; }
+  if(state.step >= steps.length){ renderResult(card); return; }
+  const s = steps[state.step];
+  let html = `<div class="progress-wrap">`;
+  for(let i=0;i<steps.length;i++){ html += `<div class="progress-seg ${i<=state.step?'filled':''}"></div>`; }
+  html += `</div>`;
+  html += `<div class="step-label">${s.label}</div>`;
+  html += `<h2 class="question">${s.question}</h2>`;
+
+  if(s.type === 'choice'){
+    html += `<div class="options">`;
+    s.options.forEach(opt => {
+      const sel = state.answers[s.key] === opt ? 'selected' : '';
+      html += `<button class="opt ${sel}" onclick="selectChoice('${s.key}', this)">${opt}</button>`;
+    });
+    html += `</div>`;
+    html += navRow(false);
+  } else if(s.type === 'text'){
+    const val = state.answers[s.key] || '';
+    html += `<textarea class="opt-text" id="textinput" placeholder="${s.placeholder}">${val}</textarea>`;
+    html += navRow(true, 'textNext');
+  } else if(s.type === 'contact'){
+    html += `
+      <input type="text" id="c-name" placeholder="First name" value="${state.answers.name||''}">
+      <input type="email" id="c-email" placeholder="Email address" value="${state.answers.email||''}">
+      <input type="tel" id="c-phone" placeholder="Phone number" value="${state.answers.phone||''}">
+    `;
+    html += navRow(true, 'contactNext', state.submitting ? 'Submitting…' : 'See My Results', state.submitting);
+    if (state.submitError) {
+      html += `<div class="error-note">Something went wrong sending your info (${state.submitError}). You can try again, or call/text us directly.</div>`;
+    }
+  }
+  card.innerHTML = html;
+}
+
+function navRow(showButton, handler, label, disabled){
+  let back = state.step > 0 ? `<button class="back-link" onclick="goBack()">&larr; Back</button>` : `<span></span>`;
+  let btn = showButton ? `<button class="btn" style="width:auto;margin-left:auto" ${disabled ? 'disabled' : ''} onclick="${handler}()">${label||'Next'}</button>` : '';
+  return `<div class="nav-row">${back}${btn}</div>`;
+}
+
+function selectChoice(key, el){
+  const value = el.innerText;
+  state.answers[key] = value;
+  document.querySelectorAll('.opt').forEach(o=>o.classList.remove('selected'));
+  el.classList.add('selected');
+  setTimeout(()=>{
+    // Aspen (in-person + telehealth) can only legally treat patients physically located
+    // in Texas — stop here rather than collecting the rest of the quiz for a lead that
+    // can't be seen.
+    if(key === 'location' && value === 'No, I’m in a different state'){
+      state.disqualified = 'location';
+    // Low-intent filter: "just researching" means they're not ready to book, so don't
+    // hand them to the active follow-up queue as a real lead.
+    } else if(key === 'timeline' && value === 'Just researching for now'){
+      state.disqualified = 'researching';
+    } else {
+      state.step++;
+    }
+    render();
+  }, 200);
+}
+
+function textNext(){
+  state.answers.why = document.getElementById('textinput').value;
+  state.step++; render();
+}
+
+function getParam(name){
+  try { return new URLSearchParams(window.location.search).get(name) || ''; } catch { return ''; }
+}
+
+async function submitLead(){
+  const payload = {
+    action: 'lead',
+    client: CLIENT_KEY,
+    name: state.answers.name,
+    email: state.answers.email,
+    phone: state.answers.phone,
+    source: 'ADHD Quiz — Meta Ads',
+    tags: ['adhd-quiz-lead', 'web-lead'],
+    answers: {
+      'How will they pay': state.answers.payment,
+      'Main symptom': state.answers.symptom,
+      'Duration': state.answers.duration,
+      'Daily impact': state.answers.cost,
+      'In their own words': state.answers.why,
+      'Ready in 30 days?': state.answers.timeline,
+      'utm_source': getParam('utm_source'),
+      'utm_campaign': getParam('utm_campaign'),
+      'utm_content': getParam('utm_content'),
+    },
+  };
+
+  const res = await fetch(LEAD_ENDPOINT, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+  });
+
+  if (!res.ok) {
+    let detail = res.status;
+    try { const j = await res.json(); if (j?.error) detail = j.error; } catch {}
+    throw new Error(String(detail));
+  }
+
+  // Fire the Meta pixel Lead event only once the GHL upsert actually succeeded — this is
+  // what lets the ad account optimize toward real completions, not just page views.
+  // No content_name/content_category: Meta's Business Tools Terms flag health-category
+  // signals (ADHD/mental-health especially) as sensitive data and will silently strip the
+  // event's usable data if included. Bare Lead event only, same as every other
+  // BookedClinics quiz page.
+  if (typeof fbq === 'function') {
+    fbq('track', 'Lead');
+  }
+
+  return res.json();
+}
+
+async function contactNext(){
+  state.answers.name = document.getElementById('c-name').value;
+  state.answers.email = document.getElementById('c-email').value;
+  state.answers.phone = document.getElementById('c-phone').value;
+
+  if (!state.answers.name || !state.answers.email || !state.answers.phone) return;
+
+  state.submitting = true;
+  state.submitError = null;
+  render();
+
+  try {
+    await submitLead();
+    state.step++;
+  } catch (err) {
+    state.submitError = err.message || 'network error';
+  } finally {
+    state.submitting = false;
+    render();
+  }
+}
+
+function goBack(){
+  // Stepping back out of a disqualification should return to the question that
+  // triggered it, not silently resume the funnel.
+  if(state.disqualified){ state.disqualified = null; render(); return; }
+  state.step--; render();
+}
+
+function renderDisqualified(card){
+  let html = '';
+  if(state.disqualified === 'location'){
+    html += `<div class="result-title">Thanks for your interest.</div>`;
+    html += `<div class="result-body">Right now Aspen Behavioral Health Services is only able to see patients located in <b>Texas</b>, whether in-person in Pearland or by telehealth. We're not yet able to schedule an evaluation for someone outside Texas.</div>`;
+    html += `<div class="result-body">If that changes, we'd love to have you back. In the meantime, <a href="https://www.psychologytoday.com/us/psychiatrists" target="_blank" rel="noopener">Psychology Today's provider directory</a> is a good place to find someone licensed locally.</div>`;
+    html += navRow(false);
+  } else if(state.disqualified === 'researching'){
+    html += `<div class="result-title">No pressure — glad you're looking into it.</div>`;
+    html += `<div class="result-body">This screener is meant for people ready to move on an evaluation soon, so we won't add you to the active follow-up queue right now. When you're ready to take the next step, come back and take the screener again.</div>`;
+    html += `<div class="result-body">In the meantime, <a href="https://chadd.org/" target="_blank" rel="noopener">CHADD.org</a> is a solid, free resource on adult ADHD.</div>`;
+    html += navRow(false);
+  }
+  card.innerHTML = html;
+}
+
+function renderResult(card){
+  const name = state.answers.name ? state.answers.name : 'there';
+  const timeline = state.answers.timeline || '';
+  const strong = timeline.indexOf('Just researching') === -1;
+
+  let html = '';
+  if(strong){
+    html += `<div class="result-badge">May Be a Strong Candidate</div>`;
+    html += `<div class="result-title">Thanks, ${name} — based on your answers, you may be a candidate for an ADHD evaluation with Aspen Behavioral Health Services.</div>`;
+    html += `<div class="result-body">What you're describing is a pattern worth having a real conversation about. Our team will text and email you shortly, and our office will follow up by phone to get you scheduled — or go ahead and pick a time yourself right now.</div>`;
+    html += `<div class="urgency">Aspen Behavioral Health Services is currently accepting new patients.</div>`;
+    html += `<a class="btn" style="display:block;text-align:center;text-decoration:none;margin-top:6px" href="${BOOKING_LINK}" target="_blank" rel="noopener">Book Your Evaluation</a>`;
+  } else {
+    html += `<div class="result-badge">Good Fit — Timing TBD</div>`;
+    html += `<div class="result-title">Thanks, ${name} — here's what we'd recommend.</div>`;
+    html += `<div class="result-body">What you're describing may be worth an evaluation once you're ready. We've sent your info over and will follow up with more information for when the timing is right.</div>`;
+    html += `<div class="result-body">Whenever you're ready, you can book directly here: <a href="${BOOKING_LINK}" target="_blank" rel="noopener">Book with Aspen Behavioral Health Services</a>.</div>`;
+  }
+  card.innerHTML = html;
+}
+
+render();
+</script>
+</body>
+</html>

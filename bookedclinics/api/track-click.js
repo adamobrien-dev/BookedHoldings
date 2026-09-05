@@ -69,6 +69,10 @@ const CLIENTS = {
     locationId: '0U66FTyg5WJhqyyzIbqM',
     pitEnv: 'GHL_PIT_ALLAPHIA',
   },
+  irikefe: {
+    locationId: 'XHjz0hmM3d9YxWZWj3I8',
+    pitEnv: 'GHL_PIT_IRIKEFE',
+  },
 };
 
 async function ghl(method, path, body, pit) {
