@@ -287,8 +287,8 @@
   .cell:hover .empty-cell{ border-color:var(--line-strong); }
   .empty-cell:hover, .empty-cell:focus-visible{ color:var(--accent); border-color:var(--accent); outline:none; }
 
-  /* dim non-matching rows on filter */
-  .row-head.row-dim, .cell.row-dim{ opacity:0.32; }
+  /* fleet filter removes non-matching rows entirely */
+  .row-head.row-dim, .cell.row-dim, .section-label.row-dim{ display:none; }
 
   /* ---- legend ---- */
   .legend{ display:flex; gap:16px; align-items:center; margin-top:12px; flex-wrap:wrap; padding:0 2px; }
@@ -411,6 +411,8 @@
     .stats{ grid-template-columns:repeat(2,1fr); }
     .app{ padding:14px 12px 40px; }
     .brand-text h1{ font-size:20px; }
+    .grid{ grid-template-columns: 132px repeat(7, minmax(118px, 1fr)); }
+    .row-head{ padding:10px 8px; }
   }
 </style>
 
@@ -679,7 +681,7 @@ function buildGrid(){
   });
 
   sections.forEach(section=>{
-    html += `<div class="section-label">${section.label}</div>`;
+    html += `<div class="section-label" data-cat="${section.cat}">${section.label}</div>`;
     section.assets.forEach(asset=>{
       html += `<div class="row-head" data-cat="${section.cat}"><span class="asset-name">${asset.name}</span><span class="asset-reg mono">${asset.reg}</span></div>`;
       days.forEach((d,i)=>{
@@ -925,7 +927,7 @@ function applyFilters(){
   const activeStatus = statusFilters.querySelector('.chip.active')?.dataset.status || 'all';
   const query = jobSearch.value.trim().toLowerCase();
 
-  document.querySelectorAll('.row-head[data-cat], .cell[data-cat]').forEach(el=>{
+  document.querySelectorAll('.row-head[data-cat], .cell[data-cat], .section-label[data-cat]').forEach(el=>{
     el.classList.toggle('row-dim', !(activeCat==='all' || el.dataset.cat===activeCat));
   });
 
