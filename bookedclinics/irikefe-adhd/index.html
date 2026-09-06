@@ -137,21 +137,14 @@ const steps = [
   {
     type: 'choice',
     key: 'location',
-    label: 'Step 1 of 8',
+    label: 'Step 1 of 7',
     question: 'First — are you currently located in Texas?',
     options: [ 'Yes, I’m in Texas', 'No, I’m in a different state' ]
   },
   {
     type: 'choice',
-    key: 'payment',
-    label: 'Step 2 of 8',
-    question: 'How will you be covering your visit?',
-    options: [ 'Medicaid', 'Other insurance', 'Paying out of pocket / self-pay' ]
-  },
-  {
-    type: 'choice',
     key: 'symptom',
-    label: 'Step 3 of 8',
+    label: 'Step 2 of 7',
     question: 'Which of these sounds most like you lately?',
     options: [
       'I space out mid-conversation and lose track of what people are saying',
@@ -163,14 +156,14 @@ const steps = [
   {
     type: 'choice',
     key: 'duration',
-    label: 'Step 4 of 8',
+    label: 'Step 3 of 7',
     question: 'How long has this been a pattern for you?',
     options: [ 'Just the last few months', 'On and off for years', 'As long as I can remember', "Not sure — it comes and goes" ]
   },
   {
     type: 'choice',
     key: 'cost',
-    label: 'Step 5 of 8',
+    label: 'Step 4 of 7',
     question: "What's it costing you day to day?",
     options: [
       'Falling behind at work or missed opportunities',
@@ -182,21 +175,21 @@ const steps = [
   {
     type: 'text',
     key: 'why',
-    label: 'Step 6 of 8',
+    label: 'Step 5 of 7',
     question: "In your own words — what's making it hard to focus lately?",
     placeholder: 'e.g. I can\'t get through a workday without losing track of what I\'m doing, I start ten things and finish none...'
   },
   {
     type: 'choice',
     key: 'timeline',
-    label: 'Step 7 of 8',
+    label: 'Step 6 of 7',
     question: 'Are you open to starting an evaluation in the next 30 days?',
     options: [ 'Yes, as soon as possible', 'Yes, within the next month', 'Just researching for now' ]
   },
   {
     type: 'contact',
     key: 'contact',
-    label: 'Step 8 of 8',
+    label: 'Step 7 of 7',
     question: 'Almost done — where should we send your results?'
   }
 ];
@@ -285,7 +278,6 @@ async function submitLead(){
     source: 'ADHD Quiz — Meta Ads',
     tags: ['adhd-quiz-lead', 'web-lead'],
     answers: {
-      'How will they pay': state.answers.payment,
       'Main symptom': state.answers.symptom,
       'Duration': state.answers.duration,
       'Daily impact': state.answers.cost,
