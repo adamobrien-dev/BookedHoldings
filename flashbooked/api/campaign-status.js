@@ -442,7 +442,7 @@ module.exports = async function handler(req, res) {
   }
 
   try {
-    const [account, campaignInsightsRes, adsetInsightsRes, adInsightsRes, adInsights3dRes, adInsightsDailyRes, adsListRes, cadToEur, oldCampaignInsightsRes, oldAdsListRes] = await Promise.all([
+    const [account, campaignInsightsRes, adsetInsightsRes, adInsightsRes, adInsights3dRes, adInsightsDailyRes, adsListRes, adsetsListRes, cadToEur, oldCampaignInsightsRes, oldAdsListRes] = await Promise.all([
       metaGet(`/${AD_ACCOUNT_ID}`, { fields: 'name,currency' }),
       metaGet(`/${CAMPAIGN_ID}/insights`, {
         fields: 'spend,impressions,clicks,ctr,cpc,cpm,reach,frequency,actions',
@@ -479,7 +479,13 @@ module.exports = async function handler(req, res) {
         // 25 rows back covering only 10 of 17 ad_ids, all misreported as no first-spend date).
         limit: 1000,
       }),
-      metaGet(`/${CAMPAIGN_ID}/ads`, { fields: 'id,name,effective_status', limit: 100 }),
+      metaGet(`/${CAMPAIGN_ID}/ads`, { fields: 'id,name,effective_status,adset_id', limit: 100 }),
+      // Full ad-set list, independent of insights delivery — a brand-new ad or ad set with no
+      // spend/impressions yet is simply absent from the insights endpoints below (confirmed
+      // 2026-09-07: new ads Adam added weren't showing up on the dashboard at all), so the ads
+      // and adsets tables are built from these list endpoints and left-joined with insights,
+      // not built directly from insights the way they used to be.
+      metaGet(`/${CAMPAIGN_ID}/adsets`, { fields: 'id,name', limit: 100 }),
       fetchCadToEurRate(),
       // Old, paused campaign — just a total-spend snapshot for the Lead Sources view, not the
       // full per-ad breakdown the active campaign gets (nothing actionable left to optimize on
@@ -495,8 +501,8 @@ module.exports = async function handler(req, res) {
       if (!existing || row.date_start < existing) firstSpendDateByAdId[row.ad_id] = row.date_start;
     }
 
-    const knownAdIds = new Set((adInsightsRes.data || []).map(a => a.ad_id));
-    const nameToId = Object.fromEntries((adInsightsRes.data || []).map(a => [a.ad_name, a.ad_id]));
+    const knownAdIds = new Set((adsListRes.data || []).map(a => a.id));
+    const nameToId = Object.fromEntries((adsListRes.data || []).map(a => [a.name, a.id]));
     const oldCampaignAdIds = new Set((oldAdsListRes.data || []).map(a => a.id));
     const { phoneToAdId, emailToAdId, raw: rawNativeLeads } = await fetchNativeLeadAdIdMaps([...knownAdIds]);
     const signedResult = await fetchSignedLeadsByAdId(knownAdIds, nameToId, phoneToAdId, emailToAdId, oldCampaignAdIds);
@@ -518,9 +524,7 @@ module.exports = async function handler(req, res) {
     const leadsMetaPixel = leadsFromActions(totals.actions);
     const spendEur = spendNative * cadToEur;
 
-    const statusByAdId = Object.fromEntries(
-      (adsListRes.data || []).map(a => [a.id, a.effective_status])
-    );
+    const adsetNameById = Object.fromEntries((adsetsListRes.data || []).map(a => [a.id, a.name]));
     const spend3dByAdId = Object.fromEntries(
       (adInsights3dRes.data || []).map(a => [a.ad_id, Number(a.spend || 0)])
     );
@@ -532,10 +536,16 @@ module.exports = async function handler(req, res) {
 
     const emptySignedBucket = { total: 0, won: 0, lost: 0, reviewed: 0, qualified: 0, disqualified: 0, bookedCall: 0, resolved: 0, showed: 0 };
 
-    const ads = (adInsightsRes.data || []).map(a => {
-      const s = Number(a.spend || 0);
-      const metaPixelLeads = leadsFromActions(a.actions);
-      const signed = signedByAdId ? (signedByAdId[a.ad_id] || emptySignedBucket) : null;
+    // Left-joined from the full ads list (not built from `adInsightsRes` directly) — a brand-new
+    // ad has no delivery yet, so it's simply missing from the insights response for a while
+    // after Adam creates it. Insights are matched in by ad id and default to zero/null so a
+    // fresh ad still shows up with a "Gathering data" verdict instead of vanishing entirely.
+    const insightsByAdId = Object.fromEntries((adInsightsRes.data || []).map(a => [a.ad_id, a]));
+    const ads = (adsListRes.data || []).map(adMeta => {
+      const insight = insightsByAdId[adMeta.id] || {};
+      const s = Number(insight.spend || 0);
+      const metaPixelLeads = leadsFromActions(insight.actions);
+      const signed = signedByAdId ? (signedByAdId[adMeta.id] || emptySignedBucket) : null;
       // Verified (GHL) count wins whenever it's available — see leadsSource note above. A GHL
       // opportunity can lag a few minutes behind the pixel firing (webhook sync delay), so this
       // can very briefly under-count a just-this-second booking; that's a far safer failure mode
@@ -544,23 +554,23 @@ module.exports = async function handler(req, res) {
       const sEur = s * cadToEur;
       const cpl = l > 0 ? s / l : null; // CAD-native — CPL targets are CAD, not EUR (see 2026-09-04 KPI rework)
       const cplEur = l > 0 ? sEur / l : null; // informational only
-      const ctrVal = a.ctr ? Number(a.ctr) : 0;
-      const status = statusByAdId[a.ad_id] || null;
-      const spend3d = spend3dByAdId[a.ad_id] ?? s; // fall back to lifetime if not in the 3d window at all
+      const ctrVal = insight.ctr ? Number(insight.ctr) : 0;
+      const status = adMeta.effective_status || null;
+      const spend3d = spend3dByAdId[adMeta.id] ?? s; // fall back to lifetime if not in the 3d window at all
 
-      const firstSpendDate = firstSpendDateByAdId[a.ad_id] || null;
+      const firstSpendDate = firstSpendDateByAdId[adMeta.id] || null;
       const daysRunning = firstSpendDate
         ? Math.max(1, Math.round((Date.now() - new Date(firstSpendDate).getTime()) / 86400000))
         : null;
 
-      const linkClicks = actionValue(a.actions, 'link_click');
-      const landingPageViews = actionValue(a.actions, 'landing_page_view');
+      const linkClicks = actionValue(insight.actions, 'link_click');
+      const landingPageViews = actionValue(insight.actions, 'landing_page_view');
       const arrivalRatePct = linkClicks > 0 ? (landingPageViews / linkClicks) * 100 : null;
 
       const verdict = verdictForAd({
         status,
         spendNative: s,
-        impressions: Number(a.impressions || 0),
+        impressions: Number(insight.impressions || 0),
         ctr: ctrVal,
         leads: l,
         cplNative: cpl,
@@ -571,9 +581,9 @@ module.exports = async function handler(req, res) {
       });
 
       return {
-        id: a.ad_id,
-        name: a.ad_name,
-        adsetName: a.adset_name,
+        id: adMeta.id,
+        name: adMeta.name,
+        adsetName: adsetNameById[adMeta.adset_id] || insight.adset_name || null,
         status,
         spend_native: Math.round(s * 100) / 100,
         spend_eur: Math.round(sEur * 100) / 100,
@@ -582,11 +592,11 @@ module.exports = async function handler(req, res) {
         leads_meta_pixel: metaPixelLeads,
         cpl_native: cpl != null ? Math.round(cpl * 100) / 100 : null,
         cpl_eur: cplEur != null ? Math.round(cplEur * 100) / 100 : null,
-        impressions: Number(a.impressions || 0),
-        clicks: Number(a.clicks || 0),
-        ctr: a.ctr ? Number(a.ctr) : null,
-        cpc_native: a.cpc ? Number(a.cpc) : null,
-        frequency: a.frequency ? Number(a.frequency) : null,
+        impressions: Number(insight.impressions || 0),
+        clicks: Number(insight.clicks || 0),
+        ctr: insight.ctr ? Number(insight.ctr) : null,
+        cpc_native: insight.cpc ? Number(insight.cpc) : null,
+        frequency: insight.frequency ? Number(insight.frequency) : null,
         firstSpendDate,
         daysRunning,
         landingPageViews,
@@ -608,18 +618,22 @@ module.exports = async function handler(req, res) {
     const leadsByAdsetName = {};
     for (const a of ads) leadsByAdsetName[a.adsetName] = (leadsByAdsetName[a.adsetName] || 0) + a.leads;
 
-    const adsets = (adsetInsightsRes.data || []).map(a => {
-      const s = Number(a.spend || 0);
-      const l = leadsByAdsetName[a.adset_name] || 0;
+    // Same left-join treatment as `ads` above — a brand-new ad set with no delivery yet would
+    // otherwise be missing from `adsetInsightsRes` too.
+    const insightsByAdsetName = Object.fromEntries((adsetInsightsRes.data || []).map(a => [a.adset_name, a]));
+    const adsets = (adsetsListRes.data || []).map(adsetMeta => {
+      const insight = insightsByAdsetName[adsetMeta.name] || {};
+      const s = Number(insight.spend || 0);
+      const l = leadsByAdsetName[adsetMeta.name] || 0;
       return {
-        name: a.adset_name,
+        name: adsetMeta.name,
         spend_native: Math.round(s * 100) / 100,
         spend_eur: Math.round(s * cadToEur * 100) / 100,
         leads: l,
         cpl_native: l > 0 ? Math.round((s / l) * 100) / 100 : null,
         cpl_eur: l > 0 ? Math.round(((s * cadToEur) / l) * 100) / 100 : null,
-        clicks: Number(a.clicks || 0),
-        ctr: a.ctr ? Number(a.ctr) : null,
+        clicks: Number(insight.clicks || 0),
+        ctr: insight.ctr ? Number(insight.ctr) : null,
       };
     });
 
