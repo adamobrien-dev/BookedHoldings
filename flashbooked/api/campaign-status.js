@@ -437,6 +437,20 @@ module.exports = async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   if (req.method !== 'GET') return res.status(405).end();
 
+  if (req.query.debug === 'ghlfields') { // TEMP 2026-09-07 — remove after inspecting new opportunity columns
+    const pit = process.env.GHL_PIT_FLASHBOOKED;
+    if (!pit) return res.status(500).json({ error: 'GHL_PIT_FLASHBOOKED not configured' });
+    try {
+      const [fieldsRes, oppsRes] = await Promise.all([
+        fetch(`${GHL_API}/locations/${GHL_LOCATION_ID}/customFields`, { headers: { Authorization: `Bearer ${pit}`, Version: '2021-07-28' } }).then(r => r.json()),
+        fetch(`${GHL_API}/opportunities/search?location_id=${GHL_LOCATION_ID}&pipeline_id=${GHL_PIPELINE_ID}&limit=5`, { headers: { Authorization: `Bearer ${pit}`, Version: '2021-07-28' } }).then(r => r.json()),
+      ]);
+      return res.status(200).json({ customFieldDefs: fieldsRes, sampleOpportunities: oppsRes });
+    } catch (err) {
+      return res.status(500).json({ error: err.message });
+    }
+  }
+
   if (!process.env.META_SYSTEM_TOKEN) {
     return res.status(500).json({ error: 'META_SYSTEM_TOKEN not configured' });
   }
