@@ -441,11 +441,12 @@ module.exports = async function handler(req, res) {
     const pit = process.env.GHL_PIT_FLASHBOOKED;
     if (!pit) return res.status(500).json({ error: 'GHL_PIT_FLASHBOOKED not configured' });
     try {
-      const [fieldsRes, oppsRes] = await Promise.all([
+      const [fieldsRes, oppsRes, pipelinesRes] = await Promise.all([
         fetch(`${GHL_API}/locations/${GHL_LOCATION_ID}/customFields`, { headers: { Authorization: `Bearer ${pit}`, Version: '2021-07-28' } }).then(r => r.json()),
         fetch(`${GHL_API}/opportunities/search?location_id=${GHL_LOCATION_ID}&pipeline_id=${GHL_PIPELINE_ID}&limit=5`, { headers: { Authorization: `Bearer ${pit}`, Version: '2021-07-28' } }).then(r => r.json()),
+        fetch(`${GHL_API}/opportunities/pipelines?locationId=${GHL_LOCATION_ID}`, { headers: { Authorization: `Bearer ${pit}`, Version: '2021-07-28' } }).then(r => r.json()),
       ]);
-      return res.status(200).json({ customFieldDefs: fieldsRes, sampleOpportunities: oppsRes });
+      return res.status(200).json({ customFieldDefs: fieldsRes, sampleOpportunities: oppsRes, pipelines: pipelinesRes });
     } catch (err) {
       return res.status(500).json({ error: err.message });
     }
