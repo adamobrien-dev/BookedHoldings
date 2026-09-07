@@ -48,6 +48,11 @@ const GHL_LOST_STAGE_ID = 'af84d738-f769-4bff-8f71-388e25ffba53'; // "🥦 Lost 
 const STAGE_QUALIFIED = '817f8775-cdf4-489e-a24d-8fcc3418deaa'; // "👍 Qualified"
 const STAGE_DISQUALIFIED = '21e81cb3-d1eb-43b7-bb62-8ad6845f6555'; // "👎 Disqualified"
 const STAGE_DC_UPCOMING = '73f0587c-1d51-4e41-b070-f1eeb016cb0c'; // "📞 DC: Upcoming"
+// Added by Adam 2026-09-07, right after DC: Upcoming — the discovery call happened but the
+// prospect isn't ready to commit yet. Treated the same as DC: Follow Up (his call, confirmed
+// 2026-09-07): they showed up, so it counts as a booked+resolved+showed call, just like Follow
+// Up, not as a no-show/cancellation.
+const STAGE_NEEDS_TIME_TO_THINK = '9d637d28-4965-4fcc-ac93-8333931b50bb'; // "❓ Needs Time To Think"
 const STAGE_DC_CANCELLED = '59c5b2d1-dc45-4e29-87ac-9bb4447b12ba'; // "❌ DC: Cancelled"
 const STAGE_DC_NO_SHOW = '3adb4b6b-6d26-497d-b781-d8561c708a52'; // "👻 DC: No Show"
 const STAGE_DC_FOLLOW_UP = '27118d50-4111-495b-8f64-25e97e1ea6d4'; // "💲 DC: Follow Up"
@@ -55,12 +60,15 @@ const STAGE_SC_UPCOMING = 'f09360c1-a210-4fff-8630-5103db20e28e'; // "📞 SC: U
 const STAGE_SC_CANCELLED = '1c053852-b049-49d1-a171-57de75284de4'; // "❌ SC: Cancelled"
 const STAGE_SC_NO_SHOW = 'd45b407a-d836-40c1-9ebf-7da1543a0b6a'; // "👻 SC: No Show"
 const STAGE_SC_FOLLOW_UP = '6314c5a6-4ad0-4935-94e5-0aaff362ff0c'; // "💲 SC: Follow Up"
+// Also added by Adam 2026-09-07, right after Leads: New — a call attempt that went to
+// voicemail. Deliberately left out of every set below, same as the pre-existing untracked
+// "Convo: Responded" stage — it's still pre-qualification outreach, not a review/call outcome.
 
 // Anything other than "still sitting untouched" — i.e. someone has actually looked at this
 // lead and made a qualify/disqualify call, whether or not it's gone further since.
 const REVIEWED_STAGES = new Set([
   STAGE_QUALIFIED, STAGE_DISQUALIFIED,
-  STAGE_DC_UPCOMING, STAGE_DC_CANCELLED, STAGE_DC_NO_SHOW, STAGE_DC_FOLLOW_UP,
+  STAGE_DC_UPCOMING, STAGE_NEEDS_TIME_TO_THINK, STAGE_DC_CANCELLED, STAGE_DC_NO_SHOW, STAGE_DC_FOLLOW_UP,
   STAGE_SC_UPCOMING, STAGE_SC_CANCELLED, STAGE_SC_NO_SHOW, STAGE_SC_FOLLOW_UP,
   GHL_WON_STAGE_ID, GHL_LOST_STAGE_ID,
 ]);
@@ -71,14 +79,14 @@ const REVIEWED_STAGES = new Set([
 // SC: Upcoming) still counts here, since forward-only pipeline progression means it must have
 // passed through DC: Upcoming to get there.
 const BOOKED_CALL_STAGES = new Set([
-  STAGE_DC_UPCOMING, STAGE_DC_CANCELLED, STAGE_DC_NO_SHOW, STAGE_DC_FOLLOW_UP,
+  STAGE_DC_UPCOMING, STAGE_NEEDS_TIME_TO_THINK, STAGE_DC_CANCELLED, STAGE_DC_NO_SHOW, STAGE_DC_FOLLOW_UP,
   STAGE_SC_UPCOMING, STAGE_SC_CANCELLED, STAGE_SC_NO_SHOW, STAGE_SC_FOLLOW_UP,
   GHL_WON_STAGE_ID, GHL_LOST_STAGE_ID,
 ]);
 // A booked call whose outcome is already known — excludes DC: Upcoming, which just means a
 // call is scheduled and hasn't happened yet, so it can't be scored as shown/no-show/cancelled.
 const RESOLVED_CALL_STAGES = new Set([
-  STAGE_DC_CANCELLED, STAGE_DC_NO_SHOW, STAGE_DC_FOLLOW_UP,
+  STAGE_NEEDS_TIME_TO_THINK, STAGE_DC_CANCELLED, STAGE_DC_NO_SHOW, STAGE_DC_FOLLOW_UP,
   STAGE_SC_UPCOMING, STAGE_SC_CANCELLED, STAGE_SC_NO_SHOW, STAGE_SC_FOLLOW_UP,
   GHL_WON_STAGE_ID, GHL_LOST_STAGE_ID,
 ]);
@@ -436,21 +444,6 @@ function verdictForAd({ status, spendNative, impressions, ctr, leads, cplNative,
 module.exports = async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   if (req.method !== 'GET') return res.status(405).end();
-
-  if (req.query.debug === 'ghlfields') { // TEMP 2026-09-07 — remove after inspecting new opportunity columns
-    const pit = process.env.GHL_PIT_FLASHBOOKED;
-    if (!pit) return res.status(500).json({ error: 'GHL_PIT_FLASHBOOKED not configured' });
-    try {
-      const [fieldsRes, oppsRes, pipelinesRes] = await Promise.all([
-        fetch(`${GHL_API}/locations/${GHL_LOCATION_ID}/customFields`, { headers: { Authorization: `Bearer ${pit}`, Version: '2021-07-28' } }).then(r => r.json()),
-        fetch(`${GHL_API}/opportunities/search?location_id=${GHL_LOCATION_ID}&pipeline_id=${GHL_PIPELINE_ID}&limit=5`, { headers: { Authorization: `Bearer ${pit}`, Version: '2021-07-28' } }).then(r => r.json()),
-        fetch(`${GHL_API}/opportunities/pipelines?locationId=${GHL_LOCATION_ID}`, { headers: { Authorization: `Bearer ${pit}`, Version: '2021-07-28' } }).then(r => r.json()),
-      ]);
-      return res.status(200).json({ customFieldDefs: fieldsRes, sampleOpportunities: oppsRes, pipelines: pipelinesRes });
-    } catch (err) {
-      return res.status(500).json({ error: err.message });
-    }
-  }
 
   if (!process.env.META_SYSTEM_TOKEN) {
     return res.status(500).json({ error: 'META_SYSTEM_TOKEN not configured' });
