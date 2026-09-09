@@ -1,5 +1,7 @@
 User-agent: *
 Allow: /
 Disallow: /thank-you/
+Disallow: /dashboard/
+Disallow: /oak-enviro/
 
 Sitemap: https://flashbooked.com/sitemap.xml
