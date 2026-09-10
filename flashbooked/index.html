@@ -190,6 +190,25 @@
   .section-head{max-width:640px; margin:0 auto 48px; text-align:center;}
   .section-head h2{margin-bottom:14px;}
 
+  /* VSL */
+  .vsl-wrap{max-width:820px; margin:0 auto;}
+  .vsl-player{
+    position:relative; width:100%; aspect-ratio:16/9; border-radius:20px;
+    overflow:hidden; background:#000; cursor:pointer;
+    box-shadow:0 24px 50px rgba(15,30,51,.2);
+  }
+  .vsl-poster{width:100%; height:100%; object-fit:cover; display:block;}
+  .vsl-player video{width:100%; height:100%; object-fit:cover; display:block;}
+  .vsl-play{
+    position:absolute; inset:0; margin:auto; width:72px; height:72px;
+    border-radius:50%; background:rgba(255,255,255,.95); border:none;
+    display:flex; align-items:center; justify-content:center; cursor:pointer;
+    box-shadow:0 10px 30px rgba(0,0,0,.35); transition:transform .15s ease;
+  }
+  .vsl-player:hover .vsl-play{transform:scale(1.06);}
+  .vsl-player.playing{cursor:default;}
+  .vsl-play svg{width:26px; height:26px; color:var(--accent); margin-left:4px;}
+
   /* PROBLEM */
   .problem-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:28px; margin-top:40px;}
   @media (max-width:800px){ .problem-grid{grid-template-columns:1fr;} }
@@ -440,6 +459,24 @@ fbq('track', 'PageView');
         <small>Don't believe an AI can handle your customers?</small>
         <div class="num"><a href="tel:+35319640379" style="color:inherit;text-decoration:none;display:inline-flex;align-items:center;gap:8px;"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" style="width:18px;height:18px;flex:none;"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 002.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-.97 1.293c-.282.376-.769.542-1.21.38a12.035 12.035 0 01-7.143-7.143c-.162-.441.004-.928.38-1.21l1.293-.97c.363-.271.527-.734.417-1.173L6.963 3.102a1.125 1.125 0 00-1.091-.852H4.5A2.25 2.25 0 002.25 4.5v2.25z"/></svg>+353 1 964 0379</a></div>
         <small>This is one system we've built — see what else we make below.</small>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="video">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="eyebrow">Straight From The Founder</span>
+      <h2>A 2-minute look at how we actually work</h2>
+      <p class="muted">No script, no stock footage — just Adam walking through how FlashBooked builds custom software for trades and home service businesses.</p>
+    </div>
+    <div class="vsl-wrap">
+      <div class="vsl-player" id="vsl-player">
+        <img src="/assets/vsl/flashbooked-vsl-poster.jpg" alt="FlashBooked video preview" class="vsl-poster" width="1280" height="720" loading="lazy">
+        <button type="button" class="vsl-play" id="vsl-play" aria-label="Play video">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5.14v13.72a1 1 0 001.5.86l11-6.86a1 1 0 000-1.72l-11-6.86a1 1 0 00-1.5.86z"/></svg>
+        </button>
       </div>
     </div>
   </div>
@@ -745,6 +782,23 @@ fbq('track', 'PageView');
       })
       .finally(function() { btn.disabled = false; });
   });
+})();
+
+(function() {
+  var player = document.getElementById('vsl-player');
+  if (!player) return;
+  player.addEventListener('click', function loadVsl() {
+    var video = document.createElement('video');
+    video.src = '/assets/vsl/flashbooked-vsl.mp4';
+    video.controls = true;
+    video.autoplay = true;
+    video.playsInline = true;
+    player.innerHTML = '';
+    player.classList.add('playing');
+    player.appendChild(video);
+    player.removeEventListener('click', loadVsl);
+    video.play().catch(function() {});
+  }, { once: true });
 })();
 </script>
 
