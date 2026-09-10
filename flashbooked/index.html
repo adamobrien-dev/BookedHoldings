@@ -144,6 +144,10 @@
   }
   .hero-inner{position:relative; display:grid; grid-template-columns:1.1fr .9fr; gap:56px; align-items:center;}
   @media (max-width:900px){ .hero-inner{grid-template-columns:1fr;} }
+  .hero-founder{display:flex; align-items:center; gap:10px; margin-bottom:18px;}
+  .hero-founder img{width:40px; height:40px; border-radius:50%; object-fit:cover; flex-shrink:0; border:2px solid rgba(255,255,255,.25);}
+  .hero-founder-text{font-size:0.85rem; color:#cfd8e8;}
+  .hero-founder-text strong{color:#fff;}
   .hero h1{color:#fff; margin-bottom:20px;}
   .hero p.lead{font-size:19px; color:#cfd8e8; max-width:520px;}
   .hero-ctas{display:flex; flex-wrap:wrap; gap:14px; margin-top:28px;}
@@ -385,6 +389,7 @@ fbq('track', 'PageView');
       <a href="#what-we-build">What We Build</a>
       <a href="#pricing">Pricing</a>
       <a href="#faq">FAQ</a>
+      <a href="/about/">About</a>
       <a href="#contact">Contact</a>
     </nav>
     <div class="nav-cta">
@@ -397,6 +402,10 @@ fbq('track', 'PageView');
 <section class="hero" id="top">
   <div class="wrap hero-inner">
     <div>
+      <div class="hero-founder">
+        <img src="/adam-headshot.png" alt="Adam O'Brien, founder of FlashBooked" width="40" height="40">
+        <div class="hero-founder-text"><strong>Adam O'Brien</strong> &mdash; Founder, FlashBooked</div>
+      </div>
       <span class="eyebrow">Custom Systems For Irish Trades &amp; Home Service Businesses</span>
       <h1>Custom Software Built Around Your Business</h1>
       <p class="lead">Stop forcing your business into generic software. We build custom tools for Irish trades and home service companies — invoicing, scheduling, quoting, CRM, fleet management, customer follow-up and more.</p>
@@ -686,6 +695,7 @@ fbq('track', 'PageView');
       <a href="#what-we-build">What We Build</a>
       <a href="#pricing">Pricing</a>
       <a href="#faq">FAQ</a>
+      <a href="/about/">About</a>
       <a href="/blog/">Blog</a>
       <a href="/privacy/">Privacy</a>
       <a href="/terms/">Terms</a>
