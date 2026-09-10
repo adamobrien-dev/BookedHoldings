@@ -114,11 +114,16 @@
   .logo .bolt{display:flex;}
   .logo .bolt img{height:22px; width:auto; display:block;}
   .foot-bolt{height:15px; width:auto; vertical-align:-3px;}
-  .nav-links{display:flex; gap:28px; font-size:15px; font-weight:600;}
-  .nav-links a{text-decoration:none; color:var(--ink);}
+  .nav-links{display:flex; gap:22px; font-size:15px; font-weight:600;}
+  .nav-links a{text-decoration:none; color:var(--ink); white-space:nowrap;}
   .nav-cta{display:flex; align-items:center; gap:14px;}
   .nav-cta .btn{padding:10px 18px; font-size:14px; white-space:nowrap;}
-  @media (max-width:760px){
+  @media (max-width:1040px){
+    .nav-links{gap:16px; font-size:14px;}
+    .nav-cta{gap:8px;}
+    .nav-cta a.btn-outline{display:none;}
+  }
+  @media (max-width:900px){
     .nav-links{display:none;}
     .nav-inner{padding:14px 16px;}
     .logo{font-size:17px;}
