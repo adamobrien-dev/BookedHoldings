@@ -110,6 +110,7 @@
     display:flex; align-items:center; justify-content:space-between;
     padding:16px 24px; max-width:1120px; margin:0 auto;
   }
+  .nav-left{display:flex; align-items:center; gap:8px;}
   .logo{font-family:Georgia,serif; font-weight:700; font-size:22px; color:var(--navy); text-decoration:none; display:flex; align-items:center; gap:8px;}
   .logo .bolt{display:flex;}
   .logo .bolt img{height:22px; width:auto; display:block;}
@@ -129,9 +130,10 @@
     .nav-cta a.btn-outline{display:none;}
   }
   @media (max-width:900px){
-    .nav-inner{padding:14px 16px; position:relative;}
+    .nav-inner{padding:14px 16px; position:relative; gap:10px;}
     .logo{font-size:17px;}
-    .nav-cta{gap:8px;}
+    .nav-left{flex-shrink:0;}
+    .nav-cta{gap:8px; flex-shrink:0;}
     .nav-cta a.btn-outline{display:none;}
     .nav-cta .btn{padding:8px 14px; font-size:13px;}
     .nav-toggle{display:inline-flex;}
@@ -142,6 +144,10 @@
     }
     .nav-links.open{display:flex;}
     .nav-links a{padding:14px 20px; border-bottom:1px solid var(--line); font-size:15px;}
+  }
+  @media (max-width:400px){
+    .logo{font-size:15px;}
+    .nav-cta .btn{padding:7px 12px; font-size:12px;}
   }
 
   /* HERO */
@@ -400,7 +406,12 @@ fbq('track', 'PageView');
 
 <header class="site-nav">
   <div class="nav-inner">
-    <a href="#top" class="logo"><span class="bolt"><img src="/favicon.png" alt="" aria-hidden="true"></span>FlashBooked</a>
+    <div class="nav-left">
+      <button type="button" class="nav-toggle" id="nav-toggle" aria-label="Toggle menu" aria-expanded="false" aria-controls="site-nav-links">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5M3.75 17.25h16.5"/></svg>
+      </button>
+      <a href="#top" class="logo"><span class="bolt"><img src="/favicon.png" alt="" aria-hidden="true"></span>FlashBooked</a>
+    </div>
     <nav class="nav-links" id="site-nav-links">
       <a href="#how-it-works">How It Works</a>
       <a href="#what-we-build">What We Build</a>
@@ -413,9 +424,6 @@ fbq('track', 'PageView');
       <a href="tel:+35319640379" class="btn btn-outline dark">Call Aoife</a>
       <a href="/book/" class="btn btn-primary"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"/></svg>Free Workflow Audit</a>
     </div>
-    <button type="button" class="nav-toggle" id="nav-toggle" aria-label="Toggle menu" aria-expanded="false" aria-controls="site-nav-links">
-      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5M3.75 17.25h16.5"/></svg>
-    </button>
   </div>
 </header>
 
