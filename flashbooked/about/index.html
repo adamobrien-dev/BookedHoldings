@@ -75,7 +75,7 @@
   .head{padding:56px 0 8px; text-align:center;}
   .eyebrow{display:inline-block; font-size:12px; font-weight:700; letter-spacing:.06em; text-transform:uppercase; color:var(--accent); margin-bottom:10px;}
   h1{font-family:Georgia,"Times New Roman",serif; font-size:clamp(30px,4.5vw,44px); color:var(--navy); margin:0 0 12px;}
-  .head p{color:var(--muted); font-size:17px; margin:0 auto 40px; max-width:560px;}
+  .head p{color:var(--muted); font-size:17px; margin:0 auto 40px; max-width:560px; line-height:1.8;}
 
   .profile{
     background:#fff; border:1px solid var(--line); border-radius:20px;
@@ -92,6 +92,8 @@
   .profile-title{color:var(--accent); font-weight:700; font-size:13px; text-transform:uppercase; letter-spacing:.04em; margin-bottom:16px;}
   .profile p{color:#3a3a3a; margin-bottom:14px; font-size:15.5px;}
   .profile p:last-child{margin-bottom:0;}
+  .profile p.tight{margin-bottom:4px;}
+  .profile p.emphasis{color:var(--navy); font-weight:700; font-size:16.5px;}
 
   .facts{
     display:grid; grid-template-columns:repeat(3,1fr); gap:16px;
@@ -138,8 +140,8 @@
 <div class="head">
   <div class="wrap">
     <span class="eyebrow">About FlashBooked</span>
-    <h1>Software built by someone who's run the operations side himself</h1>
-    <p>FlashBooked exists because generic software makes trades and home service businesses adapt to it — instead of the other way around.</p>
+    <h1>Software built around how your business actually works</h1>
+    <p>FlashBooked exists because too many trades and home service businesses are forced to adapt the way they work to generic software.<br><strong style="color:var(--navy);">We think the software should adapt to the business.</strong></p>
   </div>
 </div>
 
@@ -149,43 +151,51 @@
     <div>
       <div class="profile-name">Adam O'Brien</div>
       <div class="profile-title">Founder, FlashBooked</div>
-      <p>I originally trained as a computer scientist at University College Cork (UCC), so building the actual software — not just marketing it — has always been where I'm most at home.</p>
-      <p>I started FlashBooked after seeing the same problem over and over with trades and home service businesses: they're sold one-size-fits-all software, then spend months bending their actual workflow around it instead of the other way around.</p>
-      <p>Before FlashBooked, I built and ran BookedClinics, a digital marketing agency running paid ad campaigns, booking funnels, and CRM automation for health &amp; wellness clinics across North America. That work is where I learned what actually moves the needle for a small business owner — not more software features, but fewer manual steps between a customer showing up and a job getting paid for.</p>
-      <p>FlashBooked applies that same thinking to Irish trades: invoicing, scheduling, quoting, fleet tracking, follow-up — whatever your specific bottleneck is, built around how your business actually runs, not a generic template.</p>
+      <p>I studied Computer Science at University College Cork (UCC), so building the actual software — not just selling it — has always been where I'm most at home.</p>
+      <p>I started FlashBooked after seeing the same problem over and over with trades and home service businesses: they're sold one-size-fits-all software, then end up changing the way they actually work just to fit the system.</p>
+      <p>Before FlashBooked, I built and ran BookedClinics, a digital marketing and automation agency working with health and wellness clinics across North America.</p>
+      <p>That meant working directly with paid advertising, booking funnels, CRM systems, lead follow-up and the processes that take someone from their first enquiry through to becoming a paying customer.</p>
+      <p>That's where I learned what actually makes a difference to a small business owner:</p>
+      <p class="emphasis">Not more software. Fewer things falling through the cracks.</p>
+      <p>FlashBooked applies that same thinking to trades and home service businesses in Ireland.</p>
+      <p>Whether the bottleneck is invoicing, scheduling, quoting, lead management, fleet tracking, customer follow-up or something completely specific to your business, we build the system around the way you already operate.</p>
+      <p class="tight">Sometimes that's automation.</p>
+      <p class="tight">Sometimes it's connecting the tools you already use.</p>
+      <p class="tight">Sometimes it's a completely custom application.</p>
+      <p class="emphasis">The problem comes first. The technology comes second.</p>
     </div>
   </div>
 
   <div class="facts">
     <div class="fact">
       <div class="fact-label">Education</div>
-      <div class="fact-value">Computer Science, University College Cork (UCC)</div>
+      <div class="fact-value">Computer Science — University College Cork (UCC)</div>
     </div>
     <div class="fact">
       <div class="fact-label">Background</div>
-      <div class="fact-value">Founder, BookedClinics — marketing &amp; automation for health &amp; wellness clinics</div>
+      <div class="fact-value">Founder, BookedClinics — marketing, CRM &amp; automation for health and wellness businesses</div>
     </div>
     <div class="fact">
       <div class="fact-label">Focus</div>
-      <div class="fact-value">Custom operational tooling for Irish trades — no shared template</div>
+      <div class="fact-value">Custom operational software for Irish trades &amp; home service businesses</div>
     </div>
   </div>
 
   <div class="approach">
     <h2>How I approach a new build</h2>
     <ol>
-      <li><strong>Show me the bottleneck.</strong> Every trade business is losing time or money somewhere specific — a missed call, a slow invoice, a scheduling mess. We start there, not with a feature list.</li>
-      <li><strong>Build around your workflow.</strong> The tool, and the stack behind it, gets chosen to fit your business — not the other way around. Sometimes that's automation on top of what you already use; sometimes it's a real custom app.</li>
-      <li><strong>Stay hands-on after launch.</strong> I'd rather fix something in a day than have you work around a broken step for a month.</li>
+      <li><strong>Show me the bottleneck.</strong> Every business is losing time or money somewhere specific — a missed enquiry, a slow invoice, an outstanding quote or a scheduling mess. We start there, not with a feature list.</li>
+      <li><strong>Build around your workflow.</strong> The system and the technology behind it are chosen to fit the way your business works. Sometimes that's automation on top of what you already use. Sometimes it's a custom application.</li>
+      <li><strong>Stay hands-on after launch.</strong> I'd rather fix something quickly than have you and your team work around a broken process for months.</li>
     </ol>
   </div>
 
   <div class="cta-block">
     <h2>Have a process that's slowing your business down?</h2>
-    <p>Show us how it works today — we'll tell you honestly whether we can build something better.</p>
+    <p>Show us how it works today. We'll tell you what we'd change, what we'd automate and whether it's actually worth building.</p>
     <div class="cta-actions">
       <a href="/book/" class="btn">Book a Free Workflow Audit</a>
-      <a href="tel:+35319640379" class="btn-outline">Call Aoife — One Example</a>
+      <a href="tel:+35319640379" class="btn-outline">Try Our AI Receptionist — Call Aoife</a>
     </div>
   </div>
 </div>
