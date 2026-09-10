@@ -118,18 +118,30 @@
   .nav-links a{text-decoration:none; color:var(--ink); white-space:nowrap;}
   .nav-cta{display:flex; align-items:center; gap:14px;}
   .nav-cta .btn{padding:10px 18px; font-size:14px; white-space:nowrap;}
+  .nav-toggle{
+    display:none; background:none; border:none; padding:6px; cursor:pointer;
+    align-items:center; justify-content:center; color:var(--navy);
+  }
+  .nav-toggle svg{width:24px; height:24px;}
   @media (max-width:1040px){
     .nav-links{gap:16px; font-size:14px;}
     .nav-cta{gap:8px;}
     .nav-cta a.btn-outline{display:none;}
   }
   @media (max-width:900px){
-    .nav-links{display:none;}
-    .nav-inner{padding:14px 16px;}
+    .nav-inner{padding:14px 16px; position:relative;}
     .logo{font-size:17px;}
     .nav-cta{gap:8px;}
     .nav-cta a.btn-outline{display:none;}
     .nav-cta .btn{padding:8px 14px; font-size:13px;}
+    .nav-toggle{display:inline-flex;}
+    .nav-links{
+      display:none; position:absolute; top:100%; left:0; right:0;
+      flex-direction:column; gap:0; background:#fff;
+      border-bottom:1px solid var(--line); box-shadow:0 12px 24px rgba(15,30,51,.08);
+    }
+    .nav-links.open{display:flex;}
+    .nav-links a{padding:14px 20px; border-bottom:1px solid var(--line); font-size:15px;}
   }
 
   /* HERO */
@@ -389,7 +401,7 @@ fbq('track', 'PageView');
 <header class="site-nav">
   <div class="nav-inner">
     <a href="#top" class="logo"><span class="bolt"><img src="/favicon.png" alt="" aria-hidden="true"></span>FlashBooked</a>
-    <nav class="nav-links">
+    <nav class="nav-links" id="site-nav-links">
       <a href="#how-it-works">How It Works</a>
       <a href="#what-we-build">What We Build</a>
       <a href="#pricing">Pricing</a>
@@ -401,6 +413,9 @@ fbq('track', 'PageView');
       <a href="tel:+35319640379" class="btn btn-outline dark">Call Aoife</a>
       <a href="/book/" class="btn btn-primary"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"/></svg>Free Workflow Audit</a>
     </div>
+    <button type="button" class="nav-toggle" id="nav-toggle" aria-label="Toggle menu" aria-expanded="false" aria-controls="site-nav-links">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5M3.75 17.25h16.5"/></svg>
+    </button>
   </div>
 </header>
 
@@ -742,6 +757,22 @@ fbq('track', 'PageView');
         status.textContent = 'Something went wrong — please try again or email adam@bookedjobs.ca.';
       })
       .finally(function() { btn.disabled = false; });
+  });
+})();
+
+(function() {
+  var toggle = document.getElementById('nav-toggle');
+  var links = document.getElementById('site-nav-links');
+  if (!toggle || !links) return;
+  toggle.addEventListener('click', function() {
+    var isOpen = links.classList.toggle('open');
+    toggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+  });
+  links.querySelectorAll('a').forEach(function(a) {
+    a.addEventListener('click', function() {
+      links.classList.remove('open');
+      toggle.setAttribute('aria-expanded', 'false');
+    });
   });
 })();
 </script>
