@@ -141,11 +141,14 @@ const FUNNEL_TARGETS = {
 // Adam's Great/Good/Acceptable/Bad bands (2026-09-04), weighted by his stated priority order —
 // qualified rate and booked-call rate override CPL, since a cheap CPL with bad lead quality is
 // worse than a pricier CPL with good quality.
-function campaignHealthVerdict(cplCad, qualifiedRatePct, bookedCallRatePct) {
-  if (qualifiedRatePct != null && qualifiedRatePct < QUALIFIED_RATE_KILL_PCT) {
+function campaignHealthVerdict(cplCad, qualifiedRatePct, bookedCallRatePct, reviewed) {
+  if (reviewed >= MIN_SAMPLE_FOR_QUALITY_RULES && qualifiedRatePct != null && qualifiedRatePct < QUALIFIED_RATE_KILL_PCT) {
     return { code: 'bad', label: 'Bad — low lead quality' };
   }
-  if (bookedCallRatePct != null && bookedCallRatePct < BOOKED_CALL_RATE_KILL_PCT) {
+  // Gated on `reviewed`, not raw lead count — see the matching comment in verdictForAd. Leads
+  // still sitting uncalled in Leads: New / Convo: Responded haven't had a chance to book a call
+  // yet, so they shouldn't count against the campaign as a booking-rate failure.
+  if (reviewed >= MIN_SAMPLE_FOR_QUALITY_RULES && bookedCallRatePct != null && bookedCallRatePct < BOOKED_CALL_RATE_KILL_PCT) {
     return { code: 'bad', label: 'Bad — low booking rate' };
   }
   if (cplCad == null) return null;
@@ -425,7 +428,10 @@ function verdictForAd({ status, spendNative, impressions, ctr, leads, cplNative,
       return { code: 'kill-bad-quality', label: 'Kill — low lead quality', reason: `Only ${qualifiedRatePct.toFixed(0)}% of ${reviewed} reviewed leads qualified (business + real problem + capacity) — under the ${QUALIFIED_RATE_KILL_PCT}% floor.` };
     }
   }
-  if (leads >= MIN_SAMPLE_FOR_QUALITY_RULES) {
+  // Gated on `reviewed`, not raw `leads` — booking a call only happens after a lead has been
+  // called and qualified, so judging this off leads that are still sitting untouched in
+  // Leads: New / Convo: Responded would kill ads for leads Adam simply hasn't worked yet.
+  if (reviewed >= MIN_SAMPLE_FOR_QUALITY_RULES) {
     const bookedCallRatePct = (bookedCall / leads) * 100;
     if (bookedCallRatePct < BOOKED_CALL_RATE_KILL_PCT) {
       return { code: 'kill-bad-booking-rate', label: 'Kill — low booking rate', reason: `Only ${bookedCallRatePct.toFixed(0)}% of ${leads} leads booked a call — under the ${BOOKED_CALL_RATE_KILL_PCT}% floor.` };
@@ -674,7 +680,7 @@ module.exports = async function handler(req, res) {
     const costPerBookedCallNative = bookedCall > 0 ? spendNative / bookedCall : null;
 
     const healthVerdict = sampleTrustworthy
-      ? campaignHealthVerdict(cplNativeVal, qualifiedRatePct, bookedCallRatePct)
+      ? campaignHealthVerdict(cplNativeVal, qualifiedRatePct, bookedCallRatePct, reviewed)
       : null;
     const verdict = healthVerdict ? healthVerdict.code : 'gathering-data';
 
