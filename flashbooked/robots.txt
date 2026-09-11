@@ -4,4 +4,4 @@ Disallow: /thank-you/
 Disallow: /dashboard/
 Disallow: /oak-enviro/
 
-Sitemap: https://flashbooked.com/sitemap.xml
+Sitemap: https://www.flashbooked.com/sitemap.xml
