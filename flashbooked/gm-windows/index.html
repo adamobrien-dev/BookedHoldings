@@ -1,0 +1,869 @@
+<meta charset="UTF-8">
+<meta name="robots" content="noindex, nofollow">
+<title>GM Windows — Job Tracker</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Public+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+  :root{
+    --paper:#F2F0E9;
+    --surface:#FFFFFF;
+    --surface-2:#EAE6D9;
+    --ink:#201D18;
+    --muted:#655F52;
+    --faint:#8C8574;
+    --line:#DEDACD;
+    --line-strong:#C7C1AE;
+    --accent:#2C5F8A;
+    --accent-ink:#EEF5FA;
+    --accent-bg:#DCE9F3;
+    --accent-text:#123351;
+    --amber:#B4762A;
+    --amber-bg:#F1E1C4;
+    --amber-ink:#4A2F0A;
+    --green:#3F7D4A;
+    --green-bg:#DCEEDF;
+    --green-ink:#173B20;
+    --rust:#9C3F27;
+    --rust-bg:#F3DAD1;
+    --rust-ink:#4A1D10;
+    --slate:#5B6B7A;
+    --shadow: 0 1px 2px rgba(20,18,12,0.06), 0 8px 24px -12px rgba(20,18,12,0.18);
+    --radius: 10px;
+    color-scheme: light;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --paper:#15140F;
+      --surface:#1C1B15;
+      --surface-2:#242219;
+      --ink:#EDEAE0;
+      --muted:#A6A08D;
+      --faint:#726C5A;
+      --line:#2E2C22;
+      --line-strong:#3D3A2C;
+      --accent:#6FA0C8;
+      --accent-ink:#0B1A24;
+      --accent-bg:#1A2E3B;
+      --accent-text:#BEDDF0;
+      --amber:#D9A054;
+      --amber-bg:#3A2C14;
+      --amber-ink:#F3DFAE;
+      --green:#6BAE77;
+      --green-bg:#173B20;
+      --green-ink:#BEE9C6;
+      --rust:#D07A5C;
+      --rust-bg:#3A2015;
+      --rust-ink:#F3D3C4;
+      --slate:#8FA0AC;
+      --shadow: 0 1px 2px rgba(0,0,0,0.4), 0 8px 28px -12px rgba(0,0,0,0.6);
+      color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"]{
+    --paper:#15140F; --surface:#1C1B15; --surface-2:#242219;
+    --ink:#EDEAE0; --muted:#A6A08D; --faint:#726C5A;
+    --line:#2E2C22; --line-strong:#3D3A2C;
+    --accent:#6FA0C8; --accent-ink:#0B1A24; --amber:#D9A054; --amber-bg:#3A2C14; --amber-ink:#F3DFAE;
+    --green:#6BAE77; --green-bg:#173B20; --green-ink:#BEE9C6;
+    --rust:#D07A5C; --rust-bg:#3A2015; --rust-ink:#F3D3C4;
+    --shadow: 0 1px 2px rgba(0,0,0,0.4), 0 8px 28px -12px rgba(0,0,0,0.6);
+    color-scheme: dark;
+  }
+
+  *{box-sizing:border-box;}
+  body{
+    margin:0; background:var(--paper); color:var(--ink);
+    font-family:'Public Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  h1,h2,h3,.display{ font-family:'Barlow Condensed', 'Public Sans', sans-serif; text-wrap:balance; letter-spacing:0.01em; }
+  .mono{ font-family:'IBM Plex Mono', ui-monospace, monospace; font-variant-numeric:tabular-nums; }
+
+  .app{ max-width:1440px; margin:0 auto; padding:20px 20px 56px; }
+
+  .topbar{
+    display:flex; align-items:center; justify-content:space-between;
+    gap:16px; flex-wrap:wrap;
+    padding-bottom:16px; margin-bottom:18px;
+    border-bottom:1px solid var(--line);
+  }
+  .brand{ display:flex; align-items:center; gap:12px; }
+  .brand-mark{
+    width:38px; height:38px; border-radius:9px;
+    background:linear-gradient(155deg, var(--accent), var(--amber));
+    display:flex; align-items:center; justify-content:center;
+    color:var(--accent-ink); flex-shrink:0;
+  }
+  .brand-mark svg{ width:20px; height:20px; }
+  .brand-text .eyebrow{ font-size:11px; text-transform:uppercase; letter-spacing:0.11em; color:var(--muted); font-weight:600; }
+  .brand-text h1{ font-size:24px; line-height:1; margin:2px 0 0; font-weight:700; }
+
+  .view-toggle{
+    display:flex; background:var(--surface); border:1px solid var(--line);
+    border-radius:8px; padding:3px; box-shadow:var(--shadow);
+  }
+  .view-toggle button{
+    border:none; background:transparent; color:var(--muted);
+    font-family:inherit; font-size:13px; font-weight:600;
+    padding:8px 16px; border-radius:6px; cursor:pointer;
+  }
+  .view-toggle button.active{ background:var(--accent); color:var(--accent-ink); }
+
+  .stats{ display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin-bottom:18px; }
+  .stat{
+    background:var(--surface); border:1px solid var(--line);
+    border-radius:var(--radius); padding:14px 16px;
+    display:flex; flex-direction:column; gap:4px;
+  }
+  .stat .num{ font-family:'Barlow Condensed',sans-serif; font-size:30px; font-weight:700; line-height:1; }
+  .stat .label{ font-size:12px; color:var(--muted); font-weight:600; text-transform:uppercase; letter-spacing:0.06em; }
+  .stat.stat--accent .num{ color:var(--accent); }
+  .stat.stat--amber .num{ color:var(--amber); }
+  .stat.stat--green .num{ color:var(--green); }
+  .stat.stat--rust .num{ color:var(--rust); }
+  .stat .sub{ font-size:12px; color:var(--faint); }
+
+  .drag-hint{ font-size:12px; color:var(--faint); margin:0 0 12px; }
+
+  .kanban-board{ display:flex; gap:12px; overflow-x:auto; padding-bottom:10px; align-items:flex-start; }
+  .kanban-col{
+    flex:0 0 240px; background:var(--surface-2); border:1px solid var(--line);
+    border-top:3px solid var(--col-color, var(--line-strong));
+    border-radius:10px; padding:10px; display:flex; flex-direction:column; gap:8px;
+    min-height:90px;
+  }
+  .kanban-col.drop-target{ background:color-mix(in srgb, var(--col-color, var(--accent)) 16%, var(--surface-2)); }
+  .kanban-col-head{
+    display:flex; justify-content:space-between; align-items:flex-start; gap:6px;
+    font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.04em; color:var(--muted);
+    padding:0 2px 2px; line-height:1.3;
+  }
+  .kanban-col-head .count{
+    background:var(--surface); border:1px solid var(--line); border-radius:999px;
+    padding:1px 7px; font-size:10.5px; font-family:'IBM Plex Mono',monospace; flex-shrink:0;
+  }
+  .kc-card{
+    background:var(--surface); border:1px solid var(--line); border-left:3px solid var(--col-color, var(--accent));
+    border-radius:8px; padding:10px 11px; cursor:pointer;
+    display:flex; flex-direction:column; gap:4px; text-align:left; width:100%; font-family:inherit;
+  }
+  .kc-card:hover{ border-color:var(--line-strong); }
+  .kc-card.dragging{ opacity:0.4; }
+  .kc-card .kc-title{ font-size:13px; font-weight:700; line-height:1.25; color:var(--ink); }
+  .kc-card .kc-job{ font-size:11.5px; color:var(--muted); line-height:1.3; }
+  .kc-card .kc-foot{ display:flex; justify-content:space-between; align-items:center; margin-top:2px; }
+  .kc-card .kc-value{ font-family:'IBM Plex Mono',monospace; font-size:12px; font-weight:600; color:var(--ink); }
+  .kc-card .kc-avatar{
+    width:20px; height:20px; border-radius:50%; background:var(--accent); color:var(--accent-ink);
+    font-size:9.5px; font-weight:700; display:flex; align-items:center; justify-content:center; flex-shrink:0;
+  }
+  .kc-add{
+    border:1px dashed var(--line-strong); background:none; color:var(--faint);
+    border-radius:8px; padding:9px; font-size:12px; font-family:inherit; cursor:pointer;
+  }
+  .kc-add:hover{ color:var(--accent); border-color:var(--accent); }
+
+  .legend{ display:flex; gap:16px; align-items:center; margin:14px 2px 0; flex-wrap:wrap; }
+  .legend-item{ display:flex; align-items:center; gap:6px; font-size:12px; color:var(--muted); }
+  .legend-item .sw{ width:11px; height:11px; border-radius:3px; }
+
+  /* ---- Dashboard ---- */
+  .dash-wrap{ display:none; }
+  .dash-wrap.active{ display:block; }
+  .dash-section{ margin-bottom:28px; }
+  .dash-section h2{ font-size:20px; font-weight:700; margin:0 0 3px; }
+  .dash-sub{ font-size:13px; color:var(--muted); margin:0 0 14px; }
+  .team-grid{ display:grid; grid-template-columns:repeat(auto-fit, minmax(200px,1fr)); gap:12px; }
+  .team-card{
+    background:var(--surface); border:1px solid var(--line); border-radius:var(--radius);
+    padding:14px 16px; display:flex; align-items:center; gap:12px;
+  }
+  .team-avatar{
+    width:38px; height:38px; border-radius:50%; background:var(--amber); color:var(--amber-ink);
+    font-size:13px; font-weight:700; display:flex; align-items:center; justify-content:center; flex-shrink:0;
+  }
+  .team-name{ font-weight:700; font-size:14px; }
+  .team-role{ font-size:11.5px; color:var(--muted); }
+  .team-count{ font-size:11.5px; color:var(--faint); margin-top:2px; }
+
+  /* ---- Drawer ---- */
+  .scrim{
+    position:fixed; inset:0; background:rgba(10,10,8,0.38);
+    opacity:0; pointer-events:none; transition:opacity .18s ease; z-index:10;
+  }
+  .scrim.open{ opacity:1; pointer-events:auto; }
+  .drawer{
+    position:fixed; top:0; right:0; height:100%; width:min(440px, 92vw);
+    background:var(--surface); border-left:1px solid var(--line);
+    box-shadow:-16px 0 40px -20px rgba(0,0,0,0.4);
+    transform:translateX(100%); transition:transform .2s ease;
+    z-index:11; display:flex; flex-direction:column;
+  }
+  .drawer.open{ transform:translateX(0); }
+  .drawer-head{
+    padding:20px 22px 16px; border-bottom:1px solid var(--line);
+    display:flex; align-items:flex-start; justify-content:space-between; gap:12px;
+  }
+  .drawer-head .status-pill{
+    display:inline-flex; align-items:center; gap:6px;
+    font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.06em;
+    padding:4px 10px; border-radius:999px; margin-bottom:8px;
+  }
+  .drawer-head h2{ font-size:21px; margin:0; font-weight:700; }
+  .drawer-head .drawer-sub{ font-size:13px; color:var(--muted); margin-top:2px; }
+  .drawer-close{
+    border:1px solid var(--line); background:var(--surface-2); color:var(--ink);
+    width:30px; height:30px; border-radius:8px; cursor:pointer; font-size:15px; flex-shrink:0;
+  }
+  .drawer-body{ padding:18px 22px; overflow-y:auto; flex:1; display:flex; flex-direction:column; gap:18px; }
+  .field-row{ display:grid; grid-template-columns:96px 1fr; gap:10px; font-size:13.5px; }
+  .field-row dt{ color:var(--faint); font-weight:600; }
+  .field-row dd{ margin:0; }
+  .field-group{ display:flex; flex-direction:column; gap:9px; }
+  .drawer-section-title{ font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.08em; color:var(--faint); margin:0 0 2px; }
+  .notes-box{ background:var(--surface-2); border:1px solid var(--line); border-radius:8px; padding:12px; font-size:13px; line-height:1.5; }
+  .timeline{ display:flex; flex-direction:column; gap:0; }
+  .tl-item{ display:flex; gap:10px; padding:0 0 12px; position:relative; }
+  .tl-item:last-child{ padding-bottom:0; }
+  .tl-dot{ width:8px; height:8px; border-radius:50%; background:var(--accent); margin-top:5px; flex-shrink:0; position:relative; }
+  .tl-item:not(:last-child) .tl-dot::after{
+    content:''; position:absolute; top:11px; left:3px; width:1px; height:calc(100% + 6px);
+    background:var(--line-strong);
+  }
+  .tl-date{ font-size:10.5px; color:var(--faint); font-family:'IBM Plex Mono',monospace; }
+  .tl-event{ font-size:13px; line-height:1.35; }
+  .doc-list{ display:flex; flex-direction:column; gap:6px; }
+  .doc-chip{
+    display:flex; align-items:center; gap:8px;
+    border:1px solid var(--line); border-radius:8px; padding:8px 10px;
+    font-size:12.5px; color:var(--muted);
+  }
+  .form-field{ display:flex; flex-direction:column; gap:5px; }
+  .form-field label{ font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.06em; color:var(--faint); }
+  .form-field input, .form-field select, .form-field textarea{
+    font-family:inherit; font-size:13.5px; padding:9px 10px; border-radius:8px;
+    border:1px solid var(--line); background:var(--surface-2); color:var(--ink); width:100%;
+  }
+  .form-field textarea{ resize:vertical; min-height:60px; line-height:1.4; }
+  .form-field input:focus, .form-field select:focus, .form-field textarea:focus{
+    outline:2px solid var(--accent); outline-offset:1px; border-color:var(--accent);
+  }
+  .form-row{ display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+  .drawer-actions{ display:flex; gap:10px; }
+  .btn{
+    font-family:inherit; font-size:13.5px; font-weight:600; padding:10px 16px;
+    border-radius:8px; cursor:pointer; border:1px solid var(--line);
+    background:var(--surface-2); color:var(--ink); flex:1;
+  }
+  .btn:hover{ border-color:var(--line-strong); }
+  .btn-primary{ background:var(--accent); color:var(--accent-ink); border-color:var(--accent); }
+  .btn-primary:hover{ filter:brightness(1.06); }
+
+  /* ---- Toast (automation demo) ---- */
+  .toast-stack{ position:fixed; bottom:20px; right:20px; z-index:20; display:flex; flex-direction:column; gap:8px; align-items:flex-end; }
+  .toast{
+    background:var(--ink); color:var(--paper); border-radius:10px; padding:12px 16px;
+    font-size:12.5px; line-height:1.4; max-width:320px; box-shadow:var(--shadow);
+    opacity:0; transform:translateY(8px); transition:opacity .2s ease, transform .2s ease;
+  }
+  .toast.show{ opacity:1; transform:translateY(0); }
+  .toast strong{ color:var(--amber); }
+
+  .footnote{ text-align:center; font-size:11.5px; color:var(--faint); margin-top:26px; }
+
+  @media (max-width:760px){
+    .stats{ grid-template-columns:repeat(2,1fr); }
+    .app{ padding:14px 12px 40px; }
+    .brand-text h1{ font-size:20px; }
+  }
+</style>
+
+<div class="app">
+
+  <div class="topbar">
+    <div class="brand">
+      <div class="brand-mark">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="1"/><line x1="12" y1="3" x2="12" y2="21"/><line x1="3" y1="12" x2="21" y2="12"/></svg>
+      </div>
+      <div class="brand-text">
+        <div class="eyebrow">GM Windows · Operations</div>
+        <h1>Job Tracker</h1>
+      </div>
+    </div>
+    <div class="view-toggle" role="tablist" aria-label="View">
+      <button id="btn-pipeline" class="active" role="tab" aria-selected="true">Pipeline</button>
+      <button id="btn-jobs" role="tab" aria-selected="false">Active Jobs</button>
+      <button id="btn-dash" role="tab" aria-selected="false">Dashboard</button>
+    </div>
+  </div>
+
+  <!-- PIPELINE -->
+  <div id="pipeline-wrap">
+    <div class="stats" id="pipeline-stats"></div>
+    <p class="drag-hint">Drag a card between stages to move it, or click it to open the customer record. Try dragging Patrick O'Brien from New Enquiry into Contacted.</p>
+    <div class="kanban-board" id="pipeline-board" data-scope="full"></div>
+  </div>
+
+  <!-- ACTIVE JOBS -->
+  <div id="jobs-wrap" style="display:none;">
+    <div class="stats" id="jobs-stats"></div>
+    <p class="drag-hint">This is the same customer list, filtered to everything that's already sold — from deposit through to final payment.</p>
+    <div class="kanban-board" id="jobs-board" data-scope="jobs"></div>
+  </div>
+
+  <!-- DASHBOARD -->
+  <div class="dash-wrap" id="dash-wrap">
+    <div class="dash-section">
+      <h2>This month</h2>
+      <p class="dash-sub">The bird's-eye view — health of the business without asking anyone what's happening.</p>
+      <div class="stats" id="dash-stats"></div>
+    </div>
+    <div class="dash-section">
+      <h2>Team</h2>
+      <p class="dash-sub">Who owns what, right now — no more assuming someone else has it.</p>
+      <div class="team-grid" id="team-grid"></div>
+    </div>
+  </div>
+
+  <div class="legend" id="legend"></div>
+
+  <div class="footnote">Prototype for demo purposes — GM Windows Job Tracker · built from your process, New Enquiry through to Completed &amp; Paid</div>
+</div>
+
+<div class="scrim" id="scrim"></div>
+<aside class="drawer" id="drawer" aria-hidden="true">
+  <div class="drawer-head">
+    <div>
+      <span class="status-pill" id="d-status-pill"></span>
+      <h2 id="d-title">Customer</h2>
+      <div class="drawer-sub" id="d-sub">Job · Value</div>
+    </div>
+    <button class="drawer-close" id="d-close" aria-label="Close">✕</button>
+  </div>
+  <div class="drawer-body" id="drawer-body"></div>
+</aside>
+<div class="toast-stack" id="toast-stack"></div>
+
+<script>
+function esc(str){
+  return (str==null ? '' : String(str))
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+function fmtEur(n){ return '€' + Number(n||0).toLocaleString('en-IE'); }
+function initials(name){ return name.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase(); }
+
+// ---- Staff ----
+const staff = {
+  gary:  {name:'Gary Moran',   role:'Owner'},
+  john:  {name:'John Doyle',   role:'Sales & Surveys'},
+  david: {name:'David Byrne',  role:'Installation Lead'},
+  ciara: {name:'Ciara Lynch',  role:'Office & Ordering'},
+  emma:  {name:'Emma Walsh',   role:'Sales'},
+  liam:  {name:'Liam Kavanagh',role:'Installer'},
+};
+
+// ---- Pipeline stages ----
+const stageOrder = ['new','contacted','survey','quoting','quote_sent','followup','won','deposit','manufacturing','install_sched','installed','paid'];
+const jobStages = ['deposit','manufacturing','install_sched','installed','paid'];
+const stageMeta = {
+  new:            {label:'New Enquiry',                color:'var(--slate)'},
+  contacted:      {label:'Contacted',                  color:'var(--amber)'},
+  survey:         {label:'Site Visit / Measure Booked', color:'var(--amber)'},
+  quoting:        {label:'Quote Being Prepared',        color:'var(--amber)'},
+  quote_sent:     {label:'Quote Sent',                  color:'var(--accent)'},
+  followup:       {label:'Follow-Up',                   color:'var(--rust)'},
+  won:            {label:'Job Won',                     color:'var(--green)'},
+  deposit:        {label:'Deposit Paid',                color:'var(--green)'},
+  manufacturing:  {label:'Ordered / Manufacturing',     color:'var(--amber)'},
+  install_sched:  {label:'Installation Scheduled',      color:'var(--accent)'},
+  installed:      {label:'Installed',                   color:'var(--green)'},
+  paid:           {label:'Completed / Paid',             color:'var(--ink)'},
+};
+
+// ---- Seed customers ----
+const customers = {
+  c1: {
+    stage:'new', name:'Patrick O’Brien', phone:'087 512 4432', email:'patrick.obrien@gmail.com', area:'Blanchardstown, D15',
+    job:'6 windows + composite front door', value:9000, assigned:'gary', added:'Today', lastContact:'Today',
+    nextTask:'Call Patrick to confirm details & book a survey', dueDate:'Today',
+    notes:'Came through the website contact form. Mentioned he’s comparing two other quotes and wants uPVC.',
+    timeline:[
+      {date:'Today, 09:14', event:'Enquiry received — website form'},
+      {date:'Today, 09:15', event:'Automated SMS sent: “Thanks for getting in touch with GM Windows — one of the team will be in touch shortly.”'},
+      {date:'Today, 09:15', event:'Internal notification created for Gary Moran'},
+    ], docs:[]
+  },
+  c2: {
+    stage:'contacted', name:'Deirdre Walsh', phone:'086 233 7710', email:'deirdre.walsh@outlook.com', area:'Rathfarnham',
+    job:'Upgrade 5 rear windows to triple glazing', value:7200, assigned:'john', added:'Yesterday', lastContact:'Today',
+    nextTask:'Book site visit / measure', dueDate:'Tomorrow',
+    notes:'Existing windows are 15 years old and drafty. Deciding between double and triple glazing — wants a quote for both.',
+    timeline:[
+      {date:'Yesterday, 14:02', event:'Enquiry received — phone call'},
+      {date:'Yesterday, 14:05', event:'Automated SMS + internal notification sent'},
+      {date:'Today, 10:40', event:'Called by John — discussed scope, offered a site visit'},
+    ], docs:[]
+  },
+  c3: {
+    stage:'survey', name:'Sarah Kelly', phone:'083 902 1187', email:'sarah.kelly87@gmail.com', area:'Swords',
+    job:'Patio door replacement', value:4200, assigned:'john', added:'3 days ago', lastContact:'Yesterday',
+    nextTask:'Attend site visit & take measurements', dueDate:'Tue 10:00',
+    notes:'Swapping a sliding patio door for a bi-fold. Access via the side gate, code is 4471.',
+    timeline:[
+      {date:'3 days ago', event:'Enquiry received — Facebook message'},
+      {date:'3 days ago', event:'Automated SMS + internal notification sent'},
+      {date:'2 days ago', event:'Called by John — site visit booked'},
+      {date:'Yesterday', event:'Site visit confirmed for Tue 10:00'},
+    ], docs:[]
+  },
+  c4: {
+    stage:'quoting', name:'Tom Fitzgerald', phone:'085 660 2298', email:'tom.fitz@gmail.com', area:'Lucan',
+    job:'Rear extension windows + bi-fold doors', value:14300, assigned:'ciara', added:'1 week ago', lastContact:'2 days ago',
+    nextTask:'Finish quote & send to Tom', dueDate:'Today',
+    notes:'Extension opening is 6.2m wide — bi-fold is made to measure. Waiting on the supplier’s price before finalising.',
+    timeline:[
+      {date:'1 week ago', event:'Enquiry received — referral from Deirdre Walsh'},
+      {date:'6 days ago', event:'Contacted, site visit booked'},
+      {date:'4 days ago', event:'Site visit completed — measurements taken'},
+      {date:'2 days ago', event:'Quote drafted, awaiting supplier bi-fold pricing'},
+    ], docs:[]
+  },
+  c5: {
+    stage:'quote_sent', name:'John Murphy', phone:'087 776 4410', email:'john.murphy@gmail.com', area:'Tallaght',
+    job:'8 windows + front door', value:11500, assigned:'emma', added:'2 weeks ago', lastContact:'5 days ago',
+    nextTask:'Call John — quote follow-up', dueDate:'Tomorrow',
+    notes:'Comparing against one other local supplier. Price sensitive but liked our warranty terms.',
+    timeline:[
+      {date:'2 weeks ago', event:'Enquiry received — Google search'},
+      {date:'2 weeks ago', event:'Contacted, site visit booked'},
+      {date:'12 days ago', event:'Site visit completed'},
+      {date:'5 days ago', event:'Quote €11,500 sent by email'},
+      {date:'3 days ago', event:'Automated Day-2 follow-up sent: “Just checking you received the quotation — let us know if you have any questions.”'},
+      {date:'Today', event:'Automated Day-5 follow-up scheduled'},
+    ], docs:['Quote — John Murphy — €11,500.pdf']
+  },
+  c6: {
+    stage:'followup', name:'Anne Doyle', phone:'089 220 5563', email:'anne.doyle@gmail.com', area:'Clondalkin',
+    job:'Front door', value:3100, assigned:'liam', added:'3 weeks ago', lastContact:'1 week ago',
+    nextTask:'Call Anne — quote follow-up (task auto-created)', dueDate:'Today',
+    notes:'Quote sent 9 days ago, no response yet. Try calling instead of texting this time.',
+    timeline:[
+      {date:'3 weeks ago', event:'Enquiry received — phone call'},
+      {date:'19 days ago', event:'Site visit completed'},
+      {date:'9 days ago', event:'Quote €3,100 sent'},
+      {date:'7 days ago', event:'Automated Day-2 follow-up sent'},
+      {date:'4 days ago', event:'Automated Day-5 follow-up sent'},
+      {date:'4 days ago', event:'Task created: Call Anne — Quote Follow-Up (assigned to Liam)'},
+    ], docs:[]
+  },
+  c7: {
+    stage:'won', name:'Niamh Kavanagh', phone:'086 441 7723', email:'niamh.kav@gmail.com', area:'Blanchardstown',
+    job:'Full house window replacement', value:16800, assigned:'john', added:'1 month ago', lastContact:'2 days ago',
+    nextTask:'Send deposit invoice', dueDate:'Today',
+    notes:'Verbally accepted the quote on a call. Wants to start as soon as possible.',
+    timeline:[
+      {date:'1 month ago', event:'Enquiry received'},
+      {date:'26 days ago', event:'Site visit completed'},
+      {date:'3 weeks ago', event:'Quote €16,800 sent'},
+      {date:'2 days ago', event:'Customer accepted — job won'},
+    ], docs:[]
+  },
+  c8: {
+    stage:'deposit', name:'Brian Cusack', phone:'087 330 8871', email:'brian.cusack@gmail.com', area:'Malahide',
+    job:'Composite door + 4 windows', value:8450, assigned:'david', added:'5 weeks ago', lastContact:'3 days ago',
+    nextTask:'Place manufacturing order', dueDate:'Today',
+    notes:'30% deposit received. Composite door in anthracite grey, windows white internally.',
+    timeline:[
+      {date:'5 weeks ago', event:'Enquiry received'},
+      {date:'4 weeks ago', event:'Quote sent, accepted'},
+      {date:'3 days ago', event:'Deposit €2,535 received (Stripe)'},
+    ], docs:[]
+  },
+  c9: {
+    stage:'manufacturing', name:'Aoife Ryan', phone:'083 664 1290', email:'aoife.ryan@gmail.com', area:'Stillorgan',
+    job:'10-window full renovation', value:21000, assigned:'ciara', added:'7 weeks ago', lastContact:'1 week ago',
+    nextTask:'Chase supplier for manufacturing ETA', dueDate:'Fri',
+    notes:'Large order, 4–5 week manufacturing lead time quoted by supplier. Keep customer updated weekly.',
+    timeline:[
+      {date:'7 weeks ago', event:'Enquiry received — referral'},
+      {date:'6 weeks ago', event:'Quote sent, accepted'},
+      {date:'5 weeks ago', event:'Deposit received'},
+      {date:'5 weeks ago', event:'Order placed with supplier — ETA 4–5 weeks'},
+      {date:'1 week ago', event:'Customer updated on manufacturing progress'},
+    ], docs:[]
+  },
+  c10: {
+    stage:'install_sched', name:'Michael Byrne', phone:'085 992 4471', email:'michael.byrne@gmail.com', area:'Portmarnock',
+    job:'Full house windows', value:18750, assigned:'david', added:'9 weeks ago', lastContact:'2 days ago',
+    nextTask:'Confirm crew & van for install day', dueDate:'Mon',
+    notes:'Installation booked for Monday, a 2-day job. Customer home both days. Old windows to be recycled.',
+    timeline:[
+      {date:'9 weeks ago', event:'Enquiry received'},
+      {date:'8 weeks ago', event:'Quote sent, accepted'},
+      {date:'7 weeks ago', event:'Deposit received, order placed'},
+      {date:'2 days ago', event:'Windows arrived from supplier — install booked for Monday'},
+    ], docs:['Signed quote acceptance.pdf']
+  },
+  c11: {
+    stage:'installed', name:'Colm Whelan', phone:'086 774 2210', email:'colm.whelan@gmail.com', area:'Sandyford',
+    job:'Bay window + French doors', value:9900, assigned:'emma', added:'10 weeks ago', lastContact:'Yesterday',
+    nextTask:'Send final invoice', dueDate:'Today',
+    notes:'Install completed yesterday, customer delighted on the day. Balance of €6,930 due before we close the job out.',
+    timeline:[
+      {date:'10 weeks ago', event:'Enquiry received'},
+      {date:'9 weeks ago', event:'Quote sent, accepted, deposit received'},
+      {date:'6 weeks ago', event:'Order placed with supplier'},
+      {date:'Yesterday', event:'Installation completed — 1 day job'},
+    ], docs:[]
+  },
+  c12: {
+    stage:'paid', name:'Marie Coogan', phone:'087 118 3345', email:'marie.coogan@gmail.com', area:'Raheny',
+    job:'6 windows replacement', value:10250, assigned:'liam', added:'14 weeks ago', lastContact:'2 weeks ago',
+    nextTask:'—', dueDate:'—',
+    notes:'Job fully closed out. Asked for a Google review — she said she’d leave one.',
+    timeline:[
+      {date:'14 weeks ago', event:'Enquiry received'},
+      {date:'13 weeks ago', event:'Quote sent, accepted, deposit received'},
+      {date:'10 weeks ago', event:'Order placed with supplier'},
+      {date:'3 weeks ago', event:'Installation completed'},
+      {date:'2 weeks ago', event:'Final payment received — job closed'},
+    ], docs:['Final invoice — paid.pdf']
+  },
+};
+
+function fmtEurOrDash(n){ return n ? fmtEur(n) : '—'; }
+
+function renderKanban(boardEl, scopeStages){
+  boardEl.innerHTML = scopeStages.map(stage=>{
+    const meta = stageMeta[stage];
+    const items = Object.entries(customers).filter(([id,c])=>c.stage===stage);
+    const cardsHtml = items.map(([id,c])=>{
+      const person = staff[c.assigned];
+      return `<button class="kc-card" draggable="true" data-id="${id}" style="--col-color:${meta.color}">
+        <span class="kc-title">${esc(c.name)}</span>
+        <span class="kc-job">${esc(c.job)}</span>
+        <span class="kc-foot">
+          <span class="kc-value">${fmtEur(c.value)}</span>
+          <span class="kc-avatar" title="${esc(person.name)}">${initials(person.name)}</span>
+        </span>
+      </button>`;
+    }).join('');
+    return `<div class="kanban-col" data-stage="${stage}" style="--col-color:${meta.color}">
+      <div class="kanban-col-head"><span>${meta.label}</span><span class="count">${items.length}</span></div>
+      ${cardsHtml}
+      <button class="kc-add" data-stage="${stage}" type="button">+ Add customer</button>
+    </div>`;
+  }).join('');
+}
+
+function renderPipelineStats(){
+  const all = Object.values(customers);
+  const open = all.filter(c=> !jobStages.includes(c.stage) && c.stage!=='won');
+  const openValue = open.reduce((s,c)=>s+c.value,0);
+  const quotesOut = all.filter(c=>c.stage==='quote_sent' || c.stage==='followup');
+  const quotesOutValue = quotesOut.reduce((s,c)=>s+c.value,0);
+  const won = all.filter(c=>c.stage!=='new' && c.stage!=='contacted' && c.stage!=='survey' && c.stage!=='quoting');
+  document.getElementById('pipeline-stats').innerHTML = `
+    <div class="stat stat--accent"><div class="num">${open.length}</div><div class="label">Open enquiries</div><div class="sub">${fmtEur(openValue)} not yet quoted or decided</div></div>
+    <div class="stat stat--amber"><div class="num">${quotesOut.length}</div><div class="label">Quotes awaiting decision</div><div class="sub">${fmtEur(quotesOutValue)} on the table</div></div>
+    <div class="stat stat--green"><div class="num">${won.length}</div><div class="label">Won or in production</div><div class="sub">across every later stage</div></div>
+    <div class="stat"><div class="num">${all.length}</div><div class="label">Total customers tracked</div><div class="sub">nothing sitting in a notebook</div></div>
+  `;
+}
+
+function renderJobsStats(){
+  const jobs = Object.values(customers).filter(c=>jobStages.includes(c.stage));
+  const inProd = jobs.filter(c=>c.stage==='deposit'||c.stage==='manufacturing').length;
+  const scheduled = jobs.filter(c=>c.stage==='install_sched').length;
+  const value = jobs.reduce((s,c)=>s+c.value,0);
+  const paid = jobs.filter(c=>c.stage==='paid').length;
+  document.getElementById('jobs-stats').innerHTML = `
+    <div class="stat stat--accent"><div class="num">${jobs.length}</div><div class="label">Active jobs</div><div class="sub">sold, in the system end to end</div></div>
+    <div class="stat stat--amber"><div class="num">${inProd}</div><div class="label">In production</div><div class="sub">deposit paid or on order</div></div>
+    <div class="stat stat--green"><div class="num">${scheduled}</div><div class="label">Installation scheduled</div><div class="sub">crew &amp; van confirmed</div></div>
+    <div class="stat"><div class="num">${fmtEur(value)}</div><div class="label">Value in the pipeline</div><div class="sub">${paid} fully closed out</div></div>
+  `;
+}
+
+function renderLegend(scope){
+  const stages = scope==='jobs' ? jobStages : stageOrder;
+  document.getElementById('legend').innerHTML = stages.map(s=>{
+    const m = stageMeta[s];
+    return `<div class="legend-item"><span class="sw" style="background:${m.color}"></span>${m.label}</div>`;
+  }).join('');
+}
+
+function renderDashboard(){
+  document.getElementById('dash-stats').innerHTML = `
+    <div class="stat stat--accent"><div class="num">38</div><div class="label">New enquiries</div><div class="sub">this month</div></div>
+    <div class="stat stat--amber"><div class="num">24</div><div class="label">Quotes sent</div><div class="sub">this month</div></div>
+    <div class="stat stat--green"><div class="num">11</div><div class="label">Jobs won</div><div class="sub">this month</div></div>
+    <div class="stat"><div class="num">9</div><div class="label">Active installations</div><div class="sub">in progress right now</div></div>
+    <div class="stat stat--accent"><div class="num">€163,000</div><div class="label">Pipeline value</div><div class="sub">everything still open</div></div>
+    <div class="stat stat--green"><div class="num">€84,000</div><div class="label">Won value</div><div class="sub">this month</div></div>
+    <div class="stat stat--amber"><div class="num">€71,000</div><div class="label">Awaiting decision</div><div class="sub">quotes out, no answer yet</div></div>
+    <div class="stat"><div class="num">${Object.keys(customers).length}</div><div class="label">Customers on file</div><div class="sub">every job, tracked start to finish</div></div>
+  `;
+  document.getElementById('team-grid').innerHTML = Object.entries(staff).map(([id,p])=>{
+    const count = Object.values(customers).filter(c=>c.assigned===id).length;
+    return `<div class="team-card">
+      <div class="team-avatar">${initials(p.name)}</div>
+      <div>
+        <div class="team-name">${esc(p.name)}</div>
+        <div class="team-role">${esc(p.role)}</div>
+        <div class="team-count">${count} customer${count===1?'':'s'} assigned right now</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function renderAll(){
+  renderPipelineStats();
+  renderJobsStats();
+  renderKanban(document.getElementById('pipeline-board'), stageOrder);
+  renderKanban(document.getElementById('jobs-board'), jobStages);
+  renderDashboard();
+}
+renderAll();
+
+// ---- View toggle ----
+const btnPipeline = document.getElementById('btn-pipeline');
+const btnJobs = document.getElementById('btn-jobs');
+const btnDash = document.getElementById('btn-dash');
+const pipelineWrap = document.getElementById('pipeline-wrap');
+const jobsWrap = document.getElementById('jobs-wrap');
+const dashWrap = document.getElementById('dash-wrap');
+const legend = document.getElementById('legend');
+const tabs = [btnPipeline, btnJobs, btnDash];
+
+function setView(view){
+  tabs.forEach(b=>{ const active=b.id===view; b.classList.toggle('active',active); b.setAttribute('aria-selected',String(active)); });
+  pipelineWrap.style.display = view==='btn-pipeline' ? '' : 'none';
+  jobsWrap.style.display = view==='btn-jobs' ? '' : 'none';
+  dashWrap.classList.toggle('active', view==='btn-dash');
+  legend.style.display = view==='btn-dash' ? 'none' : '';
+  renderLegend(view==='btn-jobs' ? 'jobs' : 'full');
+}
+btnPipeline.addEventListener('click', ()=>setView('btn-pipeline'));
+btnJobs.addEventListener('click', ()=>setView('btn-jobs'));
+btnDash.addEventListener('click', ()=>setView('btn-dash'));
+setView('btn-pipeline');
+
+// ---- Toasts (visualising the automations) ----
+function showToast(html){
+  const stack = document.getElementById('toast-stack');
+  const el = document.createElement('div');
+  el.className = 'toast';
+  el.innerHTML = html;
+  stack.appendChild(el);
+  requestAnimationFrame(()=> el.classList.add('show'));
+  setTimeout(()=>{
+    el.classList.remove('show');
+    setTimeout(()=>el.remove(), 250);
+  }, 3800);
+}
+function fireAutomation(fromStage, toStage, customer){
+  if(fromStage==='new' && toStage==='contacted'){
+    showToast(`<strong>Automation</strong><br>SMS sent to ${esc(customer.name)} confirming contact.<br>Internal task cleared for ${esc(staff[customer.assigned].name)}.`);
+  } else if(toStage==='quote_sent'){
+    showToast(`<strong>Automation</strong><br>Day-2 and Day-5 follow-up messages scheduled for ${esc(customer.name)}.`);
+  } else if(toStage==='followup'){
+    showToast(`<strong>Automation</strong><br>Task created: Call ${esc(customer.name)} — Quote Follow-Up, assigned to ${esc(staff[customer.assigned].name)}.`);
+  } else if(toStage==='won'){
+    showToast(`<strong>Automation</strong><br>Deposit invoice queued for ${esc(customer.name)}.`);
+  }
+}
+
+// ---- Drawer ----
+const drawer = document.getElementById('drawer');
+const scrim = document.getElementById('scrim');
+const drawerBody = document.getElementById('drawer-body');
+
+function setDrawerHead(label, bg, ink, title, sub){
+  const pill = document.getElementById('d-status-pill');
+  pill.textContent = label;
+  pill.style.background = bg;
+  pill.style.color = ink;
+  document.getElementById('d-title').textContent = title;
+  document.getElementById('d-sub').textContent = sub;
+}
+function showDrawer(){ drawer.classList.add('open'); drawer.setAttribute('aria-hidden','false'); scrim.classList.add('open'); }
+function closeDrawer(){ drawer.classList.remove('open'); drawer.setAttribute('aria-hidden','true'); scrim.classList.remove('open'); }
+document.getElementById('d-close').addEventListener('click', closeDrawer);
+scrim.addEventListener('click', closeDrawer);
+document.addEventListener('keydown', e=>{ if(e.key==='Escape') closeDrawer(); });
+
+function stageSelectHtml(selected){
+  return `<select id="pf-stage">${stageOrder.map(s=>`<option value="${s}" ${s===selected?'selected':''}>${stageMeta[s].label}</option>`).join('')}</select>`;
+}
+function staffSelectHtml(selected){
+  return `<select id="pf-assigned">${Object.entries(staff).map(([id,p])=>`<option value="${id}" ${id===selected?'selected':''}>${esc(p.name)}</option>`).join('')}</select>`;
+}
+function timelineHtml(items){
+  if(!items || !items.length) return '<div class="notes-box">No activity logged yet.</div>';
+  return `<div class="timeline">${items.map(t=>`
+    <div class="tl-item">
+      <div class="tl-dot"></div>
+      <div><div class="tl-date">${esc(t.date)}</div><div class="tl-event">${esc(t.event)}</div></div>
+    </div>`).join('')}</div>`;
+}
+function docsHtml(docs){
+  if(docs && docs.length) return docs.map(d=>`<div class="doc-chip"><span>📄</span><span>${esc(d)}</span></div>`).join('');
+  return '<div class="doc-chip"><span>—</span><span>No documents attached</span></div>';
+}
+
+function openCustomer(id){
+  const c = customers[id];
+  if(!c) return;
+  const meta = stageMeta[c.stage];
+  setDrawerHead(meta.label, meta.color, '#fff', c.name, `${c.job} · ${fmtEur(c.value)}`);
+  drawerBody.innerHTML = `
+    <div class="field-group">
+      <dl class="field-row"><dt>Phone</dt><dd>${esc(c.phone)}</dd></dl>
+      <dl class="field-row"><dt>Email</dt><dd>${esc(c.email)}</dd></dl>
+      <dl class="field-row"><dt>Area</dt><dd>${esc(c.area)}</dd></dl>
+      <dl class="field-row"><dt>Added</dt><dd>${esc(c.added)}</dd></dl>
+      <dl class="field-row"><dt>Last contact</dt><dd>${esc(c.lastContact)}</dd></dl>
+    </div>
+    <div class="form-row">
+      <div class="form-field"><label for="pf-stage">Stage</label>${stageSelectHtml(c.stage)}</div>
+      <div class="form-field"><label for="pf-assigned">Assigned to</label>${staffSelectHtml(c.assigned)}</div>
+    </div>
+    <div>
+      <p class="drawer-section-title">Next task</p>
+      <div class="notes-box">${esc(c.nextTask)} ${c.dueDate && c.dueDate!=='—' ? `<span class="mono" style="color:var(--faint)">· due ${esc(c.dueDate)}</span>` : ''}</div>
+    </div>
+    <div>
+      <p class="drawer-section-title">Notes</p>
+      <div class="notes-box">${esc(c.notes) || 'No additional notes on file.'}</div>
+    </div>
+    <div>
+      <p class="drawer-section-title">Customer timeline</p>
+      ${timelineHtml(c.timeline)}
+    </div>
+    <div>
+      <p class="drawer-section-title">Documents</p>
+      <div class="doc-list">${docsHtml(c.docs)}</div>
+    </div>
+    <div class="drawer-actions">
+      <button class="btn" id="btn-remove-card" type="button" style="color:var(--rust)">Remove</button>
+      <button class="btn btn-primary" id="btn-save-stage" type="button">Save changes</button>
+    </div>
+  `;
+  document.getElementById('btn-save-stage').addEventListener('click', ()=>{
+    const newStage = document.getElementById('pf-stage').value;
+    const oldStage = c.stage;
+    c.assigned = document.getElementById('pf-assigned').value;
+    c.stage = newStage;
+    if(newStage !== oldStage) fireAutomation(oldStage, newStage, c);
+    renderAll();
+    setView(document.getElementById('btn-jobs').classList.contains('active') ? 'btn-jobs' : (document.getElementById('btn-dash').classList.contains('active') ? 'btn-dash' : 'btn-pipeline'));
+    openCustomer(id);
+  });
+  document.getElementById('btn-remove-card').addEventListener('click', ()=>{
+    delete customers[id];
+    renderAll();
+    closeDrawer();
+  });
+  showDrawer();
+}
+
+function openNewForm(stage){
+  setDrawerHead('New', 'var(--surface-2)', 'var(--ink)', 'New customer', stageMeta[stage].label);
+  drawerBody.innerHTML = `
+    <div class="form-field"><label for="nf-name">Name</label><input id="nf-name" type="text" placeholder="e.g. Patrick O’Brien"></div>
+    <div class="form-field"><label for="nf-job">Job</label><input id="nf-job" type="text" placeholder="e.g. 6 windows + front door"></div>
+    <div class="form-row">
+      <div class="form-field"><label for="nf-value">Estimated value (€)</label><input id="nf-value" type="number" min="0" step="1" placeholder="9000"></div>
+      <div class="form-field"><label for="nf-area">Area</label><input id="nf-area" type="text" placeholder="e.g. Swords"></div>
+    </div>
+    <div class="form-row">
+      <div class="form-field"><label for="nf-phone">Phone</label><input id="nf-phone" type="text" placeholder="087 000 0000"></div>
+      <div class="form-field"><label for="nf-assigned">Assigned to</label>${staffSelectHtml('gary')}</div>
+    </div>
+    <div class="drawer-actions">
+      <button class="btn" id="btn-cancel-nf" type="button">Cancel</button>
+      <button class="btn btn-primary" id="btn-save-nf" type="button">Add customer</button>
+    </div>
+  `;
+  document.getElementById('pf-assigned').id = 'nf-assigned';
+  document.getElementById('btn-cancel-nf').addEventListener('click', closeDrawer);
+  document.getElementById('btn-save-nf').addEventListener('click', ()=>{
+    const name = document.getElementById('nf-name').value.trim();
+    if(!name) return;
+    const id = 'c' + Date.now();
+    customers[id] = {
+      stage, name,
+      phone: document.getElementById('nf-phone').value.trim(),
+      email:'', area: document.getElementById('nf-area').value.trim(),
+      job: document.getElementById('nf-job').value.trim(),
+      value: Number(document.getElementById('nf-value').value) || 0,
+      assigned: document.getElementById('nf-assigned').value,
+      added:'Today', lastContact:'Today', nextTask:'Make first contact', dueDate:'Today',
+      notes:'', timeline:[{date:'Today', event:'Enquiry received'}], docs:[],
+    };
+    if(stage==='new') fireAutomation('__created__', 'new', customers[id]);
+    renderAll();
+    closeDrawer();
+  });
+  showDrawer();
+}
+
+// ---- Click delegation + drag/drop for both boards ----
+[document.getElementById('pipeline-board'), document.getElementById('jobs-board')].forEach(board=>{
+  board.addEventListener('click', e=>{
+    const addBtn = e.target.closest('.kc-add');
+    if(addBtn){ openNewForm(addBtn.dataset.stage); return; }
+    const card = e.target.closest('.kc-card');
+    if(card){ openCustomer(card.dataset.id); return; }
+  });
+
+  let dragId = null;
+  board.addEventListener('dragstart', e=>{
+    const card = e.target.closest('.kc-card');
+    if(!card) return;
+    dragId = card.dataset.id;
+    e.dataTransfer.effectAllowed = 'move';
+    e.dataTransfer.setData('text/plain', dragId);
+    requestAnimationFrame(()=>card.classList.add('dragging'));
+  });
+  board.addEventListener('dragend', e=>{
+    const card = e.target.closest('.kc-card');
+    if(card) card.classList.remove('dragging');
+    board.querySelectorAll('.kanban-col.drop-target').forEach(c=>c.classList.remove('drop-target'));
+    dragId = null;
+  });
+  board.addEventListener('dragover', e=>{
+    const col = e.target.closest('.kanban-col');
+    if(!col || !dragId) return;
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+  });
+  board.addEventListener('dragenter', e=>{
+    const col = e.target.closest('.kanban-col');
+    if(!col || !dragId) return;
+    col.classList.add('drop-target');
+  });
+  board.addEventListener('dragleave', e=>{
+    const col = e.target.closest('.kanban-col');
+    if(!col) return;
+    if(col.contains(e.relatedTarget)) return;
+    col.classList.remove('drop-target');
+  });
+  board.addEventListener('drop', e=>{
+    const col = e.target.closest('.kanban-col');
+    if(!col || !dragId) return;
+    e.preventDefault();
+    const c = customers[dragId];
+    if(c){
+      const oldStage = c.stage;
+      const newStage = col.dataset.stage;
+      c.stage = newStage;
+      if(newStage !== oldStage) fireAutomation(oldStage, newStage, c);
+    }
+    dragId = null;
+    renderAll();
+  });
+});
+</script>
